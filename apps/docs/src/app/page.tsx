@@ -904,8 +904,8 @@ export default function DesignSystemPage() {
                         <div className="flex items-center justify-between mb-2">
                           <p className="text-[length:var(--text-14)] font-medium">{item.label}</p>
                           <div className="flex gap-2">
-                            <a href={`/${item.file}.svg`} download className="text-[length:var(--text-12)] text-muted-foreground hover:text-foreground border border-border rounded px-2 py-1 font-[family-name:var(--font-mono-family)] transition-colors">SVG</a>
-                            <a href={`/${item.file}.png`} download className="text-[length:var(--text-12)] text-muted-foreground hover:text-foreground border border-border rounded px-2 py-1 font-[family-name:var(--font-mono-family)] transition-colors">PNG</a>
+                            <a href={`${BASE_PATH}/${item.file}.svg`} download className="text-[length:var(--text-12)] text-muted-foreground hover:text-foreground border border-border rounded px-2 py-1 font-[family-name:var(--font-mono-family)] transition-colors">SVG</a>
+                            <a href={`${BASE_PATH}/${item.file}.png`} download className="text-[length:var(--text-12)] text-muted-foreground hover:text-foreground border border-border rounded px-2 py-1 font-[family-name:var(--font-mono-family)] transition-colors">PNG</a>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">

@@ -65,30 +65,55 @@
 
 ---
 
-### 1.2 Базовые (Нейтральные) цвета
+### 1.2 Нейтральная шкала (Gray Scale)
 
-Источник: твои базовые цвета из скрина. shadcn использует шкалу от `background` до `foreground` через нейтральные.
-Шкала расширена с твоих 5 позиций до полной shadcn-совместимой (background → foreground).
+Единая числовая шкала `--rm-gray-{N}` — основа всех нейтральных решений. Каждый уровень несёт конкретную UI-роль. shadcn-токены (`background`, `border`, `muted`...) являются алиасами на эту шкалу.
 
-| Токен shadcn | CSS-переменная | Light HEX | Dark HEX | Описание |
-|-------------|---------------|-----------|----------|----------|
-| `background` | `--background` | `#FAFAFA` | `#121212` | Основной фон страницы |
-| `foreground` | `--foreground` | `#2D2D2D` | `#F0F0F0` | Основной текст |
-| `muted` | `--muted` | `#F0F0F0` | `#1E1E1E` | Приглушённый фон (подложки, chips) |
-| `muted-foreground` | `--muted-foreground` | `#666666` | `#939393` | Второстепенный текст, подписи |
-| `border` | `--border` | `#CBCBCB` | `#404040` | Разделители, бордеры |
-| `input` | `--input` | `#CBCBCB` | `#404040` | Бордер инпутов |
-| `ring` | `--ring` | `#FFCC00` | `#FFCC00` | Фокус-кольцо (жёлтый в обеих темах) |
-| `card` | `--card` | `#FFFFFF` | `#1A1A1A` | Фон карточек |
-| `card-foreground` | `--card-foreground` | `#2D2D2D` | `#F0F0F0` | Текст в карточках |
-| `popover` | `--popover` | `#FFFFFF` | `#1A1A1A` | Фон поповеров/дропдаунов |
-| `popover-foreground` | `--popover-foreground` | `#2D2D2D` | `#F0F0F0` | Текст в поповерах |
-| `secondary` | `--secondary` | `#F0F0F0` | `#1E1E1E` | Второстепенный фон |
-| `secondary-foreground` | `--secondary-foreground` | `#2D2D2D` | `#F0F0F0` | Текст на secondary |
-| `accent` | `--accent` | `#F0F0F0` | `#1E1E1E` | Hover-состояния (нейтральный акцент) |
-| `accent-foreground` | `--accent-foreground` | `#2D2D2D` | `#F0F0F0` | Текст на accent |
-| `destructive` | `--destructive` | `#ED4843` | `#FF6B6B` | Опасные действия, ошибки |
-| `destructive-foreground` | `--destructive-foreground` | `#FFFFFF` | `#FFFFFF` | Текст на destructive |
+#### Уровни и их роли
+
+| Уровень | CSS-переменная | Light | Dark | Роль |
+|---------|---------------|-------|------|------|
+| 1 | `--rm-gray-1` | `#FAFAFA` | `#121212` | Фон страницы — `background` |
+| 2 | `--rm-gray-2` | `#F5F5F5` | `#1A1A1A` | Тихая поверхность — `card`, `popover` |
+| 3 | `--rm-gray-3` | `#EBEBEB` | `#242424` | Hover-фон компонентов — `muted`, `accent`, `secondary` |
+| 4 | `--rm-gray-4` | `#CBCBCB` | `#404040` | Дефолтный бордер — `border`, `input` |
+| 5 | `--rm-gray-5` | `#A3A3A3` | `#5C5C5C` | Hover/active бордер |
+| 6 | `--rm-gray-6` | `#666666` | `#939393` | Второстепенный текст — `muted-foreground` |
+| fg | `--rm-gray-fg` | `#2D2D2D` | `#F0F0F0` | Основной текст — `foreground` |
+
+#### Gray Alpha (полупрозрачные оверлеи)
+
+Используй вместо `rgba()` в коде — автоматически адаптируются к светлой и тёмной теме.
+
+| Токен | Light | Dark | Применение |
+|-------|-------|------|------------|
+| `--rm-gray-alpha-100` | `rgba(0,0,0, 0.06)` | `rgba(255,255,255, 0.06)` | Лёгкий тинт (dot-grid, фоны) |
+| `--rm-gray-alpha-200` | `rgba(0,0,0, 0.10)` | `rgba(255,255,255, 0.10)` | Разделители на светлых фонах |
+| `--rm-gray-alpha-400` | `rgba(0,0,0, 0.20)` | `rgba(255,255,255, 0.20)` | Overlay лёгкий |
+| `--rm-gray-alpha-600` | `rgba(0,0,0, 0.40)` | `rgba(255,255,255, 0.40)` | Modal scrim |
+| `--rm-gray-alpha-800` | `rgba(0,0,0, 0.70)` | `rgba(255,255,255, 0.70)` | Тяжёлый overlay |
+
+#### shadcn-алиасы на gray scale
+
+| Токен shadcn | Алиас на | Light HEX | Dark HEX | Описание |
+|-------------|----------|-----------|----------|----------|
+| `background` | `--rm-gray-1` | `#FAFAFA` | `#121212` | Основной фон страницы |
+| `foreground` | `--rm-gray-fg` | `#2D2D2D` | `#F0F0F0` | Основной текст |
+| `muted` | `--rm-gray-3` | `#EBEBEB` | `#242424` | Приглушённый фон |
+| `muted-foreground` | `--rm-gray-6` | `#666666` | `#939393` | Второстепенный текст |
+| `border` | `--rm-gray-4` | `#CBCBCB` | `#404040` | Разделители, бордеры |
+| `input` | `--rm-gray-4` | `#CBCBCB` | `#404040` | Бордер инпутов |
+| `ring` | — | `#FFCC00` | `#FFCC00` | Фокус-кольцо (жёлтый) |
+| `card` | `--rm-gray-2` | `#F5F5F5` | `#1A1A1A` | Фон карточек |
+| `card-foreground` | `--rm-gray-fg` | `#2D2D2D` | `#F0F0F0` | Текст в карточках |
+| `popover` | `--rm-gray-2` | `#F5F5F5` | `#1A1A1A` | Фон поповеров/дропдаунов |
+| `popover-foreground` | `--rm-gray-fg` | `#2D2D2D` | `#F0F0F0` | Текст в поповерах |
+| `secondary` | `--rm-gray-3` | `#EBEBEB` | `#242424` | Второстепенный фон |
+| `secondary-foreground` | `--rm-gray-fg` | `#2D2D2D` | `#F0F0F0` | Текст на secondary |
+| `accent` | `--rm-gray-3` | `#EBEBEB` | `#242424` | Hover-состояния |
+| `accent-foreground` | `--rm-gray-fg` | `#2D2D2D` | `#F0F0F0` | Текст на accent |
+| `destructive` | — | `#ED4843` | `#FF6B6B` | Опасные действия, ошибки |
+| `destructive-foreground` | — | `#FFFFFF` | `#FFFFFF` | Текст на destructive |
 
 > **Цветной разделитель** (`--border-on-colored`) — используется только поверх цветных фонов:
 > Light: `#7D61B1` (фиолетовый приглушённый), Dark: `#DBC800` (жёлтый приглушённый).
@@ -109,7 +134,13 @@ shadcn требует `primary` и `primary-foreground` — маппим на г
 ### 1.4 Дополнительные (Categorical) цвета
 
 Используются для тегов, бейджей, статусов, графиков.
-Каждый цвет имеет три уровня насыщенности: 100% / 50% / 10%.
+Каждый цвет имеет три уровня с явными ролями:
+
+| Уровень | Роль |
+|---------|------|
+| **100** | Сам цвет — иконки, текст на цветном фоне, stroke. В тёмной теме чуть светлее для контраста. |
+| **50** | Приглушённый — фон тега/бейджа, hover-фон. В тёмной теме насыщенный тёмный оттенок. |
+| **10** | Очень светлый/тёмный фон — подложка блока, hover секции. В тёмной теме почти чёрный с оттенком. |
 
 | Цвет | Токен | Light 100 / 50 / 10 | Dark 100 / 50 / 10 |
 |------|-------|--------------------|--------------------|
@@ -121,171 +152,122 @@ shadcn требует `primary` и `primary-foreground` — маппим на г
 | Красный | `--color-red-{100/50/10}` | `#ED4843` / `#FFBCBA` / `#FFF9F8` | `#F47370` / `#7A1715` / `#250504` |
 | Зелёный | `--color-green-{100/50/10}` | `#9AF576` / `#D8F4CD` / `#F7FEF3` | `#B5FA97` / `#2A6E15` / `#0A2005` |
 
-> Логика адаптации под тёмную тему: 100 — чуть светлее (контраст на тёмном фоне), 50 — насыщенный тёмный оттенок (фон тега/бейджа), 10 — почти чёрный с оттенком цвета (глубокий фон).
-
 ---
 
-### 1.5 CSS-переменные (готово к вставке в globals.css)
+### 1.5 CSS-переменные (актуальный globals.css)
+
+> Источник правды — `design-system-docs/src/app/globals.css`. Блок ниже для справки.
 
 ```css
-@layer base {
-  :root {
-    /* === Базовые нейтральные === */
-    --background: 0 0% 98%;          /* #FAFAFA */
-    --foreground: 0 0% 17.6%;        /* #2D2D2D */
-    --muted: 0 0% 94.1%;             /* #F0F0F0 */
-    --muted-foreground: 0 0% 40%;    /* #666666 */
-    --border: 0 0% 79.6%;            /* #CBCBCB */
-    --input: 0 0% 79.6%;             /* #CBCBCB */
-    --ring: 54 100% 50%;             /* #FFCC00 */
-    --card: 0 0% 100%;               /* #FFFFFF */
-    --card-foreground: 0 0% 17.6%;   /* #2D2D2D */
-    --popover: 0 0% 100%;            /* #FFFFFF */
-    --popover-foreground: 0 0% 17.6%;/* #2D2D2D */
-    --secondary: 0 0% 94.1%;         /* #F0F0F0 */
-    --secondary-foreground: 0 0% 17.6%;
-    --accent: 0 0% 94.1%;
-    --accent-foreground: 0 0% 17.6%;
-    --destructive: 2 82% 60%;        /* #ED4843 */
-    --destructive-foreground: 0 0% 100%;
+:root {
+  /* === Gray Scale (Light) ===
+   * 1 — page bg · 2 — subtle surface · 3 — hover bg
+   * 4 — default border · 5 — hover border · 6 — secondary text · fg — primary text
+  */
+  --rm-gray-1:  #FAFAFA;
+  --rm-gray-2:  #F5F5F5;
+  --rm-gray-3:  #EBEBEB;
+  --rm-gray-4:  #CBCBCB;
+  --rm-gray-5:  #A3A3A3;
+  --rm-gray-6:  #666666;
+  --rm-gray-fg: #2D2D2D;
 
-    /* === Primary (жёлтый акцент) === */
-    --primary: 54 100% 50%;          /* #FFCC00 */
-    --primary-foreground: 0 0% 7.1%; /* #121212 */
+  /* === Gray Alpha (overlays, tooltips, glass) === */
+  --rm-gray-alpha-100: rgba(0,0,0, 0.06);
+  --rm-gray-alpha-200: rgba(0,0,0, 0.10);
+  --rm-gray-alpha-400: rgba(0,0,0, 0.20);
+  --rm-gray-alpha-600: rgba(0,0,0, 0.40);
+  --rm-gray-alpha-800: rgba(0,0,0, 0.70);
 
-    /* === Брендовые акценты === */
-    --color-yellow-100: 54 100% 50%; /* #FFCC00 */
-    --color-yellow-50: 54 100% 83%;  /* #FFF0AA */
-    --color-yellow-10: 54 100% 96%;  /* #FFFEF3 */
+  /* === shadcn aliases === */
+  --background: var(--rm-gray-1);
+  --foreground: var(--rm-gray-fg);
+  --muted: var(--rm-gray-3);
+  --muted-foreground: var(--rm-gray-6);
+  --border: var(--rm-gray-4);
+  --input: var(--rm-gray-4);
+  --ring: #FFCC00;
+  --card: #FFFFFF;
+  --card-foreground: var(--rm-gray-fg);
+  --popover: #FFFFFF;
+  --popover-foreground: var(--rm-gray-fg);
+  --secondary: var(--rm-gray-3);
+  --secondary-foreground: var(--rm-gray-fg);
+  --accent: var(--rm-gray-3);
+  --accent-foreground: var(--rm-gray-fg);
+  --destructive: #ED4843;
+  --destructive-foreground: #FFFFFF;
+  --primary: #FFCC00;
+  --primary-foreground: #121212;
 
-    --color-violet-100: 265 91% 71%; /* #A172F8 */
-    --color-violet-50: 265 100% 90%; /* #DCC8FF */
-    --color-violet-10: 265 100% 98%; /* #FBFAFE */
+  /* === Brand accents === */
+  --rm-yellow-100: #FFCC00;
+  --rm-yellow-50:  #FFF0AA;
+  --rm-yellow-10:  #FFFEF3;
+  --rm-violet-100: #A172F8;
+  --rm-violet-50:  #DCC8FF;
+  --rm-violet-10:  #FBFAFE;
+  --border-on-colored: #7D61B1;
 
-    /* === Цветной разделитель === */
-    --border-on-colored: 265 36% 55%; /* #7D61B1 */
+  /* === Categorical colors === */
+  --rm-terracotta-100: #FE733A; --rm-terracotta-50: #FFD6AD; --rm-terracotta-10: #FFFAF7;
+  --rm-sky-100: #56CAEA;        --rm-sky-50: #C3ECF7;        --rm-sky-10: #F7FDFF;
+  --rm-pink-100: #FF54AC;       --rm-pink-50: #FFB8D9;       --rm-pink-10: #FFF8FC;
+  --rm-blue-100: #4A56DF;       --rm-blue-50: #BFC4F3;       --rm-blue-10: #F9FAFF;
+  --rm-red-100: #ED4843;        --rm-red-50: #FFBCBA;        --rm-red-10: #FFF9F8;
+  --rm-green-100: #9AF576;      --rm-green-50: #D8F4CD;      --rm-green-10: #F7FEF3;
+}
 
-    /* === Дополнительные цвета (categorical) === */
-    --color-terracotta-100: 16 98% 60%;   /* #FE733A */
-    --color-terracotta-50: 28 100% 84%;   /* #FFD6AD */
-    --color-terracotta-10: 30 100% 97%;   /* #FFFAF7 */
+.dark {
+  /* === Gray Scale (Dark) === */
+  --rm-gray-1:  #121212;
+  --rm-gray-2:  #1A1A1A;
+  --rm-gray-3:  #242424;
+  --rm-gray-4:  #404040;
+  --rm-gray-5:  #5C5C5C;
+  --rm-gray-6:  #939393;
+  --rm-gray-fg: #F0F0F0;
 
-    --color-sky-100: 193 76% 63%;     /* #56CAEA */
-    --color-sky-50: 197 72% 86%;      /* #C3ECF7 */
-    --color-sky-10: 197 100% 98%;     /* #F7FDFF */
+  /* === Gray Alpha (dark) === */
+  --rm-gray-alpha-100: rgba(255,255,255, 0.06);
+  --rm-gray-alpha-200: rgba(255,255,255, 0.10);
+  --rm-gray-alpha-400: rgba(255,255,255, 0.20);
+  --rm-gray-alpha-600: rgba(255,255,255, 0.40);
+  --rm-gray-alpha-800: rgba(255,255,255, 0.70);
 
-    --color-pink-100: 326 100% 66%;   /* #FF54AC */
-    --color-pink-50: 333 100% 86%;    /* #FFB8D9 */
-    --color-pink-10: 333 100% 98%;    /* #FFF8FC */
+  /* === shadcn aliases === */
+  --background: var(--rm-gray-1);
+  --foreground: var(--rm-gray-fg);
+  --muted: var(--rm-gray-3);
+  --muted-foreground: var(--rm-gray-6);
+  --border: var(--rm-gray-4);
+  --input: var(--rm-gray-4);
+  --ring: #FFCC00;
+  --card: var(--rm-gray-2);
+  --card-foreground: var(--rm-gray-fg);
+  --popover: var(--rm-gray-2);
+  --popover-foreground: var(--rm-gray-fg);
+  --secondary: var(--rm-gray-3);
+  --secondary-foreground: var(--rm-gray-fg);
+  --accent: var(--rm-gray-3);
+  --accent-foreground: var(--rm-gray-fg);
+  --destructive: #FF6B6B;
+  --destructive-foreground: #FFFFFF;
+  --primary: #FFCC00;
+  --primary-foreground: #121212;
 
-    --color-blue-100: 235 67% 58%;    /* #4A56DF */
-    --color-blue-50: 237 71% 85%;     /* #BFC4F3 */
-    --color-blue-10: 237 100% 98%;    /* #F9FAFF */
+  /* === Brand accents (dark) === */
+  --rm-yellow-100: #FFCC00; --rm-yellow-50: #7A6200; --rm-yellow-10: #3D3300;
+  --rm-violet-100: #B48DFA; --rm-violet-50: #5A3D99; --rm-violet-10: #20143D;
+  --border-on-colored: #DBC800;
 
-    --color-red-100: 2 82% 60%;       /* #ED4843 */
-    --color-red-50: 2 100% 86%;       /* #FFBCBA */
-    --color-red-10: 2 100% 98%;       /* #FFF9F8 */
-
-    --color-green-100: 100 87% 71%;   /* #9AF576 */
-    --color-green-50: 103 55% 87%;    /* #D8F4CD */
-    --color-green-10: 103 60% 96%;    /* #F7FEF3 */
-
-    /* === Chart === */
-    --chart-1: 54 100% 50%;   /* #FFCC00 */
-    --chart-2: 265 91% 71%;   /* #A172F8 */
-    --chart-3: 193 76% 63%;   /* #56CAEA */
-    --chart-4: 16 98% 60%;    /* #FE733A */
-    --chart-5: 100 87% 71%;   /* #9AF576 */
-
-    /* === Sidebar === */
-    --sidebar: 0 0% 98%;                   /* #FAFAFA */
-    --sidebar-foreground: 0 0% 17.6%;     /* #2D2D2D */
-    --sidebar-primary: 54 100% 50%;       /* #FFCC00 */
-    --sidebar-primary-foreground: 0 0% 7.1%; /* #121212 */
-    --sidebar-accent: 0 0% 94.1%;         /* #F0F0F0 */
-    --sidebar-accent-foreground: 0 0% 17.6%;
-    --sidebar-border: 0 0% 79.6%;         /* #CBCBCB */
-    --sidebar-ring: 54 100% 50%;          /* #FFCC00 */
-  }
-
-  .dark {
-    /* === Базовые нейтральные === */
-    --background: 0 0% 7.1%;          /* #121212 */
-    --foreground: 0 0% 94.1%;         /* #F0F0F0 */
-    --muted: 0 0% 11.8%;              /* #1E1E1E */
-    --muted-foreground: 0 0% 57.6%;   /* #939393 */
-    --border: 0 0% 25.1%;             /* #404040 */
-    --input: 0 0% 25.1%;              /* #404040 */
-    --ring: 54 100% 50%;              /* #FFCC00 — жёлтый в тёмной теме */
-    --card: 0 0% 10.2%;               /* #1A1A1A */
-    --card-foreground: 0 0% 94.1%;    /* #F0F0F0 */
-    --popover: 0 0% 10.2%;            /* #1A1A1A */
-    --popover-foreground: 0 0% 94.1%;
-    --secondary: 0 0% 11.8%;          /* #1E1E1E */
-    --secondary-foreground: 0 0% 94.1%;
-    --accent: 0 0% 11.8%;
-    --accent-foreground: 0 0% 94.1%;
-    --destructive: 0 100% 71%;        /* #FF6B6B */
-    --destructive-foreground: 0 0% 100%;
-
-    /* === Primary (жёлтый акцент — без изменений) === */
-    --primary: 54 100% 50%;           /* #FFCC00 */
-    --primary-foreground: 0 0% 7.1%;  /* #121212 */
-
-    /* === Брендовые акценты в тёмной теме === */
-    --color-yellow-100: 54 100% 50%;  /* #FFCC00 */
-    --color-yellow-50: 54 100% 24%;   /* #7A6200 — тёмный насыщенный */
-    --color-yellow-10: 54 100% 12%;   /* #3D3300 — тёмный */
-
-    --color-violet-100: 265 91% 76%;  /* #B48DFA — светлее для контраста */
-    --color-violet-50: 265 60% 40%;   /* #5A3D99 — тёмно-фиолетовый */
-    --color-violet-10: 265 40% 18%;   /* #20143D — почти чёрный */
-
-    /* === Категориальные цвета (тёмная тема) === */
-    --color-terracotta-100: 16 100% 67%;  /* #FF8A5C — светлее */
-    --color-terracotta-50: 16 74% 27%;    /* #7A2E10 — тёмный */
-    --color-terracotta-10: 16 69% 9%;     /* #2A0F05 — почти чёрный */
-
-    --color-sky-100: 193 76% 70%;     /* #7AD6EF — светлее */
-    --color-sky-50: 193 62% 27%;      /* #1A5F72 — тёмный */
-    --color-sky-10: 193 70% 8%;       /* #051A20 — почти чёрный */
-
-    --color-pink-100: 326 100% 74%;   /* #FF7EC5 — светлее */
-    --color-pink-50: 326 64% 28%;     /* #7A1A55 — тёмный */
-    --color-pink-10: 326 72% 9%;      /* #25061A — почти чёрный */
-
-    --color-blue-100: 235 79% 70%;    /* #7A84F0 — светлее */
-    --color-blue-50: 235 57% 27%;     /* #1E2870 — тёмный */
-    --color-blue-10: 235 68% 9%;      /* #060A24 — почти чёрный */
-
-    --color-red-100: 2 84% 70%;       /* #F47370 — светлее */
-    --color-red-50: 2 70% 27%;        /* #7A1715 — тёмный */
-    --color-red-10: 2 70% 9%;         /* #250504 — почти чёрный */
-
-    --color-green-100: 100 91% 78%;   /* #B5FA97 — светлее */
-    --color-green-50: 100 66% 25%;    /* #2A6E15 — тёмный */
-    --color-green-10: 100 63% 8%;     /* #0A2005 — почти чёрный */
-
-    /* === Цветной разделитель === */
-    --border-on-colored: 54 62% 43%;  /* #DBC800 */
-
-    /* === Chart (тёмная тема — без изменений, те же катег. цвета) === */
-    --chart-1: 54 100% 50%;   /* #FFCC00 */
-    --chart-2: 265 91% 76%;   /* #B48DFA */
-    --chart-3: 193 76% 70%;   /* #7AD6EF */
-    --chart-4: 16 100% 67%;   /* #FF8A5C */
-    --chart-5: 100 91% 78%;   /* #B5FA97 */
-
-    /* === Sidebar (тёмная тема) === */
-    --sidebar: 0 0% 10.2%;                /* #1A1A1A */
-    --sidebar-foreground: 0 0% 94.1%;    /* #F0F0F0 */
-    --sidebar-primary: 54 100% 50%;      /* #FFCC00 */
-    --sidebar-primary-foreground: 0 0% 7.1%; /* #121212 */
-    --sidebar-accent: 0 0% 11.8%;        /* #1E1E1E */
-    --sidebar-accent-foreground: 0 0% 94.1%;
-    --sidebar-border: 0 0% 25.1%;        /* #404040 */
-    --sidebar-ring: 54 100% 50%;         /* #FFCC00 */
-  }
+  /* === Categorical colors (dark) === */
+  --rm-terracotta-100: #FF8A5C; --rm-terracotta-50: #7A2E10; --rm-terracotta-10: #2A0F05;
+  --rm-sky-100: #7AD6EF;        --rm-sky-50: #1A5F72;        --rm-sky-10: #051A20;
+  --rm-pink-100: #FF7EC5;       --rm-pink-50: #7A1A55;       --rm-pink-10: #25061A;
+  --rm-blue-100: #7A84F0;       --rm-blue-50: #1E2870;       --rm-blue-10: #060A24;
+  --rm-red-100: #F47370;        --rm-red-50: #7A1715;        --rm-red-10: #250504;
+  --rm-green-100: #B5FA97;      --rm-green-50: #2A6E15;      --rm-green-10: #0A2005;
 }
 ```
 
