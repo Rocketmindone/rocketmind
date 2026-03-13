@@ -1,16 +1,26 @@
 "use client";
 
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { ref, onValue, set } from 'firebase/database';
+import { db } from '@/lib/firebase';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
+
+type ColorToken = 'yellow' | 'violet' | 'sky' | 'terracotta' | 'pink' | 'blue' | 'red' | 'green';
 
 type Week = {
   id: string;
   label: string;
   dates: string;
   theme: string;
-  color: string;
+  color: ColorToken;
 };
+
+// ─── Color helpers ────────────────────────────────────────────────────────────
+
+function cssVar(token: ColorToken, level: '100' | '300' | '500' | '700' | '900' | 'fg' | 'fg-subtle') {
+  return `var(--rm-${token}-${level})`;
+}
 
 const DAYS = ['пн', 'вт', 'ср', 'чт', 'пт'] as const;
 type Day = typeof DAYS[number];
@@ -31,10 +41,10 @@ type Row = {
 // ─── Initial data ─────────────────────────────────────────────────────────────
 
 const INITIAL_WEEKS: Week[] = [
-  { id: 'w1', label: 'Неделя 1', dates: '9–15 мар', theme: 'Поиск направления + технический фундамент + DS v1', color: '#A172F8' },
-  { id: 'w2', label: 'Неделя 2', dates: '16–22 мар', theme: 'Стабилизация сборки + DS v2 + старт MVP сервиса', color: '#56CAEA' },
-  { id: 'w3', label: 'Неделя 3', dates: '23–29 мар', theme: 'Интеграция MVP с n8n + агенты + DS v3', color: '#FE733A' },
-  { id: 'w4', label: 'Неделя 4', dates: '30 мар – 5 апр', theme: 'Полировка + DS v4 + QA MVP сервиса', color: '#FFCC00' },
+  { id: 'w1', label: 'Неделя 1', dates: '9–15 мар', theme: 'Поиск направления + технический фундамент + DS v1', color: 'violet' },
+  { id: 'w2', label: 'Неделя 2', dates: '16–22 мар', theme: 'Стабилизация сборки + DS v2 + старт MVP сервиса', color: 'sky' },
+  { id: 'w3', label: 'Неделя 3', dates: '23–29 мар', theme: 'Интеграция MVP с n8n + агенты + DS v3', color: 'terracotta' },
+  { id: 'w4', label: 'Неделя 4', dates: '30 мар – 5 апр', theme: 'Полировка + DS v4 + QA MVP сервиса', color: 'yellow' },
 ];
 
 function card(label: string, done = false): Card {
@@ -118,11 +128,11 @@ const INITIAL_ROWS: Row[] = [
   },
 ];
 
+const INITIAL_TITLE = 'План работ 9 марта — 3 апреля';
+const INITIAL_SUBTITLE = '4 недели · Дизайн-система + MVP сервиса + Продуктовые страницы';
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function textColor(hex: string) {
-  return hex;
-}
 
 // ─── EditableText ─────────────────────────────────────────────────────────────
 
@@ -170,7 +180,6 @@ function EditableText({
 }
 
 // ─── CardItem ─────────────────────────────────────────────────────────────────
-// label хранится как многострочный текст; каждая строка — отдельный буллит
 
 function CardItem({
   card: c, weekColor, locked,
@@ -179,7 +188,7 @@ function CardItem({
   onDragStart, onDragEnd, onDragOver, onDrop,
   onToggleDay,
 }: {
-  card: Card; weekColor: string; locked: boolean;
+  card: Card; weekColor: ColorToken; locked: boolean;
   onToggleDone: () => void;
   onUpdateLabel: (v: string) => void;
   onRemove: () => void;
@@ -190,11 +199,10 @@ function CardItem({
   onDrop: (e: React.DragEvent) => void;
   onToggleDay: (day: Day) => void;
 }) {
-  const tc = textColor(weekColor);
   const [editing, setEditing] = useState(false);
   const taRef = useRef<HTMLTextAreaElement>(null);
 
-  const lines = c.label.split('\n').filter(l => l.trim() !== '');
+  const lines = (c.label ?? '').split('\n').filter(l => l.trim() !== '');
 
   const startEdit = useCallback(() => {
     setEditing(true);
@@ -203,7 +211,6 @@ function CardItem({
       taRef.current.focus();
       const len = taRef.current.value.length;
       taRef.current.setSelectionRange(len, len);
-      // auto-height
       taRef.current.style.height = 'auto';
       taRef.current.style.height = taRef.current.scrollHeight + 'px';
     });
@@ -223,20 +230,19 @@ function CardItem({
       onDrop={onDrop}
       className="rounded-md px-2.5 pt-1.5 pb-2 group/card relative"
       style={{
-        backgroundColor: weekColor + '1A',
-        border: `1px solid ${weekColor}40`,
+        backgroundColor: cssVar(weekColor, '900'),
+        border: `1px solid ${cssVar(weekColor, '300')}`,
         cursor: editing ? 'default' : 'grab',
       }}
     >
       {/* Top row: checkbox + days + remove */}
       <div className="flex items-center gap-1.5 mb-1">
-        {/* Checkbox */}
         <button
           onClick={onToggleDone}
           className="flex-shrink-0 w-3.5 h-3.5 rounded-sm border transition-colors"
           style={{
-            borderColor: c.done ? weekColor : weekColor + '80',
-            backgroundColor: c.done ? weekColor : 'white',
+            borderColor: c.done ? cssVar(weekColor, '100') : cssVar(weekColor, '300'),
+            backgroundColor: c.done ? cssVar(weekColor, '100') : 'transparent',
           }}
           title={c.done ? 'Готово' : 'Отметить как готово'}
         >
@@ -247,10 +253,9 @@ function CardItem({
           )}
         </button>
 
-        {/* Days */}
         <div className="flex items-center gap-0.5">
           {DAYS.map(day => {
-            const active = c.days.includes(day);
+            const active = (c.days ?? []).includes(day);
             return (
               <button
                 key={day}
@@ -261,10 +266,10 @@ function CardItem({
                   width: 18,
                   height: 16,
                   borderRadius: 3,
-                  backgroundColor: active ? weekColor : weekColor + '18',
-                  color: active ? '#fff' : textColor(weekColor),
-                  opacity: active ? 1 : 0.5,
-                  border: `1px solid ${active ? weekColor : weekColor + '40'}`,
+                  backgroundColor: active ? cssVar(weekColor, '100') : cssVar(weekColor, '900'),
+                  color: active ? cssVar(weekColor, 'fg') : cssVar(weekColor, 'fg-subtle'),
+                  opacity: active ? 1 : 0.6,
+                  border: `1px solid ${active ? cssVar(weekColor, '100') : cssVar(weekColor, '300')}`,
                 }}
                 title={day}
               >
@@ -286,25 +291,21 @@ function CardItem({
         )}
       </div>
 
-      {/* Bullet list / editor */}
       {editing ? (
         <textarea
           ref={taRef}
           defaultValue={c.label}
           className="w-full bg-transparent outline-none resize-none text-xs leading-snug"
-          style={{ color: tc, minHeight: 32 }}
+          style={{ color: cssVar(weekColor, 'fg-subtle'), minHeight: 32 }}
           rows={Math.max(lines.length, 1)}
           onInput={e => autoResize(e.currentTarget)}
           onBlur={e => {
-            // trim trailing empty lines but keep structure
             const val = e.target.value.replace(/\n{3,}/g, '\n\n').trimEnd();
             onUpdateLabel(val || 'Новая задача');
             setEditing(false);
           }}
           onKeyDown={e => {
-            if (e.key === 'Escape') {
-              setEditing(false);
-            }
+            if (e.key === 'Escape') setEditing(false);
           }}
         />
       ) : (
@@ -316,10 +317,8 @@ function CardItem({
         >
           {(lines.length > 0 ? lines : [c.label]).map((line, i) => (
             <li key={i} className="flex items-start gap-1.5 text-xs leading-snug">
-              <span className="flex-shrink-0 mt-[3px] w-1 h-1 rounded-full" style={{ backgroundColor: weekColor, opacity: 0.7 }} />
-              <span style={{ color: tc }}>
-                {line}
-              </span>
+              <span className="flex-shrink-0 mt-[3px] w-1 h-1 rounded-full" style={{ backgroundColor: cssVar(weekColor, '100'), opacity: 0.7 }} />
+              <span style={{ color: cssVar(weekColor, 'fg-subtle') }}>{line}</span>
             </li>
           ))}
         </ul>
@@ -327,8 +326,6 @@ function CardItem({
     </div>
   );
 }
-
-// ─── Main page ────────────────────────────────────────────────────────────────
 
 // ─── Lock modal ───────────────────────────────────────────────────────────────
 
@@ -396,36 +393,101 @@ function LockModal({ onClose, onUnlock }: { onClose: () => void; onUnlock: () =>
   );
 }
 
-// ─── Main page ────────────────────────────────────────────────────────────────
+// ─── Sync indicator ───────────────────────────────────────────────────────────
 
-const STORAGE_KEY = 'rocketmind-gantt-v1';
-
-function loadState() {
-  if (typeof window === 'undefined') return null;
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
-    return JSON.parse(raw) as {
-      weeks: Week[]; rows: Row[]; title: string; subtitle: string;
-    };
-  } catch { return null; }
+function SyncDot({ status }: { status: 'synced' | 'saving' | 'error' | 'loading' }) {
+  const map = {
+    loading: { color: '#94a3b8', label: 'Загрузка…' },
+    saving:  { color: '#F59E0B', label: 'Сохранение…' },
+    synced:  { color: '#22C55E', label: 'Синхронизировано' },
+    error:   { color: '#EF4444', label: 'Ошибка синхронизации' },
+  };
+  const { color, label } = map[status];
+  return (
+    <div className="flex items-center gap-1.5 font-mono text-[11px] text-muted-foreground select-none" title={label}>
+      <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
+      {label}
+    </div>
+  );
 }
 
+// ─── Main page ────────────────────────────────────────────────────────────────
+
+const DB_PATH = 'gantt';
+
 export default function GanttPage() {
-  const saved = loadState();
-  const [weeks, setWeeks] = useState<Week[]>(saved?.weeks ?? INITIAL_WEEKS);
-  const [rows, setRows] = useState<Row[]>(saved?.rows ?? INITIAL_ROWS);
-  const [title, setTitle] = useState(saved?.title ?? 'План работ 9 марта — 3 апреля');
-  const [subtitle, setSubtitle] = useState(saved?.subtitle ?? '4 недели · Дизайн-система + MVP сервиса + Продуктовые страницы');
+  const [weeks, setWeeks] = useState<Week[]>(INITIAL_WEEKS);
+  const [rows, setRows] = useState<Row[]>(INITIAL_ROWS);
+  const [title, setTitle] = useState(INITIAL_TITLE);
+  const [subtitle, setSubtitle] = useState(INITIAL_SUBTITLE);
   const [locked, setLocked] = useState(false);
   const [showLockModal, setShowLockModal] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<'synced' | 'saving' | 'error' | 'loading'>('loading');
 
-  // Persist state to localStorage on every change
+  // Track whether we've received the first snapshot from Firebase
+  const initialized = useRef(false);
+  // Suppress writes while receiving remote update
+  const remoteUpdate = useRef(false);
+
+  // ── Subscribe to Firebase Realtime DB ─────────────────────────────────────
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ weeks, rows, title, subtitle }));
-    } catch { /* quota exceeded or SSR */ }
-  }, [weeks, rows, title, subtitle]);
+    const dbRef = ref(db, DB_PATH);
+    const unsub = onValue(
+      dbRef,
+      (snapshot) => {
+        const data = snapshot.val();
+        remoteUpdate.current = true;
+        if (data) {
+          if (data.weeks) setWeeks(data.weeks);
+          if (data.rows) setRows(data.rows);
+          if (data.title) setTitle(data.title);
+          if (data.subtitle) setSubtitle(data.subtitle);
+          if (data.locked !== undefined) setLocked(data.locked);
+        }
+        initialized.current = true;
+        setSyncStatus('synced');
+        // reset flag after state updates are flushed
+        setTimeout(() => { remoteUpdate.current = false; }, 0);
+      },
+      (error) => {
+        console.error('Firebase error:', error);
+        setSyncStatus('error');
+        initialized.current = true;
+      }
+    );
+    return () => unsub();
+  }, []);
+
+  // ── Write state to Firebase (debounced) ───────────────────────────────────
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const persist = useCallback((
+    nextWeeks: Week[], nextRows: Row[],
+    nextTitle: string, nextSubtitle: string, nextLocked: boolean,
+  ) => {
+    if (!initialized.current || remoteUpdate.current) return;
+    setSyncStatus('saving');
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
+      set(ref(db, DB_PATH), {
+        weeks: nextWeeks,
+        rows: nextRows,
+        title: nextTitle,
+        subtitle: nextSubtitle,
+        locked: nextLocked,
+      })
+        .then(() => setSyncStatus('synced'))
+        .catch(() => setSyncStatus('error'));
+    }, 600);
+  }, []);
+
+  // ── Helpers that update state AND persist ─────────────────────────────────
+
+  const updateWeeks = (next: Week[]) => { setWeeks(next); persist(next, rows, title, subtitle, locked); };
+  const updateRows  = (next: Row[])  => { setRows(next);  persist(weeks, next, title, subtitle, locked); };
+  const updateTitle = (v: string)    => { setTitle(v);    persist(weeks, rows, v, subtitle, locked); };
+  const updateSubtitle = (v: string) => { setSubtitle(v); persist(weeks, rows, title, v, locked); };
+  const updateLocked = (v: boolean)  => { setLocked(v);   persist(weeks, rows, title, subtitle, v); };
 
   // ── Row drag ──────────────────────────────────────────────────────────────
   const dragRowIdx = useRef<number | null>(null);
@@ -455,7 +517,7 @@ export default function GanttPage() {
     const next = [...rows];
     const [moved] = next.splice(from, 1);
     next.splice(idx, 0, moved);
-    setRows(next);
+    updateRows(next);
     dragRowIdx.current = null;
     dragOverRowIdx.current = null;
     setDraggingRowId(null);
@@ -463,9 +525,8 @@ export default function GanttPage() {
   };
   const onRowDragEnd = () => { setDraggingRowId(null); setDropTargetRowIdx(null); isCardDragging.current = false; };
 
-  // ── Card drag within/between cells ────────────────────────────────────────
+  // ── Card drag ─────────────────────────────────────────────────────────────
   const dragCard = useRef<{ rowId: string; weekId: string; cardId: string } | null>(null);
-  // dropTarget: rowId+weekId+cardId (insert before) or rowId+weekId (append)
   const [cardDropTarget, setCardDropTarget] = useState<{ rowId: string; weekId: string; cardId: string | null } | null>(null);
 
   const onCardDragStart = (e: React.DragEvent, rowId: string, weekId: string, cardId: string) => {
@@ -476,121 +537,124 @@ export default function GanttPage() {
     e.dataTransfer.effectAllowed = 'move';
     e.stopPropagation();
   };
-
   const onCardDragOver = (e: React.DragEvent, rowId: string, weekId: string, cardId: string | null) => {
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault(); e.stopPropagation();
     if (dragCard.current) setCardDropTarget({ rowId, weekId, cardId });
   };
-
-  const onCardDragEnd = () => {
-    isCardDragging.current = false;
-    dragCard.current = null;
-    setCardDropTarget(null);
-  };
+  const onCardDragEnd = () => { isCardDragging.current = false; dragCard.current = null; setCardDropTarget(null); };
 
   const onCardDrop = (e: React.DragEvent, toRowId: string, toWeekId: string, toCardId: string | null) => {
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault(); e.stopPropagation();
     setCardDropTarget(null);
     const from = dragCard.current;
     if (!from) return;
     if (from.rowId === toRowId && from.weekId === toWeekId && from.cardId === toCardId) return;
 
-    setRows(prev => {
-      let movedCard: Card | null = null;
-      const step1 = prev.map(row => {
-        if (row.id !== from.rowId) return row;
-        const cards = row.cells[from.weekId] ?? [];
-        const idx = cards.findIndex(c => c.id === from.cardId);
-        if (idx === -1) return row;
-        movedCard = cards[idx];
-        return { ...row, cells: { ...row.cells, [from.weekId]: cards.filter(c => c.id !== from.cardId) } };
-      });
-      if (!movedCard) return prev;
-
-      return step1.map(row => {
-        if (row.id !== toRowId) return row;
-        const cards = [...(row.cells[toWeekId] ?? [])];
-        if (toCardId) {
-          const idx = cards.findIndex(c => c.id === toCardId);
-          cards.splice(idx >= 0 ? idx : cards.length, 0, movedCard!);
-        } else {
-          cards.push(movedCard!);
-        }
-        return { ...row, cells: { ...row.cells, [toWeekId]: cards } };
-      });
+    let next = rows;
+    let movedCard: Card | null = null;
+    const step1 = next.map(row => {
+      if (row.id !== from.rowId) return row;
+      const cards = row.cells[from.weekId] ?? [];
+      const idx = cards.findIndex(c => c.id === from.cardId);
+      if (idx === -1) return row;
+      movedCard = cards[idx];
+      return { ...row, cells: { ...row.cells, [from.weekId]: cards.filter(c => c.id !== from.cardId) } };
     });
+    if (!movedCard) return;
+
+    next = step1.map(row => {
+      if (row.id !== toRowId) return row;
+      const cards = [...(row.cells[toWeekId] ?? [])];
+      if (toCardId) {
+        const idx = cards.findIndex(c => c.id === toCardId);
+        cards.splice(idx >= 0 ? idx : cards.length, 0, movedCard!);
+      } else {
+        cards.push(movedCard!);
+      }
+      return { ...row, cells: { ...row.cells, [toWeekId]: cards } };
+    });
+    updateRows(next);
     dragCard.current = null;
     isCardDragging.current = false;
   };
 
   // ── Mutations ─────────────────────────────────────────────────────────────
 
-  const updateRowLabel = (rowId: string, val: string) =>
-    setRows(prev => prev.map(r => r.id === rowId ? { ...r, label: val } : r));
+  const updateRowLabel = (rowId: string, val: string) => {
+    const next = rows.map(r => r.id === rowId ? { ...r, label: val } : r);
+    updateRows(next);
+  };
 
-  const addCard = (rowId: string, weekId: string) =>
-    setRows(prev => prev.map(r =>
+  const addCard = (rowId: string, weekId: string) => {
+    const next = rows.map(r =>
       r.id === rowId
         ? { ...r, cells: { ...r.cells, [weekId]: [card('Новая задача'), ...(r.cells[weekId] ?? [])] } }
         : r
-    ));
+    );
+    updateRows(next);
+  };
 
-  const removeCard = (rowId: string, weekId: string, cardId: string) =>
-    setRows(prev => prev.map(r =>
+  const removeCard = (rowId: string, weekId: string, cardId: string) => {
+    const next = rows.map(r =>
       r.id === rowId
         ? { ...r, cells: { ...r.cells, [weekId]: (r.cells[weekId] ?? []).filter(c => c.id !== cardId) } }
         : r
-    ));
+    );
+    updateRows(next);
+  };
 
-  const updateCardLabel = (rowId: string, weekId: string, cardId: string, val: string) =>
-    setRows(prev => prev.map(r =>
+  const updateCardLabel = (rowId: string, weekId: string, cardId: string, val: string) => {
+    const next = rows.map(r =>
       r.id === rowId
         ? { ...r, cells: { ...r.cells, [weekId]: (r.cells[weekId] ?? []).map(c => c.id === cardId ? { ...c, label: val } : c) } }
         : r
-    ));
+    );
+    updateRows(next);
+  };
 
-  const toggleCardDone = (rowId: string, weekId: string, cardId: string) =>
-    setRows(prev => prev.map(r =>
+  const toggleCardDone = (rowId: string, weekId: string, cardId: string) => {
+    const next = rows.map(r =>
       r.id === rowId
         ? { ...r, cells: { ...r.cells, [weekId]: (r.cells[weekId] ?? []).map(c => c.id === cardId ? { ...c, done: !c.done } : c) } }
         : r
-    ));
+    );
+    updateRows(next);
+  };
 
-  const toggleCardDay = (rowId: string, weekId: string, cardId: string, day: Day) =>
-    setRows(prev => prev.map(r =>
+  const toggleCardDay = (rowId: string, weekId: string, cardId: string, day: Day) => {
+    const next = rows.map(r =>
       r.id === rowId
         ? {
             ...r, cells: {
               ...r.cells, [weekId]: (r.cells[weekId] ?? []).map(c =>
                 c.id === cardId
-                  ? { ...c, days: c.days.includes(day) ? c.days.filter(d => d !== day) : [...c.days, day] }
+                  ? { ...c, days: (c.days ?? []).includes(day) ? (c.days ?? []).filter(d => d !== day) : [...(c.days ?? []), day] }
                   : c
               ),
             },
           }
         : r
-    ));
+    );
+    updateRows(next);
+  };
 
   const updateWeekLabel = (weekId: string, val: string) =>
-    setWeeks(prev => prev.map(w => w.id === weekId ? { ...w, label: val } : w));
+    updateWeeks(weeks.map(w => w.id === weekId ? { ...w, label: val } : w));
 
   const updateWeekDates = (weekId: string, val: string) =>
-    setWeeks(prev => prev.map(w => w.id === weekId ? { ...w, dates: val } : w));
+    updateWeeks(weeks.map(w => w.id === weekId ? { ...w, dates: val } : w));
 
   const updateWeekTheme = (weekId: string, val: string) =>
-    setWeeks(prev => prev.map(w => w.id === weekId ? { ...w, theme: val } : w));
+    updateWeeks(weeks.map(w => w.id === weekId ? { ...w, theme: val } : w));
 
   const addRow = () => {
     const id = `r${Date.now()}`;
     const cells: Record<string, Card[]> = {};
     weeks.forEach(w => { cells[w.id] = []; });
-    setRows(prev => [...prev, { id, label: 'Новый раздел', cells }]);
+    updateRows([...rows, { id, label: 'Новый раздел', cells }]);
   };
 
-  const removeRow = (rowId: string) =>
-    setRows(prev => prev.filter(r => r.id !== rowId));
+  const removeRow = (rowId: string) => updateRows(rows.filter(r => r.id !== rowId));
 
   // ──────────────────────────────────────────────────────────────────────────
 
@@ -602,14 +666,17 @@ export default function GanttPage() {
       {/* Header */}
       <div className="border-b border-border px-8 py-6">
         <div className="max-w-[1400px] mx-auto">
-          <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground mb-1">
-            Rocketmind · MVP 1.1
-          </p>
+          <div className="flex items-center gap-3 mb-1">
+            <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground flex-1">
+              Rocketmind · MVP 1.1
+            </p>
+            <SyncDot status={syncStatus} />
+          </div>
           <h1 className="font-heading text-[2rem] font-bold leading-tight">
-            <EditableText value={title} onChange={setTitle} />
+            <EditableText value={title} onChange={updateTitle} />
           </h1>
           <p className="text-muted-foreground mt-1.5 text-sm">
-            <EditableText value={subtitle} onChange={setSubtitle} />
+            <EditableText value={subtitle} onChange={updateSubtitle} />
           </p>
         </div>
       </div>
@@ -620,8 +687,8 @@ export default function GanttPage() {
         <div className="grid gap-3" style={{ gridTemplateColumns: `repeat(${weeks.length}, 1fr)` }}>
           {weeks.map(w => (
             <div key={w.id} className="border border-border rounded-xl p-4 relative overflow-hidden">
-              <div className="absolute top-0 left-0 right-0 h-0.5" style={{ backgroundColor: w.color }} />
-              <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground mb-1">
+              <div className="absolute top-0 left-0 right-0 h-0.5" style={{ backgroundColor: cssVar(w.color, '100') }} />
+              <div className="font-mono text-[12px] uppercase tracking-[0.12em] text-muted-foreground mb-1">
                 <EditableText value={w.dates} onChange={v => updateWeekDates(w.id, v)} />
               </div>
               <div className="font-heading font-bold text-base mb-1">
@@ -653,10 +720,10 @@ export default function GanttPage() {
                     className="flex-1 px-3 py-3 border-r border-border last:border-r-0 text-center"
                     style={{ minWidth: 240 }}
                   >
-                    <div className="font-mono text-xs font-bold uppercase tracking-wide" style={{ color: textColor(w.color) }}>
+                    <div className="font-mono text-xs font-bold uppercase tracking-wide" style={{ color: cssVar(w.color, '100') }}>
                       <EditableText value={w.label} onChange={v => updateWeekLabel(w.id, v)} />
                     </div>
-                    <div className="font-mono text-[10px] text-muted-foreground mt-0.5">
+                    <div className="font-mono text-[12px] text-muted-foreground mt-0.5">
                       <EditableText value={w.dates} onChange={v => updateWeekDates(w.id, v)} />
                     </div>
                   </div>
@@ -713,17 +780,16 @@ export default function GanttPage() {
                         onDragOver={e => onCardDragOver(e, row.id, w.id, null)}
                         onDrop={e => onCardDrop(e, row.id, w.id, null)}
                       >
-                        {/* + add card button — thin, top of cell */}
                         {!locked && (
                           <button
                             onClick={() => addCard(row.id, w.id)}
-                            className="w-full mb-1.5 flex items-center justify-center gap-1 rounded text-[10px] font-mono uppercase tracking-wide transition-colors"
+                            className="w-full mb-1.5 flex items-center justify-center gap-1 rounded text-[12px] font-mono uppercase tracking-wide transition-colors"
                             style={{
                               height: 18,
-                              color: textColor(w.color),
+                              color: cssVar(w.color, 'fg-subtle'),
                               opacity: 0.35,
-                              backgroundColor: w.color + '10',
-                              border: `1px dashed ${w.color}40`,
+                              backgroundColor: cssVar(w.color, '900'),
+                              border: `1px dashed ${cssVar(w.color, '300')}`,
                             }}
                             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '0.8'; }}
                             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '0.35'; }}
@@ -733,7 +799,6 @@ export default function GanttPage() {
                           </button>
                         )}
 
-                        {/* Cards */}
                         <div className="flex flex-col gap-0">
                           {cards.map(c => {
                             const isDropBefore =
@@ -743,9 +808,8 @@ export default function GanttPage() {
                               dragCard.current?.cardId !== c.id;
                             return (
                               <div key={c.id}>
-                                {/* drop indicator line */}
                                 {isDropBefore && (
-                                  <div className="h-0.5 mx-1 rounded-full mb-1" style={{ backgroundColor: w.color }} />
+                                  <div className="h-0.5 mx-1 rounded-full mb-1" style={{ backgroundColor: cssVar(w.color, '100') }} />
                                 )}
                                 <div className="mb-1.5">
                                   <CardItem
@@ -766,7 +830,6 @@ export default function GanttPage() {
                               </div>
                             );
                           })}
-                          {/* drop indicator at end */}
                           {cardDropTarget?.rowId === row.id &&
                             cardDropTarget?.weekId === w.id &&
                             cardDropTarget?.cardId === null &&
@@ -806,11 +869,10 @@ export default function GanttPage() {
             )}
             {locked && <span className="text-muted-foreground/60">Редактирование заблокировано</span>}
           </div>
-          {/* Lock button */}
           <button
             onClick={() => {
               if (locked) { setShowLockModal(true); }
-              else { setLocked(true); }
+              else { updateLocked(true); }
             }}
             className="flex-shrink-0 flex items-center gap-1.5 border border-border rounded-lg px-3 py-1.5 hover:bg-muted transition-colors text-foreground"
             title={locked ? 'Разблокировать' : 'Заблокировать редактирование'}
@@ -821,11 +883,10 @@ export default function GanttPage() {
         </div>
       </div>
 
-      {/* Lock modal */}
       {showLockModal && (
         <LockModal
           onClose={() => setShowLockModal(false)}
-          onUnlock={() => { setLocked(false); setShowLockModal(false); }}
+          onUnlock={() => { updateLocked(false); setShowLockModal(false); }}
         />
       )}
     </div>
