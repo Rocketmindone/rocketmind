@@ -4,7 +4,7 @@ import { Copy, Check } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 
-export function CopyButton({ value, label }: { value: string; label?: string }) {
+export function CopyButton({ value, label, iconColor }: { value: string; label?: string; iconColor?: string }) {
   const [copied, setCopied] = useState(false)
 
   const handleCopy = async () => {
@@ -20,9 +20,10 @@ export function CopyButton({ value, label }: { value: string; label?: string }) 
   return (
     <button
       onClick={handleCopy}
-      className="inline-flex items-center justify-center w-7 h-7 rounded-md
-                 text-muted-foreground hover:text-foreground hover:bg-accent
-                 transition-all duration-150 cursor-pointer shrink-0"
+      className={`inline-flex items-center justify-center w-7 h-7 rounded-md
+                 ${iconColor ? "" : "text-muted-foreground hover:text-foreground"} hover:bg-accent
+                 transition-all duration-150 cursor-pointer shrink-0`}
+      style={iconColor ? { color: iconColor } : undefined}
       title="Копировать"
     >
       {copied ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}

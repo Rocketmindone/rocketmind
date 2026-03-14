@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useRef } from "react"
+import { useState, useCallback, useRef, useEffect } from "react"
 import { toast } from "sonner"
 import { CopyButton } from "./copy-button"
 
@@ -11,14 +11,32 @@ function computeHex(el: HTMLElement): string {
   return "#" + [+m[0], +m[1], +m[2]].map(v => v.toString(16).padStart(2, "0")).join("")
 }
 
+function computeLumColor(hex: string): string {
+  if (!hex || hex.length < 7) return "#000000"
+  const r = parseInt(hex.slice(1, 3), 16) / 255
+  const g = parseInt(hex.slice(3, 5), 16) / 255
+  const b = parseInt(hex.slice(5, 7), 16) / 255
+  const lin = (c: number) => c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)
+  const lum = 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b)
+  return lum > 0.5 ? "#000000" : "#ffffff"
+}
+
 function useColorBlock() {
   const ref = useRef<HTMLDivElement>(null)
   const [hex, setHex] = useState("")
+  const [autoColor, setAutoColor] = useState("#000000")
   const [hovered, setHovered] = useState(false)
+
+  useEffect(() => {
+    if (!ref.current) return
+    const h = computeHex(ref.current)
+    if (h) { setHex(h); setAutoColor(computeLumColor(h)) }
+  }, [])
 
   const onMouseEnter = useCallback(() => {
     if (!ref.current) return
-    setHex(computeHex(ref.current))
+    const h = computeHex(ref.current)
+    if (h) { setHex(h); setAutoColor(computeLumColor(h)) }
     setHovered(true)
   }, [])
 
@@ -32,7 +50,7 @@ function useColorBlock() {
     toast.success("Скопировано в буфер обмена", { description: `HEX: ${h}`, duration: 2000 })
   }, [])
 
-  return { ref, hex, hovered, onMouseEnter, onMouseLeave, onClick }
+  return { ref, hex, autoColor, hovered, onMouseEnter, onMouseLeave, onClick }
 }
 
 interface ColorSwatchProps {
@@ -44,7 +62,7 @@ interface ColorSwatchProps {
 }
 
 export function ColorSwatch({ name, token, lightHex, darkHex, className }: ColorSwatchProps) {
-  const { ref, hex, hovered, onMouseEnter, onMouseLeave, onClick } = useColorBlock()
+  const { ref, hex, autoColor, hovered, onMouseEnter, onMouseLeave, onClick } = useColorBlock()
 
   return (
     <div className={`flex flex-col gap-2 ${className || ""}`}>
@@ -56,9 +74,12 @@ export function ColorSwatch({ name, token, lightHex, darkHex, className }: Color
         className="relative w-full h-20 rounded-md border border-border cursor-pointer hover:border-muted-foreground dark:hover:border-white/[0.12] transition-all duration-150"
         style={{ backgroundColor: lightHex }}
       >
-        {hovered && hex && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <span className="text-[11px] font-[family-name:var(--font-mono-family)] text-foreground">{hex}</span>
+        {hex && (
+          <div
+            className="absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-150"
+            style={{ opacity: hovered ? 1 : 0.3 }}
+          >
+            <span className="text-[11px] font-[family-name:var(--font-mono-family)]" style={{ color: autoColor }}>{hex}</span>
           </div>
         )}
       </div>
@@ -92,7 +113,7 @@ export function ColorSwatchLive({
   darkHex?: string
   twClass?: string
 }) {
-  const { ref, hex, hovered, onMouseEnter, onMouseLeave, onClick } = useColorBlock()
+  const { ref, hex, autoColor, hovered, onMouseEnter, onMouseLeave, onClick } = useColorBlock()
 
   return (
     <div className="flex flex-col gap-2">
@@ -104,9 +125,12 @@ export function ColorSwatchLive({
         className="relative w-full h-20 rounded-md border border-border cursor-pointer hover:border-muted-foreground dark:hover:border-white/[0.12] transition-all duration-150"
         style={{ backgroundColor: `var(${cssVar})` }}
       >
-        {hovered && hex && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <span className="text-[11px] font-[family-name:var(--font-mono-family)] text-foreground">{hex}</span>
+        {hex && (
+          <div
+            className="absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-150"
+            style={{ opacity: hovered ? 1 : 0.3 }}
+          >
+            <span className="text-[11px] font-[family-name:var(--font-mono-family)]" style={{ color: autoColor }}>{hex}</span>
           </div>
         )}
       </div>

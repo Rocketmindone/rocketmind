@@ -28,25 +28,49 @@ function computeHex(el: HTMLElement): string {
   return "#" + [+m[0], +m[1], +m[2]].map(v => v.toString(16).padStart(2, "0")).join("")
 }
 
-/** Кликабельный цветной блок: hex по клику, hex-оверлей при ховере, опциональный бейдж */
+/** Returns black or white based on WCAG perceived luminance */
+function computeLumColor(hex: string): string {
+  if (!hex || hex.length < 7) return "#000000"
+  const r = parseInt(hex.slice(1, 3), 16) / 255
+  const g = parseInt(hex.slice(3, 5), 16) / 255
+  const b = parseInt(hex.slice(5, 7), 16) / 255
+  const lin = (c: number) => c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)
+  const lum = 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b)
+  return lum > 0.5 ? "#000000" : "#ffffff"
+}
+
+/** Кликабельный цветной блок: hex по клику, hex-оверлей 30% всегда / 100% при ховере, опциональный бейдж */
 function ColorHexBlock({
-  style, className, textColor, badge,
+  style, className, badgeColor, badge,
 }: {
   style: React.CSSProperties
   className: string
-  textColor: string   // CSS value, e.g. "var(--rm-yellow-fg)"
-  badge?: string      // e.g. "100"
+  badgeColor?: string  // CSS value for badge text, e.g. "var(--rm-yellow-fg)"
+  badge?: string       // e.g. "100"
 }) {
   const ref = useRef<HTMLDivElement>(null)
   const [hex, setHex] = useState("")
+  const [autoColor, setAutoColor] = useState("#000000")
   const [hovered, setHovered] = useState(false)
+
+  useEffect(() => {
+    if (!ref.current) return
+    const h = computeHex(ref.current)
+    if (h) { setHex(h); setAutoColor(computeLumColor(h)) }
+  }, [])
 
   return (
     <div
       ref={ref}
       className={`relative cursor-pointer hover:border-muted-foreground dark:hover:border-white/[0.12] transition-all duration-150 ${className}`}
       style={style}
-      onMouseEnter={() => { if (ref.current) { setHex(computeHex(ref.current)); setHovered(true) } }}
+      onMouseEnter={() => {
+        if (ref.current) {
+          const h = computeHex(ref.current)
+          if (h) { setHex(h); setAutoColor(computeLumColor(h)) }
+        }
+        setHovered(true)
+      }}
       onMouseLeave={() => setHovered(false)}
       onClick={() => {
         if (!ref.current) return
@@ -59,12 +83,15 @@ function ColorHexBlock({
       {badge && (
         <span
           className="absolute top-1 left-1 text-[9px] font-[family-name:var(--font-mono-family)] font-bold"
-          style={{ color: textColor }}
+          style={{ color: badgeColor }}
         >{badge}</span>
       )}
-      {hovered && hex && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <span className="text-[11px] font-[family-name:var(--font-mono-family)]" style={{ color: textColor }}>
+      {hex && (
+        <div
+          className="absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-150"
+          style={{ opacity: hovered ? 1 : 0.3 }}
+        >
+          <span className="text-[11px] font-[family-name:var(--font-mono-family)]" style={{ color: autoColor }}>
             {hex}
           </span>
         </div>
@@ -73,19 +100,15 @@ function ColorHexBlock({
   )
 }
 
-/** Строка fg-subtle: hex по клику + оверлей + кнопка копирования токена */
+/** Строка fg-subtle: hex по клику + кнопка копирования токена (без hex-оверлея) */
 function FgSubtleCard({ token }: { token: string }) {
   const ref = useRef<HTMLDivElement>(null)
-  const [hex, setHex] = useState("")
-  const [hovered, setHovered] = useState(false)
 
   return (
     <div
       ref={ref}
-      className="relative rounded-md border border-border/60 px-3 py-2 flex items-center justify-between cursor-pointer hover:border-muted-foreground dark:hover:border-white/[0.12] transition-all duration-150"
+      className="rounded-md border border-border/60 px-3 py-2 flex items-center justify-between cursor-pointer hover:border-muted-foreground dark:hover:border-white/[0.12] transition-all duration-150"
       style={{ backgroundColor: `var(--rm-${token}-900)`, color: `var(--rm-${token}-fg-subtle)` }}
-      onMouseEnter={() => { if (ref.current) { setHex(computeHex(ref.current)); setHovered(true) } }}
-      onMouseLeave={() => setHovered(false)}
       onClick={() => {
         if (!ref.current) return
         const h = computeHex(ref.current)
@@ -97,15 +120,8 @@ function FgSubtleCard({ token }: { token: string }) {
       <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)]">fg-subtle · текст на 900</span>
       <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
         <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)]">--rm-{token}-fg-subtle</span>
-        <CopyButton value={`--rm-${token}-fg-subtle`} label={`Токен: --rm-${token}-fg-subtle`} />
+        <CopyButton value={`--rm-${token}-fg-subtle`} label={`Токен: --rm-${token}-fg-subtle`} iconColor={`var(--rm-${token}-fg-subtle)`} />
       </div>
-      {hovered && hex && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <span className="text-[11px] font-[family-name:var(--font-mono-family)]" style={{ color: `var(--rm-${token}-fg-subtle)` }}>
-            {hex}
-          </span>
-        </div>
-      )}
     </div>
   )
 }
@@ -1044,7 +1060,6 @@ export default function DesignSystemPage() {
                   <ColorHexBlock
                     className="w-full h-16 rounded-md border border-border"
                     style={{ backgroundColor: `var(${c.var})` }}
-                    textColor="var(--foreground)"
                   />
                   <div>
                     <p className="text-[length:var(--text-14)] font-medium">{c.name}</p>
@@ -1081,7 +1096,6 @@ export default function DesignSystemPage() {
                   <ColorHexBlock
                     className="w-full h-10 rounded-md border border-border"
                     style={{ backgroundColor: `var(${c.var})` }}
-                    textColor="var(--foreground)"
                   />
                   <p className="text-[length:var(--text-12)] font-medium font-[family-name:var(--font-mono-family)]">{c.name}</p>
                   <div className="flex items-center gap-0.5">
@@ -1162,7 +1176,7 @@ export default function DesignSystemPage() {
                         <ColorHexBlock
                           className="w-full h-12 rounded-md border border-border/60"
                           style={{ backgroundColor: `var(--rm-${c.token}-${level})` }}
-                          textColor={level === "100" ? `var(--rm-${c.token}-fg)` : `var(--rm-${c.token}-fg-subtle)`}
+                          badgeColor={level === "100" ? `var(--rm-${c.token}-fg)` : `var(--rm-${c.token}-fg-subtle)`}
                           badge={level}
                         />
                         <div className="flex items-center justify-between gap-0.5">
@@ -1182,7 +1196,7 @@ export default function DesignSystemPage() {
                       <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)]">fg · текст на solid</span>
                       <div className="flex items-center gap-1">
                         <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)]">--rm-{c.token}-fg</span>
-                        <CopyButton value={`--rm-${c.token}-fg`} label={`Токен: --rm-${c.token}-fg`} />
+                        <CopyButton value={`--rm-${c.token}-fg`} label={`Токен: --rm-${c.token}-fg`} iconColor={`var(--rm-${c.token}-fg)`} />
                       </div>
                     </div>
                     {/* fg-subtle · текст на 900 — hex по клику + оверлей + токен */}
