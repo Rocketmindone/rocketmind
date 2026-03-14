@@ -1,30 +1,38 @@
 "use client"
 
-import { useCallback, useRef } from "react"
+import { useState, useCallback, useRef } from "react"
 import { toast } from "sonner"
 import { CopyButton } from "./copy-button"
 
-function rgbToHex(r: number, g: number, b: number) {
-  return "#" + [r, g, b].map(v => v.toString(16).padStart(2, "0")).join("")
+function computeHex(el: HTMLElement): string {
+  const bg = getComputedStyle(el).backgroundColor
+  const m = bg.match(/(\d+)/g)
+  if (!m) return ""
+  return "#" + [+m[0], +m[1], +m[2]].map(v => v.toString(16).padStart(2, "0")).join("")
 }
 
-function useColorCopy() {
+function useColorBlock() {
   const ref = useRef<HTMLDivElement>(null)
+  const [hex, setHex] = useState("")
+  const [hovered, setHovered] = useState(false)
 
-  const copyHex = useCallback(() => {
+  const onMouseEnter = useCallback(() => {
     if (!ref.current) return
-    const bg = getComputedStyle(ref.current).backgroundColor
-    const match = bg.match(/(\d+)/g)
-    if (!match) return
-    const hex = rgbToHex(+match[0], +match[1], +match[2])
-    navigator.clipboard.writeText(hex)
-    toast.success("Скопировано в буфер обмена", {
-      description: `HEX: ${hex}`,
-      duration: 2000,
-    })
+    setHex(computeHex(ref.current))
+    setHovered(true)
   }, [])
 
-  return { ref, copyHex }
+  const onMouseLeave = useCallback(() => setHovered(false), [])
+
+  const onClick = useCallback(() => {
+    if (!ref.current) return
+    const h = computeHex(ref.current)
+    if (!h) return
+    navigator.clipboard.writeText(h)
+    toast.success("Скопировано в буфер обмена", { description: `HEX: ${h}`, duration: 2000 })
+  }, [])
+
+  return { ref, hex, hovered, onMouseEnter, onMouseLeave, onClick }
 }
 
 interface ColorSwatchProps {
@@ -36,16 +44,24 @@ interface ColorSwatchProps {
 }
 
 export function ColorSwatch({ name, token, lightHex, darkHex, className }: ColorSwatchProps) {
-  const { ref, copyHex } = useColorCopy()
+  const { ref, hex, hovered, onMouseEnter, onMouseLeave, onClick } = useColorBlock()
 
   return (
     <div className={`flex flex-col gap-2 ${className || ""}`}>
       <div
         ref={ref}
-        onClick={copyHex}
-        className="w-full h-20 rounded-md border border-border cursor-pointer hover:border-muted-foreground dark:hover:border-white/[0.12] transition-all duration-150"
+        onClick={onClick}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        className="relative w-full h-20 rounded-md border border-border cursor-pointer hover:border-muted-foreground dark:hover:border-white/[0.12] transition-all duration-150"
         style={{ backgroundColor: lightHex }}
-      />
+      >
+        {hovered && hex && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <span className="text-[11px] font-[family-name:var(--font-mono-family)] text-foreground">{hex}</span>
+          </div>
+        )}
+      </div>
       <div className="flex items-start justify-between gap-1">
         <div className="min-w-0">
           <p className="text-[length:var(--text-14)] font-medium truncate">{name}</p>
@@ -76,16 +92,24 @@ export function ColorSwatchLive({
   darkHex?: string
   twClass?: string
 }) {
-  const { ref, copyHex } = useColorCopy()
+  const { ref, hex, hovered, onMouseEnter, onMouseLeave, onClick } = useColorBlock()
 
   return (
     <div className="flex flex-col gap-2">
       <div
         ref={ref}
-        onClick={copyHex}
-        className="w-full h-20 rounded-md border border-border cursor-pointer hover:border-muted-foreground dark:hover:border-white/[0.12] transition-all duration-150"
+        onClick={onClick}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        className="relative w-full h-20 rounded-md border border-border cursor-pointer hover:border-muted-foreground dark:hover:border-white/[0.12] transition-all duration-150"
         style={{ backgroundColor: `var(${cssVar})` }}
-      />
+      >
+        {hovered && hex && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <span className="text-[11px] font-[family-name:var(--font-mono-family)] text-foreground">{hex}</span>
+          </div>
+        )}
+      </div>
       <div className="flex items-start justify-between gap-1">
         <div className="min-w-0">
           <p className="text-[length:var(--text-14)] font-medium truncate">{name}</p>

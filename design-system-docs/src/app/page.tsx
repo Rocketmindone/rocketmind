@@ -18,6 +18,97 @@ import { toast } from "sonner"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
 
 const DS_VERSION = "1.2.0"
+
+/* ───────── COLOR BLOCK HELPERS ───────── */
+
+function computeHex(el: HTMLElement): string {
+  const bg = getComputedStyle(el).backgroundColor
+  const m = bg.match(/(\d+)/g)
+  if (!m) return ""
+  return "#" + [+m[0], +m[1], +m[2]].map(v => v.toString(16).padStart(2, "0")).join("")
+}
+
+/** Кликабельный цветной блок: hex по клику, hex-оверлей при ховере, опциональный бейдж */
+function ColorHexBlock({
+  style, className, textColor, badge,
+}: {
+  style: React.CSSProperties
+  className: string
+  textColor: string   // CSS value, e.g. "var(--rm-yellow-fg)"
+  badge?: string      // e.g. "100"
+}) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [hex, setHex] = useState("")
+  const [hovered, setHovered] = useState(false)
+
+  return (
+    <div
+      ref={ref}
+      className={`relative cursor-pointer hover:border-muted-foreground dark:hover:border-white/[0.12] transition-all duration-150 ${className}`}
+      style={style}
+      onMouseEnter={() => { if (ref.current) { setHex(computeHex(ref.current)); setHovered(true) } }}
+      onMouseLeave={() => setHovered(false)}
+      onClick={() => {
+        if (!ref.current) return
+        const h = computeHex(ref.current)
+        if (!h) return
+        navigator.clipboard.writeText(h)
+        toast.success("Скопировано в буфер обмена", { description: `HEX: ${h}`, duration: 2000 })
+      }}
+    >
+      {badge && (
+        <span
+          className="absolute top-1 left-1 text-[9px] font-[family-name:var(--font-mono-family)] font-bold"
+          style={{ color: textColor }}
+        >{badge}</span>
+      )}
+      {hovered && hex && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <span className="text-[11px] font-[family-name:var(--font-mono-family)]" style={{ color: textColor }}>
+            {hex}
+          </span>
+        </div>
+      )}
+    </div>
+  )
+}
+
+/** Строка fg-subtle: hex по клику + оверлей + кнопка копирования токена */
+function FgSubtleCard({ token }: { token: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [hex, setHex] = useState("")
+  const [hovered, setHovered] = useState(false)
+
+  return (
+    <div
+      ref={ref}
+      className="relative rounded-md border border-border/60 px-3 py-2 flex items-center justify-between cursor-pointer hover:border-muted-foreground dark:hover:border-white/[0.12] transition-all duration-150"
+      style={{ backgroundColor: `var(--rm-${token}-900)`, color: `var(--rm-${token}-fg-subtle)` }}
+      onMouseEnter={() => { if (ref.current) { setHex(computeHex(ref.current)); setHovered(true) } }}
+      onMouseLeave={() => setHovered(false)}
+      onClick={() => {
+        if (!ref.current) return
+        const h = computeHex(ref.current)
+        if (!h) return
+        navigator.clipboard.writeText(h)
+        toast.success("Скопировано в буфер обмена", { description: `HEX: ${h}`, duration: 2000 })
+      }}
+    >
+      <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)]">fg-subtle · текст на 900</span>
+      <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
+        <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)]">--rm-{token}-fg-subtle</span>
+        <CopyButton value={`--rm-${token}-fg-subtle`} label={`Токен: --rm-${token}-fg-subtle`} />
+      </div>
+      {hovered && hex && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <span className="text-[11px] font-[family-name:var(--font-mono-family)]" style={{ color: `var(--rm-${token}-fg-subtle)` }}>
+            {hex}
+          </span>
+        </div>
+      )}
+    </div>
+  )
+}
 const DS_DATE = "2026-03-12"
 const BASE_PATH = process.env.NODE_ENV === "production" ? "/rocketmind-design-system" : ""
 
@@ -950,17 +1041,10 @@ export default function DesignSystemPage() {
                   note: "Фон выпадающих меню, тултипов, модальных окон." },
               ].map((c) => (
                 <div key={c.token} className="flex flex-col gap-2">
-                  <div
-                    className="w-full h-16 rounded-md border border-border cursor-pointer hover:border-muted-foreground dark:hover:border-white/[0.12] transition-all duration-150"
+                  <ColorHexBlock
+                    className="w-full h-16 rounded-md border border-border"
                     style={{ backgroundColor: `var(${c.var})` }}
-                    onClick={(e) => {
-                      const bg = getComputedStyle(e.currentTarget).backgroundColor
-                      const m = bg.match(/(\d+)/g)
-                      if (!m) return
-                      const hex = "#" + [+m[0], +m[1], +m[2]].map(v => v.toString(16).padStart(2, "0")).join("")
-                      navigator.clipboard.writeText(hex)
-                      toast.success("Скопировано в буфер обмена", { description: `HEX: ${hex}`, duration: 2000 })
-                    }}
+                    textColor="var(--foreground)"
                   />
                   <div>
                     <p className="text-[length:var(--text-14)] font-medium">{c.name}</p>
@@ -994,17 +1078,10 @@ export default function DesignSystemPage() {
                 { name: "Gray fg", var: "--rm-gray-fg", role: "Primary text",   lhex: "#2D2D2D", dhex: "#F0F0F0" },
               ].map((c) => (
                 <div key={c.var} className="flex flex-col gap-1.5">
-                  <div
-                    className="w-full h-10 rounded-md border border-border cursor-pointer hover:border-muted-foreground dark:hover:border-white/[0.12] transition-all duration-150"
+                  <ColorHexBlock
+                    className="w-full h-10 rounded-md border border-border"
                     style={{ backgroundColor: `var(${c.var})` }}
-                    onClick={(e) => {
-                      const bg = getComputedStyle(e.currentTarget).backgroundColor
-                      const m = bg.match(/(\d+)/g)
-                      if (!m) return
-                      const hex = "#" + [+m[0], +m[1], +m[2]].map(v => v.toString(16).padStart(2, "0")).join("")
-                      navigator.clipboard.writeText(hex)
-                      toast.success("Скопировано в буфер обмена", { description: `HEX: ${hex}`, duration: 2000 })
-                    }}
+                    textColor="var(--foreground)"
                   />
                   <p className="text-[length:var(--text-12)] font-medium font-[family-name:var(--font-mono-family)]">{c.name}</p>
                   <div className="flex items-center gap-0.5">
@@ -1082,23 +1159,12 @@ export default function DesignSystemPage() {
                   <div className="grid grid-cols-5 gap-2 mb-2">
                     {(["100","300","500","700","900"] as const).map((level) => (
                       <div key={level} className="flex flex-col gap-1.5">
-                        <div
-                          className="w-full h-12 rounded-md border border-border/60 flex items-start justify-start p-1 cursor-pointer hover:border-muted-foreground dark:hover:border-white/[0.12] transition-all duration-150 relative group"
+                        <ColorHexBlock
+                          className="w-full h-12 rounded-md border border-border/60"
                           style={{ backgroundColor: `var(--rm-${c.token}-${level})` }}
-                          onClick={(e) => {
-                            const bg = getComputedStyle(e.currentTarget).backgroundColor
-                            const m = bg.match(/(\d+)/g)
-                            if (!m) return
-                            const hex = "#" + [+m[0], +m[1], +m[2]].map(v => v.toString(16).padStart(2, "0")).join("")
-                            navigator.clipboard.writeText(hex)
-                            toast.success("Скопировано в буфер обмена", { description: `HEX: ${hex}`, duration: 2000 })
-                          }}
-                        >
-                          <span
-                            className="text-[9px] font-[family-name:var(--font-mono-family)] font-bold px-1 rounded"
-                            style={{ backgroundColor: "var(--rm-gray-alpha-200)", color: "var(--foreground)" }}
-                          >{level}</span>
-                        </div>
+                          textColor={level === "100" ? `var(--rm-${c.token}-fg)` : `var(--rm-${c.token}-fg-subtle)`}
+                          badge={level}
+                        />
                         <div className="flex items-center justify-between gap-0.5">
                           <p className="text-[10px] font-[family-name:var(--font-mono-family)] text-muted-foreground truncate">--rm-{c.token}-{level}</p>
                           <CopyButton value={`--rm-${c.token}-${level}`} label={`Токен: --rm-${c.token}-${level}`} />
@@ -1108,36 +1174,19 @@ export default function DesignSystemPage() {
                   </div>
                   {/* fg tokens */}
                   <div className="grid grid-cols-2 gap-2">
+                    {/* fg · текст на solid — без копирования hex (дублирует level-100), только токен */}
                     <div
-                      className="rounded-md border border-border/60 px-3 py-2 flex items-center justify-between cursor-pointer hover:border-muted-foreground dark:hover:border-white/[0.12] transition-all duration-150"
+                      className="rounded-md border border-border/60 px-3 py-2 flex items-center justify-between"
                       style={{ backgroundColor: `var(--rm-${c.token}-100)`, color: `var(--rm-${c.token}-fg)` }}
-                      onClick={(e) => {
-                        const bg = getComputedStyle(e.currentTarget).backgroundColor
-                        const m = bg.match(/(\d+)/g)
-                        if (!m) return
-                        const hex = "#" + [+m[0], +m[1], +m[2]].map(v => v.toString(16).padStart(2, "0")).join("")
-                        navigator.clipboard.writeText(hex)
-                        toast.success("Скопировано в буфер обмена", { description: `HEX: ${hex}`, duration: 2000 })
-                      }}
                     >
                       <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)]">fg · текст на solid</span>
-                      <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)]">--rm-{c.token}-fg</span>
+                      <div className="flex items-center gap-1">
+                        <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)]">--rm-{c.token}-fg</span>
+                        <CopyButton value={`--rm-${c.token}-fg`} label={`Токен: --rm-${c.token}-fg`} />
+                      </div>
                     </div>
-                    <div
-                      className="rounded-md border border-border/60 px-3 py-2 flex items-center justify-between cursor-pointer hover:border-muted-foreground dark:hover:border-white/[0.12] transition-all duration-150"
-                      style={{ backgroundColor: `var(--rm-${c.token}-900)`, color: `var(--rm-${c.token}-fg-subtle)` }}
-                      onClick={(e) => {
-                        const bg = getComputedStyle(e.currentTarget).backgroundColor
-                        const m = bg.match(/(\d+)/g)
-                        if (!m) return
-                        const hex = "#" + [+m[0], +m[1], +m[2]].map(v => v.toString(16).padStart(2, "0")).join("")
-                        navigator.clipboard.writeText(hex)
-                        toast.success("Скопировано в буфер обмена", { description: `HEX: ${hex}`, duration: 2000 })
-                      }}
-                    >
-                      <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)]">fg-subtle · текст на 900</span>
-                      <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)]">--rm-{c.token}-fg-subtle</span>
-                    </div>
+                    {/* fg-subtle · текст на 900 — hex по клику + оверлей + токен */}
+                    <FgSubtleCard token={c.token} />
                   </div>
                 </div>
               ))}
