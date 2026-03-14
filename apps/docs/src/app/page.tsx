@@ -950,10 +950,24 @@ export default function DesignSystemPage() {
                   note: "Фон выпадающих меню, тултипов, модальных окон." },
               ].map((c) => (
                 <div key={c.token} className="flex flex-col gap-2">
-                  <div className="w-full h-16 rounded-md border border-border" style={{ backgroundColor: `var(${c.var})` }} />
+                  <div
+                    className="w-full h-16 rounded-md border border-border cursor-pointer hover:ring-2 hover:ring-ring transition-all"
+                    style={{ backgroundColor: `var(${c.var})` }}
+                    onClick={(e) => {
+                      const bg = getComputedStyle(e.currentTarget).backgroundColor
+                      const m = bg.match(/(\d+)/g)
+                      if (!m) return
+                      const hex = "#" + [+m[0], +m[1], +m[2]].map(v => v.toString(16).padStart(2, "0")).join("")
+                      navigator.clipboard.writeText(hex)
+                      toast.success("Скопировано в буфер обмена", { description: `HEX: ${hex}`, duration: 2000 })
+                    }}
+                  />
                   <div>
                     <p className="text-[length:var(--text-14)] font-medium">{c.name}</p>
-                    <p className="text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)]">{c.token}</p>
+                    <div className="flex items-center gap-0.5">
+                      <p className="text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)] flex-1">{c.token}</p>
+                      <CopyButton value={c.token} label={`Токен: ${c.token}`} />
+                    </div>
                     <p className="text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)]">L: {c.lhex} · D: {c.dhex}</p>
                   </div>
                   <p className="text-[length:var(--text-12)] text-muted-foreground leading-relaxed border-t border-border pt-2">{c.note}</p>
@@ -980,8 +994,23 @@ export default function DesignSystemPage() {
                 { name: "Gray fg", var: "--rm-gray-fg", role: "Primary text",   lhex: "#2D2D2D", dhex: "#F0F0F0" },
               ].map((c) => (
                 <div key={c.var} className="flex flex-col gap-1.5">
-                  <div className="w-full h-10 rounded-md border border-border" style={{ backgroundColor: `var(${c.var})` }} />
+                  <div
+                    className="w-full h-10 rounded-md border border-border cursor-pointer hover:ring-2 hover:ring-ring transition-all"
+                    style={{ backgroundColor: `var(${c.var})` }}
+                    onClick={(e) => {
+                      const bg = getComputedStyle(e.currentTarget).backgroundColor
+                      const m = bg.match(/(\d+)/g)
+                      if (!m) return
+                      const hex = "#" + [+m[0], +m[1], +m[2]].map(v => v.toString(16).padStart(2, "0")).join("")
+                      navigator.clipboard.writeText(hex)
+                      toast.success("Скопировано в буфер обмена", { description: `HEX: ${hex}`, duration: 2000 })
+                    }}
+                  />
                   <p className="text-[length:var(--text-12)] font-medium font-[family-name:var(--font-mono-family)]">{c.name}</p>
+                  <div className="flex items-center gap-0.5">
+                    <p className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)] flex-1 truncate">{c.var}</p>
+                    <CopyButton value={c.var} label={`Токен: ${c.var}`} />
+                  </div>
                   <p className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">{c.role}</p>
                 </div>
               ))}
