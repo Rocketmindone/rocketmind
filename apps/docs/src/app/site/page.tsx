@@ -38,7 +38,9 @@ function HeroDotGrid() {
             const w = container.clientWidth, h = container.clientHeight
             ctx.clearRect(0, 0, w, h)
             const isDark = document.documentElement.classList.contains("dark")
+            // --rm-gray-4: light ≈ [220,220,220], dark ≈ [40,40,40]
             const base = isDark ? [40, 40, 40] : [220, 220, 220]
+            // --rm-violet-100: #A172F8
             const accent = [161, 114, 248]
             const { x: mx, y: my } = mouseRef.current
             for (let i = 0; i <= Math.ceil(w / GAP); i++) {
@@ -50,7 +52,7 @@ function HeroDotGrid() {
                     if (t > 0) {
                         ctx.fillStyle = `rgb(${Math.round(base[0] + (accent[0] - base[0]) * t)},${Math.round(base[1] + (accent[1] - base[1]) * t)},${Math.round(base[2] + (accent[2] - base[2]) * t)})`
                     } else {
-                        ctx.fillStyle = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)"
+                        ctx.fillStyle = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)" // --rm-gray-alpha-100
                     }
                     ctx.beginPath(); ctx.arc(px, py, BASE * s, 0, Math.PI * 2); ctx.fill()
                 }
@@ -99,7 +101,7 @@ function SectionHeading({ tag, title, description }: { tag: string; title: strin
         <div className="mb-12 md:mb-16">
             <Badge
                 variant="outline"
-                className="mb-4 text-[11px] font-[family-name:var(--font-mono-family)] uppercase tracking-[0.08em] border-[var(--rm-violet-100)] text-[var(--rm-violet-100)]"
+                className="mb-4 text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] uppercase tracking-[0.08em] border-[var(--rm-violet-100)] text-[var(--rm-violet-100)]"
             >
                 {tag}
             </Badge>
@@ -107,7 +109,7 @@ function SectionHeading({ tag, title, description }: { tag: string; title: strin
                 {title}
             </h2>
             {description && (
-                <p className="text-base md:text-lg text-muted-foreground leading-[1.618] max-w-[640px]">
+                <p className="text-[length:var(--text-16)] md:text-[length:var(--text-19)] text-muted-foreground leading-[1.618] max-w-[640px]">
                     {description}
                 </p>
             )}
@@ -142,10 +144,10 @@ function ServiceCard({
                     >
                         <Icon size={20} style={{ color: accentVar }} />
                     </div>
-                    <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-lg md:text-xl uppercase tracking-[-0.005em] leading-[1.3] mb-3">
+                    <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.005em] leading-[1.3] mb-3">
                         {title}
                     </h3>
-                    <p className="text-sm text-muted-foreground leading-[1.618] flex-1 mb-4">
+                    <p className="text-[length:var(--text-14)] text-muted-foreground leading-[1.618] flex-1 mb-4">
                         {description}
                     </p>
                     {tags && (
@@ -167,10 +169,10 @@ function ServiceCard({
 function MethodCard({ title, description }: { title: string; description: string }) {
     return (
         <div className="p-6 rounded-md border border-border bg-card/50 hover:bg-card transition-colors duration-300 group">
-            <h4 className="font-[family-name:var(--font-heading-family)] font-bold text-base uppercase tracking-[-0.005em] leading-[1.3] mb-2">
+            <h4 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-16)] uppercase tracking-[-0.005em] leading-[1.3] mb-2">
                 {title}
             </h4>
-            <p className="text-sm text-muted-foreground leading-[1.618]">
+            <p className="text-[length:var(--text-14)] text-muted-foreground leading-[1.618]">
                 {description}
             </p>
         </div>
@@ -226,7 +228,7 @@ export default function SitePage() {
                             <a
                                 key={item.href}
                                 href={item.href}
-                                className="text-[13px] font-[family-name:var(--font-mono-family)] font-medium uppercase tracking-[0.08em] text-muted-foreground hover:text-foreground transition-colors"
+                                className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] font-medium uppercase tracking-[0.08em] text-muted-foreground hover:text-foreground transition-colors"
                             >
                                 {item.label}
                             </a>
@@ -241,7 +243,7 @@ export default function SitePage() {
                             rel="noopener noreferrer"
                             className="hidden md:flex"
                         >
-                            <Button variant="default" className="font-[family-name:var(--font-mono-family)] uppercase tracking-[0.08em] text-[12px]">
+                            <Button variant="default" className="font-[family-name:var(--font-mono-family)] uppercase tracking-[0.08em] text-[length:var(--text-12)]">
                                 <Send size={14} />
                                 Связаться
                             </Button>
@@ -263,7 +265,7 @@ export default function SitePage() {
                                 key={item.href}
                                 href={item.href}
                                 onClick={() => setMobileNav(false)}
-                                className="block py-2.5 text-[15px] font-[family-name:var(--font-mono-family)] font-medium uppercase tracking-[0.06em] text-muted-foreground hover:text-foreground transition-colors"
+                                className="block py-2.5 text-[length:var(--text-14)] font-[family-name:var(--font-mono-family)] font-medium uppercase tracking-[0.06em] text-muted-foreground hover:text-foreground transition-colors"
                             >
                                 {item.label}
                             </a>
@@ -288,7 +290,7 @@ export default function SitePage() {
                         {/* Left — Text */}
                         <div className="space-y-8">
                             <div>
-                                <h1 className="font-[family-name:var(--font-heading-family)] font-extrabold text-[48px] md:text-[80px] lg:text-[110px] xl:text-[130px] uppercase tracking-[-0.02em] leading-[1.02] mb-6">
+                                <h1 className="font-[family-name:var(--font-heading-family)] font-extrabold text-[length:var(--text-48)] md:text-[80px] lg:text-[110px] xl:text-[130px] uppercase tracking-[-0.02em] leading-[1.02] mb-6">
                                     Стратегия
                                     <br />
                                     <span className="text-muted-foreground/60">и бизнес-</span>
@@ -296,14 +298,14 @@ export default function SitePage() {
                                     модели
                                 </h1>
                             </div>
-                            <p className="text-base md:text-lg text-muted-foreground leading-[1.618] max-w-[600px]">
+                            <p className="text-[length:var(--text-16)] md:text-[length:var(--text-19)] text-muted-foreground leading-[1.618] max-w-[600px]">
                                 Помогаем командам искать, проверять и&nbsp;усиливать бизнес-модели,
                                 связывать стратегию с&nbsp;операционными действиями и&nbsp;переходить
                                 от&nbsp;продуктовой логики к&nbsp;платформенной и&nbsp;экосистемной архитектуре.
                             </p>
                             <div className="flex flex-wrap gap-3">
                                 <a href="https://t.me/otideidomodeli" target="_blank" rel="noopener noreferrer">
-                                    <Button className="h-12 md:h-14 px-8 font-[family-name:var(--font-mono-family)] uppercase tracking-[0.08em] text-[14px] md:text-[16px]">
+                                    <Button className="h-12 md:h-14 px-8 font-[family-name:var(--font-mono-family)] uppercase tracking-[0.08em] text-[length:var(--text-14)] md:text-[length:var(--text-16)]">
                                         Связаться
                                         <ArrowRight size={18} />
                                     </Button>
@@ -316,7 +318,7 @@ export default function SitePage() {
                             {["Платформы", "Экосистемы", "Сервисы"].map((word, i) => (
                                 <span
                                     key={word}
-                                    className="font-[family-name:var(--font-heading-family)] font-bold text-[48px] xl:text-[64px] uppercase tracking-[-0.02em] leading-[1.05]"
+                                    className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-48)] xl:text-[64px] uppercase tracking-[-0.02em] leading-[1.05]"
                                     style={{
                                         opacity: 0.4 + i * 0.3,
                                         animationDelay: `${i * 200}ms`,
@@ -325,7 +327,7 @@ export default function SitePage() {
                                     {word}
                                 </span>
                             ))}
-                            <p className="text-sm text-muted-foreground leading-[1.618] mt-4 max-w-[380px]">
+                            <p className="text-[length:var(--text-14)] text-muted-foreground leading-[1.618] mt-4 max-w-[380px]">
                                 Развиваем методологию бизнес-дизайна, представляем Platform Innovation Kit
                                 в&nbsp;России и&nbsp;странах Азии
                             </p>
@@ -340,14 +342,14 @@ export default function SitePage() {
             {/* ═══════ TRUST LOGOS BAR ═══════ */}
             <section className="py-8 md:py-10 border-b border-border overflow-hidden bg-muted/30">
                 <div className="max-w-[1920px] mx-auto px-5 md:px-10 lg:px-20">
-                    <p className="text-[11px] font-[family-name:var(--font-mono-family)] uppercase tracking-[0.08em] text-muted-foreground mb-5">
+                    <p className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] uppercase tracking-[0.08em] text-muted-foreground mb-5">
                         Нам доверяют
                     </p>
                     <div className="flex items-center gap-10 md:gap-16 overflow-x-auto pb-2 scrollbar-hide">
                         {["Сбер", "МТС", "Ростелеком", "СКОЛКОВО", "Газпром", "Тинькофф", "Яндекс"].map(name => (
                             <span
                                 key={name}
-                                className="text-muted-foreground/50 font-[family-name:var(--font-heading-family)] font-bold text-lg md:text-xl uppercase tracking-wider whitespace-nowrap shrink-0"
+                                className="text-muted-foreground/50 font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-wider whitespace-nowrap shrink-0"
                             >
                                 {name}
                             </span>
@@ -446,10 +448,10 @@ export default function SitePage() {
                         <div className="space-y-6">
                             <div className="p-6 md:p-8 rounded-md border border-border bg-card">
                                 <GraduationCap size={24} className="text-[var(--rm-yellow-100)] mb-4" />
-                                <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-xl uppercase tracking-[-0.005em] mb-3">
+                                <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-25)] uppercase tracking-[-0.005em] mb-3">
                                     Практикум по бизнес-дизайну для команд
                                 </h3>
-                                <p className="text-sm text-muted-foreground leading-[1.618]">
+                                <p className="text-[length:var(--text-14)] text-muted-foreground leading-[1.618]">
                                     Навыки стратегического развития бизнеса — от поиска бизнес-модели
                                     до проектирования платформ и экосистем.
                                 </p>
@@ -457,10 +459,10 @@ export default function SitePage() {
 
                             <div className="p-6 md:p-8 rounded-md border border-border bg-card">
                                 <BookOpen size={24} className="text-[var(--rm-violet-100)] mb-4" />
-                                <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-xl uppercase tracking-[-0.005em] mb-3">
+                                <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-25)] uppercase tracking-[-0.005em] mb-3">
                                     Бизнес-дизайн. Быстрый старт
                                 </h3>
-                                <p className="text-sm text-muted-foreground leading-[1.618]">
+                                <p className="text-[length:var(--text-14)] text-muted-foreground leading-[1.618]">
                                     Онлайн-курс, который поможет быстро понять суть бизнес-дизайна
                                     и начать мыслить как стратег.
                                 </p>
@@ -471,13 +473,13 @@ export default function SitePage() {
                         <div className="space-y-4">
                             <Badge
                                 variant="outline"
-                                className="mb-2 text-[11px] font-[family-name:var(--font-mono-family)] uppercase tracking-[0.08em]"
+                                className="mb-2 text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] uppercase tracking-[0.08em]"
                             >
                                 Программы с ведущими бизнес-школами
                             </Badge>
                             <div className="p-6 md:p-10 rounded-md border border-border bg-muted/30 relative overflow-hidden">
                                 <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[var(--rm-violet-100)] to-[var(--rm-yellow-100)]" />
-                                <p className="text-lg md:text-xl leading-[1.618] max-w-[600px]">
+                                <p className="text-[length:var(--text-19)] md:text-[length:var(--text-25)] leading-[1.618] max-w-[600px]">
                                     Обучаем топ-менеджеров крупных компаний, помогаем трансформировать бизнес
                                     с&nbsp;помощью бизнес-дизайна. Работаем совместно с&nbsp;ведущими бизнес-школами
                                     России и&nbsp;мира.
@@ -486,7 +488,7 @@ export default function SitePage() {
                                     {["СКОЛКОВО", "РАНХиГС", "МШУ"].map(school => (
                                         <span
                                             key={school}
-                                            className="text-muted-foreground/60 font-[family-name:var(--font-heading-family)] font-bold text-base uppercase tracking-wider"
+                                            className="text-muted-foreground/60 font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-16)] uppercase tracking-wider"
                                         >
                                             {school}
                                         </span>
@@ -531,22 +533,22 @@ export default function SitePage() {
                     </div>
 
                     {/* PIK Block */}
-                    <div className="p-8 md:p-12 rounded-md border border-[var(--rm-violet-100)]/30 bg-[var(--rm-violet-10)] relative overflow-hidden">
+                    <div className="p-8 md:p-12 rounded-md border border-[var(--rm-violet-100)]/30 bg-[var(--rm-violet-900)] relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[var(--rm-violet-100)] rounded-full blur-[200px] opacity-10 pointer-events-none" />
                         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-[62fr_38fr] gap-8 items-center">
                             <div>
-                                <Badge className="mb-4 bg-[var(--rm-violet-100)] text-white text-[11px] font-[family-name:var(--font-mono-family)] uppercase tracking-[0.08em] hover:bg-[var(--rm-violet-100)]">
+                                <Badge className="mb-4 bg-[var(--rm-violet-100)] text-[var(--rm-violet-fg)] text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] uppercase tracking-[0.08em] hover:bg-[var(--rm-violet-100)]">
                                     Эксклюзив
                                 </Badge>
-                                <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[26px] md:text-[36px] uppercase tracking-[-0.015em] leading-[1.1] mb-4">
+                                <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-25)] md:text-[36px] uppercase tracking-[-0.015em] leading-[1.1] mb-4">
                                     Platform Innovation Kit
                                 </h3>
-                                <p className="text-base text-muted-foreground leading-[1.618] mb-6">
+                                <p className="text-[length:var(--text-16)] text-muted-foreground leading-[1.618] mb-6">
                                     Rocketmind — официальный представитель Platform Innovation Kit.
                                     Это фреймворк, основанный на анализе 100+ успешных платформ по всему миру.
                                 </p>
                                 <a href="https://t.me/otideidomodeli" target="_blank" rel="noopener noreferrer">
-                                    <Button variant="outline" className="font-[family-name:var(--font-mono-family)] uppercase tracking-[0.08em] text-[12px]">
+                                    <Button variant="outline" className="font-[family-name:var(--font-mono-family)] uppercase tracking-[0.08em] text-[length:var(--text-12)]">
                                         Узнать больше
                                         <ChevronRight size={14} />
                                     </Button>
@@ -614,7 +616,7 @@ export default function SitePage() {
                                 className="p-6 rounded-md border border-border bg-card hover:border-muted-foreground/30 transition-all duration-300 group cursor-pointer flex flex-col"
                             >
                                 <div className="flex-1">
-                                    <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-base uppercase tracking-[-0.005em] leading-[1.3] mb-3 group-hover:text-[var(--rm-yellow-100)] transition-colors">
+                                    <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-16)] uppercase tracking-[-0.005em] leading-[1.3] mb-3 group-hover:text-[var(--rm-yellow-100)] transition-colors">
                                         {c.title}
                                     </h3>
                                     <div className="flex flex-wrap gap-1.5 mb-4">
@@ -626,7 +628,7 @@ export default function SitePage() {
                                     </div>
                                 </div>
                                 <div className="pt-3 border-t border-border">
-                                    <p className="text-[11px] font-[family-name:var(--font-mono-family)] uppercase tracking-wider text-muted-foreground mb-1.5">
+                                    <p className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] uppercase tracking-wider text-muted-foreground mb-1.5">
                                         Продукты:
                                     </p>
                                     <div className="flex flex-wrap gap-1.5">
@@ -649,19 +651,19 @@ export default function SitePage() {
 
             {/* ═══════ CTA ═══════ */}
             <section className="py-20 md:py-32 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-[var(--rm-violet-10)] to-background pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-br from-[var(--rm-violet-900)] to-background pointer-events-none" />
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[var(--rm-yellow-100)] rounded-full blur-[300px] opacity-5 pointer-events-none" />
 
                 <div className="relative z-10 max-w-[1920px] mx-auto px-5 md:px-10 lg:px-20 text-center">
                     <h2 className="font-[family-name:var(--font-heading-family)] font-extrabold text-[36px] md:text-[56px] lg:text-[72px] uppercase tracking-[-0.02em] leading-[1.05] mb-6">
                         Готовы начать?
                     </h2>
-                    <p className="text-base md:text-lg text-muted-foreground leading-[1.618] max-w-[540px] mx-auto mb-8">
+                    <p className="text-[length:var(--text-16)] md:text-[length:var(--text-19)] text-muted-foreground leading-[1.618] max-w-[540px] mx-auto mb-8">
                         Свяжитесь с нами, чтобы обсудить вашу задачу. Мы подберём подходящий продукт
                         и формат работы.
                     </p>
                     <a href="https://t.me/otideidomodeli" target="_blank" rel="noopener noreferrer">
-                        <Button className="h-14 px-10 font-[family-name:var(--font-mono-family)] uppercase tracking-[0.08em] text-[16px]">
+                        <Button className="h-14 px-10 font-[family-name:var(--font-mono-family)] uppercase tracking-[0.08em] text-[length:var(--text-16)]">
                             <MessageCircle size={18} />
                             Связаться с нами
                         </Button>
@@ -685,7 +687,7 @@ export default function SitePage() {
                                 alt="Rocketmind"
                                 className="h-6 dark:hidden mb-4"
                             />
-                            <p className="text-sm text-muted-foreground leading-[1.618]">
+                            <p className="text-[length:var(--text-14)] text-muted-foreground leading-[1.618]">
                                 Стратегия и бизнес-модели.
                                 <br />
                                 Представители Platform Innovation Kit
@@ -696,7 +698,7 @@ export default function SitePage() {
 
                         {/* Nav */}
                         <div>
-                            <p className="text-[11px] font-[family-name:var(--font-mono-family)] uppercase tracking-[0.08em] text-muted-foreground mb-4">
+                            <p className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] uppercase tracking-[0.08em] text-muted-foreground mb-4">
                                 Навигация
                             </p>
                             <nav className="space-y-2">
@@ -704,7 +706,7 @@ export default function SitePage() {
                                     <a
                                         key={item.href}
                                         href={item.href}
-                                        className="block text-sm text-muted-foreground hover:text-foreground transition-colors"
+                                        className="block text-[length:var(--text-14)] text-muted-foreground hover:text-foreground transition-colors"
                                     >
                                         {item.label}
                                     </a>
@@ -714,10 +716,10 @@ export default function SitePage() {
 
                         {/* Contacts */}
                         <div>
-                            <p className="text-[11px] font-[family-name:var(--font-mono-family)] uppercase tracking-[0.08em] text-muted-foreground mb-4">
+                            <p className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] uppercase tracking-[0.08em] text-muted-foreground mb-4">
                                 Контакты
                             </p>
-                            <div className="space-y-2 text-sm text-muted-foreground">
+                            <div className="space-y-2 text-[length:var(--text-14)] text-muted-foreground">
                                 <a
                                     href="https://t.me/otideidomodeli"
                                     target="_blank"
@@ -743,10 +745,10 @@ export default function SitePage() {
                     <Separator className="mb-6" />
 
                     <div className="flex flex-col md:flex-row items-center justify-between gap-2">
-                        <p className="text-[11px] text-muted-foreground font-[family-name:var(--font-mono-family)]">
+                        <p className="text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)]">
                             © 2024 Rocketmind. Все права защищены.
                         </p>
-                        <p className="text-[11px] text-muted-foreground font-[family-name:var(--font-mono-family)]">
+                        <p className="text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)]">
                             Design System v1.1.0
                         </p>
                     </div>

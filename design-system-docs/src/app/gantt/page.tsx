@@ -247,8 +247,8 @@ function CardItem({
           title={c.done ? 'Готово' : 'Отметить как готово'}
         >
           {c.done && (
-            <svg viewBox="0 0 10 10" className="w-full h-full" fill="none">
-              <path d="M2 5l2.5 2.5L8 3" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <svg viewBox="0 0 10 10" className="w-full h-full text-[var(--rm-gray-1)]" fill="none">
+              <path d="M2 5l2.5 2.5L8 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           )}
         </button>
@@ -283,7 +283,7 @@ function CardItem({
         {!locked && (
           <button
             onClick={onRemove}
-            className="opacity-0 group-hover/card:opacity-100 transition-opacity text-muted-foreground/40 hover:text-destructive text-sm leading-none"
+            className="opacity-0 group-hover/card:opacity-100 transition-opacity text-muted-foreground/40 hover:text-destructive text-[length:var(--text-14)] leading-none"
             title="Удалить карточку"
           >
             ×
@@ -295,7 +295,7 @@ function CardItem({
         <textarea
           ref={taRef}
           defaultValue={c.label}
-          className="w-full bg-transparent outline-none resize-none text-xs leading-snug"
+          className="w-full bg-transparent outline-none resize-none text-[length:var(--text-12)] leading-snug"
           style={{ color: cssVar(weekColor, 'fg-subtle'), minHeight: 32 }}
           rows={Math.max(lines.length, 1)}
           onInput={e => autoResize(e.currentTarget)}
@@ -316,7 +316,7 @@ function CardItem({
           style={{ opacity: c.done ? 0.45 : 1 }}
         >
           {(lines.length > 0 ? lines : [c.label]).map((line, i) => (
-            <li key={i} className="flex items-start gap-1.5 text-xs leading-snug">
+            <li key={i} className="flex items-start gap-1.5 text-[length:var(--text-12)] leading-snug">
               <span className="flex-shrink-0 mt-[3px] w-1 h-1 rounded-full" style={{ backgroundColor: cssVar(weekColor, '100'), opacity: 0.7 }} />
               <span style={{ color: cssVar(weekColor, 'fg-subtle') }}>{line}</span>
             </li>
@@ -346,7 +346,7 @@ function LockModal({ onClose, onUnlock }: { onClose: () => void; onUnlock: () =>
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center"
-      style={{ backgroundColor: 'rgba(0,0,0,0.45)' }}
+      style={{ backgroundColor: 'var(--rm-gray-alpha-600)' }}
       onClick={onClose}
     >
       <div
@@ -354,9 +354,9 @@ function LockModal({ onClose, onUnlock }: { onClose: () => void; onUnlock: () =>
         onClick={e => e.stopPropagation()}
       >
         <div className="text-center mb-4">
-          <div className="text-2xl mb-1">🔒</div>
-          <div className="font-heading font-bold text-base">Введите пароль</div>
-          <div className="text-xs text-muted-foreground mt-0.5">для разблокировки редактирования</div>
+          <div className="text-[length:var(--text-25)] mb-1">🔒</div>
+          <div className="font-heading font-bold text-[length:var(--text-16)]">Введите пароль</div>
+          <div className="text-[length:var(--text-12)] text-muted-foreground mt-0.5">для разблокировки редактирования</div>
         </div>
         <input
           ref={inputRef}
@@ -364,25 +364,25 @@ function LockModal({ onClose, onUnlock }: { onClose: () => void; onUnlock: () =>
           value={val}
           onChange={e => setVal(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') submit(); if (e.key === 'Escape') onClose(); }}
-          className="w-full border rounded-lg px-3 py-2 text-sm outline-none transition-colors"
+          className="w-full border rounded-lg px-3 py-2 text-[length:var(--text-14)] outline-none transition-colors"
           style={{
-            borderColor: err ? '#ED4843' : 'var(--border)',
-            backgroundColor: err ? '#FFF9F8' : 'var(--background)',
+            borderColor: err ? 'var(--rm-red-100)' : 'var(--border)',
+            backgroundColor: err ? 'var(--rm-red-900)' : 'var(--background)',
           }}
           placeholder="Пароль"
           autoComplete="off"
         />
-        {err && <p className="text-xs text-red-500 mt-1.5">Неверный пароль</p>}
+        {err && <p className="text-[length:var(--text-12)] text-[var(--rm-red-100)] mt-1.5">Неверный пароль</p>}
         <div className="flex gap-2 mt-4">
           <button
             onClick={onClose}
-            className="flex-1 border border-border rounded-lg py-2 text-sm hover:bg-muted transition-colors"
+            className="flex-1 border border-border rounded-lg py-2 text-[length:var(--text-14)] hover:bg-muted transition-colors"
           >
             Отмена
           </button>
           <button
             onClick={submit}
-            className="flex-1 rounded-lg py-2 text-sm font-medium transition-colors"
+            className="flex-1 rounded-lg py-2 text-[length:var(--text-14)] font-medium transition-colors"
             style={{ backgroundColor: 'var(--primary)', color: 'var(--primary-foreground)' }}
           >
             Войти
@@ -397,14 +397,14 @@ function LockModal({ onClose, onUnlock }: { onClose: () => void; onUnlock: () =>
 
 function SyncDot({ status }: { status: 'synced' | 'saving' | 'error' | 'loading' }) {
   const map = {
-    loading: { color: '#94a3b8', label: 'Загрузка…' },
-    saving:  { color: '#F59E0B', label: 'Сохранение…' },
-    synced:  { color: '#22C55E', label: 'Синхронизировано' },
-    error:   { color: '#EF4444', label: 'Ошибка синхронизации' },
+    loading: { color: 'var(--rm-gray-5)', label: 'Загрузка…' },
+    saving:  { color: 'var(--rm-yellow-100)', label: 'Сохранение…' },
+    synced:  { color: 'var(--rm-green-100)', label: 'Синхронизировано' },
+    error:   { color: 'var(--rm-red-100)', label: 'Ошибка синхронизации' },
   };
   const { color, label } = map[status];
   return (
-    <div className="flex items-center gap-1.5 font-mono text-[11px] text-muted-foreground select-none" title={label}>
+    <div className="flex items-center gap-1.5 font-mono text-[length:var(--text-12)] text-muted-foreground select-none" title={label}>
       <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
       {label}
     </div>
@@ -667,15 +667,15 @@ export default function GanttPage() {
       <div className="border-b border-border px-8 py-6">
         <div className="max-w-[1400px] mx-auto">
           <div className="flex items-center gap-3 mb-1">
-            <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground flex-1">
+            <p className="font-mono text-[length:var(--text-12)] uppercase tracking-[0.12em] text-muted-foreground flex-1">
               Rocketmind · MVP 1.1
             </p>
             <SyncDot status={syncStatus} />
           </div>
-          <h1 className="font-heading text-[2rem] font-bold leading-tight">
+          <h1 className="font-heading text-[length:var(--text-31)] font-bold leading-tight">
             <EditableText value={title} onChange={updateTitle} />
           </h1>
-          <p className="text-muted-foreground mt-1.5 text-sm">
+          <p className="text-muted-foreground mt-1.5 text-[length:var(--text-14)]">
             <EditableText value={subtitle} onChange={updateSubtitle} />
           </p>
         </div>
@@ -688,13 +688,13 @@ export default function GanttPage() {
           {weeks.map(w => (
             <div key={w.id} className="border border-border rounded-xl p-4 relative overflow-hidden">
               <div className="absolute top-0 left-0 right-0 h-0.5" style={{ backgroundColor: cssVar(w.color, '100') }} />
-              <div className="font-mono text-[12px] uppercase tracking-[0.12em] text-muted-foreground mb-1">
+              <div className="font-mono text-[length:var(--text-12)] uppercase tracking-[0.12em] text-muted-foreground mb-1">
                 <EditableText value={w.dates} onChange={v => updateWeekDates(w.id, v)} />
               </div>
-              <div className="font-heading font-bold text-base mb-1">
+              <div className="font-heading font-bold text-[length:var(--text-16)] mb-1">
                 <EditableText value={w.label} onChange={v => updateWeekLabel(w.id, v)} />
               </div>
-              <p className="text-xs text-muted-foreground leading-snug">
+              <p className="text-[length:var(--text-12)] text-muted-foreground leading-snug">
                 <EditableText value={w.theme} onChange={v => updateWeekTheme(w.id, v)} />
               </p>
             </div>
@@ -709,7 +709,7 @@ export default function GanttPage() {
               {/* Header */}
               <div className="flex border-b border-border bg-muted/40 sticky top-0 z-10">
                 <div
-                  className="flex-shrink-0 px-4 py-3 border-r border-border text-xs font-mono uppercase tracking-wide text-muted-foreground bg-muted/40"
+                  className="flex-shrink-0 px-4 py-3 border-r border-border text-[length:var(--text-12)] font-mono uppercase tracking-wide text-muted-foreground bg-muted/40"
                   style={{ width: COL_W, minWidth: COL_W }}
                 >
                   Раздел
@@ -720,10 +720,10 @@ export default function GanttPage() {
                     className="flex-1 px-3 py-3 border-r border-border last:border-r-0 text-center"
                     style={{ minWidth: 240 }}
                   >
-                    <div className="font-mono text-xs font-bold uppercase tracking-wide" style={{ color: cssVar(w.color, '100') }}>
+                    <div className="font-mono text-[length:var(--text-12)] font-bold uppercase tracking-wide" style={{ color: cssVar(w.color, '100') }}>
                       <EditableText value={w.label} onChange={v => updateWeekLabel(w.id, v)} />
                     </div>
-                    <div className="font-mono text-[12px] text-muted-foreground mt-0.5">
+                    <div className="font-mono text-[length:var(--text-12)] text-muted-foreground mt-0.5">
                       <EditableText value={w.dates} onChange={v => updateWeekDates(w.id, v)} />
                     </div>
                   </div>
@@ -752,17 +752,17 @@ export default function GanttPage() {
                     style={{ width: COL_W, minWidth: COL_W }}
                   >
                     <span
-                      className="cursor-grab text-muted-foreground/30 hover:text-muted-foreground transition-colors select-none flex-shrink-0 mt-0.5 text-base leading-none"
+                      className="cursor-grab text-muted-foreground/30 hover:text-muted-foreground transition-colors select-none flex-shrink-0 mt-0.5 text-[length:var(--text-16)] leading-none"
                       title="Перетащить строку"
                     >
                       ⠿
                     </span>
-                    <span className="text-xs font-medium text-foreground flex-1 min-w-0 mt-0.5">
+                    <span className="text-[length:var(--text-12)] font-medium text-foreground flex-1 min-w-0 mt-0.5">
                       <EditableText value={row.label} onChange={v => updateRowLabel(row.id, v)} />
                     </span>
                     <button
                       onClick={() => removeRow(row.id)}
-                      className="flex-shrink-0 text-muted-foreground/20 hover:text-destructive transition-colors text-sm leading-none mt-0.5"
+                      className="flex-shrink-0 text-muted-foreground/20 hover:text-destructive transition-colors text-[length:var(--text-14)] leading-none mt-0.5"
                       title="Удалить строку"
                     >
                       ×
@@ -783,7 +783,7 @@ export default function GanttPage() {
                         {!locked && (
                           <button
                             onClick={() => addCard(row.id, w.id)}
-                            className="w-full mb-1.5 flex items-center justify-center gap-1 rounded text-[12px] font-mono uppercase tracking-wide transition-colors"
+                            className="w-full mb-1.5 flex items-center justify-center gap-1 rounded text-[length:var(--text-12)] font-mono uppercase tracking-wide transition-colors"
                             style={{
                               height: 18,
                               color: cssVar(w.color, 'fg-subtle'),
@@ -850,7 +850,7 @@ export default function GanttPage() {
         </div>
 
         {/* Bottom controls */}
-        <div className="flex items-center gap-4 text-xs text-muted-foreground font-mono pb-2">
+        <div className="flex items-center gap-4 text-[length:var(--text-12)] text-muted-foreground font-mono pb-2">
           {!locked && (
             <button
               onClick={addRow}
@@ -877,7 +877,7 @@ export default function GanttPage() {
             className="flex-shrink-0 flex items-center gap-1.5 border border-border rounded-lg px-3 py-1.5 hover:bg-muted transition-colors text-foreground"
             title={locked ? 'Разблокировать' : 'Заблокировать редактирование'}
           >
-            <span className="text-sm">{locked ? '🔒' : '🔓'}</span>
+            <span className="text-[length:var(--text-14)]">{locked ? '🔒' : '🔓'}</span>
             <span>{locked ? 'Заблокировано' : 'Заблокировать'}</span>
           </button>
         </div>

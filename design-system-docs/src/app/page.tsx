@@ -442,7 +442,9 @@ function DotGridDemo() {
       const h = container.clientHeight
       ctx.clearRect(0, 0, w, h)
       const isDark = document.documentElement.classList.contains("dark")
+      // --rm-gray-4: #CBCBCB (light) / #404040 (dark)
       const baseColor = isDark ? [64, 64, 64] : [203, 203, 203]
+      // --rm-yellow-100: #FFCC00
       const accentColor = [255, 204, 0]
       const { x: mx, y: my } = mouseRef.current
       const cols = Math.ceil(w / GRID_GAP) + 1
@@ -516,7 +518,7 @@ function DotGridDemo() {
         </button>
         <button
           onClick={() => setAccent(true)}
-          className={`text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] uppercase tracking-wider px-3 py-1 rounded border transition-colors ${accent ? "bg-[#FFCC00] text-[#121212] border-[#FFCC00]" : "border-border text-muted-foreground hover:border-foreground"}`}
+          className={`text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] uppercase tracking-wider px-3 py-1 rounded border transition-colors ${accent ? "bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] border-[var(--rm-yellow-100)]" : "border-border text-muted-foreground hover:border-foreground"}`}
         >
           Акцентный
         </button>
@@ -605,7 +607,7 @@ function TimingRow({ token, ms, desc }: { token: string; ms: number; desc: strin
         <CopyButton value={token} label={token} />
       </div>
       <div className="h-1.5 bg-muted rounded-full overflow-hidden ml-3">
-        <div className="h-full rounded-full bg-[#FFCC00]" style={{ width: `${width}%` }} />
+        <div className="h-full rounded-full bg-[var(--rm-yellow-100)]" style={{ width: `${width}%` }} />
       </div>
     </div>
   )
@@ -652,7 +654,7 @@ function EasingDemo({ token, curve, desc }: { token: string; curve: string; desc
         </button>
       </div>
       <div className="h-8 bg-muted/50 rounded-md relative overflow-hidden flex items-center px-2">
-        <div ref={ballRef} className="w-4 h-4 rounded-full bg-[#FFCC00] shrink-0" style={{ transform: "translateX(0)" }} />
+        <div ref={ballRef} className="w-4 h-4 rounded-full bg-[var(--rm-yellow-100)] shrink-0" style={{ transform: "translateX(0)" }} />
       </div>
       <p className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] text-muted-foreground/60 mt-2 truncate">{curve}</p>
     </div>
@@ -811,7 +813,7 @@ export default function DesignSystemPage() {
               Версия
             </p>
             <div className="flex items-center gap-2">
-              <Badge className="bg-[var(--rm-yellow-100)] text-[#121212] text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] hover:bg-[var(--rm-yellow-100)]">
+              <Badge className="bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] hover:bg-[var(--rm-yellow-100)]">
                 {DS_VERSION}
               </Badge>
             </div>
@@ -949,11 +951,11 @@ export default function DesignSystemPage() {
                 <div key={c.token} className="flex flex-col gap-2">
                   <div className="w-full h-16 rounded-md border border-border" style={{ backgroundColor: `var(${c.var})` }} />
                   <div>
-                    <p className="text-sm font-medium">{c.name}</p>
-                    <p className="text-[11px] text-muted-foreground font-[family-name:var(--font-mono-family)]">{c.token}</p>
-                    <p className="text-[11px] text-muted-foreground font-[family-name:var(--font-mono-family)]">L: {c.lhex} · D: {c.dhex}</p>
+                    <p className="text-[length:var(--text-14)] font-medium">{c.name}</p>
+                    <p className="text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)]">{c.token}</p>
+                    <p className="text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)]">L: {c.lhex} · D: {c.dhex}</p>
                   </div>
-                  <p className="text-[11px] text-muted-foreground leading-relaxed border-t border-border pt-2">{c.note}</p>
+                  <p className="text-[length:var(--text-12)] text-muted-foreground leading-relaxed border-t border-border pt-2">{c.note}</p>
                 </div>
               ))}
             </div>
@@ -978,7 +980,7 @@ export default function DesignSystemPage() {
               ].map((c) => (
                 <div key={c.var} className="flex flex-col gap-1.5">
                   <div className="w-full h-10 rounded-md border border-border" style={{ backgroundColor: `var(${c.var})` }} />
-                  <p className="text-[11px] font-medium font-[family-name:var(--font-mono-family)]">{c.name}</p>
+                  <p className="text-[length:var(--text-12)] font-medium font-[family-name:var(--font-mono-family)]">{c.name}</p>
                   <p className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">{c.role}</p>
                 </div>
               ))}
@@ -1056,7 +1058,7 @@ export default function DesignSystemPage() {
                         >
                           <span
                             className="text-[9px] font-[family-name:var(--font-mono-family)] px-1 rounded"
-                            style={{ backgroundColor: "rgba(0,0,0,0.15)", color: "inherit" }}
+                            style={{ backgroundColor: "var(--rm-gray-alpha-200)", color: "inherit" }}
                           >{level}</span>
                         </div>
                         <p className="text-[10px] font-[family-name:var(--font-mono-family)] text-muted-foreground truncate">--rm-{c.token}-{level}</p>
@@ -1069,15 +1071,15 @@ export default function DesignSystemPage() {
                       className="rounded-md px-3 py-2 flex items-center justify-between"
                       style={{ backgroundColor: `var(--rm-${c.token}-100)`, color: `var(--rm-${c.token}-fg)` }}
                     >
-                      <span className="text-[11px] font-[family-name:var(--font-mono-family)]">fg · текст на solid</span>
-                      <span className="text-[11px] font-[family-name:var(--font-mono-family)]">--rm-{c.token}-fg</span>
+                      <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)]">fg · текст на solid</span>
+                      <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)]">--rm-{c.token}-fg</span>
                     </div>
                     <div
                       className="rounded-md px-3 py-2 flex items-center justify-between"
                       style={{ backgroundColor: `var(--rm-${c.token}-900)`, color: `var(--rm-${c.token}-fg-subtle)` }}
                     >
-                      <span className="text-[11px] font-[family-name:var(--font-mono-family)]">fg-subtle · текст на 900</span>
-                      <span className="text-[11px] font-[family-name:var(--font-mono-family)]">--rm-{c.token}-fg-subtle</span>
+                      <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)]">fg-subtle · текст на 900</span>
+                      <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)]">--rm-{c.token}-fg-subtle</span>
                     </div>
                   </div>
                 </div>
@@ -1756,19 +1758,19 @@ export default function DesignSystemPage() {
                   <div className="space-y-2">
                     <Badge variant="outline" className="text-[length:var(--text-12)]">PRIMARY</Badge>
                     <div className="flex items-center gap-3">
-                      <button className="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-md bg-[#FFCC00] text-[#121212] font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-[#FFE040] cursor-pointer">
+                      <button className="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-md bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-[var(--rm-yellow-300)] cursor-pointer">
                         Попробовать
                       </button>
-                      <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md bg-[#FFCC00] text-[#121212] font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-[#FFE040] cursor-pointer">
+                      <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-[var(--rm-yellow-300)] cursor-pointer">
                         Начать
                       </button>
-                      <button className="inline-flex items-center justify-center gap-2 h-8 px-3 rounded-md bg-[#FFCC00] text-[#121212] font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-[#FFE040] cursor-pointer">
+                      <button className="inline-flex items-center justify-center gap-2 h-8 px-3 rounded-md bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-[var(--rm-yellow-300)] cursor-pointer">
                         SM
                       </button>
                     </div>
                   </div>
                   <CopyButton
-                    value={`inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md bg-[#FFCC00] text-[#121212] font-mono text-[length:var(--text-14)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-[#FFE040]`}
+                    value={`inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-mono text-[length:var(--text-14)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-[var(--rm-yellow-300)]`}
                     label="Primary Button"
                   />
                 </div>
@@ -1832,10 +1834,10 @@ export default function DesignSystemPage() {
                   <div className="space-y-2">
                     <Badge variant="outline" className="text-[length:var(--text-12)]">СОСТОЯНИЯ</Badge>
                     <div className="flex items-center gap-3">
-                      <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md bg-[#FFCC00] text-[#121212] font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase tracking-[0.08em] opacity-40 cursor-not-allowed">
+                      <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase tracking-[0.08em] opacity-40 cursor-not-allowed">
                         Disabled
                       </button>
-                      <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md bg-[#FFCC00] text-[#121212] font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase tracking-[0.08em] opacity-80 cursor-wait">
+                      <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase tracking-[0.08em] opacity-80 cursor-wait">
                         <Loader2 size={14} className="animate-spin" /> Loading
                       </button>
                     </div>
@@ -1982,7 +1984,7 @@ export default function DesignSystemPage() {
                       {["", "", "", ""].map((_, i) => (
                         <div
                           key={i}
-                          className="relative h-24 rounded-sm bg-card cursor-pointer transition-all duration-75 border border-border active:[border:2px_solid_#FFCC00]"
+                          className="relative h-24 rounded-sm bg-card cursor-pointer transition-all duration-75 border border-border active:[border:2px_solid_var(--rm-yellow-100)]"
                         >
                           <GlowingEffect
                             spread={40}
@@ -2055,7 +2057,7 @@ export default function DesignSystemPage() {
                         </div>
                         <h4 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] uppercase tracking-[-0.005em]">Название продукта</h4>
                         <p className="text-[length:var(--text-16)] text-muted-foreground leading-[1.618] line-clamp-3">Подробное описание продукта — здесь можно разместить больше текста, поскольку карточка шире.</p>
-                        <div className="flex items-center gap-2 text-[#FFCC00]">
+                        <div className="flex items-center gap-2 text-[var(--rm-yellow-100)]">
                           {"★★★★★".split("").map((s,j)=><span key={j} className="text-[length:var(--text-14)]">{s}</span>)}
                           <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] text-muted-foreground ml-1">4.9 (128)</span>
                         </div>
@@ -2184,7 +2186,7 @@ export default function DesignSystemPage() {
                           <Rocket size={20} className="text-[var(--rm-yellow-100)]"/>
                         </div>
                         <span className="absolute -bottom-0.5 -right-0.5 flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-card border border-border">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#9AF576]"/>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[var(--rm-green-100)]"/>
                         </span>
                       </div>
                       <div>
@@ -2209,7 +2211,7 @@ export default function DesignSystemPage() {
                             <Rocket size={28} className="text-[var(--rm-yellow-100)]"/>
                           </div>
                           <span className="absolute bottom-0.5 right-0.5 flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-card border border-border">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#9AF576]"/>
+                            <span className="w-1.5 h-1.5 rounded-full bg-[var(--rm-green-100)]"/>
                             <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase text-muted-foreground">Акт</span>
                           </span>
                         </div>
@@ -2237,7 +2239,7 @@ export default function DesignSystemPage() {
                         <div className="w-20 h-20 rounded-full border-2 flex items-center justify-center bg-muted" style={{borderColor:"var(--rm-yellow-50)"}}>
                           <Rocket size={28} className="text-[var(--rm-yellow-100)]"/>
                         </div>
-                        <span className="absolute bottom-0.5 right-0.5 w-3 h-3 rounded-full bg-[#9AF576] border-2 border-card"/>
+                        <span className="absolute bottom-0.5 right-0.5 w-3 h-3 rounded-full bg-[var(--rm-green-100)] border-2 border-card"/>
                       </div>
                       <div className="flex flex-col gap-0.5 w-40 flex-shrink-0">
                         <h4 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] uppercase tracking-[-0.005em]">Маркетолог</h4>
@@ -2261,7 +2263,7 @@ export default function DesignSystemPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                   {[1,2,3].map(i => (
                     <div key={i} className="flex flex-col gap-4 p-5 rounded-sm border border-border bg-card dark:border-white/[0.06]">
-                      <div className="flex gap-0.5 text-[#FFCC00]">{"★★★★★".split("").map((s,j)=><span key={j} className="text-[length:var(--text-14)]">{s}</span>)}</div>
+                      <div className="flex gap-0.5 text-[var(--rm-yellow-100)]">{"★★★★★".split("").map((s,j)=><span key={j} className="text-[length:var(--text-14)]">{s}</span>)}</div>
                       <blockquote className="text-[length:var(--text-14)] italic leading-[1.5] text-foreground line-clamp-4">«Агент помог за 2 дня разобраться в структуре рынка, на что раньше уходило 2 недели.»</blockquote>
                       <div className="flex items-center gap-2.5 pt-3 border-t border-border mt-auto">
                         <div className="w-8 h-8 rounded-full bg-muted border border-border flex-shrink-0 flex items-center justify-center text-muted-foreground"><User size={14}/></div>
@@ -2278,7 +2280,7 @@ export default function DesignSystemPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   {[1,2].map(i => (
                     <div key={i} className="flex flex-col gap-5 p-6 rounded-sm border border-border bg-card dark:border-white/[0.06]">
-                      <div className="flex gap-0.5 text-[#FFCC00]">{"★★★★★".split("").map((s,j)=><span key={j} className="text-[length:var(--text-16)]">{s}</span>)}</div>
+                      <div className="flex gap-0.5 text-[var(--rm-yellow-100)]">{"★★★★★".split("").map((s,j)=><span key={j} className="text-[length:var(--text-16)]">{s}</span>)}</div>
                       <blockquote className="text-[length:var(--text-16)] italic leading-[1.618] text-foreground">«Агент помог мне за 2 дня разобраться в структуре рынка, на что раньше уходило целых 2 недели работы аналитика.»</blockquote>
                       <div className="flex items-center gap-3 pt-4 border-t border-border">
                         <div className="w-10 h-10 rounded-full bg-muted border border-border flex-shrink-0 flex items-center justify-center text-muted-foreground"><User size={16}/></div>
@@ -2305,7 +2307,7 @@ export default function DesignSystemPage() {
                       </div>
                       <div className="flex flex-col gap-3 flex-1">
                         <div className="flex items-center gap-3">
-                          <div className="flex gap-0.5 text-[#FFCC00]">{"★★★★★".split("").map((s,j)=><span key={j} className="text-[length:var(--text-16)]">{s}</span>)}</div>
+                          <div className="flex gap-0.5 text-[var(--rm-yellow-100)]">{"★★★★★".split("").map((s,j)=><span key={j} className="text-[length:var(--text-16)]">{s}</span>)}</div>
                           <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground">Март 2026</span>
                         </div>
                         <blockquote className="text-[length:var(--text-16)] italic leading-[1.618] text-foreground">«Агент помог мне за 2 дня разобраться в структуре рынка, на что раньше уходило целых 2 недели работы аналитика. Результат превзошёл ожидания.»</blockquote>
@@ -2325,7 +2327,7 @@ export default function DesignSystemPage() {
                     <div key={i} className="flex flex-col gap-3 p-5 rounded-sm border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.12] cursor-pointer">
                       <div className="flex items-center justify-between">
                         <span className="px-2 py-0.5 rounded-sm font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em]"
-                          style={{backgroundColor:"rgba(154,245,118,0.15)",color:"#9AF576"}}>Активен</span>
+                          style={{backgroundColor:"var(--rm-green-900)",color:"var(--rm-green-100)"}}>Активен</span>
                         <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground">@maks</span>
                       </div>
                       <div>
@@ -2347,7 +2349,7 @@ export default function DesignSystemPage() {
                     <div key={i} className="flex flex-col gap-4 p-6 rounded-sm border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.12] cursor-pointer">
                       <div className="flex items-center justify-between">
                         <span className="px-2 py-0.5 rounded-sm font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em]"
-                          style={{backgroundColor:"rgba(154,245,118,0.15)",color:"#9AF576"}}>Активен</span>
+                          style={{backgroundColor:"var(--rm-green-900)",color:"var(--rm-green-100)"}}>Активен</span>
                         <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground">@maks</span>
                       </div>
                       <div>
@@ -2372,7 +2374,7 @@ export default function DesignSystemPage() {
                     <div key={i} className="flex items-center gap-6 p-6 rounded-sm border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.12] cursor-pointer">
                       <div className="flex flex-col gap-1 w-40 flex-shrink-0">
                         <span className="px-2 py-0.5 rounded-sm w-fit font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em]"
-                          style={{backgroundColor:"rgba(154,245,118,0.15)",color:"#9AF576"}}>Активен</span>
+                          style={{backgroundColor:"var(--rm-green-900)",color:"var(--rm-green-100)"}}>Активен</span>
                         <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mt-1">2 часа назад</span>
                       </div>
                       <div className="flex flex-col gap-1 w-56 flex-shrink-0">
@@ -2404,7 +2406,7 @@ export default function DesignSystemPage() {
                       <div className="flex flex-col gap-2.5 p-5">
                         <div className="flex gap-1.5">
                           <span className="px-1.5 py-0.5 rounded-sm font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em]"
-                            style={{backgroundColor:"rgba(86,202,234,0.15)",color:"#56CAEA"}}>Начинающий</span>
+                            style={{backgroundColor:"var(--rm-sky-900)",color:"var(--rm-sky-100)"}}>Начинающий</span>
                           <span className="px-1.5 py-0.5 rounded-sm bg-muted font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground">Видео</span>
                         </div>
                         <h4 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] uppercase tracking-[-0.005em] leading-snug">Маркетинг для стартапов</h4>
@@ -2429,14 +2431,14 @@ export default function DesignSystemPage() {
                       <div className="flex flex-col gap-4 p-6">
                         <div className="flex gap-2">
                           <span className="px-2 py-0.5 rounded-sm font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em]"
-                            style={{backgroundColor:"rgba(86,202,234,0.15)",color:"#56CAEA"}}>Начинающий</span>
+                            style={{backgroundColor:"var(--rm-sky-900)",color:"var(--rm-sky-100)"}}>Начинающий</span>
                           <span className="px-2 py-0.5 rounded-sm bg-muted font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground">Видео</span>
                         </div>
                         <h4 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] uppercase tracking-[-0.005em]">Маркетинг для стартапов</h4>
                         <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase tracking-[0.08em] text-muted-foreground">Иван Петров · 12 уроков</span>
                         <p className="text-[length:var(--text-16)] text-muted-foreground leading-[1.618] line-clamp-2">Практический курс по привлечению первых клиентов без большого бюджета.</p>
                         <div className="flex items-center gap-2">
-                          <span className="text-[#FFCC00]">★</span>
+                          <span className="text-[var(--rm-yellow-100)]">★</span>
                           <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] text-muted-foreground">4.8 (234)</span>
                         </div>
                         <div className="flex items-center justify-between pt-3 border-t border-border mt-auto">
@@ -2462,14 +2464,14 @@ export default function DesignSystemPage() {
                         <div className="flex flex-col gap-2 flex-1">
                           <div className="flex gap-2">
                             <span className="px-2 py-0.5 rounded-sm font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em]"
-                              style={{backgroundColor:"rgba(86,202,234,0.15)",color:"#56CAEA"}}>Начинающий</span>
+                              style={{backgroundColor:"var(--rm-sky-900)",color:"var(--rm-sky-100)"}}>Начинающий</span>
                             <span className="px-2 py-0.5 rounded-sm bg-muted font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground">Видео</span>
                           </div>
                           <h4 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] uppercase tracking-[-0.005em]">Маркетинг для стартапов</h4>
                           <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase tracking-[0.08em] text-muted-foreground">Иван Петров · 12 уроков</span>
                           <p className="text-[length:var(--text-14)] text-muted-foreground leading-[1.5] line-clamp-2">Практический курс по привлечению первых клиентов без большого бюджета.</p>
                           <div className="flex items-center gap-1">
-                            <span className="text-[#FFCC00] text-[length:var(--text-14)]">★</span>
+                            <span className="text-[var(--rm-yellow-100)] text-[length:var(--text-14)]">★</span>
                             <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] text-muted-foreground">4.8 (234)</span>
                           </div>
                         </div>
@@ -2500,7 +2502,7 @@ export default function DesignSystemPage() {
                       </div>
                       <p className="text-[length:var(--text-14)] text-muted-foreground leading-[1.5] line-clamp-2">Синхронизирует кейсы с базой знаний автоматически.</p>
                       <span className="w-fit px-1.5 py-0.5 rounded-sm font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em]"
-                        style={{backgroundColor:"rgba(74,86,223,0.15)",color:"#4A56DF"}}>Webhook</span>
+                        style={{backgroundColor:"var(--rm-blue-900)",color:"var(--rm-blue-100)"}}>Webhook</span>
                       <span className="inline-flex items-center gap-1 font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mt-auto group/cta">
                         Подключить <ArrowRight size={12} className="transition-transform group-hover/cta:translate-x-1"/>
                       </span>
@@ -2521,7 +2523,7 @@ export default function DesignSystemPage() {
                       </div>
                       <p className="text-[length:var(--text-16)] text-muted-foreground leading-[1.618] line-clamp-2">Синхронизирует кейсы с вашей базой знаний Notion автоматически через n8n.</p>
                       <span className="w-fit px-2 py-0.5 rounded-sm font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em]"
-                        style={{backgroundColor:"rgba(74,86,223,0.15)",color:"#4A56DF"}}>Webhook</span>
+                        style={{backgroundColor:"var(--rm-blue-900)",color:"var(--rm-blue-100)"}}>Webhook</span>
                       <span className="inline-flex items-center gap-1.5 font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase tracking-[0.08em] text-muted-foreground mt-auto group/cta">
                         Подключить <ArrowRight size={14} className="transition-transform group-hover/cta:translate-x-1"/>
                       </span>
@@ -2543,7 +2545,7 @@ export default function DesignSystemPage() {
                       <p className="flex-1 text-[length:var(--text-16)] text-muted-foreground leading-[1.618] line-clamp-2">Синхронизирует кейсы с вашей базой знаний Notion автоматически через n8n вебхуки.</p>
                       <div className="flex items-center gap-4 flex-shrink-0">
                         <span className="px-2 py-0.5 rounded-sm font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em]"
-                          style={{backgroundColor:"rgba(74,86,223,0.15)",color:"#4A56DF"}}>Webhook</span>
+                          style={{backgroundColor:"var(--rm-blue-900)",color:"var(--rm-blue-100)"}}>Webhook</span>
                         <span className="inline-flex items-center gap-1.5 font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase tracking-[0.08em] text-muted-foreground group/cta">
                           Подключить <ArrowRight size={14} className="transition-transform group-hover/cta:translate-x-1"/>
                         </span>
@@ -2562,15 +2564,15 @@ export default function DesignSystemPage() {
                   {[1,2,3].map(i => (
                     <div key={i} className="flex flex-col gap-3 p-5 rounded-sm border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.12] cursor-pointer">
                       <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-                        style={{backgroundColor:"rgba(255,204,0,0.15)"}}>
-                        <Gem size={18} className="text-[#FFCC00]"/>
+                        style={{backgroundColor:"var(--rm-yellow-900)"}}>
+                        <Gem size={18} className="text-[var(--rm-yellow-100)]"/>
                       </div>
                       <div>
                         <h4 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] uppercase tracking-[-0.005em]">Реферальная</h4>
                         <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground">До 30% · Пожизненно</span>
                       </div>
                       <div className="pt-2 border-t border-border">
-                        <span className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-25)] uppercase tracking-tight leading-none text-[#FFCC00]">30%</span>
+                        <span className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-25)] uppercase tracking-tight leading-none text-[var(--rm-yellow-100)]">30%</span>
                       </div>
                       <button className="h-7 px-3 rounded-sm bg-primary text-primary-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] w-full mt-auto">
                         Стать партнёром
@@ -2584,8 +2586,8 @@ export default function DesignSystemPage() {
                   {[1,2].map(i => (
                     <div key={i} className="flex flex-col gap-4 p-6 rounded-sm border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.12] cursor-pointer">
                       <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
-                        style={{backgroundColor:"rgba(255,204,0,0.15)"}}>
-                        <Gem size={22} className="text-[#FFCC00]"/>
+                        style={{backgroundColor:"var(--rm-yellow-900)"}}>
+                        <Gem size={22} className="text-[var(--rm-yellow-100)]"/>
                       </div>
                       <div>
                         <h4 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] uppercase tracking-[-0.005em]">Реферальная программа</h4>
@@ -2594,7 +2596,7 @@ export default function DesignSystemPage() {
                       <p className="text-[length:var(--text-16)] text-muted-foreground leading-[1.618]">Приглашайте клиентов и получайте процент от каждой их оплаты навсегда.</p>
                       <div className="flex flex-col gap-0.5 pt-3 border-t border-border">
                         <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground">Комиссия</span>
-                        <span className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-25)] uppercase tracking-tight leading-none text-[#FFCC00]">30%</span>
+                        <span className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-25)] uppercase tracking-tight leading-none text-[var(--rm-yellow-100)]">30%</span>
                       </div>
                       <button className="h-8 px-3 rounded-smpx] uppercase tracking-[0.08em] w-full mt-auto">
                         Стать партнёром
@@ -2608,8 +2610,8 @@ export default function DesignSystemPage() {
                   {[1,2].map(i => (
                     <div key={i} className="flex items-center gap-6 p-6 rounded-sm border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.12] cursor-pointer">
                       <div className="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0"
-                        style={{backgroundColor:"rgba(255,204,0,0.15)"}}>
-                        <Gem size={24} className="text-[#FFCC00]"/>
+                        style={{backgroundColor:"var(--rm-yellow-900)"}}>
+                        <Gem size={24} className="text-[var(--rm-yellow-100)]"/>
                       </div>
                       <div className="flex flex-col gap-0.5 w-48 flex-shrink-0">
                         <h4 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] uppercase tracking-[-0.005em]">Реферальная программа</h4>
@@ -2618,7 +2620,7 @@ export default function DesignSystemPage() {
                       <p className="flex-1 text-[length:var(--text-16)] text-muted-foreground leading-[1.618]">Приглашайте клиентов и получайте процент от каждой их оплаты навсегда. Без ограничений по времени.</p>
                       <div className="flex flex-col items-end gap-1 flex-shrink-0">
                         <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground">Комиссия</span>
-                        <span className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-31)] uppercase tracking-tight leading-none text-[#FFCC00]">30%</span>
+                        <span className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-31)] uppercase tracking-tight leading-none text-[var(--rm-yellow-100)]">30%</span>
                       </div>
                       <button className="h-9 px-5 rounded-smpx] uppercase tracking-[0.08em] flex-shrink-0">
                         Стать партнёром
@@ -2793,10 +2795,10 @@ export default function DesignSystemPage() {
 
               <AnimDemoCard label="Button hover" desc="Primary button: hover меняет цвет. 100ms ease-standard.">
                 <button
-                  className="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-md bg-[#FFCC00] text-[#121212] font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase tracking-[0.08em] cursor-pointer select-none"
+                  className="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-md bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase tracking-[0.08em] cursor-pointer select-none"
                   style={{ transition: "background-color 100ms cubic-bezier(0.4,0,0.2,1)" }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#FFE040" }}
-                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "#FFCC00" }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--rm-yellow-300)" }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "var(--rm-yellow-100)" }}
                 >
                   Hover me
                 </button>
@@ -2819,7 +2821,7 @@ export default function DesignSystemPage() {
                   placeholder="Кликни сюда..."
                   className="w-full h-10 px-3 rounded-md border bg-background text-foreground text-[length:var(--text-14)] outline-none"
                   style={{ borderColor: "var(--border)", transition: "border-color 200ms cubic-bezier(0.4,0,0.2,1)" }}
-                  onFocus={(e) => { e.currentTarget.style.borderColor = "#FFCC00" }}
+                  onFocus={(e) => { e.currentTarget.style.borderColor = "var(--rm-yellow-100)" }}
                   onBlur={(e) => { e.currentTarget.style.borderColor = "var(--border)" }}
                 />
               </AnimDemoCard>
@@ -2828,12 +2830,12 @@ export default function DesignSystemPage() {
                 <div
                   className="w-full p-4 rounded-md border bg-card cursor-pointer"
                   style={{ borderColor: "var(--border)", transition: "border-color 200ms cubic-bezier(0.34,1.56,0.64,1)" }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = "#A172F8" }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = "var(--rm-violet-100)" }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = "var(--border)" }}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-[#A172F8]/20 flex items-center justify-center">
-                      <Sparkles className="w-4 h-4 text-[#A172F8]" />
+                    <div className="w-8 h-8 rounded-full bg-[var(--rm-violet-100)]/20 flex items-center justify-center">
+                      <Sparkles className="w-4 h-4 text-[var(--rm-violet-100)]" />
                     </div>
                     <div>
                       <p className="text-[length:var(--text-14)] font-medium">AI-агент</p>
@@ -2882,7 +2884,7 @@ export default function DesignSystemPage() {
                   <p className="font-medium mb-2">Диалог</p>
                   <p className="text-muted-foreground text-[length:var(--text-12)] mb-3">Вы уверены в этом действии?</p>
                   <div className="flex gap-2">
-                    <span className="px-3 py-1 rounded bg-[#FFCC00] text-[#121212] text-[length:var(--text-12)] font-medium">Да</span>
+                    <span className="px-3 py-1 rounded bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] text-[length:var(--text-12)] font-medium">Да</span>
                     <span className="px-3 py-1 rounded border border-border text-[length:var(--text-12)] text-muted-foreground">Нет</span>
                   </div>
                 </div>
@@ -2923,8 +2925,8 @@ export default function DesignSystemPage() {
               </AnimDemoCard>
               <AnimDemoCard label="Typing indicator" desc="Три точки с stagger 0.2s. Показывает, что агент печатает ответ.">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[#A172F8]/20 flex items-center justify-center shrink-0">
-                    <Sparkles className="w-3.5 h-3.5 text-[#A172F8]" />
+                  <div className="w-8 h-8 rounded-full bg-[var(--rm-violet-100)]/20 flex items-center justify-center shrink-0">
+                    <Sparkles className="w-3.5 h-3.5 text-[var(--rm-violet-100)]" />
                   </div>
                   <div className="px-4 py-2.5 rounded-xl rounded-tl-none bg-muted flex gap-1.5 items-center">
                     {[0, 1, 2].map((i) => (
@@ -3174,7 +3176,7 @@ export default function DesignSystemPage() {
             </h2>
             <div className="space-y-4">
               <div className="flex gap-4 p-4 rounded-md border border-border">
-                <Badge className="bg-[var(--rm-yellow-100)] text-[#121212] text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] hover:bg-[var(--rm-yellow-100)] shrink-0 h-5">
+                <Badge className="bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] hover:bg-[var(--rm-yellow-100)] shrink-0 h-5">
                   v{DS_VERSION}
                 </Badge>
                 <div>
