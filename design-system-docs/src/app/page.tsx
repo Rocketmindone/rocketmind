@@ -16,6 +16,7 @@ import {
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
+import { GridGuides } from "@/components/ui/guide-grid"
 
 const DS_VERSION = "1.2.0"
 
@@ -1737,6 +1738,111 @@ export default function DesignSystemPage() {
             </div>
             <p className="text-[length:var(--text-14)] text-muted-foreground">
               Золотое сечение 38/62 — для sidebar/content, text/visual в hero-блоках.
+            </p>
+
+            <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4 mt-10">
+              Сетка как визуальный стиль
+            </h3>
+            <p className="text-[length:var(--text-14)] text-muted-foreground mb-6 max-w-[640px]">
+              Сетка — часть дизайн-кода. Направляющие линии между колонками — не декор, а материализация структуры.
+              Реальные 1px CSS-колонки задают ритм и видимый каркас. <code className="bg-muted px-1.5 py-0.5 rounded text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)]">guideVisible</code> управляет видимостью без изменения раскладки.
+            </p>
+
+            {/* Механика: три состояния */}
+            <p className="text-[length:var(--text-12)] font-medium text-muted-foreground mb-3">Механика: от пустой сетки к контенту</p>
+            <p className="text-[length:var(--text-12)] text-muted-foreground mb-4">
+              Принцип: вместо CSS gap — реальные 1px CSS-колонки.
+              {" "}<code className="bg-muted px-1 rounded font-[family-name:var(--font-mono-family)]">cols=4</code> →
+              {" "}template = <code className="bg-muted px-1 rounded font-[family-name:var(--font-mono-family)]">&quot;1fr 1px 1fr 1px 1fr 1px 1fr&quot;</code>
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+              {/* 1: только направляющие */}
+              <div className="space-y-2">
+                <p className="text-[length:var(--text-12)] font-medium">1. Направляющие без контента</p>
+                <div className="border rounded-[var(--radius-lg)]" style={{ minHeight: 120 }}>
+                  <GridGuides cols={4} guideVisible={true} cellPadding={16} rowGap={0}>
+                    {Array.from({ length: 4 }, (_, i) => (
+                      <div key={i} style={{ height: 88 }} />
+                    ))}
+                  </GridGuides>
+                </div>
+              </div>
+
+              {/* 2: контент, guide видны */}
+              <div className="space-y-2">
+                <p className="text-[length:var(--text-12)] font-medium">2. С контентом, направляющие видны</p>
+                <div className="border rounded-[var(--radius-lg)]">
+                  <GridGuides cols={4} guideVisible={true} cellPadding={8} rowGap={0}>
+                    {["AI", "Авто", "Быстро", "Точно"].map((label) => (
+                      <Card key={label} size="sm">
+                        <CardHeader>
+                          <Badge>{label}</Badge>
+                          <CardTitle>Функция</CardTitle>
+                        </CardHeader>
+                      </Card>
+                    ))}
+                  </GridGuides>
+                </div>
+              </div>
+
+              {/* 3: контент, guide скрыты */}
+              <div className="space-y-2">
+                <p className="text-[length:var(--text-12)] font-medium">3. С контентом, направляющие скрыты</p>
+                <div className="border rounded-[var(--radius-lg)]">
+                  <GridGuides cols={4} guideVisible={false} cellPadding={8} rowGap={0}>
+                    {["AI", "Авто", "Быстро", "Точно"].map((label) => (
+                      <Card key={label} size="sm">
+                        <CardHeader>
+                          <Badge>{label}</Badge>
+                          <CardTitle>Функция</CardTitle>
+                        </CardHeader>
+                      </Card>
+                    ))}
+                  </GridGuides>
+                </div>
+              </div>
+            </div>
+
+            {/* Два режима */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+              <div className="space-y-2 bg-muted/30 rounded-[var(--radius-lg)] p-4">
+                <Badge variant="default">Лендинг / маркетинг</Badge>
+                <p className="text-[length:var(--text-14)] font-medium">guideVisible = true</p>
+                <p className="text-[length:var(--text-12)] text-muted-foreground">
+                  Направляющие видны как часть визуального языка. Структура читается через линии.
+                </p>
+              </div>
+              <div className="space-y-2 bg-muted/30 rounded-[var(--radius-lg)] p-4">
+                <Badge variant="secondary">SaaS-интерфейс</Badge>
+                <p className="text-[length:var(--text-14)] font-medium">guideVisible = false</p>
+                <p className="text-[length:var(--text-12)] text-muted-foreground">
+                  Те же 1px-колонки, но прозрачны. Раскладка идентична — меняется только вид.
+                </p>
+              </div>
+            </div>
+
+            {/* Пример: 3 колонки с направляющими */}
+            <p className="text-[length:var(--text-12)] font-medium text-muted-foreground mb-3">Пример: 3 колонки с направляющими</p>
+            <div className="border rounded-[var(--radius-xl)] mb-2">
+              <GridGuides cols={3} guideVisible={true} cellPadding={12} rowGap={0}>
+                {[
+                  { badge: "AI", title: "Анализ кейса", desc: "Агент обрабатывает документы и формирует сводку." },
+                  { badge: "Авто", title: "Классификация", desc: "Определяет тип дела и маршрутизирует автоматически." },
+                  { badge: "Быстро", title: "Результат за секунды", desc: "Формирует ответ и ссылку на оплату." },
+                ].map((c) => (
+                  <Card key={c.title}>
+                    <CardHeader>
+                      <Badge>{c.badge}</Badge>
+                      <CardTitle>{c.title}</CardTitle>
+                      <p className="text-[length:var(--text-14)] text-muted-foreground">{c.desc}</p>
+                    </CardHeader>
+                  </Card>
+                ))}
+              </GridGuides>
+            </div>
+            <p className="text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)]">
+              GridGuides cols=3 guideVisible=true cellPadding=12
             </p>
           </Section>
 
