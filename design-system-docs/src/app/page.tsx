@@ -108,7 +108,7 @@ function FgSubtleCard({ token }: { token: string }) {
   return (
     <div
       ref={ref}
-      className="rounded-md border border-border/60 px-3 py-2 flex items-center justify-between cursor-pointer"
+      className="px-3 py-2 flex items-center justify-between cursor-pointer"
       style={{ backgroundColor: `var(--rm-${token}-900)`, color: `var(--rm-${token}-fg-subtle)` }}
       onClick={() => {
         if (!ref.current) return
@@ -143,6 +143,24 @@ const sections = [
   { id: "tooltips", label: "Тултипы" },
   { id: "dot-grid", label: "Точечная сетка" },
 ]
+
+function useActiveSection() {
+  const [activeId, setActiveId] = useState(sections[0].id)
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) if (e.isIntersecting) setActiveId(e.target.id)
+      },
+      { rootMargin: "-20% 0px -70% 0px" }
+    )
+    sections.forEach((s) => {
+      const el = document.getElementById(s.id)
+      if (el) observer.observe(el)
+    })
+    return () => observer.disconnect()
+  }, [])
+  return activeId
+}
 
 /* ───────── MASCOT SECTION ───────── */
 const MASCOTS: Array<{
@@ -748,7 +766,7 @@ function EasingDemo({ token, curve, desc }: { token: string; curve: string; desc
   }
 
   return (
-    <div className="p-4 rounded-md border border-border bg-card">
+    <div className="p-4 bg-card">
       <div className="flex items-start justify-between mb-3 gap-2">
         <div>
           <code className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] text-foreground bg-muted px-1.5 py-0.5 rounded">{token}</code>
@@ -845,6 +863,7 @@ function LinkCTADemo() {
 /* ═══════════════════════════════════ MAIN PAGE ═══════════════════════════════════ */
 export default function DesignSystemPage() {
   const [mobileNav, setMobileNav] = useState(false)
+  const activeId = useActiveSection()
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -901,18 +920,25 @@ export default function DesignSystemPage() {
 
       <div className="max-w-[1280px] mx-auto flex">
         {/* ───── SIDEBAR NAV ───── */}
-        <aside className="hidden md:block w-[220px] shrink-0 sticky top-14 self-start h-[calc(100vh-56px)] overflow-y-auto py-8 pl-10 pr-4">
-          <nav className="space-y-1">
-            {sections.map((s) => (
-              <a
-                key={s.id}
-                href={`#${s.id}`}
-                className="block py-1.5 text-[length:var(--text-12)] text-muted-foreground hover:text-foreground transition-colors
-                           font-[family-name:var(--font-mono-family)] uppercase tracking-wider"
-              >
-                {s.label}
-              </a>
-            ))}
+        <aside className="hidden md:block w-[220px] shrink-0 sticky top-14 self-start h-[calc(100vh-56px)] overflow-y-auto py-8 pl-10 pr-0 border-r border-border">
+          <nav className="space-y-0.5">
+            {sections.map((s) => {
+              const isActive = activeId === s.id
+              return (
+                <a
+                  key={s.id}
+                  href={`#${s.id}`}
+                  className={`block py-1.5 pr-4 text-[length:var(--text-12)] transition-colors
+                             font-[family-name:var(--font-mono-family)] uppercase tracking-wider
+                             ${isActive
+                               ? "text-foreground font-medium border-l-2 border-[var(--rm-yellow-100)] pl-3"
+                               : "text-muted-foreground hover:text-foreground pl-[14px]"
+                             }`}
+                >
+                  {s.label}
+                </a>
+              )
+            })}
           </nav>
 
           <Separator className="my-6" />
@@ -1046,7 +1072,7 @@ export default function DesignSystemPage() {
             <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] uppercase tracking-[-0.01em] mb-2">
               Фоны
             </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-3">
+            <div className="border border-border rounded-lg overflow-hidden grid grid-cols-2 sm:grid-cols-4 mb-3">
               {[
                 { name: "Background 1", var: "--background",    token: "--background", lhex: "#FAFAFA", dhex: "#121212",
                   note: "Основной фон страницы. Используй по умолчанию — особенно когда поверх кладёшь цвет." },
@@ -1056,10 +1082,10 @@ export default function DesignSystemPage() {
                   note: "Фон неактивных элементов, hover-состояний, sidebar-секций." },
                 { name: "Popover",      var: "--popover",       token: "--popover",    lhex: "#FFFFFF", dhex: "#1A1A1A",
                   note: "Фон выпадающих меню, тултипов, модальных окон." },
-              ].map((c) => (
-                <div key={c.token} className="flex flex-col gap-2">
+              ].map((c, i) => (
+                <div key={c.token} className={`flex flex-col gap-2 p-3 ${i < 3 ? "border-r border-border" : ""} ${i < 2 ? "sm:border-b-0 border-b border-border" : ""}`}>
                   <ColorHexBlock
-                    className="w-full h-16 rounded-md border border-border"
+                    className="w-full h-16 rounded-sm"
                     style={{ backgroundColor: `var(${c.var})` }}
                   />
                   <div>
@@ -1083,29 +1109,32 @@ export default function DesignSystemPage() {
             <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] uppercase tracking-[-0.01em] mb-2">
               Серая шкала
             </h3>
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-3 mb-3">
-              {[
-                { name: "Gray 1",  var: "--rm-gray-1",  role: "Page bg",        lhex: "#FAFAFA", dhex: "#121212" },
-                { name: "Gray 2",  var: "--rm-gray-2",  role: "Subtle surface", lhex: "#F5F5F5", dhex: "#1A1A1A" },
-                { name: "Gray 3",  var: "--rm-gray-3",  role: "Hover bg",       lhex: "#EBEBEB", dhex: "#242424" },
-                { name: "Gray 4",  var: "--rm-gray-4",  role: "Default border", lhex: "#CBCBCB", dhex: "#404040" },
-                { name: "Gray 5",  var: "--rm-gray-5",  role: "Hover border",   lhex: "#A3A3A3", dhex: "#5C5C5C" },
-                { name: "Gray 6",  var: "--rm-gray-6",  role: "2nd text",       lhex: "#666666", dhex: "#939393" },
-                { name: "Gray fg", var: "--rm-gray-fg", role: "Primary text",   lhex: "#2D2D2D", dhex: "#F0F0F0" },
-              ].map((c) => (
-                <div key={c.var} className="flex flex-col gap-1.5">
-                  <ColorHexBlock
-                    className="w-full h-10 rounded-md border border-border"
-                    style={{ backgroundColor: `var(${c.var})` }}
-                  />
-                  <p className="text-[length:var(--text-12)] font-medium font-[family-name:var(--font-mono-family)]">{c.name}</p>
-                  <div className="flex items-center gap-0.5">
-                    <p className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)] flex-1 truncate">{c.var}</p>
-                    <CopyButton value={c.var} label={`Токен: ${c.var}`} />
+            <div className="border border-border rounded-lg overflow-hidden grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 mb-3">
+              {(() => {
+                const grays = [
+                  { name: "Gray 1",  var: "--rm-gray-1",  role: "Page bg",        lhex: "#FAFAFA", dhex: "#121212" },
+                  { name: "Gray 2",  var: "--rm-gray-2",  role: "Subtle surface", lhex: "#F5F5F5", dhex: "#1A1A1A" },
+                  { name: "Gray 3",  var: "--rm-gray-3",  role: "Hover bg",       lhex: "#EBEBEB", dhex: "#242424" },
+                  { name: "Gray 4",  var: "--rm-gray-4",  role: "Default border", lhex: "#CBCBCB", dhex: "#404040" },
+                  { name: "Gray 5",  var: "--rm-gray-5",  role: "Hover border",   lhex: "#A3A3A3", dhex: "#5C5C5C" },
+                  { name: "Gray 6",  var: "--rm-gray-6",  role: "2nd text",       lhex: "#666666", dhex: "#939393" },
+                  { name: "Gray fg", var: "--rm-gray-fg", role: "Primary text",   lhex: "#2D2D2D", dhex: "#F0F0F0" },
+                ]
+                return grays.map((c, i) => (
+                  <div key={c.var} className={`flex flex-col gap-1.5 p-3 ${i < grays.length - 1 ? "border-r border-border" : ""}`}>
+                    <ColorHexBlock
+                      className="w-full h-10 rounded-sm"
+                      style={{ backgroundColor: `var(${c.var})` }}
+                    />
+                    <p className="text-[length:var(--text-12)] font-medium font-[family-name:var(--font-mono-family)]">{c.name}</p>
+                    <div className="flex items-center gap-0.5">
+                      <p className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)] flex-1 truncate">{c.var}</p>
+                      <CopyButton value={c.var} label={`Токен: ${c.var}`} />
+                    </div>
+                    <p className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">{c.role}</p>
                   </div>
-                  <p className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">{c.role}</p>
-                </div>
-              ))}
+                ))
+              })()}
             </div>
             <div className="rounded-md border border-border bg-muted/40 px-4 py-3 text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)] mb-10 leading-relaxed">
               1–3: фоны компонентов. 4–5: границы. 6: вторичный текст. fg: основной текст.
@@ -1121,19 +1150,22 @@ export default function DesignSystemPage() {
             </p>
 
             {/* Scale legend */}
-            <div className="grid grid-cols-5 gap-2 mb-4 text-[10px] font-[family-name:var(--font-mono-family)] text-muted-foreground">
-              {[
-                { level: "100", role: "Solid fill. Кнопка, filled badge, иконка-заливка." },
-                { level: "300", role: "Subtle border. Граница chip/тега в покое." },
-                { level: "500", role: "Component bg active. Нажатое состояние." },
-                { level: "700", role: "Component bg hover. Наведение на chip/row." },
-                { level: "900", role: "Subtle background. Badge ghost, строка таблицы, фон карточки." },
-              ].map((l) => (
-                <div key={l.level} className="border border-border rounded-md px-2 py-2">
-                  <p className="font-bold text-foreground mb-0.5">{l.level}</p>
-                  <p className="leading-snug">{l.role}</p>
-                </div>
-              ))}
+            <div className="border border-border rounded-lg overflow-hidden grid grid-cols-5 mb-4 text-[10px] font-[family-name:var(--font-mono-family)] text-muted-foreground">
+              {(() => {
+                const levels = [
+                  { level: "100", role: "Solid fill. Кнопка, filled badge, иконка-заливка." },
+                  { level: "300", role: "Subtle border. Граница chip/тега в покое." },
+                  { level: "500", role: "Component bg active. Нажатое состояние." },
+                  { level: "700", role: "Component bg hover. Наведение на chip/row." },
+                  { level: "900", role: "Subtle background. Badge ghost, строка таблицы, фон карточки." },
+                ]
+                return levels.map((l, i) => (
+                  <div key={l.level} className={`px-2 py-2 ${i < levels.length - 1 ? "border-r border-border" : ""}`}>
+                    <p className="font-bold text-foreground mb-0.5">{l.level}</p>
+                    <p className="leading-snug">{l.role}</p>
+                  </div>
+                ))
+              })()}
             </div>
             <div className="rounded-md border border-border bg-muted/40 px-4 py-3 text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)] mb-6 leading-relaxed">
               <span className="text-foreground font-medium">fg</span> — текст поверх solid-100 фона (WCAG AA).&nbsp;&nbsp;
@@ -1171,37 +1203,40 @@ export default function DesignSystemPage() {
               ].map((c) => (
                 <div key={c.token}>
                   <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-3">{c.name}</p>
-                  <div className="grid grid-cols-5 gap-2 mb-2">
-                    {(["100","300","500","700","900"] as const).map((level) => (
-                      <div key={level} className="flex flex-col gap-1.5">
-                        <ColorHexBlock
-                          className="w-full h-12 rounded-md border border-border/60"
-                          style={{ backgroundColor: `var(--rm-${c.token}-${level})` }}
-                          badgeColor={level === "100" ? `var(--rm-${c.token}-fg)` : `var(--rm-${c.token}-fg-subtle)`}
-                          badge={level}
-                        />
-                        <div className="flex items-center justify-between gap-0.5">
-                          <p className="text-[10px] font-[family-name:var(--font-mono-family)] text-muted-foreground truncate">--rm-{c.token}-{level}</p>
-                          <CopyButton value={`--rm-${c.token}-${level}`} label={`Токен: --rm-${c.token}-${level}`} />
+                  <div className="border border-border rounded-lg overflow-hidden">
+                    {/* 5-level row */}
+                    <div className="grid grid-cols-5">
+                      {(["100","300","500","700","900"] as const).map((level, li) => (
+                        <div key={level} className={`flex flex-col gap-1.5 p-2 ${li < 4 ? "border-r border-border" : ""}`}>
+                          <ColorHexBlock
+                            className="w-full h-12 rounded-sm"
+                            style={{ backgroundColor: `var(--rm-${c.token}-${level})` }}
+                            badgeColor={level === "100" ? `var(--rm-${c.token}-fg)` : `var(--rm-${c.token}-fg-subtle)`}
+                            badge={level}
+                          />
+                          <div className="flex items-center justify-between gap-0.5">
+                            <p className="text-[10px] font-[family-name:var(--font-mono-family)] text-muted-foreground truncate">--rm-{c.token}-{level}</p>
+                            <CopyButton value={`--rm-${c.token}-${level}`} label={`Токен: --rm-${c.token}-${level}`} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    {/* fg tokens row */}
+                    <div className="grid grid-cols-2 border-t border-border">
+                      {/* fg · текст на solid */}
+                      <div
+                        className="px-3 py-2 flex items-center justify-between border-r border-border"
+                        style={{ backgroundColor: `var(--rm-${c.token}-100)`, color: `var(--rm-${c.token}-fg)` }}
+                      >
+                        <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)]">fg · текст на solid</span>
+                        <div className="flex items-center gap-1">
+                          <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)]">--rm-{c.token}-fg</span>
+                          <CopyButton value={`--rm-${c.token}-fg`} label={`Токен: --rm-${c.token}-fg`} iconColor={`var(--rm-${c.token}-fg)`} />
                         </div>
                       </div>
-                    ))}
-                  </div>
-                  {/* fg tokens */}
-                  <div className="grid grid-cols-2 gap-2">
-                    {/* fg · текст на solid — без копирования hex (дублирует level-100), только токен */}
-                    <div
-                      className="rounded-md border border-border/60 px-3 py-2 flex items-center justify-between"
-                      style={{ backgroundColor: `var(--rm-${c.token}-100)`, color: `var(--rm-${c.token}-fg)` }}
-                    >
-                      <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)]">fg · текст на solid</span>
-                      <div className="flex items-center gap-1">
-                        <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)]">--rm-{c.token}-fg</span>
-                        <CopyButton value={`--rm-${c.token}-fg`} label={`Токен: --rm-${c.token}-fg`} iconColor={`var(--rm-${c.token}-fg)`} />
-                      </div>
+                      {/* fg-subtle */}
+                      <FgSubtleCard token={c.token} />
                     </div>
-                    {/* fg-subtle · текст на 900 — hex по клику + оверлей + токен */}
-                    <FgSubtleCard token={c.token} />
                   </div>
                 </div>
               ))}
@@ -1892,49 +1927,48 @@ export default function DesignSystemPage() {
               Технологичная архитектура. Сетка как каркас, линии как структура, свет как энергия.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[
-                {
-                  title: "Corner Brackets",
-                  desc: "L-образные маркеры в углах блоков. Точность чертежа.",
-                  cls: ".bracket",
-                },
-                {
-                  title: "Animated Grid Lines",
-                  desc: "Тонкие линии при загрузке hero. stroke-dashoffset, 0.8s, ease-out.",
-                  cls: ".grid-lines",
-                },
-                {
-                  title: "Bento Grid",
-                  desc: "Нерегулярная мозаика карточек разного размера. 4–6 ячеек.",
-                  cls: "grid-cols-[6fr_6fr] / [4fr_8fr]",
-                },
-                {
-                  title: "Connection Graph",
-                  desc: "Граф связей агентов. Центральный узел + лучи. SVG, не интерактивный.",
-                  cls: "SVG + absolute positioning",
-                },
-                {
-                  title: "Thin Border Cards",
-                  desc: "Карточки сливаются с фоном. Граница — намёк, не рамка.",
-                  cls: "border border-white/[0.06]",
-                },
-              ].map((item) => (
-                <Card key={item.title} className="border border-border">
-                  <CardHeader className="pb-2">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-[length:var(--text-16)] font-[family-name:var(--font-heading-family)] uppercase">{item.title}</CardTitle>
+            <div className="border border-border rounded-lg overflow-hidden grid grid-cols-1 md:grid-cols-2">
+              {(() => {
+                const items = [
+                  {
+                    title: "Corner Brackets",
+                    desc: "L-образные маркеры в углах блоков. Точность чертежа.",
+                    cls: ".bracket",
+                  },
+                  {
+                    title: "Animated Grid Lines",
+                    desc: "Тонкие линии при загрузке hero. stroke-dashoffset, 0.8s, ease-out.",
+                    cls: ".grid-lines",
+                  },
+                  {
+                    title: "Bento Grid",
+                    desc: "Нерегулярная мозаика карточек разного размера. 4–6 ячеек.",
+                    cls: "grid-cols-[6fr_6fr] / [4fr_8fr]",
+                  },
+                  {
+                    title: "Connection Graph",
+                    desc: "Граф связей агентов. Центральный узел + лучи. SVG, не интерактивный.",
+                    cls: "SVG + absolute positioning",
+                  },
+                  {
+                    title: "Thin Border Cards",
+                    desc: "Карточки сливаются с фоном. Граница — намёк, не рамка.",
+                    cls: "border border-white/[0.06]",
+                  },
+                ]
+                return items.map((item, i) => (
+                  <div key={item.title} className={`p-4 ${i % 2 === 0 ? "md:border-r border-border" : ""} ${i < items.length - 1 ? "border-b border-border" : ""} ${i === items.length - 2 ? "md:border-b-0" : ""}`}>
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-[length:var(--text-16)] font-[family-name:var(--font-heading-family)] font-medium uppercase">{item.title}</p>
                       <CopyButton value={item.cls} label={item.title} />
                     </div>
-                  </CardHeader>
-                  <CardContent>
                     <p className="text-[length:var(--text-14)] text-muted-foreground">{item.desc}</p>
                     <code className="block mt-2 text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] text-[var(--rm-yellow-100)] bg-muted/50 px-2 py-1 rounded">
                       {item.cls}
                     </code>
-                  </CardContent>
-                </Card>
-              ))}
+                  </div>
+                ))
+              })()}
             </div>
 
             {/* Corner Brackets Demo */}
@@ -2172,9 +2206,9 @@ export default function DesignSystemPage() {
                   <div className="mb-10">
                     <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-1">Базовая структура</p>
                     <p className="text-[length:var(--text-14)] text-muted-foreground mb-4">Фон, скругление, бордер. Без hover-реакции — для статичных блоков и отзывов.</p>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                      {["", "", "", ""].map((_, i) => (
-                        <div key={i} className="h-24 rounded-sm border border-border bg-card" />
+                    <div className="border border-border rounded-lg overflow-hidden grid grid-cols-2 sm:grid-cols-4">
+                      {[0, 1, 2, 3].map((i) => (
+                        <div key={i} className={`h-24 bg-card ${i < 3 ? "border-r border-border" : ""}`} />
                       ))}
                     </div>
                     <p className="mt-3 font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] text-muted-foreground">
@@ -2189,9 +2223,9 @@ export default function DesignSystemPage() {
                   <div className="mb-10">
                     <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-1">Soft hover</p>
                     <p className="text-[length:var(--text-14)] text-muted-foreground mb-4">Бордер меняется на <code className="px-1 py-0.5 bg-muted rounded-sm text-[length:var(--text-12)]">muted-foreground</code> — приглушённый, ненавязчивый. Используется в большинстве каталожных карточек.</p>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                      {["", "", "", ""].map((_, i) => (
-                        <div key={i} className="h-24 rounded-sm border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer" />
+                    <div className="border border-border rounded-lg overflow-hidden grid grid-cols-2 sm:grid-cols-4">
+                      {[0, 1, 2, 3].map((i) => (
+                        <div key={i} className={`h-24 bg-card transition-all duration-150 hover:bg-muted/50 cursor-pointer ${i < 3 ? "border-r border-border" : ""}`} />
                       ))}
                     </div>
                     <p className="mt-3 font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] text-muted-foreground">
@@ -2206,11 +2240,11 @@ export default function DesignSystemPage() {
                   <div className="mb-10">
                     <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-1">Yellow hover</p>
                     <p className="text-[length:var(--text-14)] text-muted-foreground mb-4">Жёлтое свечение бордера следует за курсором. Используется для CTA-карточек: партнёрка, выделенные офферы.</p>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                      {["", "", "", ""].map((_, i) => (
+                    <div className="border border-border rounded-lg overflow-hidden grid grid-cols-2 sm:grid-cols-4">
+                      {[0, 1, 2, 3].map((i) => (
                         <div
                           key={i}
-                          className="relative h-24 rounded-sm bg-card cursor-pointer transition-all duration-75 border border-border active:[border:2px_solid_var(--rm-yellow-100)]"
+                          className={`relative h-24 bg-card cursor-pointer transition-all duration-75 ${i < 3 ? "border-r border-border" : ""}`}
                         >
                           <GlowingEffect
                             spread={40}
@@ -2968,18 +3002,21 @@ export default function DesignSystemPage() {
             <p className="text-muted-foreground mb-6">
               Motion в Rocketmind — <strong>функциональный, не декоративный</strong>. Каждая анимация решает задачу: подтверждает действие, указывает направление, сообщает о смене состояния.
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
-              {[
-                { num: "01", title: "Минимализм", desc: "Анимировать только то, что несёт смысл. Без декора ради декора." },
-                { num: "02", title: "Скорость", desc: "100–300ms. Длинные анимации раздражают и замедляют восприятие." },
-                { num: "03", title: "Единообразие", desc: "Одни и те же easing-кривые и длительности по всей системе." },
-              ].map((p) => (
-                <div key={p.num} className="p-5 rounded-md border border-border bg-card">
-                  <div className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] text-muted-foreground mb-1">{p.num}</div>
-                  <div className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-16)] uppercase tracking-tight mb-2">{p.title}</div>
-                  <div className="text-[length:var(--text-14)] text-muted-foreground leading-relaxed">{p.desc}</div>
-                </div>
-              ))}
+            <div className="border border-border rounded-lg overflow-hidden grid grid-cols-1 sm:grid-cols-3 mb-10">
+              {(() => {
+                const principles = [
+                  { num: "01", title: "Минимализм", desc: "Анимировать только то, что несёт смысл. Без декора ради декора." },
+                  { num: "02", title: "Скорость", desc: "100–300ms. Длинные анимации раздражают и замедляют восприятие." },
+                  { num: "03", title: "Единообразие", desc: "Одни и те же easing-кривые и длительности по всей системе." },
+                ]
+                return principles.map((p, i) => (
+                  <div key={p.num} className={`p-5 bg-card ${i < principles.length - 1 ? "border-r border-border" : ""}`}>
+                    <div className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] text-muted-foreground mb-1">{p.num}</div>
+                    <div className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-16)] uppercase tracking-tight mb-2">{p.title}</div>
+                    <div className="text-[length:var(--text-14)] text-muted-foreground leading-relaxed">{p.desc}</div>
+                  </div>
+                ))
+              })()}
             </div>
 
             {/* 8.2 Timing */}
@@ -3005,11 +3042,11 @@ export default function DesignSystemPage() {
               8.3 Easing-кривые
             </h3>
             <p className="text-[length:var(--text-14)] text-muted-foreground mb-4">Нажми «Play», чтобы увидеть как шарик движется с данной кривой.</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
-              <EasingDemo token="--ease-standard"  curve="cubic-bezier(0.4, 0, 0.2, 1)"       desc="Hover, focus, active — большинство переходов" />
-              <EasingDemo token="--ease-enter"     curve="cubic-bezier(0, 0, 0.2, 1)"         desc="Появление элементов (модал, дропдаун, toast)" />
-              <EasingDemo token="--ease-exit"      curve="cubic-bezier(0.4, 0, 1, 1)"         desc="Исчезновение элементов (закрытие, скрытие)" />
-              <EasingDemo token="--ease-spring"    curve="cubic-bezier(0.34, 1.56, 0.64, 1)"  desc="Hover scale на карточках — небольшой перелёт" />
+            <div className="border border-border rounded-lg overflow-hidden grid grid-cols-1 sm:grid-cols-2 mb-10">
+              <div className="border-r sm:border-r border-b sm:border-b border-border"><EasingDemo token="--ease-standard" curve="cubic-bezier(0.4, 0, 0.2, 1)" desc="Hover, focus, active — большинство переходов" /></div>
+              <div className="border-b border-border"><EasingDemo token="--ease-enter" curve="cubic-bezier(0, 0, 0.2, 1)" desc="Появление элементов (модал, дропдаун, toast)" /></div>
+              <div className="sm:border-r border-border"><EasingDemo token="--ease-exit" curve="cubic-bezier(0.4, 0, 1, 1)" desc="Исчезновение элементов (закрытие, скрытие)" /></div>
+              <div><EasingDemo token="--ease-spring" curve="cubic-bezier(0.34, 1.56, 0.64, 1)" desc="Hover scale на карточках — небольшой перелёт" /></div>
             </div>
 
             {/* 8.4 Микроинтерактивы */}
