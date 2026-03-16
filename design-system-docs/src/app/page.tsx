@@ -1370,23 +1370,21 @@ export default function DesignSystemPage() {
                       </button>
                     )}
                   </div>
-                  {hasSubs && (
+                  {isOpen && hasSubs && (
                     <div
-                      className={`sidebar-subnav${isOpen ? " is-open" : ""}`}
+                      className="ml-3 pl-3 border-l border-border space-y-0.5 pb-1"
                       onMouseEnter={() => { if (isHoverOpen && !isClickOpen) startHover(s.id) }}
                       onMouseLeave={endHover}
                     >
-                      <div className="sidebar-subnav-inner ml-3 pl-3 border-l border-border space-y-0.5 pb-1">
-                        {s.subsections.map((sub) => (
-                          <a
-                            key={sub.id}
-                            href={`#${sub.id}`}
-                            className="block py-0.5 text-[length:var(--text-12)] text-muted-foreground hover:text-foreground transition-colors font-[family-name:var(--font-mono-family)] uppercase tracking-wider opacity-80"
-                          >
-                            {sub.label}
-                          </a>
-                        ))}
-                      </div>
+                      {s.subsections.map((sub) => (
+                        <a
+                          key={sub.id}
+                          href={`#${sub.id}`}
+                          className="block py-0.5 text-[length:var(--text-12)] text-muted-foreground hover:text-foreground transition-colors font-[family-name:var(--font-mono-family)] uppercase tracking-wider opacity-80"
+                        >
+                          {sub.label}
+                        </a>
+                      ))}
                     </div>
                   )}
                 </div>

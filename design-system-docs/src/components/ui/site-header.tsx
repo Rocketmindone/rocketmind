@@ -159,7 +159,7 @@ export function SiteHeader({ basePath = '', preview = false }: SiteHeaderProps) 
           <a
             href="#"
             aria-label="Rocketmind"
-            className="flex items-center rounded-sm px-1 hover:bg-accent transition-colors duration-150 mr-4"
+            className="flex items-center px-1 mr-4"
           >
             <img
               src={`${basePath}/text_logo_dark_background_en.svg`}
