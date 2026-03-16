@@ -1304,50 +1304,25 @@ export default function DesignSystemPage() {
             <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">
               Шрифты
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
-              {[
-                {
-                  family: "Roboto Condensed",
-                  role: "Заголовки (H1–H4)",
-                  example: "ЗАГОЛОВОК СТРАНИЦЫ",
-                  css: "font-family: 'Roboto Condensed', sans-serif",
-                  fontClass: "font-[family-name:var(--font-heading-family)] font-bold uppercase",
-                },
-                {
-                  family: "Roboto Mono",
-                  role: "Навигация, кнопки, код",
-                  example: "НАВИГАЦИЯ / КНОПКИ",
-                  css: "font-family: 'Roboto Mono', monospace",
-                  fontClass: "font-[family-name:var(--font-mono-family)] font-medium uppercase tracking-wider",
-                },
-                {
-                  family: "Roboto",
-                  role: "Основной текст, body",
-                  example: "Основной текст для описаний и контента страниц",
-                  css: "font-family: 'Roboto', sans-serif",
-                  fontClass: "",
-                },
-                {
-                  family: "Shantell Sans",
-                  role: "Акцентные подписи, стикеры",
-                  example: "Рукописная подпись агента",
-                  css: "font-family: 'Shantell Sans', cursive",
-                  fontClass: "font-[family-name:var(--font-accent-family)]",
-                },
-              ].map((f) => (
-                <Card key={f.family} className="border border-border">
-                  <CardHeader className="pb-2">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-[length:var(--text-16)]">{f.family}</CardTitle>
+            <div className="border border-border rounded-lg overflow-hidden grid grid-cols-1 md:grid-cols-2 mb-10">
+              {(() => {
+                const fonts = [
+                  { family: "Roboto Condensed", role: "Заголовки (H1–H4)", example: "ЗАГОЛОВОК СТРАНИЦЫ", css: "font-family: 'Roboto Condensed', sans-serif", fontClass: "font-[family-name:var(--font-heading-family)] font-bold uppercase" },
+                  { family: "Roboto Mono", role: "Навигация, кнопки, код", example: "НАВИГАЦИЯ / КНОПКИ", css: "font-family: 'Roboto Mono', monospace", fontClass: "font-[family-name:var(--font-mono-family)] font-medium uppercase tracking-wider" },
+                  { family: "Roboto", role: "Основной текст, body", example: "Основной текст для описаний и контента страниц", css: "font-family: 'Roboto', sans-serif", fontClass: "" },
+                  { family: "Shantell Sans", role: "Акцентные подписи, стикеры", example: "Рукописная подпись агента", css: "font-family: 'Shantell Sans', cursive", fontClass: "font-[family-name:var(--font-accent-family)]" },
+                ]
+                return fonts.map((f, i) => (
+                  <div key={f.family} className={`p-4 ${i % 2 === 0 ? "md:border-r border-border" : ""} ${i < 2 ? "border-b border-border" : ""}`}>
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-[length:var(--text-16)] font-medium">{f.family}</p>
                       <CopyButton value={f.css} label={f.family} />
                     </div>
-                    <p className="text-[length:var(--text-12)] text-muted-foreground">{f.role}</p>
-                  </CardHeader>
-                  <CardContent>
+                    <p className="text-[length:var(--text-12)] text-muted-foreground mb-3">{f.role}</p>
                     <p className={`text-[length:var(--text-19)] ${f.fontClass}`}>{f.example}</p>
-                  </CardContent>
-                </Card>
-              ))}
+                  </div>
+                ))
+              })()}
             </div>
 
             {/* 2.2 ТИПОГРАФИКА */}
@@ -1363,9 +1338,9 @@ export default function DesignSystemPage() {
 
               {/* SCALE */}
               <TabsContent value="scale">
-                <div className="space-y-2">
+                <div className="border border-border rounded-lg overflow-hidden">
                   {/* Header row */}
-                  <div className="flex items-center gap-4 px-4 pb-2 border-b border-border">
+                  <div className="flex items-center gap-4 px-4 py-2 border-b border-border bg-muted/40">
                     <span className="w-16 shrink-0" />
                     <span className="flex-1 text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)] uppercase tracking-wider">Пример</span>
                     <span className="text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)] hidden sm:flex items-center gap-1 shrink-0 w-28 justify-end">
@@ -1393,8 +1368,8 @@ export default function DesignSystemPage() {
                     { label: "Copy-16",      size: "16px", mobileSize: "16px", weight: "400", cls: "leading-[1.618]",                                                                                             tailwind: "text-[length:var(--text-16)]" },
                     { label: "Copy-14",      size: "14px", mobileSize: "14px", weight: "400", cls: "leading-[1.5] tracking-[0.01em]",                                                                             tailwind: "text-[length:var(--text-14)]" },
                     { label: "Copy-12",      size: "12px", mobileSize: "12px", weight: "400", cls: "leading-[1.4] tracking-[0.02em]",                                                                             tailwind: "text-[length:var(--text-12)]" },
-                  ].map((t) => (
-                    <div key={t.label} className="flex items-center gap-4 py-3 px-4 rounded-md border border-border hover:bg-accent/30 transition-colors group">
+                  ].map((t, i, arr) => (
+                    <div key={t.label} className={`flex items-center gap-4 py-3 px-4 hover:bg-muted/40 transition-colors group ${i < arr.length - 1 ? "border-b border-border" : ""}`}>
                       <Badge variant="secondary" className="w-16 justify-center text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] shrink-0">
                         {t.label}
                       </Badge>
