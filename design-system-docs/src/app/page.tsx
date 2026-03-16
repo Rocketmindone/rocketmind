@@ -103,31 +103,54 @@ function ColorHexBlock({
   )
 }
 
-/** Строка fg-subtle: hex по клику + кнопка копирования токена (без hex-оверлея) */
-function FgSubtleCard({ token }: { token: string }) {
-  const ref = useRef<HTMLDivElement>(null)
+
+/** Нижняя строка акцентной карточки: fg на 100-фоне (col-span-2) + fg-subtle (col-span-4) */
+function FgRow({ token }: { token: string }) {
+  const fgProbeRef = useRef<HTMLDivElement>(null)
+  const fgsProbeRef = useRef<HTMLDivElement>(null)
+  const [fgHex, setFgHex] = useState("")
+  const [fgsHex, setFgsHex] = useState("")
+
+  const readHexes = () => {
+    if (fgProbeRef.current) { const h = computeHex(fgProbeRef.current); if (h) setFgHex(h) }
+    if (fgsProbeRef.current) { const h = computeHex(fgsProbeRef.current); if (h) setFgsHex(h) }
+  }
+
+  useEffect(() => { readHexes() }, [])
 
   return (
-    <div
-      ref={ref}
-      className="px-3 py-2 flex items-center justify-between cursor-pointer"
-      style={{ backgroundColor: `var(--rm-${token}-900)`, color: `var(--rm-${token}-fg-subtle)` }}
-      onClick={() => {
-        if (!ref.current) return
-        const h = computeHex(ref.current)
-        if (!h) return
-        navigator.clipboard.writeText(h)
-        toast.success("Скопировано в буфер обмена", { description: `HEX: ${h}`, duration: 2000 })
-      }}
-    >
-      <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)]">fg-subtle · текст на 900</span>
-      <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
-        <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)]">--rm-{token}-fg-subtle</span>
-        <CopyButton value={`--rm-${token}-fg-subtle`} label={`Токен: --rm-${token}-fg-subtle`} iconColor={`var(--rm-${token}-fg-subtle)`} />
+    <div className="grid grid-cols-6 border-t border-border relative">
+      {/* Invisible probes to read fg/fg-subtle hex values */}
+      <div ref={fgProbeRef}  className="sr-only" style={{ backgroundColor: `var(--rm-${token}-fg)` }} />
+      <div ref={fgsProbeRef} className="sr-only" style={{ backgroundColor: `var(--rm-${token}-fg-subtle)` }} />
+      {/* fg cell */}
+      <div
+        className="col-span-2 px-3 py-2 flex items-center justify-between border-r border-border cursor-pointer"
+        style={{ backgroundColor: `var(--rm-${token}-100)`, color: `var(--rm-${token}-fg)` }}
+        onMouseEnter={readHexes}
+        onClick={() => { if (fgHex) { navigator.clipboard.writeText(fgHex); toast.success("Скопировано в буфер обмена", { description: `HEX: ${fgHex}`, duration: 2000 }) } }}
+      >
+        <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)]">fg · {fgHex}</span>
+        <div onClick={e => e.stopPropagation()}>
+          <CopyButton value={fgHex} label={`HEX: ${fgHex}`} iconColor={`var(--rm-${token}-fg)`} />
+        </div>
+      </div>
+      {/* fg-subtle cell */}
+      <div
+        className="col-span-4 px-3 py-2 flex items-center justify-between cursor-pointer"
+        style={{ backgroundColor: `var(--rm-${token}-900)`, color: `var(--rm-${token}-fg-subtle)` }}
+        onMouseEnter={readHexes}
+        onClick={() => { if (fgsHex) { navigator.clipboard.writeText(fgsHex); toast.success("Скопировано в буфер обмена", { description: `HEX: ${fgsHex}`, duration: 2000 }) } }}
+      >
+        <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)]">fg-subtle · {fgsHex}</span>
+        <div onClick={e => e.stopPropagation()}>
+          <CopyButton value={fgsHex} label={`HEX: ${fgsHex}`} iconColor={`var(--rm-${token}-fg-subtle)`} />
+        </div>
       </div>
     </div>
   )
 }
+
 const DS_DATE = "2026-03-12"
 const BASE_PATH = process.env.NODE_ENV === "production" ? "/rocketmind-design-system" : ""
 
@@ -1344,27 +1367,30 @@ export default function DesignSystemPage() {
             </p>
 
             {/* Scale legend */}
-            <div className="border border-border rounded-lg overflow-hidden grid grid-cols-5 mb-4 text-[10px] font-[family-name:var(--font-mono-family)] text-muted-foreground">
-              {(() => {
-                const levels = [
-                  { level: "100", role: "Solid fill. Кнопка, filled badge, иконка-заливка." },
-                  { level: "300", role: "Subtle border. Граница chip/тега в покое." },
-                  { level: "500", role: "Component bg active. Нажатое состояние." },
-                  { level: "700", role: "Component bg hover. Наведение на chip/row." },
-                  { level: "900", role: "Subtle background. Badge ghost, строка таблицы, фон карточки." },
-                ]
-                return levels.map((l, i) => (
-                  <div key={l.level} className={`px-2 py-2 ${i < levels.length - 1 ? "border-r border-border" : ""}`}>
-                    <p className="font-bold text-foreground mb-0.5">{l.level}</p>
-                    <p className="leading-snug">{l.role}</p>
-                  </div>
-                ))
-              })()}
-            </div>
-            <div className="rounded-md border border-border bg-muted/40 px-4 py-3 text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)] mb-6 leading-relaxed">
-              <span className="text-foreground font-medium">fg</span> — текст поверх solid-100 фона (WCAG AA).&nbsp;&nbsp;
-              <span className="text-foreground font-medium">fg-subtle</span> — текст поверх 900/700/500 фона (WCAG AA).
-              Никогда не используй уровень цвета одновременно как фон и как цвет текста поверх него.
+            <div className="border border-border rounded-lg overflow-hidden grid grid-cols-6 mb-6 text-[10px] font-[family-name:var(--font-mono-family)] text-muted-foreground">
+              {/* Level descriptions row */}
+              <div className="col-span-2 px-2 py-2 border-r border-border">
+                <p className="font-bold text-foreground mb-0.5">100</p>
+                <p className="leading-snug">Solid fill. Кнопка, filled badge, иконка-заливка.</p>
+              </div>
+              {[
+                { level: "300", role: "Subtle border. Граница chip/тега в покое." },
+                { level: "500", role: "Component bg active. Нажатое состояние." },
+                { level: "700", role: "Component bg hover. Наведение на chip/row." },
+                { level: "900", role: "Subtle background. Badge ghost, строка таблицы, фон карточки." },
+              ].map((l, i, arr) => (
+                <div key={l.level} className={`px-2 py-2 ${i < arr.length - 1 ? "border-r border-border" : ""}`}>
+                  <p className="font-bold text-foreground mb-0.5">{l.level}</p>
+                  <p className="leading-snug">{l.role}</p>
+                </div>
+              ))}
+              {/* FG footnote row */}
+              <div className="col-span-2 border-t border-border px-2 py-2 border-r">
+                <span className="font-bold text-foreground">fg</span> — текст поверх solid-100 фона (WCAG AA).
+              </div>
+              <div className="col-span-4 border-t border-border px-2 py-2">
+                <span className="font-bold text-foreground">fg-subtle</span> — текст поверх 300–900 фона (WCAG AA).
+              </div>
             </div>
 
             {/* Color scales */}
@@ -1398,10 +1424,10 @@ export default function DesignSystemPage() {
                 <div key={c.token}>
                   <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-3">{c.name}</p>
                   <div className="border border-border rounded-lg overflow-hidden">
-                    {/* 5-level row */}
-                    <div className="grid grid-cols-5">
+                    {/* 6-col row: 100 = col-span-2, 300–900 = col-span-1 each */}
+                    <div className="grid grid-cols-6">
                       {(["100","300","500","700","900"] as const).map((level, li) => (
-                        <div key={level} className={`flex flex-col gap-1.5 p-2 ${li < 4 ? "border-r border-border" : ""}`}>
+                        <div key={level} className={`${level === "100" ? "col-span-2" : ""} flex flex-col gap-1.5 p-2 ${li < 4 ? "border-r border-border" : ""}`}>
                           <ColorHexBlock
                             className="w-full h-12 rounded-sm"
                             style={{ backgroundColor: `var(--rm-${c.token}-${level})` }}
@@ -1415,22 +1441,8 @@ export default function DesignSystemPage() {
                         </div>
                       ))}
                     </div>
-                    {/* fg tokens row */}
-                    <div className="grid grid-cols-2 border-t border-border">
-                      {/* fg · текст на solid */}
-                      <div
-                        className="px-3 py-2 flex items-center justify-between border-r border-border"
-                        style={{ backgroundColor: `var(--rm-${c.token}-100)`, color: `var(--rm-${c.token}-fg)` }}
-                      >
-                        <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)]">fg · текст на solid</span>
-                        <div className="flex items-center gap-1">
-                          <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)]">--rm-{c.token}-fg</span>
-                          <CopyButton value={`--rm-${c.token}-fg`} label={`Токен: --rm-${c.token}-fg`} iconColor={`var(--rm-${c.token}-fg)`} />
-                        </div>
-                      </div>
-                      {/* fg-subtle */}
-                      <FgSubtleCard token={c.token} />
-                    </div>
+                    {/* fg / fg-subtle row */}
+                    <FgRow token={c.token} />
                   </div>
                 </div>
               ))}
