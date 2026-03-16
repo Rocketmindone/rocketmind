@@ -63,7 +63,6 @@
   --radius-4xl: 1.5rem;
 
   /* Rocketmind gray scale */
-  --color-rm-gray-1: var(--rm-gray-1);
   --color-rm-gray-2: var(--rm-gray-2);
   --color-rm-gray-3: var(--rm-gray-3);
   --color-rm-gray-4: var(--rm-gray-4);
@@ -170,16 +169,14 @@
   --text-81: 5.0625rem;    /* heading-81 · H1 hero */
 
   /* === Rocketmind Gray Scale (Light) ===
-   * 1 — Card / popover surface  (bg-card, bg-popover)
-   * 2 — Subtle surface          (bg-muted, bg-secondary)
-   * 3 — Component hover bg      (hover:bg-accent)
+   * 2 — Subtle surface          (bg-rm-gray-2)
+   * 3 — Component hover bg      (bg-rm-gray-3)
    * 4 — Default border          (border-border, border-input)
    * 5 — Hover/active border     (hover:border-*)
    * 6 — Secondary text          (text-muted-foreground)
    * fg — Primary text           (text-foreground)
   */
-  --rm-gray-1:  #FAFAFA;   /* card / popover surface */
-  --rm-gray-2:  #F5F5F5;   /* muted / secondary surface */
+  --rm-gray-2:  #F5F5F5;   /* subtle surface */
   --rm-gray-3:  #EBEBEB;   /* hover bg */
   --rm-gray-4:  #CBCBCB;   /* default border */
   --rm-gray-5:  #A3A3A3;   /* hover border */
@@ -194,7 +191,7 @@
   --rm-gray-alpha-800: rgba(0, 0, 0, 0.70);   /* heavy overlay */
 
   /* === Rocketmind Neutrals (Light) — mapped to gray scale === */
-  --background: var(--rm-gray-1);
+  --background: #FAFAFA;
   --foreground: var(--rm-gray-fg);
   --muted-foreground: var(--rm-gray-6);
   --border: var(--rm-gray-4);
@@ -373,15 +370,13 @@
 
 .dark {
   /* === Rocketmind Gray Scale (Dark) ===
-   * 1 — Card / popover surface  (bg-card, bg-popover)
-   * 2 — Subtle surface          (bg-muted, bg-secondary)
-   * 3 — Component hover bg      (hover:bg-accent)
+   * 2 — Subtle surface          (bg-rm-gray-2)
+   * 3 — Component hover bg      (bg-rm-gray-3)
    * 4 — Default border          (border-border, border-input)
    * 5 — Hover/active border     (hover:border-*)
    * 6 — Secondary text          (text-muted-foreground)
    * fg — Primary text           (text-foreground)
   */
-  --rm-gray-1:  #121212;
   --rm-gray-2:  #1A1A1A;
   --rm-gray-3:  #242424;
   --rm-gray-4:  #404040;
@@ -403,9 +398,9 @@
   --border: var(--rm-gray-4);
   --input: var(--rm-gray-4);
   --ring: #FFCC00;
-  --card: var(--rm-gray-1);
+  --card: #121212;
   --card-foreground: var(--rm-gray-fg);
-  --popover: var(--rm-gray-1);
+  --popover: #121212;
   --popover-foreground: var(--rm-gray-fg);
   /* shadcn internals — в коде проекта используй --rm-gray-2/3 напрямую */
   --muted: var(--rm-gray-2);
@@ -428,70 +423,70 @@
   --rm-yellow-500: #7A6200;
   --rm-yellow-700: #4A3C00;
   --rm-yellow-900: #3D3300;
-  --rm-yellow-fg: #0A0800;
+  --rm-yellow-fg: #3D2E00;
   --rm-yellow-fg-subtle: #FFE566;
 
   /* Violet */
-  --rm-violet-100: #B48DFA;
+  --rm-violet-100: #A172F8;
   --rm-violet-300: #8A5FF5;
   --rm-violet-500: #5A3D99;
   --rm-violet-700: #2E1F66;
   --rm-violet-900: #20143D;
-  --rm-violet-fg: #0A050F;
+  --rm-violet-fg: #FFFFFF;
   --rm-violet-fg-subtle: #DCC8FF;
 
   /* Terracotta */
-  --rm-terracotta-100: #FF8A5C;
+  --rm-terracotta-100: #FE733A;
   --rm-terracotta-300: #CC5522;
   --rm-terracotta-500: #7A2E10;
   --rm-terracotta-700: #3D1507;
   --rm-terracotta-900: #2A0F05;
-  --rm-terracotta-fg: #0A0300;
+  --rm-terracotta-fg: #FFFFFF;
   --rm-terracotta-fg-subtle: #FFD6AD;
 
   /* Sky */
-  --rm-sky-100: #7AD6EF;
+  --rm-sky-100: #56CAEA;
   --rm-sky-300: #3AAACE;
   --rm-sky-500: #1A5F72;
   --rm-sky-700: #0A2D38;
   --rm-sky-900: #051A20;
-  --rm-sky-fg: #020D10;
+  --rm-sky-fg: #FFFFFF;
   --rm-sky-fg-subtle: #C3ECF7;
 
   /* Pink */
-  --rm-pink-100: #FF7EC5;
+  --rm-pink-100: #FF54AC;
   --rm-pink-300: #CC3D88;
   --rm-pink-500: #7A1A55;
   --rm-pink-700: #3D0D2A;
   --rm-pink-900: #25061A;
-  --rm-pink-fg: #0A0208;
+  --rm-pink-fg: #FFFFFF;
   --rm-pink-fg-subtle: #FFB8D9;
 
   /* Blue */
-  --rm-blue-100: #7A84F0;
+  --rm-blue-100: #4A56DF;
   --rm-blue-300: #3D4ACC;
   --rm-blue-500: #1E2870;
   --rm-blue-700: #0D1238;
   --rm-blue-900: #060A24;
-  --rm-blue-fg: #020310;
+  --rm-blue-fg: #FFFFFF;
   --rm-blue-fg-subtle: #BFC4F3;
 
   /* Red */
-  --rm-red-100: #F47370;
+  --rm-red-100: #ED4843;
   --rm-red-300: #CC2E2A;
   --rm-red-500: #7A1715;
   --rm-red-700: #3D0908;
   --rm-red-900: #250504;
-  --rm-red-fg: #0A0202;
+  --rm-red-fg: #FFFFFF;
   --rm-red-fg-subtle: #FFBCBA;
 
   /* Green */
-  --rm-green-100: #B5FA97;
+  --rm-green-100: #9AF576;
   --rm-green-300: #6ACC44;
   --rm-green-500: #2A6E15;
   --rm-green-700: #133808;
   --rm-green-900: #0A2005;
-  --rm-green-fg: #020A01;
+  --rm-green-fg: #1A4A05;
   --rm-green-fg-subtle: #D8F4CD;
 
   /* === Border on colored backgrounds (dark) === */
@@ -501,9 +496,9 @@
   --glow-yellow: 0 0 0 1px rgba(255, 204, 0, 0.4),
     0 0 16px 0 rgba(255, 204, 0, 0.3),
     0 0 32px 0 rgba(255, 204, 0, 0.12);
-  --glow-violet: 0 0 0 1px rgba(180, 141, 250, 0.4),
-    0 0 16px 0 rgba(180, 141, 250, 0.25),
-    0 0 32px 0 rgba(180, 141, 250, 0.1);
+  --glow-violet: 0 0 0 1px rgba(161, 114, 248, 0.4),
+    0 0 16px 0 rgba(161, 114, 248, 0.25),
+    0 0 32px 0 rgba(161, 114, 248, 0.1);
   --glow-subtle: 0 0 0 1px rgba(255, 255, 255, 0.08),
     0 0 8px 0 rgba(255, 255, 255, 0.04);
 

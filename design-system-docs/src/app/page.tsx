@@ -1583,12 +1583,11 @@ export default function DesignSystemPage() {
             <p className="text-[length:var(--text-13)] text-muted-foreground font-[family-name:var(--font-mono-family)] mb-3">
               Используй шкалу последовательно — не пропускай уровни без причины.
             </p>
-            <div className="border border-border rounded-lg overflow-hidden grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 mb-10">
+            <div className="border border-border rounded-lg overflow-hidden grid grid-cols-3 sm:grid-cols-3 md:grid-cols-6 mb-10">
               {(() => {
                 const grays = [
-                  { name: "Gray 1",  var: "--rm-gray-1",  role: "Card / popover", lhex: "#FAFAFA", dhex: "#121212" },
-                  { name: "Gray 2",  var: "--rm-gray-2",  role: "Muted / 2nd",   lhex: "#F5F5F5", dhex: "#1A1A1A" },
-                  { name: "Gray 3",  var: "--rm-gray-3",  role: "Hover / accent", lhex: "#EBEBEB", dhex: "#242424" },
+                  { name: "Gray 2",  var: "--rm-gray-2",  role: "Subtle surface", lhex: "#F5F5F5", dhex: "#1A1A1A" },
+                  { name: "Gray 3",  var: "--rm-gray-3",  role: "Hover bg",       lhex: "#EBEBEB", dhex: "#242424" },
                   { name: "Gray 4",  var: "--rm-gray-4",  role: "Default border", lhex: "#CBCBCB", dhex: "#404040" },
                   { name: "Gray 5",  var: "--rm-gray-5",  role: "Hover border",   lhex: "#A3A3A3", dhex: "#5C5C5C" },
                   { name: "Gray 6",  var: "--rm-gray-6",  role: "2nd text",       lhex: "#666666", dhex: "#939393" },
@@ -2570,8 +2569,8 @@ export default function DesignSystemPage() {
               {(() => {
                 const mono = "font-[family-name:var(--font-mono-family)]"
                 const sizes = [
-                  { id: "lg", label: "LG / 48px", h: "h-12", px: "px-6", fs: "text-[length:var(--text-14)]" },
-                  { id: "md", label: "MD / 40px", h: "h-10", px: "px-4", fs: "text-[length:var(--text-13)]" },
+                  { id: "lg", label: "LG / 48px", h: "h-12", px: "px-6", fs: "text-[length:var(--text-16)]" },
+                  { id: "md", label: "MD / 40px", h: "h-10", px: "px-4", fs: "text-[length:var(--text-14)]" },
                   { id: "sm", label: "SM / 32px", h: "h-8",  px: "px-3", fs: "text-[length:var(--text-12)]" },
                 ]
                 const variants: {

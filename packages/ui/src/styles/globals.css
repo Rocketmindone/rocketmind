@@ -63,7 +63,6 @@
   --radius-4xl: 1.5rem;
 
   /* Rocketmind gray scale */
-  --color-rm-gray-1: var(--rm-gray-1);
   --color-rm-gray-2: var(--rm-gray-2);
   --color-rm-gray-3: var(--rm-gray-3);
   --color-rm-gray-4: var(--rm-gray-4);
@@ -132,7 +131,6 @@
    * 6 — Secondary text       (text-muted-foreground)
    * fg — Primary text        (text-foreground)
   */
-  --rm-gray-1:  #FAFAFA;   /* page background */
   --rm-gray-2:  #F5F5F5;   /* subtle surface */
   --rm-gray-3:  #EBEBEB;   /* hover bg */
   --rm-gray-4:  #CBCBCB;   /* default border */
@@ -148,7 +146,7 @@
   --rm-gray-alpha-800: rgba(0, 0, 0, 0.70);   /* heavy overlay */
 
   /* === Rocketmind Neutrals (Light) — mapped to gray scale === */
-  --background: var(--rm-gray-1);
+  --background: #FAFAFA;
   --foreground: var(--rm-gray-fg);
   --muted: var(--rm-gray-3);
   --muted-foreground: var(--rm-gray-6);
@@ -250,7 +248,6 @@
    * 6 — Secondary text
    * fg — Primary text
   */
-  --rm-gray-1:  #121212;
   --rm-gray-2:  #1A1A1A;
   --rm-gray-3:  #242424;
   --rm-gray-4:  #404040;
@@ -266,7 +263,7 @@
   --rm-gray-alpha-800: rgba(255, 255, 255, 0.70);
 
   /* === Rocketmind Neutrals (Dark) — mapped to gray scale === */
-  --background: var(--rm-gray-1);
+  --background: #0A0A0A;
   --foreground: var(--rm-gray-fg);
   --muted: var(--rm-gray-3);
   --muted-foreground: var(--rm-gray-6);

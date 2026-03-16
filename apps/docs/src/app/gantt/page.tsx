@@ -247,7 +247,7 @@ function CardItem({
           title={c.done ? 'Готово' : 'Отметить как готово'}
         >
           {c.done && (
-            <svg viewBox="0 0 10 10" className="w-full h-full text-[var(--rm-gray-1)]" fill="none">
+            <svg viewBox="0 0 10 10" className="w-full h-full text-white" fill="none">
               <path d="M2 5l2.5 2.5L8 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           )}

@@ -1084,7 +1084,6 @@ export default function DesignSystemPage() {
             </h3>
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-3 mb-3">
               {[
-                { name: "Gray 1",  var: "--rm-gray-1",  role: "Page bg",        lhex: "#FAFAFA", dhex: "#121212" },
                 { name: "Gray 2",  var: "--rm-gray-2",  role: "Subtle surface", lhex: "#F5F5F5", dhex: "#1A1A1A" },
                 { name: "Gray 3",  var: "--rm-gray-3",  role: "Hover bg",       lhex: "#EBEBEB", dhex: "#242424" },
                 { name: "Gray 4",  var: "--rm-gray-4",  role: "Default border", lhex: "#CBCBCB", dhex: "#404040" },
