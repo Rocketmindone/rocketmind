@@ -754,3 +754,15 @@
 .tooltip-enter {
   animation: tooltip-in 120ms cubic-bezier(0, 0, 0.2, 1) forwards;
 }
+
+/* ── Accordion-05 (Marketing Blocks) ── */
+.accordion-05-panel {
+  display: grid;
+  transition: grid-template-rows 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.accordion-05-panel[data-open] {
+  grid-template-rows: 1fr;
+}
+.accordion-05-panel[data-closed] {
+  grid-template-rows: 0fr;
+}

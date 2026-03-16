@@ -1288,10 +1288,13 @@ export default function DesignSystemPage() {
             </div>
 
             {/* ── Gray Scale ── */}
-            <h3 id="colors-gray" className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] uppercase tracking-[-0.01em] mb-2">
+            <h3 id="colors-gray" className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] uppercase tracking-[-0.01em] mb-1">
               Серая шкала
             </h3>
-            <div className="border border-border rounded-lg overflow-hidden grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 mb-3">
+            <p className="text-[length:var(--text-13)] text-muted-foreground font-[family-name:var(--font-mono-family)] mb-3">
+              Используй шкалу последовательно — не пропускай уровни без причины.
+            </p>
+            <div className="border border-border rounded-lg overflow-hidden grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 mb-10">
               {(() => {
                 const grays = [
                   { name: "Gray 1",  var: "--rm-gray-1",  role: "Page bg",        lhex: "#FAFAFA", dhex: "#121212" },
@@ -1317,10 +1320,19 @@ export default function DesignSystemPage() {
                   </div>
                 ))
               })()}
-            </div>
-            <div className="rounded-md border border-border bg-muted/40 px-4 py-3 text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)] mb-10 leading-relaxed">
-              1–3: фоны компонентов. 4–5: границы. 6: вторичный текст. fg: основной текст.
-              Используй шкалу последовательно — не пропускай уровни без причины.
+              {/* Group labels row — visible only at md (7-col grid) */}
+              <div className="hidden md:flex md:col-span-3 border-t border-border px-3 py-2 items-center">
+                <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">фоны компонентов</span>
+              </div>
+              <div className="hidden md:flex md:col-span-2 border-t border-border border-l px-3 py-2 items-center">
+                <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">границы</span>
+              </div>
+              <div className="hidden md:flex md:col-span-1 border-t border-border border-l px-3 py-2 items-center">
+                <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">вторичный текст</span>
+              </div>
+              <div className="hidden md:flex md:col-span-1 border-t border-border border-l px-3 py-2 items-center">
+                <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">основной текст</span>
+              </div>
             </div>
 
             {/* ── Accent Scale ── */}

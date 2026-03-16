@@ -23,6 +23,7 @@
 | 6.7 Footer | ✅ Готово |
 | 7. Иконки | ✅ Готово |
 | 8. Анимации и motion | ✅ Готово |
+| 9. Маркетинг блоки | ✅ Готово |
 
 ---
 
@@ -2638,5 +2639,73 @@ if (reducedMotion) {
 | Лендинг — CTA | Фон CTA-блока | Монохромный |
 | Auth | Фоновый декор | Монохромный, opacity: 0.5 |
 | Main App | Не используется | — |
+
+---
+
+## 9. Маркетинг блоки
+
+Готовые блоки для лендинга и маркетинговых страниц. Используют токены дизайн-системы — стиль единый с основным приложением.
+
+---
+
+### 9.1 Аккордион — FAQ (Accordion-05)
+
+Аккордион для секций FAQ и «Часто задаваемые вопросы» на лендинге.
+
+#### Анатомия
+
+```
+Accordion.Root
+└── Accordion.Item (border-b border-border)
+    ├── Accordion.Header
+    │   └── Accordion.Trigger  ← кнопка
+    │       ├── <span> число (--font-mono-family, --text-12)
+    │       └── <span> заголовок (--font-heading-family, uppercase, text-3xl / --text-50)
+    └── Accordion.Panel  ← .accordion-05-panel (grid-template-rows анимация)
+        └── <div overflow-hidden>
+            └── <p> контент (--text-14, text-muted-foreground)
+```
+
+#### Токены
+
+| Свойство | Токен / значение | Описание |
+|----------|-----------------|----------|
+| Закрытый заголовок | `text-foreground/20` | Приглушённый текст |
+| Открытый заголовок | `text-primary` (`--rm-yellow-100`) | Акцентный жёлтый |
+| Hover заголовок | `text-foreground/50` | Промежуточное состояние |
+| Типографика | `--font-heading-family`, uppercase | Bold, tracking -0.02em |
+| Номер | `--font-mono-family`, `--text-12` | Tabular nums, mt-2, shrink-0 |
+| Отступ триггера | `pl-6 md:pl-14` | Левый отступ |
+| Контент | `--text-14`, `text-muted-foreground` | Отступ `pl-6 md:px-20` |
+| Разделитель | `border-b border-border` | Стандартный бордер ДС |
+| Анимация | `grid-template-rows`, 200ms | `cubic-bezier(0.4, 0, 0.2, 1)` |
+
+#### Состояния триггера (`@base-ui/react` data-атрибуты)
+
+| Атрибут | Когда | Tailwind-селектор |
+|---------|-------|------------------|
+| `data-panel-open` | Панель открыта | `data-[panel-open]:` |
+| _(нет атрибута)_ | Панель закрыта | _(дефолтный стиль)_ |
+
+#### CSS-класс анимации
+
+```css
+/* globals.css */
+.accordion-05-panel {
+  display: grid;
+  transition: grid-template-rows 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.accordion-05-panel[data-open]   { grid-template-rows: 1fr; }
+.accordion-05-panel[data-closed] { grid-template-rows: 0fr; }
+```
+
+> Внутренний `<div>` панели должен иметь `overflow-hidden` — иначе контент виден до раскрытия.
+
+#### Применение
+
+| Экран | Секция |
+|-------|--------|
+| Лендинг | FAQ, «Часто задаваемые вопросы» |
+| Страница агента | Детали кейса, параметры |
 
 ---
