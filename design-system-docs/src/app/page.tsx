@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import {
   Rocket, Sparkles, Eye, Zap, Search, User, Gem, BookOpen,
-  ChevronRight, ArrowRight, Loader2, Trash2, Menu, X,
+  ChevronRight, ChevronDown, ArrowRight, Loader2, Trash2, Menu, X,
   Wrench, GraduationCap
 } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
@@ -18,6 +18,7 @@ import { toast } from "sonner"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
 import { GridGuides } from "@/components/ui/guide-grid"
 import { SiteHeader } from "@/components/ui/site-header"
+import { Accordion } from "@base-ui/react"
 
 const DS_VERSION = "1.2.0"
 
@@ -131,17 +132,57 @@ const DS_DATE = "2026-03-12"
 const BASE_PATH = process.env.NODE_ENV === "production" ? "/rocketmind-design-system" : ""
 
 /* ───────── NAV DATA ───────── */
-const sections = [
-  { id: "logos", label: "Логотипы" },
-  { id: "colors", label: "Цвета" },
-  { id: "typography", label: "Типография" },
-  { id: "spacing", label: "Спейсинг и сетка" },
-  { id: "radius-shadows", label: "Скругления" },
-  { id: "components", label: "Компоненты" },
-  { id: "tooltips", label: "Тултипы" },
-  { id: "icons", label: "Иконки" },
-  { id: "animations", label: "Анимации" },
-  { id: "cross-blocks", label: "Сквозные блоки" },
+type SubSection = { id: string; label: string }
+type NavSection = { id: string; label: string; subsections: SubSection[] }
+
+const sections: NavSection[] = [
+  { id: "logos", label: "Логотипы", subsections: [] },
+  { id: "colors", label: "Цвета", subsections: [
+    { id: "colors-bg",       label: "Фоны" },
+    { id: "colors-gray",     label: "Серая шкала" },
+    { id: "colors-accent",   label: "Акцентная" },
+    { id: "colors-inverted", label: "Инвертированные" },
+  ]},
+  { id: "typography", label: "Типография", subsections: [
+    { id: "typography-fonts", label: "Шрифты" },
+    { id: "typography-scale", label: "Типографика" },
+  ]},
+  { id: "spacing", label: "Спейсинг и сетка", subsections: [
+    { id: "spacing-scale",  label: "Шкала отступов" },
+    { id: "spacing-grid",   label: "Сетка страницы" },
+    { id: "spacing-phi",    label: "Пропорции (phi)" },
+    { id: "spacing-visual", label: "Визуальный стиль" },
+  ]},
+  { id: "radius-shadows", label: "Скругления", subsections: [
+    { id: "radius-scale", label: "Border Radius" },
+  ]},
+  { id: "components", label: "Компоненты", subsections: [
+    { id: "components-buttons", label: "Кнопки" },
+    { id: "components-inputs",  label: "Инпуты" },
+    { id: "components-cards",   label: "Карточки" },
+  ]},
+  { id: "tooltips", label: "Тултипы", subsections: [
+    { id: "tooltips-animation", label: "Анимация" },
+    { id: "tooltips-variants",  label: "Варианты" },
+    { id: "tooltips-rules",     label: "Правила" },
+  ]},
+  { id: "icons", label: "Иконки", subsections: [
+    { id: "icons-scale",   label: "Размерная шкала" },
+    { id: "icons-lucide",  label: "Lucide" },
+    { id: "icons-mascots", label: "Маскоты" },
+  ]},
+  { id: "animations", label: "Анимации", subsections: [
+    { id: "animations-timing", label: "Timing-шкала" },
+    { id: "animations-easing", label: "Easing-кривые" },
+    { id: "animations-micro",  label: "Микроинтерактивы" },
+    { id: "animations-loading", label: "Loading" },
+    { id: "animations-page",   label: "Page-level" },
+    { id: "animations-a11y",   label: "Доступность" },
+  ]},
+  { id: "cross-blocks", label: "Сквозные блоки", subsections: [
+    { id: "cross-header", label: "Header" },
+  ]},
+  { id: "marketing-blocks", label: "Маркетинг блоки", subsections: [] },
 ]
 
 function useActiveSection() {
@@ -920,10 +961,56 @@ function LinkCTADemo() {
   )
 }
 
+/* ═══════════════════════════════════ MARKETING BLOCKS ═══════════════════════════════════ */
+
+const accordion05Items = [
+  { id: "1", q: "Что такое Rocketmind?", a: "Rocketmind — SaaS-платформа с готовыми AI-агентами для ведения кейсов. Каждый агент специализируется на конкретной задаче: анализ, стратегия, исследование рынка, тестирование гипотез." },
+  { id: "2", q: "Как начать работу?", a: "Перейдите по ссылке /a/{agent_slug}, введите email — и сразу начинайте диалог. Никаких долгих регистраций и настроек." },
+  { id: "3", q: "Что умеют агенты?", a: "Агенты ведут структурированный диалог, задают уточняющие вопросы и в конце формируют готовый результат: отчёт, стратегию или ссылку на следующий шаг." },
+  { id: "4", q: "Безопасны ли мои данные?", a: "Все данные зашифрованы и хранятся изолированно. Агент видит только историю вашего конкретного кейса — ничего больше." },
+  { id: "5", q: "Какие тарифы?", a: "Первый кейс — бесплатно. Далее подписка от 990 ₽/мес, включает неограниченные диалоги с выбранными агентами." },
+]
+
+function Accordion05Demo() {
+  return (
+    <div className="w-full max-w-3xl">
+      <Accordion.Root defaultValue={["3"]} className="w-full">
+        {accordion05Items.map((item) => (
+          <Accordion.Item
+            key={item.id}
+            value={item.id}
+            className="border-b border-border"
+          >
+            <Accordion.Header>
+              <Accordion.Trigger className="w-full text-left py-5 pl-6 md:pl-14 flex items-start gap-4 cursor-pointer text-foreground/20 transition-colors duration-200 data-[panel-open]:text-primary hover:text-foreground/50">
+                <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] mt-2 shrink-0 tabular-nums">
+                  {item.id}
+                </span>
+                <span className="font-[family-name:var(--font-heading-family)] font-bold uppercase text-3xl md:text-[length:var(--text-50)] leading-none tracking-[-0.02em]">
+                  {item.q}
+                </span>
+              </Accordion.Trigger>
+            </Accordion.Header>
+            <Accordion.Panel className="accordion-05-panel">
+              <div className="overflow-hidden">
+                <p className="pb-6 pl-6 md:px-20 text-[length:var(--text-14)] text-muted-foreground">
+                  {item.a}
+                </p>
+              </div>
+            </Accordion.Panel>
+          </Accordion.Item>
+        ))}
+      </Accordion.Root>
+    </div>
+  )
+}
+
 /* ═══════════════════════════════════ MAIN PAGE ═══════════════════════════════════ */
 export default function DesignSystemPage() {
   const [mobileNav, setMobileNav] = useState(false)
   const activeId = useActiveSection()
+  const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [hoverArrowId, setHoverArrowId] = useState<string | null>(null)
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -984,19 +1071,54 @@ export default function DesignSystemPage() {
           <nav className="space-y-0.5">
             {sections.map((s) => {
               const isActive = activeId === s.id
+              const isClickOpen = expandedId === s.id
+              const isHoverOpen = hoverArrowId === s.id
+              const isOpen = isClickOpen || isHoverOpen
+              const hasSubs = s.subsections.length > 0
               return (
-                <a
-                  key={s.id}
-                  href={`#${s.id}`}
-                  className={`block py-1.5 pr-4 text-[length:var(--text-12)] transition-colors
-                             font-[family-name:var(--font-mono-family)] uppercase tracking-wider
-                             ${isActive
-                               ? "text-foreground font-medium border-l-2 border-[var(--rm-yellow-100)] pl-3"
-                               : "text-muted-foreground hover:text-foreground pl-[14px]"
-                             }`}
-                >
-                  {s.label}
-                </a>
+                <div key={s.id}>
+                  <div className="flex items-center">
+                    <a
+                      href={`#${s.id}`}
+                      onClick={() => setExpandedId(expandedId === s.id ? null : s.id)}
+                      className={`flex-1 py-1.5 text-[length:var(--text-12)] transition-colors
+                                 font-[family-name:var(--font-mono-family)] uppercase tracking-wider
+                                 ${isActive
+                                   ? "text-foreground font-medium border-l-2 border-[var(--rm-yellow-100)] pl-3"
+                                   : "text-muted-foreground hover:text-foreground pl-[14px]"
+                                 }`}
+                    >
+                      {s.label}
+                    </a>
+                    {hasSubs && (
+                      <button
+                        onMouseEnter={() => { if (!isClickOpen) setHoverArrowId(s.id) }}
+                        onMouseLeave={() => setHoverArrowId(null)}
+                        onClick={() => { setHoverArrowId(null); setExpandedId(expandedId === s.id ? null : s.id) }}
+                        className="p-1 pr-2 text-muted-foreground hover:text-foreground transition-colors shrink-0"
+                        aria-label={isOpen ? "Скрыть подразделы" : "Показать подразделы"}
+                      >
+                        <ChevronDown
+                          size={12}
+                          className={`transition-transform duration-150 ${isClickOpen ? "rotate-180" : ""}`}
+                        />
+                      </button>
+                    )}
+                  </div>
+                  {isOpen && hasSubs && (
+                    <div className="ml-[14px] pl-3 border-l border-border space-y-0.5 pb-1">
+                      {s.subsections.map((sub) => (
+                        <a
+                          key={sub.id}
+                          href={`#${sub.id}`}
+                          className="block py-0.5 text-[length:var(--text-12)] text-muted-foreground hover:text-foreground transition-colors font-[family-name:var(--font-mono-family)] uppercase tracking-wider opacity-80"
+                        >
+                          {sub.label}
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </div>
               )
             })}
           </nav>
@@ -1129,7 +1251,7 @@ export default function DesignSystemPage() {
             </p>
 
             {/* ── Backgrounds ── */}
-            <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] uppercase tracking-[-0.01em] mb-2">
+            <h3 id="colors-bg" className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] uppercase tracking-[-0.01em] mb-2">
               Фоны
             </h3>
             <div className="border border-border rounded-lg overflow-hidden grid grid-cols-2 sm:grid-cols-4 mb-3">
@@ -1166,7 +1288,7 @@ export default function DesignSystemPage() {
             </div>
 
             {/* ── Gray Scale ── */}
-            <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] uppercase tracking-[-0.01em] mb-2">
+            <h3 id="colors-gray" className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] uppercase tracking-[-0.01em] mb-2">
               Серая шкала
             </h3>
             <div className="border border-border rounded-lg overflow-hidden grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 mb-3">
@@ -1202,7 +1324,7 @@ export default function DesignSystemPage() {
             </div>
 
             {/* ── Accent Scale ── */}
-            <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] uppercase tracking-[-0.01em] mb-2">
+            <h3 id="colors-accent" className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] uppercase tracking-[-0.01em] mb-2">
               Акцентная шкала
             </h3>
             <p className="text-[length:var(--text-14)] text-muted-foreground mb-4">
@@ -1303,7 +1425,7 @@ export default function DesignSystemPage() {
             </div>
 
             {/* ── On-color surfaces ── */}
-            <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] uppercase tracking-[-0.01em] mt-12 mb-2">
+            <h3 id="colors-inverted" className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] uppercase tracking-[-0.01em] mt-12 mb-2">
               Инвертированные поверхности
             </h3>
             <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">
@@ -1361,7 +1483,7 @@ export default function DesignSystemPage() {
             </p>
 
             {/* 2.1 ШРИФТЫ */}
-            <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">
+            <h3 id="typography-fonts" className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">
               Шрифты
             </h3>
             <div className="border border-border rounded-lg overflow-hidden grid grid-cols-1 md:grid-cols-2 mb-10">
@@ -1386,7 +1508,7 @@ export default function DesignSystemPage() {
             </div>
 
             {/* 2.2 ТИПОГРАФИКА */}
-            <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">
+            <h3 id="typography-scale" className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">
               Типографика
             </h3>
 
@@ -1659,7 +1781,7 @@ export default function DesignSystemPage() {
               Все отступы кратны 8. Золотое сечение для макетных пропорций.
             </p>
 
-            <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">
+            <h3 id="spacing-scale" className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">
               Шкала отступов
             </h3>
             <div className="flex flex-wrap gap-3 mb-8">
@@ -1690,7 +1812,7 @@ export default function DesignSystemPage() {
               ))}
             </div>
 
-            <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">
+            <h3 id="spacing-grid" className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">
               Сетка страницы
             </h3>
             <Tabs defaultValue="mobile" className="mb-6">
@@ -1774,7 +1896,7 @@ export default function DesignSystemPage() {
               ))}
             </Tabs>
 
-            <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">
+            <h3 id="spacing-phi" className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">
               Макетные пропорции (phi)
             </h3>
             {/* phi bar aligned to 12-col grid: 5/12 ≈ 41.67% / 7/12 ≈ 58.33% — snaps to column boundary */}
@@ -1810,7 +1932,7 @@ export default function DesignSystemPage() {
               Золотое сечение 38/62 — для sidebar/content, text/visual в hero-блоках.
             </p>
 
-            <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4 mt-10">
+            <h3 id="spacing-visual" className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4 mt-10">
               Сетка как визуальный стиль
             </h3>
             <p className="text-[length:var(--text-14)] text-muted-foreground mb-6 max-w-[640px]">
@@ -1969,7 +2091,7 @@ export default function DesignSystemPage() {
               Full только как выделительный элемент в самостоятельных блоках.
             </p>
 
-            <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">
+            <h3 id="radius-scale" className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">
               Border Radius
             </h3>
             <div className="flex flex-wrap gap-6 mb-8">
@@ -2009,7 +2131,7 @@ export default function DesignSystemPage() {
 
             {/* ── Кнопки ── */}
             <div className="mb-12">
-              <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] uppercase tracking-[0.04em] text-muted-foreground mb-6 pb-2 border-b border-border">Кнопки</h3>
+              <h3 id="components-buttons" className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] uppercase tracking-[0.04em] text-muted-foreground mb-6 pb-2 border-b border-border">Кнопки</h3>
               <div className="space-y-6">
                 {/* Primary */}
                 <div className="flex flex-wrap items-end gap-4 p-6 rounded-md border border-border">
@@ -2106,7 +2228,7 @@ export default function DesignSystemPage() {
 
             {/* ── Инпуты ── */}
             <div className="mb-12">
-              <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] uppercase tracking-[0.04em] text-muted-foreground mb-6 pb-2 border-b border-border">Инпуты</h3>
+              <h3 id="components-inputs" className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] uppercase tracking-[0.04em] text-muted-foreground mb-6 pb-2 border-b border-border">Инпуты</h3>
               <div className="space-y-6">
                 <div className="p-6 rounded-md border border-border space-y-3">
                   <div className="flex items-center justify-between">
@@ -2184,7 +2306,7 @@ export default function DesignSystemPage() {
 
             {/* ── Карточки ── */}
             <div>
-              <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] uppercase tracking-[0.04em] text-muted-foreground mb-6 pb-2 border-b border-border">Карточки</h3>
+              <h3 id="components-cards" className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] uppercase tracking-[0.04em] text-muted-foreground mb-6 pb-2 border-b border-border">Карточки</h3>
               <Tabs defaultValue="cards" className="w-full">
                 <TabsList className="mb-6">
                   <TabsTrigger value="cards">Каталог карточек</TabsTrigger>
@@ -2193,7 +2315,7 @@ export default function DesignSystemPage() {
 
                 {/* CARDS BASE */}
                 <TabsContent value="cards-base">
-                  <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-2">
+                  <h3 id="tooltips-variants" className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-2">
                     Варианты бордера карточки
                   </h3>
                   <p className="text-muted-foreground text-[length:var(--text-14)] mb-8">
@@ -2900,7 +3022,7 @@ export default function DesignSystemPage() {
               Контекстные подсказки при наведении. Появляются поверх контента через <code className="text-[length:var(--text-12)] bg-muted px-1 py-0.5 rounded font-[family-name:var(--font-mono-family)]">position: fixed</code>, не обрезаются родителем. Анимация: 120ms ease-out, fade + translateY.
             </p>
 
-            <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">
+            <h3 id="tooltips-animation" className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">
               Анимация
             </h3>
             <div className="space-y-2 mb-8">
@@ -2962,7 +3084,7 @@ export default function DesignSystemPage() {
               </div>
             </div>
 
-            <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">
+            <h3 id="tooltips-rules" className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">
               Правила применения
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -2994,7 +3116,7 @@ export default function DesignSystemPage() {
               Цвет наследуется через currentColor.
             </p>
 
-            <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">
+            <h3 id="icons-scale" className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">
               Размерная шкала
             </h3>
             <div className="flex flex-wrap items-end gap-6 mb-8">
@@ -3018,7 +3140,7 @@ export default function DesignSystemPage() {
               ))}
             </div>
 
-            <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">
+            <h3 id="icons-lucide" className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">
               Примеры иконок (Lucide)
             </h3>
             <div className="flex flex-wrap gap-3">
@@ -3046,7 +3168,7 @@ export default function DesignSystemPage() {
               ))}
             </div>
 
-            <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4 mt-8">
+            <h3 id="icons-mascots" className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4 mt-8">
               AI-агенты (Маскоты)
             </h3>
             <MascotSection />
@@ -3111,7 +3233,7 @@ export default function DesignSystemPage() {
             </div>
 
             {/* 8.2 Timing */}
-            <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-2">
+            <h3 id="animations-timing" className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-2">
               8.2 Timing-шкала
             </h3>
             <p className="text-[length:var(--text-14)] text-muted-foreground mb-4">Полоска показывает относительную длину каждого токена.</p>
@@ -3129,7 +3251,7 @@ export default function DesignSystemPage() {
             </div>
 
             {/* 8.3 Easing */}
-            <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-2">
+            <h3 id="animations-easing" className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-2">
               8.3 Easing-кривые
             </h3>
             <p className="text-[length:var(--text-14)] text-muted-foreground mb-4">Нажми «Play», чтобы увидеть как шарик движется с данной кривой.</p>
@@ -3141,7 +3263,7 @@ export default function DesignSystemPage() {
             </div>
 
             {/* 8.4 Микроинтерактивы */}
-            <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-2">
+            <h3 id="animations-micro" className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-2">
               8.4 Микроинтерактивы
             </h3>
             <p className="text-[length:var(--text-14)] text-muted-foreground mb-4">Наведи курсор на каждый элемент.</p>
@@ -3258,7 +3380,7 @@ export default function DesignSystemPage() {
             </div>
 
             {/* 8.6 Loading */}
-            <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-2">
+            <h3 id="animations-loading" className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-2">
               8.6 Loading / Skeleton
             </h3>
             <p className="text-[length:var(--text-14)] text-muted-foreground mb-4">Skeleton занимает место сразу — нет «прыжков» при загрузке. Shimmer движется бесконечно.</p>
@@ -3297,7 +3419,7 @@ export default function DesignSystemPage() {
             </div>
 
             {/* 8.7 Page-level */}
-            <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">
+            <h3 id="animations-page" className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">
               8.7 Page-level правила
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
@@ -3328,7 +3450,7 @@ export default function DesignSystemPage() {
             </div>
 
             {/* 8.8 Reduced Motion */}
-            <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">
+            <h3 id="animations-a11y" className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">
               8.8 Доступность (Reduced Motion)
             </h3>
             <div className="p-4 rounded-md border border-border bg-muted/30">
@@ -3447,7 +3569,7 @@ export default function DesignSystemPage() {
             </p>
 
             {/* ── Header ── */}
-            <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">
+            <h3 id="cross-header" className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">
               Header — Шапка
             </h3>
             <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">
@@ -3571,6 +3693,61 @@ export default function DesignSystemPage() {
             <div className="p-4 rounded-md border border-border bg-muted/30 font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] text-muted-foreground">
               <p className="mb-1">{'<SiteHeader basePath={BASE_PATH} />'}</p>
               <p className="text-[length:var(--text-12)] text-muted-foreground/60">{'// basePath — для корректных путей к SVG-логотипам в prod'}</p>
+            </div>
+          </Section>
+
+          <Separator />
+
+          {/* ═══════ MARKETING BLOCKS ═══════ */}
+          <Section id="marketing-blocks" title="Маркетинг блоки" version={DS_VERSION}>
+            <p className="text-muted-foreground mb-8">
+              Готовые блоки для лендинга и маркетинговых страниц. Используют токены дизайн-системы — стиль единый с основным приложением.
+            </p>
+
+            {/* ── Accordion 05 ── */}
+            <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-2">
+              Аккордион — FAQ
+            </h3>
+            <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">
+              Аккордион для секций FAQ и «Часто задаваемые вопросы». Числа слева — порядковые метки. Заголовок раскрытого пункта подсвечивается акцентным жёлтым. Плавное открытие через <code className="text-[length:var(--text-12)] bg-muted px-1 py-0.5 rounded font-[family-name:var(--font-mono-family)]">grid-template-rows</code> (200ms, ease-standard).
+            </p>
+
+            <div className="-mx-5 md:-mx-10 border-y border-border py-10 px-5 md:px-10 mb-8">
+              <Accordion05Demo />
+            </div>
+
+            {/* Token spec */}
+            <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">
+              Токены
+            </h3>
+            <div className="overflow-auto rounded-md border border-border mb-8">
+              <table className="w-full text-[length:var(--text-14)]">
+                <thead>
+                  <tr className="border-b border-border bg-muted/30">
+                    <th className="text-left px-4 py-2 font-medium">Свойство</th>
+                    <th className="text-left px-4 py-2 font-medium">Токен / значение</th>
+                    <th className="text-left px-4 py-2 font-medium">Описание</th>
+                  </tr>
+                </thead>
+                <tbody className="text-muted-foreground">
+                  {[
+                    ["Закрытый заголовок",   "text-foreground/20",              "Приглушённый текст"],
+                    ["Открытый заголовок",   "text-primary (--rm-yellow-100)",   "Акцентный жёлтый"],
+                    ["Hover заголовок",      "text-foreground/50",               "Промежуточное состояние"],
+                    ["Типографика",          "--font-heading-family, uppercase",  "Bold, tracking -0.02em"],
+                    ["Номер",               "--font-mono-family, --text-12",     "Tabular nums, mt-2"],
+                    ["Контент",             "--text-14, text-muted-foreground",  "Отступ pl-6 / md:px-20"],
+                    ["Разделитель",          "border-b border-border",           "Стандартный бордер ДС"],
+                    ["Анимация",             "grid-template-rows, 200ms",        "--ease-standard (0.4,0,0.2,1)"],
+                  ].map(([prop, token, desc]) => (
+                    <tr key={prop} className="border-b border-border last:border-0">
+                      <td className="px-4 py-2 font-medium text-foreground">{prop}</td>
+                      <td className="px-4 py-2 font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)]">{token}</td>
+                      <td className="px-4 py-2">{desc}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </Section>
 
