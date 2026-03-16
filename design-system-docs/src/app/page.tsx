@@ -11,7 +11,7 @@ import { Separator } from "@/components/ui/separator"
 import {
   Rocket, Sparkles, Eye, Zap, Search, User, Gem, BookOpen,
   ChevronRight, ChevronDown, ArrowRight, Loader2, Trash2, Menu, X,
-  Wrench, GraduationCap
+  Wrench, GraduationCap, Coffee
 } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
@@ -1253,17 +1253,25 @@ export default function DesignSystemPage() {
 
   /* ── Sidebar yellow scroll indicator ── */
   const navRef = useRef<HTMLElement>(null)
-  const itemRefs = useRef<Map<string, HTMLDivElement>>(new Map())
+  // refs to trigger rows only (not outer divs) for accurate indicator position
+  const triggerRefs = useRef<Map<string, HTMLDivElement>>(new Map())
+  const trackRef = useRef<HTMLDivElement>(null)
   const [indicator, setIndicator] = useState({ top: 0, height: 0 })
   useEffect(() => {
-    const el = itemRefs.current.get(activeId)
-    const nav = navRef.current
-    if (!el || !nav) return
+    const el = triggerRefs.current.get(activeId)
+    const track = trackRef.current
+    if (!el || !track) return
+    const trackH = track.clientHeight
     setIndicator({
-      top:    (el.offsetTop    / nav.scrollHeight) * 100,
-      height: (el.offsetHeight / nav.scrollHeight) * 100,
+      top:    (el.offsetTop    / trackH) * 100,
+      height: (el.offsetHeight / trackH) * 100,
     })
   }, [activeId, expandedId])
+
+  /* ── Auto-expand active section ── */
+  useEffect(() => {
+    if (activeId) setExpandedId(activeId)
+  }, [activeId])
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -1322,7 +1330,7 @@ export default function DesignSystemPage() {
         {/* ───── SIDEBAR NAV ───── */}
         <aside className="relative hidden md:flex flex-col w-[220px] shrink-0 sticky top-14 self-start h-[calc(100vh-56px)] border-r border-border">
           {/* ── Yellow scroll position indicator ── */}
-          <div className="absolute right-0 top-8 bottom-[60px] w-0.5 pointer-events-none z-10" aria-hidden>
+          <div ref={trackRef} className="absolute right-0 top-8 bottom-[60px] w-0.5 pointer-events-none z-10" aria-hidden>
             <div
               className="sidebar-indicator absolute left-0 right-0 bg-[var(--rm-yellow-100)]"
               style={{ top: `${indicator.top}%`, height: `${indicator.height}%` }}
@@ -1338,15 +1346,15 @@ export default function DesignSystemPage() {
               const isOpen = isClickOpen || isHoverOpen
               const hasSubs = s.subsections.length > 0
               return (
-                <div
-                  key={s.id}
-                  ref={el => { if (el) itemRefs.current.set(s.id, el); else itemRefs.current.delete(s.id) }}
-                >
-                  <div className="flex items-center">
+                <div key={s.id}>
+                  <div
+                    className="flex items-center"
+                    ref={el => { if (el) triggerRefs.current.set(s.id, el); else triggerRefs.current.delete(s.id) }}
+                  >
                     <a
                       href={`#${s.id}`}
-                      onClick={() => setExpandedId(expandedId === s.id ? null : s.id)}
-                      className={`flex-1 py-1.5 pl-3 text-[length:var(--text-12)] transition-colors
+                      onClick={() => setExpandedId(s.id)}
+                      className={`flex-1 py-1.5 pl-0 text-[length:var(--text-12)] transition-colors
                                  font-[family-name:var(--font-mono-family)] uppercase tracking-wider
                                  ${isActive
                                    ? "text-foreground font-medium"
@@ -1370,21 +1378,23 @@ export default function DesignSystemPage() {
                       </button>
                     )}
                   </div>
-                  {isOpen && hasSubs && (
+                  {hasSubs && (
                     <div
-                      className="ml-3 pl-3 border-l border-border space-y-0.5 pb-1"
+                      className={`sidebar-subnav${isOpen ? " is-open" : ""}`}
                       onMouseEnter={() => { if (isHoverOpen && !isClickOpen) startHover(s.id) }}
                       onMouseLeave={endHover}
                     >
-                      {s.subsections.map((sub) => (
-                        <a
-                          key={sub.id}
-                          href={`#${sub.id}`}
-                          className="block py-0.5 text-[length:var(--text-12)] text-muted-foreground hover:text-foreground transition-colors font-[family-name:var(--font-mono-family)] uppercase tracking-wider opacity-80"
-                        >
-                          {sub.label}
-                        </a>
-                      ))}
+                      <div className="sidebar-subnav-inner ml-3 pl-3 border-l border-border space-y-0.5 pb-1">
+                        {s.subsections.map((sub) => (
+                          <a
+                            key={sub.id}
+                            href={`#${sub.id}`}
+                            className="block py-0.5 text-[length:var(--text-12)] text-muted-foreground hover:text-foreground transition-colors font-[family-name:var(--font-mono-family)] uppercase tracking-wider opacity-80"
+                          >
+                            {sub.label}
+                          </a>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -1393,7 +1403,7 @@ export default function DesignSystemPage() {
           </nav>
           </div>
 
-          <div className="shrink-0 px-5 py-4 border-t border-border">
+          <div className="shrink-0 pl-10 pr-5 py-4 border-t border-border">
             <Badge className="bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] hover:bg-[var(--rm-yellow-100)]">
               v{DS_VERSION}
             </Badge>
@@ -1707,11 +1717,19 @@ export default function DesignSystemPage() {
                   Попробуй Rocketmind — AI-агенты для твоего бизнеса без написания кода.
                 </p>
                 <button
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border text-[length:var(--text-14)] font-[family-name:var(--font-mono-family)] uppercase tracking-wider transition-colors"
+                  className="group relative overflow-hidden inline-flex items-center justify-center px-5 py-2.5 rounded-lg border text-[length:var(--text-14)] font-[family-name:var(--font-mono-family)] uppercase tracking-wider cursor-pointer"
                   style={{ borderColor: "var(--border)", color: "var(--foreground)" }}
                 >
-                  Попробовать
-                  <ChevronRight className="w-4 h-4" />
+                  <span className="transition-all duration-300 group-hover:translate-x-12 group-hover:opacity-0 whitespace-nowrap">
+                    Попробовать
+                  </span>
+                  <div
+                    className="absolute inset-0 flex items-center justify-center gap-2 -translate-x-full group-hover:translate-x-0 transition-all duration-300"
+                    style={{ backgroundColor: "var(--foreground)", color: "var(--background)" }}
+                  >
+                    <Coffee className="w-4 h-4 shrink-0" />
+                    <span className="whitespace-nowrap">Попробовать</span>
+                  </div>
                 </button>
               </div>
               {/* Violet block */}
@@ -2537,96 +2555,140 @@ export default function DesignSystemPage() {
 
             {/* ── Кнопки ── */}
             <div className="mb-12">
-              <h3 id="components-buttons" className="scroll-mt-20 font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">Кнопки</h3>
-              <div className="space-y-6">
-                {/* Primary */}
-                <div className="flex flex-wrap items-end gap-4 p-6 rounded-md border border-border">
-                  <div className="space-y-2">
-                    <Badge variant="outline" className="text-[length:var(--text-12)]">PRIMARY</Badge>
-                    <div className="flex items-center gap-3">
-                      <button className="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-md bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-[var(--rm-yellow-300)] cursor-pointer">
-                        Попробовать
-                      </button>
-                      <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-[var(--rm-yellow-300)] cursor-pointer">
-                        Начать
-                      </button>
-                      <button className="inline-flex items-center justify-center gap-2 h-8 px-3 rounded-md bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-[var(--rm-yellow-300)] cursor-pointer">
-                        SM
-                      </button>
-                    </div>
-                  </div>
-                  <CopyButton
-                    value={`inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-mono text-[length:var(--text-14)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-[var(--rm-yellow-300)]`}
-                    label="Primary Button"
-                  />
-                </div>
+              <h3 id="components-buttons" className="scroll-mt-20 font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-2">Кнопки</h3>
+              <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">Roboto Mono, uppercase, tracking-[0.08em]. Три размера: lg (48px) / md (40px, default) / sm (32px).</p>
 
-                {/* Secondary */}
-                <div className="flex flex-wrap items-end gap-4 p-6 rounded-md border border-border">
-                  <div className="space-y-2">
-                    <Badge variant="outline" className="text-[length:var(--text-12)]">SECONDARY</Badge>
-                    <div className="flex items-center gap-3">
-                      <button className="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-md border border-border bg-transparent text-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-accent cursor-pointer">
+              {/* Variants grid */}
+              {(() => {
+                const variants = [
+                  {
+                    id: "primary",
+                    label: "Primary",
+                    token: "btn-primary",
+                    desc: "Главное действие на экране. Hero CTA, финальный шаг формы. Один на странице.",
+                    className: `inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-mono text-[13px] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-[var(--rm-yellow-300)]`,
+                    preview: (
+                      <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-[var(--rm-yellow-300)] cursor-pointer">
+                        Запустить
+                      </button>
+                    ),
+                  },
+                  {
+                    id: "secondary",
+                    label: "Secondary",
+                    token: "btn-secondary",
+                    desc: "Второстепенное действие рядом с primary. Фильтры, переключатели.",
+                    className: `inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md border border-border bg-transparent text-foreground font-mono text-[13px] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-accent`,
+                    preview: (
+                      <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md border border-border bg-transparent text-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-accent cursor-pointer">
                         Подробнее
                       </button>
-                      <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md border border-border bg-transparent text-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-accent cursor-pointer">
-                        Узнать
+                    ),
+                  },
+                  {
+                    id: "ghost",
+                    label: "Ghost",
+                    token: "btn-ghost",
+                    desc: "Тихое действие без фона. Навигация, вспомогательные inline-действия.",
+                    className: `inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md bg-transparent text-muted-foreground font-mono text-[13px] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-accent hover:text-foreground`,
+                    preview: (
+                      <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md bg-transparent text-muted-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-accent hover:text-foreground cursor-pointer">
+                        Отмена
                       </button>
-                      <button className="inline-flex items-center justify-center gap-2 h-8 px-3 rounded-md border border-border bg-transparent text-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-accent cursor-pointer">
-                        SM
+                    ),
+                  },
+                  {
+                    id: "destructive",
+                    label: "Destructive",
+                    token: "btn-destructive",
+                    desc: "Необратимые действия. Удаление, архивация. Требует диалог подтверждения.",
+                    className: `inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md bg-destructive text-white font-mono text-[13px] uppercase tracking-[0.08em] transition-all duration-150 hover:opacity-90`,
+                    preview: (
+                      <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md bg-destructive text-white font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em] transition-all duration-150 hover:opacity-90 cursor-pointer">
+                        <Trash2 size={13} /> Удалить
                       </button>
+                    ),
+                  },
+                  {
+                    id: "interactive",
+                    label: "Interactive",
+                    token: "btn-interactive",
+                    desc: "Брендовый hero-CTA. Иконка + текст выезжают слева при наведении. Один на странице.",
+                    className: `group relative overflow-hidden inline-flex items-center justify-center px-4 py-2 rounded-md border border-border text-foreground font-mono text-[13px] uppercase tracking-[0.08em] cursor-pointer`,
+                    preview: (
+                      <button
+                        className="group relative overflow-hidden inline-flex items-center justify-center px-4 py-2 rounded-md border font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em] cursor-pointer"
+                        style={{ borderColor: "var(--border)", color: "var(--foreground)" }}
+                      >
+                        <span className="transition-all duration-300 group-hover:translate-x-10 group-hover:opacity-0 whitespace-nowrap">
+                          Попробовать
+                        </span>
+                        <div
+                          className="absolute inset-0 flex items-center justify-center gap-1.5 -translate-x-full group-hover:translate-x-0 transition-all duration-300"
+                          style={{ backgroundColor: "var(--foreground)", color: "var(--background)" }}
+                        >
+                          <Coffee className="w-3.5 h-3.5 shrink-0" />
+                          <span className="whitespace-nowrap">Попробовать</span>
+                        </div>
+                      </button>
+                    ),
+                  },
+                ]
+                return (
+                  <div className="border border-border rounded-lg overflow-hidden bg-border mb-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-[1px]">
+                      {variants.map((v) => (
+                        <div key={v.id} className="flex flex-col gap-2 p-4 bg-background">
+                          <div className="flex items-center justify-center min-h-[56px]">
+                            {v.preview}
+                          </div>
+                          <p className="text-[length:var(--text-12)] font-medium font-[family-name:var(--font-mono-family)] uppercase tracking-wider">{v.label}</p>
+                          <div className="flex items-center gap-0.5">
+                            <p className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)] flex-1 truncate">{v.token}</p>
+                            <CopyButton value={v.className} label={`Токен: ${v.token}`} />
+                          </div>
+                          <p className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)] leading-relaxed">{v.desc}</p>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                  <CopyButton
-                    value={`inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md border border-border bg-transparent text-foreground font-mono text-[length:var(--text-14)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-accent`}
-                    label="Secondary Button"
-                  />
-                </div>
+                )
+              })()}
 
-                {/* Ghost */}
-                <div className="flex flex-wrap items-end gap-4 p-6 rounded-md border border-border">
-                  <div className="space-y-2">
-                    <Badge variant="outline" className="text-[length:var(--text-12)]">GHOST</Badge>
-                    <div className="flex items-center gap-3">
-                      <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md bg-transparent text-muted-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-accent hover:text-foreground cursor-pointer">
-                        Ghost
+              {/* Sizes */}
+              <div className="border border-border rounded-lg overflow-hidden mb-4">
+                <p className="px-4 pt-4 pb-3 text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] uppercase tracking-wider text-muted-foreground">Размеры</p>
+                <div className="flex flex-wrap items-end gap-4 px-4 pb-4">
+                  {[
+                    { label: "LG / 48px", h: "h-12", px: "px-6", text: "text-[length:var(--text-14)]", meta: "h-12 px-6 text-14" },
+                    { label: "MD / 40px", h: "h-10", px: "px-4", text: "text-[length:var(--text-13)]", meta: "h-10 px-4 text-13 (default)" },
+                    { label: "SM / 32px", h: "h-8",  px: "px-3", text: "text-[length:var(--text-12)]", meta: "h-8 px-3 text-12" },
+                  ].map((s) => (
+                    <div key={s.label} className="flex flex-col items-start gap-1.5">
+                      <button className={`inline-flex items-center justify-center ${s.h} ${s.px} rounded-md bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-[family-name:var(--font-mono-family)] ${s.text} uppercase tracking-[0.08em] transition-all duration-150 hover:bg-[var(--rm-yellow-300)] cursor-pointer`}>
+                        {s.label}
                       </button>
+                      <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">{s.meta}</span>
                     </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* States */}
+              <div className="border border-border rounded-lg overflow-hidden">
+                <p className="px-4 pt-4 pb-3 text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] uppercase tracking-wider text-muted-foreground">Состояния</p>
+                <div className="flex flex-wrap items-end gap-4 px-4 pb-4">
+                  <div className="flex flex-col items-start gap-1.5">
+                    <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em] opacity-40 cursor-not-allowed">
+                      Disabled
+                    </button>
+                    <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">opacity-40 pointer-events-none</span>
                   </div>
-                  <CopyButton
-                    value={`inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md bg-transparent text-muted-foreground font-mono text-[length:var(--text-14)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-accent hover:text-foreground`}
-                    label="Ghost Button"
-                  />
-                </div>
-
-                {/* Destructive */}
-                <div className="flex flex-wrap items-end gap-4 p-6 rounded-md border border-border">
-                  <div className="space-y-2">
-                    <Badge variant="outline" className="text-[length:var(--text-12)]">DESTRUCTIVE</Badge>
-                    <div className="flex items-center gap-3">
-                      <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md bg-destructive text-white font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase tracking-[0.08em] transition-all duration-150 hover:opacity-90 cursor-pointer">
-                        <Trash2 size={14} /> Удалить
-                      </button>
-                    </div>
-                  </div>
-                  <CopyButton
-                    value={`inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md bg-destructive text-white font-mono text-[length:var(--text-14)] uppercase tracking-[0.08em]`}
-                    label="Destructive Button"
-                  />
-                </div>
-
-                {/* States */}
-                <div className="flex flex-wrap items-end gap-4 p-6 rounded-md border border-border">
-                  <div className="space-y-2">
-                    <Badge variant="outline" className="text-[length:var(--text-12)]">СОСТОЯНИЯ</Badge>
-                    <div className="flex items-center gap-3">
-                      <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase tracking-[0.08em] opacity-40 cursor-not-allowed">
-                        Disabled
-                      </button>
-                      <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase tracking-[0.08em] opacity-80 cursor-wait">
-                        <Loader2 size={14} className="animate-spin" /> Loading
-                      </button>
-                    </div>
+                  <div className="flex flex-col items-start gap-1.5">
+                    <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em] opacity-80 cursor-wait">
+                      <Loader2 size={13} className="animate-spin" /> Loading
+                    </button>
+                    <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">opacity-80 + Loader2 spinner</span>
                   </div>
                 </div>
               </div>

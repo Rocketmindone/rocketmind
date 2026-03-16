@@ -984,6 +984,40 @@ className="
 "
 ```
 
+#### Вариант `interactive` (hover slide-in)
+
+Используется для главного CTA на акцентном фоне (on-yellow). При наведении текст уезжает вправо, слева выезжает div с иконкой + текстом.
+
+```tsx
+// interactive / md — на фоне on-yellow
+className="
+  group relative overflow-hidden
+  inline-flex items-center justify-center
+  px-5 py-2.5
+  rounded-lg border
+  text-[length:var(--text-14)] font-[family-name:var(--font-mono-family)]
+  uppercase tracking-wider
+  cursor-pointer
+"
+style={{ borderColor: "var(--border)", color: "var(--foreground)" }}
+
+// внутри — текст по умолчанию
+<span className="transition-all duration-300 group-hover:translate-x-12 group-hover:opacity-0 whitespace-nowrap">
+  {label}
+</span>
+
+// внутри — hover-слой (иконка + текст)
+<div
+  className="absolute inset-0 flex items-center justify-center gap-2 -translate-x-full group-hover:translate-x-0 transition-all duration-300"
+  style={{ backgroundColor: "var(--foreground)", color: "var(--background)" }}
+>
+  <Icon className="w-4 h-4 shrink-0" />
+  <span className="whitespace-nowrap">{label}</span>
+</div>
+```
+
+**Правила:** `duration-300` (не 150) — анимация намеренно медленнее для театрального эффекта. Иконка выбирается тематически под контент CTA. Вариант только для одного primary CTA на странице.
+
 ---
 
 ### 6.2 Input
