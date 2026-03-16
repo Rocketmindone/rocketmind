@@ -1532,14 +1532,14 @@ export default function DesignSystemPage() {
             </h3>
             <div className="border border-border rounded-lg overflow-hidden grid grid-cols-2 sm:grid-cols-4 mb-3">
               {[
-                { name: "Background 1", var: "--background",    token: "--background", lhex: "#FAFAFA", dhex: "#121212",
+                { name: "Background", var: "--background",    token: "--background", lhex: "#FFFFFF", dhex: "#0A0A0A",
                   note: "Основной фон страницы. Используй по умолчанию — особенно когда поверх кладёшь цвет." },
-                { name: "Background 2", var: "--card",          token: "--card",       lhex: "#FFFFFF", dhex: "#1A1A1A",
-                  note: "Вторичный фон. Используй редко — только когда нужно выделить поверхность внутри Background 1." },
-                { name: "Muted",        var: "--muted",         token: "--muted",      lhex: "#EBEBEB", dhex: "#242424",
-                  note: "Фон неактивных элементов, hover-состояний, sidebar-секций." },
-                { name: "Popover",      var: "--popover",       token: "--popover",    lhex: "#FFFFFF", dhex: "#1A1A1A",
-                  note: "Фон выпадающих меню, тултипов, модальных окон." },
+                { name: "Card",       var: "--card",          token: "--card",       lhex: "#FAFAFA", dhex: "#121212",
+                  note: "Поверхность карточек и поповеров. Слой над фоном страницы." },
+                { name: "Muted",      var: "--muted",         token: "--muted",      lhex: "#F5F5F5", dhex: "#1A1A1A",
+                  note: "Тихий фон для badge, инлайн-кода, неактивных зон." },
+                { name: "Accent",     var: "--accent",        token: "--accent",     lhex: "#EBEBEB", dhex: "#242424",
+                  note: "Hover-состояния в списках, дропдаунах, nav-пунктах." },
               ].map((c, i) => (
                 <div key={c.token} className={`flex flex-col gap-2 p-3 ${i < 3 ? "border-r border-border" : ""} ${i < 2 ? "sm:border-b-0 border-b border-border" : ""}`}>
                   <ColorHexBlock
@@ -1559,8 +1559,9 @@ export default function DesignSystemPage() {
               ))}
             </div>
             <div className="rounded-md border border-border bg-muted/40 px-4 py-3 text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)] mb-10 leading-relaxed">
-              В большинстве случаев используй Background 1 — особенно когда поверх кладётся цвет.
-              Background 2 применяй редко, только для тонкого разделения поверхностей.
+              Background (#FFFFFF / #0A0A0A) — фон страницы, всегда первый слой.
+              Card (#FAFAFA / #121212) — поверхность карточек и поповеров поверх Background.
+              Muted — тихий фон. Accent — hover-состояния.
             </div>
 
             {/* ── Gray Scale ── */}
@@ -1573,9 +1574,9 @@ export default function DesignSystemPage() {
             <div className="border border-border rounded-lg overflow-hidden grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 mb-10">
               {(() => {
                 const grays = [
-                  { name: "Gray 1",  var: "--rm-gray-1",  role: "Page bg",        lhex: "#FAFAFA", dhex: "#121212" },
-                  { name: "Gray 2",  var: "--rm-gray-2",  role: "Subtle surface", lhex: "#F5F5F5", dhex: "#1A1A1A" },
-                  { name: "Gray 3",  var: "--rm-gray-3",  role: "Hover bg",       lhex: "#EBEBEB", dhex: "#242424" },
+                  { name: "Gray 1",  var: "--rm-gray-1",  role: "Card / popover", lhex: "#FAFAFA", dhex: "#121212" },
+                  { name: "Gray 2",  var: "--rm-gray-2",  role: "Muted / 2nd",   lhex: "#F5F5F5", dhex: "#1A1A1A" },
+                  { name: "Gray 3",  var: "--rm-gray-3",  role: "Hover / accent", lhex: "#EBEBEB", dhex: "#242424" },
                   { name: "Gray 4",  var: "--rm-gray-4",  role: "Default border", lhex: "#CBCBCB", dhex: "#404040" },
                   { name: "Gray 5",  var: "--rm-gray-5",  role: "Hover border",   lhex: "#A3A3A3", dhex: "#5C5C5C" },
                   { name: "Gray 6",  var: "--rm-gray-6",  role: "2nd text",       lhex: "#666666", dhex: "#939393" },
