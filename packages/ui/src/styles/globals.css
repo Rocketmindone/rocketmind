@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700;800&family=Roboto+Mono:wght@400;500;600&family=Roboto:wght@400;500&family=Shantell+Sans:wght@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700;800&family=Roboto:wght@400;500&family=Shantell+Sans:wght@400&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -6,6 +6,15 @@
 @custom-variant dark (&:is(.dark *));
 
 /* Google Fonts */
+
+/* Local Fonts */
+@font-face {
+  font-family: 'Loos Condensed';
+  src: url('/fonts/LoosCond-Medium.otf') format('opentype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
 
 @theme inline {
   --color-background: var(--background);
@@ -107,7 +116,7 @@
 :root {
   /* === Font families === */
   --font-heading-family: 'Roboto Condensed', sans-serif;
-  --font-mono-family: 'Roboto Mono', monospace;
+  --font-mono-family: 'Loos Condensed', sans-serif;
   --font-body: 'Roboto', sans-serif;
   --font-accent-family: 'Shantell Sans', cursive;
 

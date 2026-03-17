@@ -1277,10 +1277,10 @@ export default function DesignSystemPage() {
                   fontClass: "font-[family-name:var(--font-heading-family)] font-bold uppercase",
                 },
                 {
-                  family: "Roboto Mono",
+                  family: "Loos Condensed",
                   role: "Навигация, кнопки, код",
                   example: "НАВИГАЦИЯ / КНОПКИ",
-                  css: "font-family: 'Roboto Mono', monospace",
+                  css: "font-family: 'Loos Condensed', sans-serif",
                   fontClass: "font-[family-name:var(--font-mono-family)] font-medium uppercase tracking-wider",
                 },
                 {
@@ -1864,7 +1864,7 @@ export default function DesignSystemPage() {
           {/* ═══════ 6. COMPONENTS ═══════ */}
           <Section id="components" title="6. Компоненты" version={DS_VERSION}>
             <p className="text-muted-foreground mb-6">
-              Все компоненты — надстройка над shadcn/ui. Шрифт интерактивных элементов — Roboto Mono, uppercase.
+              Все компоненты — надстройка над shadcn/ui. Шрифт интерактивных элементов — Loos Condensed, uppercase.
               Flat-стиль, без glow-эффектов.
             </p>
 

@@ -11,7 +11,8 @@
     "build": "turbo build",
     "lint": "turbo lint",
     "ui:build": "npm run build --workspace=packages/ui",
-    "ui:dev": "npm run dev --workspace=packages/ui"
+    "ui:dev": "npm run dev --workspace=packages/ui",
+    "release": "bash scripts/release.sh"
   },
   "devDependencies": {
     "turbo": "^2.5.4"

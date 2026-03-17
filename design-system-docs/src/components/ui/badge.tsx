@@ -1,52 +1,103 @@
-import { mergeProps } from "@base-ui/react/merge-props"
-import { useRender } from "@base-ui/react/use-render"
 import { cva, type VariantProps } from "class-variance-authority"
-
 import { cn } from "@/lib/utils"
 
 const badgeVariants = cva(
-  "group/badge inline-flex h-5 w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-4xl border border-transparent px-2 py-0.5 text-[length:var(--text-12)] font-medium whitespace-nowrap transition-all focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none [&>svg]:size-3!",
+  // Base: flat, Loos Condensed, uppercase — consistent with buttons and labels
+  "inline-flex items-center gap-1 rounded-sm border border-transparent px-2 whitespace-nowrap font-[family-name:var(--font-mono-family)] uppercase tracking-[0.04em] transition-all",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground [a]:hover:bg-primary/80",
+        // ── Neutral ──────────────────────────────────────────────────────
+        neutral:
+          "bg-[var(--rm-gray-1)] text-[var(--rm-gray-fg-sub)] border-[var(--border)]",
+
+        // ── Yellow ───────────────────────────────────────────────────────
+        "yellow-solid":
+          "bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)]",
+        "yellow-subtle":
+          "bg-[var(--rm-yellow-900)] text-[var(--rm-yellow-fg-subtle)]",
+
+        // ── Violet ───────────────────────────────────────────────────────
+        "violet-solid":
+          "bg-[var(--rm-violet-100)] text-[var(--rm-violet-fg)]",
+        "violet-subtle":
+          "bg-[var(--rm-violet-900)] text-[var(--rm-violet-fg-subtle)]",
+
+        // ── Sky ──────────────────────────────────────────────────────────
+        "sky-solid":
+          "bg-[var(--rm-sky-100)] text-[var(--rm-sky-fg)]",
+        "sky-subtle":
+          "bg-[var(--rm-sky-900)] text-[var(--rm-sky-fg-subtle)]",
+
+        // ── Terracotta ───────────────────────────────────────────────────
+        "terracotta-solid":
+          "bg-[var(--rm-terracotta-100)] text-[var(--rm-terracotta-fg)]",
+        "terracotta-subtle":
+          "bg-[var(--rm-terracotta-900)] text-[var(--rm-terracotta-fg-subtle)]",
+
+        // ── Pink ─────────────────────────────────────────────────────────
+        "pink-solid":
+          "bg-[var(--rm-pink-100)] text-[var(--rm-pink-fg)]",
+        "pink-subtle":
+          "bg-[var(--rm-pink-900)] text-[var(--rm-pink-fg-subtle)]",
+
+        // ── Blue ─────────────────────────────────────────────────────────
+        "blue-solid":
+          "bg-[var(--rm-blue-100)] text-[var(--rm-blue-fg)]",
+        "blue-subtle":
+          "bg-[var(--rm-blue-900)] text-[var(--rm-blue-fg-subtle)]",
+
+        // ── Red ──────────────────────────────────────────────────────────
+        "red-solid":
+          "bg-[var(--rm-red-100)] text-[var(--rm-red-fg)]",
+        "red-subtle":
+          "bg-[var(--rm-red-900)] text-[var(--rm-red-fg-subtle)]",
+
+        // ── Green ────────────────────────────────────────────────────────
+        "green-solid":
+          "bg-[var(--rm-green-100)] text-[var(--rm-green-fg)]",
+        "green-subtle":
+          "bg-[var(--rm-green-900)] text-[var(--rm-green-fg-subtle)]",
+
+        // ── Legacy shadcn aliases (backward compat) ──────────────────────
+        // "default" was primary/yellow solid; "secondary" was gray neutral
+        default:
+          "bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)]",
         secondary:
-          "bg-secondary text-secondary-foreground [a]:hover:bg-secondary/80",
+          "bg-[var(--rm-gray-1)] text-[var(--rm-gray-fg-sub)] border-[var(--border)]",
         destructive:
-          "bg-destructive/10 text-destructive focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:focus-visible:ring-destructive/40 [a]:hover:bg-destructive/20",
+          "bg-[var(--rm-red-100)] text-[var(--rm-red-fg)]",
         outline:
-          "border-border text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground",
-        ghost:
-          "hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50",
-        link: "text-primary underline-offset-4 hover:underline",
+          "border-border text-foreground",
+      },
+      size: {
+        sm: "h-5 text-[length:var(--text-12)]",
+        md: "h-6 text-[length:var(--text-12)]",
+        lg: "h-7 text-[length:var(--text-14)]",
       },
     },
     defaultVariants: {
-      variant: "default",
+      variant: "neutral",
+      size: "md",
     },
   }
 )
 
+export type BadgeVariant = VariantProps<typeof badgeVariants>["variant"]
+export type BadgeSize = VariantProps<typeof badgeVariants>["size"]
+
 function Badge({
   className,
-  variant = "default",
-  render,
+  variant,
+  size,
   ...props
-}: useRender.ComponentProps<"span"> & VariantProps<typeof badgeVariants>) {
-  return useRender({
-    defaultTagName: "span",
-    props: mergeProps<"span">(
-      {
-        className: cn(badgeVariants({ variant }), className),
-      },
-      props
-    ),
-    render,
-    state: {
-      slot: "badge",
-      variant,
-    },
-  })
+}: React.ComponentProps<"span"> & VariantProps<typeof badgeVariants>) {
+  return (
+    <span
+      className={cn(badgeVariants({ variant, size }), className)}
+      {...props}
+    />
+  )
 }
 
 export { Badge, badgeVariants }

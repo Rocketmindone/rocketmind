@@ -61,6 +61,7 @@
 ## 🛠️ Commands
 ```bash
 cd design-system-docs && npm run dev  # localhost:3000
+npm run release                        # bump version + commit + push
 ```
 
-**Last updated:** 2026-03-14 | **Version:** 1.3
+**Last updated:** 2026-03-17 | **Version:** 1.5.0

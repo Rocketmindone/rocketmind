@@ -145,14 +145,14 @@ function FgRow({ token }: { token: string }) {
         className="col-span-2 px-3 py-2 flex items-center justify-between border-r border-border cursor-pointer"
         style={{ backgroundColor: `var(--rm-${token}-100)`, color: `var(${fgToken})` }}
         onMouseEnter={readHexes}
-        onClick={() => { navigator.clipboard.writeText(fgToken); toast.success("Скопировано в буфер обмена", { description: fgToken, duration: 2000 }) }}
+        onClick={() => { if (fgHex) { navigator.clipboard.writeText(fgHex); toast.success("Скопировано в буфер обмена", { description: `HEX: ${fgHex}`, duration: 2000 }) } }}
       >
-        <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] shrink-0">fg · {fgHex}</span>
         <div className="flex items-center gap-1.5 min-w-0">
+          <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] shrink-0">fg · {fgHex}</span>
           <span className="text-[10px] font-[family-name:var(--font-mono-family)] opacity-50 truncate">{fgToken}</span>
-          <div className="shrink-0" onClick={e => e.stopPropagation()}>
-            <CopyButton value={fgToken} label={fgToken} iconColor={`var(${fgToken})`} />
-          </div>
+        </div>
+        <div className="shrink-0" onClick={e => e.stopPropagation()}>
+          <CopyButton value={fgToken} label={fgToken} iconColor={`var(${fgToken})`} />
         </div>
       </div>
       {/* fg-subtle cell */}
@@ -160,14 +160,14 @@ function FgRow({ token }: { token: string }) {
         className="col-span-4 px-3 py-2 flex items-center justify-between cursor-pointer"
         style={{ backgroundColor: `var(--rm-${token}-900)`, color: `var(${fgsToken})` }}
         onMouseEnter={readHexes}
-        onClick={() => { navigator.clipboard.writeText(fgsToken); toast.success("Скопировано в буфер обмена", { description: fgsToken, duration: 2000 }) }}
+        onClick={() => { if (fgsHex) { navigator.clipboard.writeText(fgsHex); toast.success("Скопировано в буфер обмена", { description: `HEX: ${fgsHex}`, duration: 2000 }) } }}
       >
-        <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] shrink-0">fg-subtle · {fgsHex}</span>
         <div className="flex items-center gap-1.5 min-w-0">
+          <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] shrink-0">fg-subtle · {fgsHex}</span>
           <span className="text-[10px] font-[family-name:var(--font-mono-family)] opacity-50 truncate">{fgsToken}</span>
-          <div className="shrink-0" onClick={e => e.stopPropagation()}>
-            <CopyButton value={fgsToken} label={fgsToken} iconColor={`var(${fgsToken})`} />
-          </div>
+        </div>
+        <div className="shrink-0" onClick={e => e.stopPropagation()}>
+          <CopyButton value={fgsToken} label={fgsToken} iconColor={`var(${fgsToken})`} />
         </div>
       </div>
     </div>
@@ -204,6 +204,7 @@ const sections: NavSection[] = [
   ]},
   { id: "components", label: "Компоненты", subsections: [
     { id: "components-buttons", label: "Кнопки" },
+    { id: "components-badges",  label: "Бейджи" },
     { id: "components-inputs",  label: "Инпуты" },
     { id: "components-cards",   label: "Карточки" },
   ]},
@@ -1613,7 +1614,7 @@ export default function DesignSystemPage() {
                 ))
               })()}
               {/* Group labels row — visible only at md (7-col grid) */}
-              <div className="hidden md:flex md:col-span-3 border-t border-border border-r px-3 py-2 items-center">
+              <div className="hidden md:flex md:col-span-2 border-t border-border border-r px-3 py-2 items-center">
                 <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">фоны компонентов</span>
               </div>
               <div className="hidden md:flex md:col-span-2 border-t border-border border-r px-3 py-2 items-center">
@@ -1768,7 +1769,7 @@ export default function DesignSystemPage() {
               {(() => {
                 const fonts = [
                   { family: "Roboto Condensed", role: "Заголовки (H1–H4)", example: "ЗАГОЛОВОК СТРАНИЦЫ", css: "font-family: 'Roboto Condensed', sans-serif", fontClass: "font-[family-name:var(--font-heading-family)] font-bold uppercase" },
-                  { family: "Roboto Mono", role: "Навигация, кнопки, код", example: "НАВИГАЦИЯ / КНОПКИ", css: "font-family: 'Roboto Mono', monospace", fontClass: "font-[family-name:var(--font-mono-family)] font-medium uppercase tracking-wider" },
+                  { family: "Loos Condensed", role: "Навигация, кнопки, код", example: "НАВИГАЦИЯ / КНОПКИ", css: "font-family: 'Loos Condensed', sans-serif", fontClass: "font-[family-name:var(--font-mono-family)] font-medium uppercase tracking-wider" },
                   { family: "Roboto", role: "Основной текст, body", example: "Основной текст для описаний и контента страниц", css: "font-family: 'Roboto', sans-serif", fontClass: "" },
                   { family: "Shantell Sans", role: "Акцентные подписи, стикеры", example: "Рукописная подпись агента", css: "font-family: 'Shantell Sans', cursive", fontClass: "font-[family-name:var(--font-accent-family)]" },
                 ]
@@ -1818,16 +1819,16 @@ export default function DesignSystemPage() {
                     { label: "H3",           size: "31px", mobileSize: "25px", weight: "700", cls: "font-[family-name:var(--font-heading-family)] font-bold uppercase tracking-[-0.015em] leading-[1.1]",         tailwind: "text-[length:var(--text-25)] md:text-[length:var(--text-31)]" },
                     { label: "H4",           size: "25px", mobileSize: "19px", weight: "700", cls: "font-[family-name:var(--font-heading-family)] font-bold uppercase tracking-[-0.01em] leading-[1.2]",          tailwind: "text-[length:var(--text-19)] md:text-[length:var(--text-25)]" },
                     // Label
-                    { label: "Label-19",     size: "19px", mobileSize: "19px", weight: "600", cls: "font-[family-name:var(--font-mono-family)] font-semibold uppercase tracking-[0.06em] leading-none",           tailwind: "text-[length:var(--text-19)]" },
-                    { label: "Label-16",     size: "16px", mobileSize: "16px", weight: "500", cls: "font-[family-name:var(--font-mono-family)] font-medium uppercase tracking-[0.08em] leading-none",             tailwind: "text-[length:var(--text-16)]" },
-                    { label: "Label-14",     size: "14px", mobileSize: "14px", weight: "500", cls: "font-[family-name:var(--font-mono-family)] font-medium uppercase tracking-[0.08em] leading-none",             tailwind: "text-[length:var(--text-14)]" },
-                    { label: "Label-12",     size: "12px", mobileSize: "12px", weight: "500", cls: "font-[family-name:var(--font-mono-family)] font-medium uppercase tracking-[0.06em] leading-none",             tailwind: "text-[length:var(--text-12)]" },
+                    { label: "Label-19",     size: "19px", mobileSize: "19px", weight: "600", cls: "font-[family-name:var(--font-mono-family)] font-semibold uppercase tracking-[0.03em] leading-[1.2]",           tailwind: "text-[length:var(--text-19)]" },
+                    { label: "Label-16",     size: "16px", mobileSize: "16px", weight: "500", cls: "font-[family-name:var(--font-mono-family)] font-medium uppercase tracking-[0.04em] leading-[1.28]",             tailwind: "text-[length:var(--text-16)]" },
+                    { label: "Label-14",     size: "14px", mobileSize: "14px", weight: "500", cls: "font-[family-name:var(--font-mono-family)] font-medium uppercase tracking-[0.04em] leading-[1.24]",             tailwind: "text-[length:var(--text-14)]" },
+                    { label: "Label-12",     size: "12px", mobileSize: "12px", weight: "500", cls: "font-[family-name:var(--font-mono-family)] font-medium uppercase tracking-[0.04em] leading-[1.2]",             tailwind: "text-[length:var(--text-12)]" },
                     // Copy
-                    { label: "Copy-25",      size: "25px", mobileSize: "19px", weight: "400", cls: "leading-[1.4] tracking-[-0.01em]",                                                                       tailwind: "text-[length:var(--text-19)] md:text-[length:var(--text-25)]" },
-                    { label: "Copy-19",      size: "19px", mobileSize: "17px", weight: "400", cls: "leading-[1.4]",                                                                                                tailwind: "text-[length:var(--text-16)] md:text-[length:var(--text-19)]" },
-                    { label: "Copy-16",      size: "16px", mobileSize: "16px", weight: "400", cls: "leading-[1.4]",                                                                                               tailwind: "text-[length:var(--text-16)]" },
-                    { label: "Copy-14",      size: "14px", mobileSize: "14px", weight: "400", cls: "leading-[1.5] tracking-[0.01em]",                                                                             tailwind: "text-[length:var(--text-14)]" },
-                    { label: "Copy-12",      size: "12px", mobileSize: "12px", weight: "400", cls: "leading-[1.5] tracking-[0.02em]",                                                                             tailwind: "text-[length:var(--text-12)]" },
+                    { label: "Copy-24",      size: "24px", mobileSize: "19px", weight: "400", cls: "leading-[1.32]",                                                                                          tailwind: "text-[length:var(--text-19)] md:text-[length:var(--text-25)]" },
+                    { label: "Copy-18",      size: "18px", mobileSize: "17px", weight: "400", cls: "leading-[1.32]",                                                                                                tailwind: "text-[length:var(--text-16)] md:text-[length:var(--text-19)]" },
+                    { label: "Copy-16",      size: "16px", mobileSize: "16px", weight: "400", cls: "leading-[1.32]",                                                                                               tailwind: "text-[length:var(--text-16)]" },
+                    { label: "Copy-14",      size: "14px", mobileSize: "14px", weight: "400", cls: "leading-[1.4] tracking-[0.01em]",                                                                              tailwind: "text-[length:var(--text-14)]" },
+                    { label: "Copy-12",      size: "12px", mobileSize: "12px", weight: "400", cls: "leading-[1.4] tracking-[0.02em]",                                                                              tailwind: "text-[length:var(--text-12)]" },
                   ].map((t, i, arr) => (
                     <div key={t.label} className={`flex items-center gap-4 py-3 px-4 hover:bg-rm-gray-2/40 transition-colors group ${i < arr.length - 1 ? "border-b border-border" : ""}`}>
                       <Badge variant="secondary" className="w-16 justify-center text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] shrink-0">
@@ -1905,111 +1906,111 @@ export default function DesignSystemPage() {
                     {
                       label: "Label-19",
                       text: "AI-POWERED · БЕСПЛАТНО",
-                      cls: "font-[family-name:var(--font-mono-family)] font-semibold uppercase tracking-[0.06em] leading-none",
+                      cls: "font-[family-name:var(--font-mono-family)] font-semibold uppercase tracking-[0.03em] leading-[1.2]",
                       size: "19px",
                       mobileSize: "19px",
-                      letterSpacing: "0.06em",
-                      figmaSpacing: "6%",
-                      lineHeight: "1",
-                      figmaLineHeight: "100%",
-                      twCopy: "text-[length:var(--text-19)] font-[family-name:var(--font-mono-family)] font-semibold uppercase tracking-[0.06em] leading-none",
+                      letterSpacing: "0.03em",
+                      figmaSpacing: "3%",
+                      lineHeight: "1.2",
+                      figmaLineHeight: "120%",
+                      twCopy: "text-[length:var(--text-19)] font-[family-name:var(--font-mono-family)] font-semibold uppercase tracking-[0.03em] leading-[1.2]",
                     },
                     {
                       label: "Label-16",
                       text: "ПОПРОБОВАТЬ БЕСПЛАТНО",
-                      cls: "font-[family-name:var(--font-mono-family)] font-medium uppercase tracking-[0.08em] leading-none",
+                      cls: "font-[family-name:var(--font-mono-family)] font-medium uppercase tracking-[0.04em] leading-[1.28]",
                       size: "16px",
                       mobileSize: "16px",
-                      letterSpacing: "0.08em",
-                      figmaSpacing: "8%",
-                      lineHeight: "1",
-                      figmaLineHeight: "100%",
-                      twCopy: "text-[length:var(--text-16)] font-[family-name:var(--font-mono-family)] font-medium uppercase tracking-[0.08em] leading-none",
+                      letterSpacing: "0.04em",
+                      figmaSpacing: "4%",
+                      lineHeight: "1.28",
+                      figmaLineHeight: "128%",
+                      twCopy: "text-[length:var(--text-16)] font-[family-name:var(--font-mono-family)] font-medium uppercase tracking-[0.04em] leading-[1.28]",
                     },
                     {
                       label: "Label-14",
                       text: "ДОБАВИТЬ АГЕНТА",
-                      cls: "font-[family-name:var(--font-mono-family)] font-medium uppercase tracking-[0.08em] leading-none",
+                      cls: "font-[family-name:var(--font-mono-family)] font-medium uppercase tracking-[0.04em] leading-[1.24]",
                       size: "14px",
                       mobileSize: "14px",
-                      letterSpacing: "0.08em",
-                      figmaSpacing: "8%",
-                      lineHeight: "1",
-                      figmaLineHeight: "100%",
-                      twCopy: "text-[length:var(--text-14)] font-[family-name:var(--font-mono-family)] font-medium uppercase tracking-[0.08em] leading-none",
+                      letterSpacing: "0.04em",
+                      figmaSpacing: "4%",
+                      lineHeight: "1.24",
+                      figmaLineHeight: "124%",
+                      twCopy: "text-[length:var(--text-14)] font-[family-name:var(--font-mono-family)] font-medium uppercase tracking-[0.04em] leading-[1.24]",
                     },
                     {
                       label: "Label-12",
                       text: "ОТПРАВИТЬ",
-                      cls: "font-[family-name:var(--font-mono-family)] font-medium uppercase tracking-[0.06em] leading-none",
+                      cls: "font-[family-name:var(--font-mono-family)] font-medium uppercase tracking-[0.04em] leading-[1.2]",
                       size: "12px",
                       mobileSize: "12px",
-                      letterSpacing: "0.06em",
-                      figmaSpacing: "6%",
-                      lineHeight: "1",
-                      figmaLineHeight: "100%",
-                      twCopy: "text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] font-medium uppercase tracking-[0.06em] leading-none",
+                      letterSpacing: "0.04em",
+                      figmaSpacing: "4%",
+                      lineHeight: "1.2",
+                      figmaLineHeight: "120%",
+                      twCopy: "text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] font-medium uppercase tracking-[0.04em] leading-[1.2]",
                     },
                     // Copy
                     {
-                      label: "Copy-25",
+                      label: "Copy-24",
                       text: "Платформа AI-агентов, которая помогает бизнесу запускать проекты быстро и без лишних затрат.",
-                      cls: "leading-[1.4] tracking-[-0.01em]",
-                      size: "25px",
+                      cls: "leading-[1.32]",
+                      size: "24px",
                       mobileSize: "19px",
-                      letterSpacing: "-0.01em",
-                      figmaSpacing: "-1%",
-                      lineHeight: "1.4",
-                      figmaLineHeight: "140%",
-                      twCopy: "text-[length:var(--text-19)] md:text-[length:var(--text-25)] leading-[1.4] tracking-[-0.01em]",
+                      letterSpacing: "0",
+                      figmaSpacing: "0%",
+                      lineHeight: "1.32",
+                      figmaLineHeight: "132%",
+                      twCopy: "text-[length:var(--text-19)] md:text-[length:var(--text-25)] leading-[1.32]",
                     },
                     {
-                      label: "Copy-19",
+                      label: "Copy-18",
                       text: "Платформа AI-агентов, которая помогает малому бизнесу запускать проекты без найма специалистов.",
-                      cls: "leading-[1.4]",
-                      size: "19px",
+                      cls: "leading-[1.32]",
+                      size: "18px",
                       mobileSize: "17px",
                       letterSpacing: "0",
                       figmaSpacing: "0%",
-                      lineHeight: "1.4",
-                      figmaLineHeight: "140%",
-                      twCopy: "text-[length:var(--text-16)] md:text-[length:var(--text-19)] leading-[1.4]",
+                      lineHeight: "1.32",
+                      figmaLineHeight: "132%",
+                      twCopy: "text-[length:var(--text-16)] md:text-[length:var(--text-19)] leading-[1.32]",
                     },
                     {
                       label: "Copy-16",
                       text: "Rocketmind — сервис AI-агентов для ведения кейсов. Подключите нужного агента, опишите задачу и получите результат прямо в чате.",
-                      cls: "leading-[1.4]",
+                      cls: "leading-[1.32]",
                       size: "16px",
                       mobileSize: "16px",
                       letterSpacing: "0",
                       figmaSpacing: "0%",
-                      lineHeight: "1.4",
-                      figmaLineHeight: "140%",
-                      twCopy: "text-[length:var(--text-16)] leading-[1.4]",
+                      lineHeight: "1.32",
+                      figmaLineHeight: "132%",
+                      twCopy: "text-[length:var(--text-16)] leading-[1.32]",
                     },
                     {
                       label: "Copy-14",
                       text: "Подключите нужного агента, опишите задачу в свободной форме и получите профессиональный результат без лишних усилий.",
-                      cls: "leading-[1.5] tracking-[0.01em]",
+                      cls: "leading-[1.4] tracking-[0.01em]",
                       size: "14px",
                       mobileSize: "14px",
                       letterSpacing: "0.01em",
                       figmaSpacing: "1%",
-                      lineHeight: "1.5",
-                      figmaLineHeight: "150%",
-                      twCopy: "text-[length:var(--text-14)] leading-[1.5] tracking-[0.01em]",
+                      lineHeight: "1.4",
+                      figmaLineHeight: "140%",
+                      twCopy: "text-[length:var(--text-14)] leading-[1.4] tracking-[0.01em]",
                     },
                     {
                       label: "Copy-12",
                       text: "Последнее обновление: сегодня в 14:32. Версия агента 2.1.4. © 2026 Rocketmind",
-                      cls: "leading-[1.5] tracking-[0.02em]",
+                      cls: "leading-[1.4] tracking-[0.02em]",
                       size: "12px",
                       mobileSize: "12px",
                       letterSpacing: "0.02em",
                       figmaSpacing: "2%",
-                      lineHeight: "1.5",
-                      figmaLineHeight: "150%",
-                      twCopy: "text-[length:var(--text-12)] leading-[1.5] tracking-[0.02em]",
+                      lineHeight: "1.4",
+                      figmaLineHeight: "140%",
+                      twCopy: "text-[length:var(--text-12)] leading-[1.4] tracking-[0.02em]",
                     },
                   ].map((t, i, arr) => (
                     <div key={t.label} className={`flex gap-4 py-4 px-4 hover:bg-rm-gray-2/40 transition-colors group items-start ${i < arr.length - 1 ? "border-b border-border" : ""}`}>
@@ -2545,14 +2546,14 @@ export default function DesignSystemPage() {
           {/* ═══════ 6. COMPONENTS ═══════ */}
           <Section id="components" title="6. Компоненты" version={DS_VERSION}>
             <p className="text-muted-foreground mb-6">
-              Все компоненты — надстройка над shadcn/ui. Шрифт интерактивных элементов — Roboto Mono, uppercase.
+              Все компоненты — надстройка над shadcn/ui. Шрифт интерактивных элементов — Loos Condensed, uppercase.
               Flat-стиль, без glow-эффектов.
             </p>
 
             {/* ── Кнопки ── */}
             <div className="mb-12">
               <h3 id="components-buttons" className="scroll-mt-20 font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-2">Кнопки</h3>
-              <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">Roboto Mono, uppercase, tracking-[0.08em]. Четыре размера: LG (48px) / MD (40px, default) / SM (32px) / XS (28px).</p>
+              <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">Loos Condensed, uppercase, tracking-[0.08em]. Четыре размера: LG (48px) / MD (40px, default) / SM (32px) / XS (28px).</p>
 
               {/* Variants × Sizes table */}
               {(() => {
@@ -2576,9 +2577,8 @@ export default function DesignSystemPage() {
                     desc: "Главное действие на экране. Hero CTA, финальный шаг формы. Один на странице.",
                     token: "btn-primary",
                     render: (h, px, fs) => (
-                      <button className={`group relative overflow-hidden inline-flex items-center gap-2 ${h} ${px} rounded-sm bg-[var(--rm-yellow-100)] ${mono} ${fs} uppercase tracking-[0.08em] cursor-pointer`}>
-                        <span className="shrink-0 w-2 h-2 rounded-full bg-[var(--rm-yellow-fg)] transition-all duration-300 group-hover:scale-[50] group-hover:bg-black" />
-                        <span className={`relative z-10 text-[var(--rm-yellow-fg)] whitespace-nowrap transition-colors duration-300 group-hover:text-white`}>Запустить</span>
+                      <button className={`inline-flex items-center justify-center gap-2 ${h} ${px} rounded-sm bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] ${mono} ${fs} uppercase tracking-[0.08em] transition-all duration-150 hover:bg-[#FFE040] active:bg-[#E6B800] cursor-pointer`}>
+                        Запустить
                       </button>
                     ),
                   },
@@ -2588,7 +2588,7 @@ export default function DesignSystemPage() {
                     desc: "Второстепенное действие рядом с primary. Фильтры, переключатели.",
                     token: "btn-secondary",
                     render: (h, px, fs) => (
-                      <button className={`inline-flex items-center justify-center gap-2 ${h} ${px} rounded-sm border border-border bg-transparent text-foreground ${mono} ${fs} uppercase tracking-[0.08em] transition-all duration-150 hover:bg-accent cursor-pointer`}>
+                      <button className={`inline-flex items-center justify-center gap-2 ${h} ${px} rounded-sm border border-border bg-[var(--rm-gray-1)] text-foreground ${mono} ${fs} uppercase tracking-[0.08em] transition-all duration-150 hover:bg-[var(--rm-gray-2)] active:bg-[var(--rm-gray-3)] cursor-pointer`}>
                         Подробнее
                       </button>
                     ),
@@ -2599,7 +2599,7 @@ export default function DesignSystemPage() {
                     desc: "Тихое действие без фона. Навигация, вспомогательные inline-действия.",
                     token: "btn-ghost",
                     render: (h, px, fs) => (
-                      <button className={`inline-flex items-center justify-center gap-2 ${h} ${px} rounded-sm bg-transparent text-muted-foreground ${mono} ${fs} uppercase tracking-[0.08em] transition-all duration-150 hover:bg-accent hover:text-foreground cursor-pointer`}>
+                      <button className={`inline-flex items-center justify-center gap-2 ${h} ${px} rounded-sm bg-transparent text-muted-foreground ${mono} ${fs} uppercase tracking-[0.08em] transition-all duration-150 hover:bg-[var(--rm-gray-2)] hover:text-foreground active:bg-[var(--rm-gray-3)] active:text-foreground cursor-pointer`}>
                         Отмена
                       </button>
                     ),
@@ -2610,7 +2610,7 @@ export default function DesignSystemPage() {
                     desc: "Необратимые действия. Удаление, архивация. Требует диалог подтверждения.",
                     token: "btn-destructive",
                     render: (h, px, fs) => (
-                      <button className={`inline-flex items-center justify-center gap-2 ${h} ${px} rounded-sm bg-destructive text-white ${mono} ${fs} uppercase tracking-[0.08em] transition-all duration-150 hover:opacity-90 cursor-pointer`}>
+                      <button className={`inline-flex items-center justify-center gap-2 ${h} ${px} rounded-sm bg-destructive text-white ${mono} ${fs} uppercase tracking-[0.08em] transition-all duration-150 hover:opacity-90 active:opacity-75 cursor-pointer`}>
                         <Trash2 size={13} /> Удалить
                       </button>
                     ),
@@ -2654,13 +2654,93 @@ export default function DesignSystemPage() {
               {/* States */}
               <div className="border border-border rounded-lg overflow-hidden">
                 <p className="px-4 pt-4 pb-3 text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] uppercase tracking-wider text-muted-foreground">Состояния</p>
+                {/* Hover row */}
+                <p className="px-4 pb-2 text-[10px] font-[family-name:var(--font-mono-family)] uppercase tracking-wider text-muted-foreground/60">Hover</p>
                 <div className="flex flex-wrap items-end gap-4 px-4 pb-4">
                   <div className="flex flex-col items-start gap-1.5">
-                    <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-sm bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em] opacity-40 cursor-not-allowed">
-                      Disabled
+                    <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-sm bg-[#FFE040] text-[var(--rm-yellow-fg)] font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em]">
+                      Primary
                     </button>
-                    <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">opacity-40 pointer-events-none</span>
+                    <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">bg #FFE040 (–10%)</span>
                   </div>
+                  <div className="flex flex-col items-start gap-1.5">
+                    <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-sm border border-border bg-[var(--rm-gray-2)] text-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em]">
+                      Secondary
+                    </button>
+                    <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">bg --rm-gray-2</span>
+                  </div>
+                  <div className="flex flex-col items-start gap-1.5">
+                    <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-sm bg-[var(--rm-gray-2)] text-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em]">
+                      Ghost
+                    </button>
+                    <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">bg --rm-gray-2</span>
+                  </div>
+                  <div className="flex flex-col items-start gap-1.5">
+                    <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-sm bg-destructive text-white opacity-90 font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em]">
+                      <Trash2 size={13} /> Destructive
+                    </button>
+                    <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">opacity-90</span>
+                  </div>
+                </div>
+                {/* Pressed row */}
+                <p className="px-4 pb-2 text-[10px] font-[family-name:var(--font-mono-family)] uppercase tracking-wider text-muted-foreground/60">Pressed (active)</p>
+                <div className="flex flex-wrap items-end gap-4 px-4 pb-4">
+                  <div className="flex flex-col items-start gap-1.5">
+                    <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-sm bg-[#E6B800] text-[var(--rm-yellow-fg)] font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em]">
+                      Primary
+                    </button>
+                    <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">bg #E6B800 (–20%)</span>
+                  </div>
+                  <div className="flex flex-col items-start gap-1.5">
+                    <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-sm border border-border bg-[var(--rm-gray-3)] text-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em]">
+                      Secondary
+                    </button>
+                    <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">bg --rm-gray-3</span>
+                  </div>
+                  <div className="flex flex-col items-start gap-1.5">
+                    <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-sm bg-[var(--rm-gray-3)] text-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em]">
+                      Ghost
+                    </button>
+                    <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">bg --rm-gray-3</span>
+                  </div>
+                  <div className="flex flex-col items-start gap-1.5">
+                    <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-sm bg-destructive text-white opacity-75 font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em]">
+                      <Trash2 size={13} /> Destructive
+                    </button>
+                    <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">opacity-75</span>
+                  </div>
+                </div>
+                {/* Disabled row */}
+                <p className="px-4 pb-2 text-[10px] font-[family-name:var(--font-mono-family)] uppercase tracking-wider text-muted-foreground/60">Disabled</p>
+                <div className="flex flex-wrap items-end gap-4 px-4 pb-4">
+                  <div className="flex flex-col items-start gap-1.5">
+                    <button disabled className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-sm bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em] transition-all duration-150 disabled:opacity-40 disabled:pointer-events-none disabled:cursor-not-allowed">
+                      Primary
+                    </button>
+                    <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">opacity-40</span>
+                  </div>
+                  <div className="flex flex-col items-start gap-1.5">
+                    <button disabled className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-sm border border-border bg-[var(--rm-gray-1)] text-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em] transition-all duration-150 disabled:opacity-40 disabled:pointer-events-none disabled:cursor-not-allowed">
+                      Secondary
+                    </button>
+                    <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">opacity-40</span>
+                  </div>
+                  <div className="flex flex-col items-start gap-1.5">
+                    <button disabled className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-sm bg-transparent text-muted-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em] transition-all duration-150 disabled:opacity-30 disabled:pointer-events-none disabled:cursor-not-allowed">
+                      Ghost
+                    </button>
+                    <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">opacity-30</span>
+                  </div>
+                  <div className="flex flex-col items-start gap-1.5">
+                    <button disabled className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-sm bg-destructive text-white font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em] transition-all duration-150 disabled:opacity-40 disabled:pointer-events-none disabled:cursor-not-allowed">
+                      <Trash2 size={13} /> Destructive
+                    </button>
+                    <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">opacity-40</span>
+                  </div>
+                </div>
+                {/* Loading row */}
+                <p className="px-4 pb-2 text-[10px] font-[family-name:var(--font-mono-family)] uppercase tracking-wider text-muted-foreground/60">Loading</p>
+                <div className="flex flex-wrap items-end gap-4 px-4 pb-4">
                   <div className="flex flex-col items-start gap-1.5">
                     <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-sm bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em] opacity-80 cursor-wait">
                       <Loader2 size={13} className="animate-spin" /> Loading
@@ -2671,42 +2751,250 @@ export default function DesignSystemPage() {
               </div>
             </div>
 
-            {/* ── Инпуты ── */}
+            {/* ── Бейджи ── */}
             <div className="mb-12">
-              <h3 id="components-inputs" className="scroll-mt-20 font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">Инпуты</h3>
-              <div className="space-y-6">
-                <div className="p-6 rounded-md border border-border space-y-3">
-                  <div className="flex items-center justify-between">
-                    <Badge variant="outline" className="text-[length:var(--text-12)]">DEFAULT</Badge>
-                    <CopyButton
-                      value={`w-full h-10 px-4 rounded-sm border border-border bg-background text-foreground text-[length:var(--text-16)] placeholder:text-muted-foreground transition-all duration-150 focus:outline-none focus:border-ring`}
-                      label="Default Input"
-                    />
+              <h3 id="components-badges" className="scroll-mt-20 font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-2">Бейджи</h3>
+              <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">
+                Лейблы для статусов, категорий и тегов. Шрифт — Loos Latin, Cyrillic Condensed-Medium, uppercase.
+                Три размера: SM (20px) / MD (24px, default) / LG (28px). Два типа: solid (акцент) и subtle (фон).
+              </p>
+
+              {/* Variant × Size grid */}
+              {(() => {
+                const mono = "font-[family-name:var(--font-mono-family)]"
+
+                const colors: { label: string; solid: string; subtle: string }[] = [
+                  { label: "Neutral",     solid: "neutral",          subtle: "neutral" },
+                  { label: "Yellow",      solid: "yellow-solid",     subtle: "yellow-subtle" },
+                  { label: "Violet",      solid: "violet-solid",     subtle: "violet-subtle" },
+                  { label: "Sky",         solid: "sky-solid",        subtle: "sky-subtle" },
+                  { label: "Terracotta",  solid: "terracotta-solid", subtle: "terracotta-subtle" },
+                  { label: "Pink",        solid: "pink-solid",       subtle: "pink-subtle" },
+                  { label: "Blue",        solid: "blue-solid",       subtle: "blue-subtle" },
+                  { label: "Red",         solid: "red-solid",        subtle: "red-subtle" },
+                  { label: "Green",       solid: "green-solid",      subtle: "green-subtle" },
+                ]
+
+                const sizes: { label: string; size: "sm" | "md" | "lg" }[] = [
+                  { label: "SM / 20px", size: "sm" },
+                  { label: "MD / 24px", size: "md" },
+                  { label: "LG / 28px", size: "lg" },
+                ]
+
+                return (
+                  <div className="border border-border rounded-sm overflow-hidden">
+                    {/* Header row */}
+                    <div className="grid border-b border-border" style={{ gridTemplateColumns: "120px 1fr 1fr 1fr 1fr 1fr 1fr" }}>
+                      <div className={`px-3 py-2 bg-[var(--rm-gray-1)] text-[10px] ${mono} uppercase tracking-wider text-muted-foreground border-r border-border`}>Цвет</div>
+                      <div className={`px-3 py-2 bg-[var(--rm-gray-1)] text-[10px] ${mono} uppercase tracking-wider text-muted-foreground border-r border-border col-span-3`}>Solid</div>
+                      <div className={`px-3 py-2 bg-[var(--rm-gray-1)] text-[10px] ${mono} uppercase tracking-wider text-muted-foreground col-span-3`}>Subtle</div>
+                    </div>
+                    <div className="grid border-b border-border" style={{ gridTemplateColumns: "120px 1fr 1fr 1fr 1fr 1fr 1fr" }}>
+                      <div className="border-r border-border" />
+                      {sizes.map(s => (
+                        <div key={`sh-solid-${s.size}`} className={`px-3 py-1.5 text-[10px] ${mono} uppercase tracking-wider text-muted-foreground border-r border-border`}>{s.label}</div>
+                      ))}
+                      {sizes.map((s, i) => (
+                        <div key={`sh-subtle-${s.size}`} className={`px-3 py-1.5 text-[10px] ${mono} uppercase tracking-wider text-muted-foreground ${i < sizes.length - 1 ? "border-r border-border" : ""}`}>{s.label}</div>
+                      ))}
+                    </div>
+
+                    {/* Color rows */}
+                    {colors.map((c, ri) => (
+                      <div
+                        key={c.label}
+                        className="grid items-center"
+                        style={{ gridTemplateColumns: "120px 1fr 1fr 1fr 1fr 1fr 1fr", borderBottom: ri < colors.length - 1 ? "1px solid var(--border)" : undefined }}
+                      >
+                        <div className={`px-3 py-3 text-[10px] ${mono} uppercase tracking-wider text-muted-foreground border-r border-border`}>{c.label}</div>
+                        {/* Solid sizes */}
+                        {sizes.map(s => (
+                          <div key={`${c.label}-solid-${s.size}`} className="px-3 py-3 border-r border-border flex items-center">
+                            {/* @ts-expect-error variant union */}
+                            <Badge variant={c.solid} size={s.size}>{s.size === "lg" ? "Статус" : s.size === "md" ? "Тег" : "Мета"}</Badge>
+                          </div>
+                        ))}
+                        {/* Subtle sizes */}
+                        {sizes.map((s, i) => (
+                          <div key={`${c.label}-subtle-${s.size}`} className={`px-3 py-3 flex items-center ${i < sizes.length - 1 ? "border-r border-border" : ""}`}>
+                            {c.label === "Neutral"
+                              ? <span className={`text-[10px] ${mono} text-muted-foreground/50 italic`}>—</span>
+                              : (
+                                  // @ts-expect-error variant union
+                                  <Badge variant={c.subtle} size={s.size}>{s.size === "lg" ? "Статус" : s.size === "md" ? "Тег" : "Мета"}</Badge>
+                                )
+                            }
+                          </div>
+                        ))}
+                      </div>
+                    ))}
                   </div>
-                  <div className="flex flex-col gap-1.5 max-w-md">
-                    <label className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase tracking-[0.08em] text-muted-foreground">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      placeholder="example@rocketmind.ai"
-                      className="w-full h-10 px-4 rounded-sm border border-border bg-background text-foreground text-[length:var(--text-16)] placeholder:text-muted-foreground transition-all duration-150 focus:outline-none focus:border-ring"
-                    />
+                )
+              })()}
+
+              {/* Usage examples */}
+              <div className="mt-6 border border-border rounded-sm overflow-hidden">
+                <p className="px-4 py-2 text-[10px] font-[family-name:var(--font-mono-family)] uppercase tracking-wider text-muted-foreground bg-[var(--rm-gray-1)] border-b border-border">Контекстные примеры</p>
+                <div className="px-4 py-4 flex flex-col gap-4">
+                  {/* Card with badges */}
+                  <div className="flex items-center gap-2 p-3 border border-border rounded-sm">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[length:var(--text-14)] font-medium text-foreground truncate">AI-агент «Аналитик»</p>
+                      <p className="text-[length:var(--text-12)] text-muted-foreground mt-0.5">Финансовый анализ и прогнозирование</p>
+                    </div>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <Badge variant="green-subtle" size="sm">Активен</Badge>
+                      <Badge variant="violet-subtle" size="sm">Pro</Badge>
+                    </div>
+                  </div>
+                  {/* Status row */}
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)]">Статусы:</span>
+                    <Badge variant="green-solid" size="md">Активен</Badge>
+                    <Badge variant="yellow-solid" size="md">Ожидание</Badge>
+                    <Badge variant="red-solid" size="md">Ошибка</Badge>
+                    <Badge variant="neutral" size="md">Архив</Badge>
+                  </div>
+                  {/* Category tags */}
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)]">Категории:</span>
+                    <Badge variant="violet-subtle" size="sm">Аналитика</Badge>
+                    <Badge variant="sky-subtle" size="sm">Маркетинг</Badge>
+                    <Badge variant="terracotta-subtle" size="sm">Продажи</Badge>
+                    <Badge variant="pink-subtle" size="sm">HR</Badge>
+                  </div>
+                  {/* Hero badge lg */}
+                  <div className="flex items-center gap-3">
+                    <span className="text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)]">Hero-акцент LG:</span>
+                    <Badge variant="yellow-solid" size="lg">MVP 1.1</Badge>
+                    <Badge variant="violet-subtle" size="lg">AI-агент</Badge>
                   </div>
                 </div>
+              </div>
 
+              {/* Token reference */}
+              <div className="mt-4 border border-border rounded-sm overflow-hidden">
+                <p className="px-4 py-2 text-[10px] font-[family-name:var(--font-mono-family)] uppercase tracking-wider text-muted-foreground bg-[var(--rm-gray-1)] border-b border-border">Токены</p>
+                <div className="px-4 py-3 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-1">
+                  {[
+                    ["neutral", "bg: --rm-gray-1 + border: --border · text: --rm-gray-fg-sub"],
+                    ["{color}-solid", "bg: --rm-{color}-100 · text: --rm-{color}-fg"],
+                    ["{color}-subtle", "bg: --rm-{color}-900 · text: --rm-{color}-fg-subtle"],
+                    ["SM 20px", "h-5 · label-12 · tracking-[0.04em]"],
+                    ["MD 24px", "h-6 · label-12 · tracking-[0.04em]"],
+                    ["LG 28px", "h-7 · label-14 · tracking-[0.04em]"],
+                  ].map(([token, desc]) => (
+                    <div key={token} className="flex gap-2 py-0.5">
+                      <code className="text-[11px] font-[family-name:var(--font-mono-family)] text-[var(--rm-yellow-fg-subtle)] bg-[var(--rm-yellow-900)] px-1.5 rounded-sm shrink-0">{token}</code>
+                      <span className="text-[11px] text-muted-foreground font-[family-name:var(--font-mono-family)]">{desc}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* ── Инпуты ── */}
+            <div className="mb-12">
+              <h3 id="components-inputs" className="scroll-mt-20 font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-2">Инпуты</h3>
+              <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">Четыре размера идентичны кнопкам по высоте и padding: LG (48px) / MD (40px, default) / SM (32px) / XS (28px). Инпуты и кнопки одного размера выстраиваются в одну строку без подгонки.</p>
+
+              {/* Sizes × States table */}
+              {(() => {
+                const mono = "font-[family-name:var(--font-mono-family)]"
+                const sizes = [
+                  { id: "lg", label: "LG / 48px", h: "h-12", px: "px-6", fs: "text-[length:var(--text-16)]" },
+                  { id: "md", label: "MD / 40px", h: "h-10", px: "px-4", fs: "text-[length:var(--text-14)]" },
+                  { id: "sm", label: "SM / 32px", h: "h-8",  px: "px-3", fs: "text-[length:var(--text-12)]" },
+                  { id: "xs", label: "XS / 28px", h: "h-7",  px: "px-3", fs: "text-[length:var(--text-12)]" },
+                ]
+                const states: {
+                  id: string
+                  name: string
+                  desc: string
+                  render: (h: string, px: string, fs: string) => React.ReactNode
+                }[] = [
+                  {
+                    id: "default",
+                    name: "Default",
+                    desc: "Стандартное поле. border: --border, bg: --rm-gray-1.",
+                    render: (h, px, fs) => (
+                      <input
+                        type="text"
+                        placeholder="Email..."
+                        className={`w-full ${h} ${px} rounded-sm border border-border bg-rm-gray-1 text-foreground ${fs} placeholder:text-muted-foreground transition-all duration-150 focus:outline-none focus:border-ring`}
+                      />
+                    ),
+                  },
+                  {
+                    id: "error",
+                    name: "Error",
+                    desc: "Ошибка валидации. border: --destructive.",
+                    render: (h, px, fs) => (
+                      <input
+                        type="text"
+                        defaultValue="invalid"
+                        className={`w-full ${h} ${px} rounded-sm border border-destructive bg-rm-gray-1 text-foreground ${fs} transition-all duration-150 focus:outline-none`}
+                      />
+                    ),
+                  },
+                  {
+                    id: "disabled",
+                    name: "Disabled",
+                    desc: "Недоступно. opacity: 0.4, cursor: not-allowed.",
+                    render: (h, px, fs) => (
+                      <input
+                        type="text"
+                        disabled
+                        placeholder="Email..."
+                        className={`w-full ${h} ${px} rounded-sm border border-border bg-rm-gray-1 text-foreground ${fs} placeholder:text-muted-foreground transition-all duration-150 focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed`}
+                      />
+                    ),
+                  },
+                ]
+                return (
+                  <div className="border border-border rounded-lg overflow-hidden bg-border mb-6">
+                    <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr] gap-[1px]">
+                      {/* Header row */}
+                      <div className="bg-muted/60 px-4 py-3" />
+                      {sizes.map((s) => (
+                        <div key={s.id} className="bg-muted/60 px-4 py-3 flex items-center justify-center">
+                          <span className={`text-[10px] text-muted-foreground ${mono} uppercase tracking-wider`}>{s.label}</span>
+                        </div>
+                      ))}
+                      {/* Data rows */}
+                      {states.map((v) => (
+                        <React.Fragment key={v.id}>
+                          <div className="bg-background px-4 py-4 flex flex-col justify-center gap-1">
+                            <p className={`${mono} font-medium text-[length:var(--text-13)] uppercase tracking-wider`}>{v.name}</p>
+                            <p className={`text-[10px] text-muted-foreground ${mono} leading-relaxed`}>{v.desc}</p>
+                          </div>
+                          {sizes.map((s) => (
+                            <div key={s.id} className="bg-background px-3 py-4 flex items-center justify-center">
+                              {v.render(s.h, s.px, s.fs)}
+                            </div>
+                          ))}
+                        </React.Fragment>
+                      ))}
+                    </div>
+                  </div>
+                )
+              })()}
+
+              {/* Special variants */}
+              <div className="space-y-6">
                 <div className="p-6 rounded-md border border-border space-y-3">
                   <div className="flex items-center justify-between">
                     <Badge variant="outline" className="text-[length:var(--text-12)]">CHAT</Badge>
                     <CopyButton
-                      value={`w-full min-h-[48px] max-h-[200px] px-4 py-3 rounded-sm border border-border bg-background text-foreground text-[length:var(--text-16)] leading-[1.618] placeholder:text-muted-foreground resize-none overflow-auto transition-all duration-150 focus:outline-none focus:border-ring`}
+                      value={`w-full min-h-[48px] max-h-[200px] px-4 py-3 rounded-sm border border-border bg-rm-gray-1 text-foreground text-[length:var(--text-16)] leading-[1.618] placeholder:text-muted-foreground resize-none overflow-auto transition-all duration-150 focus:outline-none focus:border-ring`}
                       label="Chat Input"
                     />
                   </div>
+                  <p className="text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)]">Multiline textarea. Растёт по контенту, max-h-[200px].</p>
                   <textarea
                     placeholder="Напишите сообщение..."
                     rows={2}
-                    className="w-full min-h-[48px] max-h-[200px] px-4 py-3 rounded-sm border border-border bg-background text-foreground text-[length:var(--text-16)] leading-[1.618] placeholder:text-muted-foreground resize-none overflow-auto transition-all duration-150 focus:outline-none focus:border-ring max-w-md"
+                    className="w-full min-h-[48px] max-h-[200px] px-4 py-3 rounded-sm border border-border bg-rm-gray-1 text-foreground text-[length:var(--text-16)] leading-[1.618] placeholder:text-muted-foreground resize-none overflow-auto transition-all duration-150 focus:outline-none focus:border-ring max-w-md"
                   />
                 </div>
 
@@ -2714,16 +3002,17 @@ export default function DesignSystemPage() {
                   <div className="flex items-center justify-between">
                     <Badge variant="outline" className="text-[length:var(--text-12)]">CODE (OTP)</Badge>
                     <CopyButton
-                      value={`w-14 h-14 text-center rounded-sm border border-border bg-background text-foreground font-mono text-[length:var(--text-25)] tracking-[0.08em] transition-all duration-150 focus:outline-none focus:border-ring`}
+                      value={`w-14 h-14 text-center rounded-sm border border-border bg-rm-gray-1 text-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-25)] tracking-[0.08em] transition-all duration-150 focus:outline-none focus:border-ring`}
                       label="Code Input"
                     />
                   </div>
+                  <p className="text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)]">6 символов авторизации. Моноширинный шрифт, крупный.</p>
                   <div className="flex gap-2">
-                    {[1,2,3,4,5,6].map(i => (
+                    {[1, 2, 3, 4, 5, 6].map((i) => (
                       <input
                         key={i}
                         maxLength={1}
-                        className="w-14 h-14 text-center rounded-sm border border-border bg-background text-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-25)] tracking-[0.08em] transition-all duration-150 focus:outline-none focus:border-ring"
+                        className="w-14 h-14 text-center rounded-sm border border-border bg-rm-gray-1 text-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-25)] tracking-[0.08em] transition-all duration-150 focus:outline-none focus:border-ring"
                         defaultValue={i <= 3 ? String(i) : ""}
                       />
                     ))}
@@ -2731,17 +3020,17 @@ export default function DesignSystemPage() {
                 </div>
 
                 <div className="p-6 rounded-md border border-border space-y-3">
-                  <Badge variant="outline" className="text-[length:var(--text-12)]">ERROR STATE</Badge>
+                  <Badge variant="outline" className="text-[length:var(--text-12)]">WITH LABEL + ERROR</Badge>
                   <div className="flex flex-col gap-1.5 max-w-md">
-                    <label className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase tracking-[0.08em] text-muted-foreground">
+                    <label className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground">
                       Email
                     </label>
                     <input
                       type="email"
                       defaultValue="invalid-email"
-                      className="w-full h-10 px-4 rounded-sm border border-destructive bg-background text-foreground text-[length:var(--text-16)] transition-all duration-150 focus:outline-none"
+                      className="w-full h-10 px-4 rounded-sm border border-destructive bg-rm-gray-1 text-foreground text-[length:var(--text-14)] transition-all duration-150 focus:outline-none"
                     />
-                    <span className="text-[length:var(--text-14)] text-destructive">
+                    <span className="text-[length:var(--text-12)] text-destructive">
                       Введите корректный email
                     </span>
                   </div>
@@ -3557,8 +3846,9 @@ export default function DesignSystemPage() {
           {/* ═══════ 7. ICONS ═══════ */}
           <Section id="icons" title="7. Иконки" version={DS_VERSION}>
             <p className="text-muted-foreground mb-6">
-              Основная библиотека — <strong>Lucide Icons</strong>. Outline, 24px viewbox, stroke 1.5px.
-              Цвет наследуется через currentColor.
+              Основная библиотека — <strong>Lucide Icons</strong>. Outline, 24px viewbox, stroke 2px (фиксированный).
+              Цвет наследуется через currentColor. Толщина не масштабируется с размером:{" "}
+              <code className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] bg-rm-gray-3 px-1 py-0.5 rounded">strokeWidth={"{48/size}"}</code>.
             </p>
 
             <h3 id="icons-scale" className="scroll-mt-20 font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-19)] md:text-[length:var(--text-25)] uppercase tracking-[-0.01em] mb-4">
@@ -3566,16 +3856,16 @@ export default function DesignSystemPage() {
             </h3>
             <div className="flex flex-wrap items-end gap-6 mb-8">
               {[
-                { size: 12, label: "xs (12px)", tw: "size={12}" },
-                { size: 16, label: "sm (16px)", tw: "size={16}" },
-                { size: 20, label: "md (20px)", tw: "size={20}" },
-                { size: 24, label: "lg (24px)", tw: "size={24}" },
-                { size: 32, label: "xl (32px)", tw: "size={32}" },
-                { size: 40, label: "2xl (40px)", tw: "size={40}" },
+                { size: 12, label: "xs (12px)", tw: "size={12} strokeWidth={4}" },
+                { size: 16, label: "sm (16px)", tw: "size={16} strokeWidth={3}" },
+                { size: 20, label: "md (20px)", tw: "size={20} strokeWidth={2.4}" },
+                { size: 24, label: "lg (24px)", tw: "size={24} strokeWidth={2}" },
+                { size: 32, label: "xl (32px)", tw: "size={32} strokeWidth={1.5}" },
+                { size: 40, label: "2xl (40px)", tw: "size={40} strokeWidth={1.2}" },
               ].map((icon) => (
                 <div key={icon.size} className="flex flex-col items-center gap-2">
                   <div className="flex items-center justify-center w-16 h-16 rounded-md border border-border">
-                    <Rocket size={icon.size} className="text-muted-foreground" />
+                    <Rocket size={icon.size} strokeWidth={48/icon.size} className="text-muted-foreground" />
                   </div>
                   <div className="flex items-center gap-1">
                     <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] text-muted-foreground">{icon.label}</span>
@@ -3590,16 +3880,16 @@ export default function DesignSystemPage() {
             </h3>
             <div className="flex flex-wrap gap-3">
               {[
-                { icon: <Rocket size={20} />, name: "Rocket" },
-                { icon: <Sparkles size={20} />, name: "Sparkles" },
-                { icon: <Eye size={20} />, name: "Eye" },
-                { icon: <Zap size={20} />, name: "Zap" },
-                { icon: <Search size={20} />, name: "Search" },
-                { icon: <User size={20} />, name: "User" },
-                { icon: <Gem size={20} />, name: "Gem" },
-                { icon: <BookOpen size={20} />, name: "BookOpen" },
-                { icon: <ChevronRight size={20} />, name: "ChevronRight" },
-                { icon: <Loader2 size={20} className="animate-spin" />, name: "Loader2" },
+                { icon: <Rocket size={20} strokeWidth={2.4} />, name: "Rocket" },
+                { icon: <Sparkles size={20} strokeWidth={2.4} />, name: "Sparkles" },
+                { icon: <Eye size={20} strokeWidth={2.4} />, name: "Eye" },
+                { icon: <Zap size={20} strokeWidth={2.4} />, name: "Zap" },
+                { icon: <Search size={20} strokeWidth={2.4} />, name: "Search" },
+                { icon: <User size={20} strokeWidth={2.4} />, name: "User" },
+                { icon: <Gem size={20} strokeWidth={2.4} />, name: "Gem" },
+                { icon: <BookOpen size={20} strokeWidth={2.4} />, name: "BookOpen" },
+                { icon: <ChevronRight size={20} strokeWidth={2.4} />, name: "ChevronRight" },
+                { icon: <Loader2 size={20} strokeWidth={2.4} className="animate-spin" />, name: "Loader2" },
               ].map((item) => (
                 <div key={item.name} className="flex flex-col items-center gap-1.5 p-3 rounded-md border border-border hover:bg-rm-gray-3 transition-colors cursor-pointer group">
                   <div className="text-muted-foreground group-hover:text-foreground transition-colors">
@@ -3607,7 +3897,7 @@ export default function DesignSystemPage() {
                   </div>
                   <div className="flex items-center gap-1">
                     <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] text-muted-foreground">{item.name}</span>
-                    <CopyButton value={`<${item.name} size={20} />`} label={item.name} />
+                    <CopyButton value={`<${item.name} size={20} strokeWidth={2.4} />`} label={item.name} />
                   </div>
                 </div>
               ))}
@@ -3740,7 +4030,7 @@ export default function DesignSystemPage() {
                 <input
                   type="text"
                   placeholder="Кликни сюда..."
-                  className="w-full h-10 px-3 rounded-sm border bg-background text-foreground text-[length:var(--text-14)] outline-none"
+                  className="w-full h-10 px-3 rounded-sm border bg-rm-gray-1 text-foreground text-[length:var(--text-14)] outline-none"
                   style={{ borderColor: "var(--border)", transition: "border-color 200ms cubic-bezier(0.4,0,0.2,1)" }}
                   onFocus={(e) => { e.currentTarget.style.borderColor = "var(--rm-yellow-100)" }}
                   onBlur={(e) => { e.currentTarget.style.borderColor = "var(--border)" }}
