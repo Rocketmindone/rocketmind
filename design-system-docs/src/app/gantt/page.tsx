@@ -228,7 +228,7 @@ function CardItem({
       onDragEnd={onDragEnd}
       onDragOver={onDragOver}
       onDrop={onDrop}
-      className="rounded-md px-2.5 pt-1.5 pb-2 group/card relative"
+      className="rounded-lg px-2.5 pt-1.5 pb-2 group/card relative"
       style={{
         backgroundColor: cssVar(weekColor, '900'),
         border: `1px solid ${cssVar(weekColor, '300')}`,
@@ -837,7 +837,7 @@ export default function GanttPage() {
                             <div className="h-0.5 mx-1 rounded-full mb-1" style={{ backgroundColor: w.color }} />
                           )}
                           {cards.length === 0 && (
-                            <div className="min-h-[40px] rounded-md border border-dashed border-border/0 hover:border-border/40 transition-colors" />
+                            <div className="min-h-[40px] rounded-sm border border-dashed border-border/0 hover:border-border/40 transition-colors" />
                           )}
                         </div>
                       </div>

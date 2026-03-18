@@ -238,17 +238,17 @@ export function SiteHeader({ basePath = '', preview = false }: SiteHeaderProps) 
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-2 ml-4">
-            <button className="inline-flex items-center justify-center h-9 px-4 rounded-md border border-border bg-transparent text-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-accent cursor-pointer">
+            <button className="inline-flex items-center justify-center h-9 px-4 rounded-sm border border-transparent bg-secondary text-secondary-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] transition-all duration-150 hover:opacity-[0.88] active:opacity-[0.76] cursor-pointer">
               Войти
             </button>
-            <button className="inline-flex items-center justify-center h-9 px-4 rounded-md bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-[var(--rm-yellow-300)] cursor-pointer">
+            <button className="inline-flex items-center justify-center h-9 px-4 rounded-sm bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-[var(--rm-yellow-300)] cursor-pointer">
               Попробовать
             </button>
           </div>
 
           {/* Mobile hamburger */}
           <button
-            className="md:hidden ml-auto inline-flex items-center justify-center h-9 w-9 rounded-md border border-border bg-transparent text-muted-foreground hover:bg-accent hover:text-foreground transition-colors duration-150 cursor-pointer"
+            className="md:hidden ml-auto inline-flex items-center justify-center h-9 w-9 rounded-sm border border-border bg-transparent text-muted-foreground hover:bg-accent hover:text-foreground transition-colors duration-150 cursor-pointer"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-expanded={mobileOpen}
             aria-label={mobileOpen ? 'Закрыть меню' : 'Открыть меню'}
@@ -277,10 +277,10 @@ export function SiteHeader({ basePath = '', preview = false }: SiteHeaderProps) 
               О нас
             </a>
             <div className="flex flex-col gap-2 pt-4 mt-2 border-t border-border">
-              <button className="w-full inline-flex items-center justify-center h-10 px-4 rounded-md border border-border bg-transparent text-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-accent cursor-pointer">
+              <button className="w-full inline-flex items-center justify-center h-10 px-4 rounded-sm border border-transparent bg-secondary text-secondary-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] transition-all duration-150 hover:opacity-[0.88] active:opacity-[0.76] cursor-pointer">
                 Войти
               </button>
-              <button className="w-full inline-flex items-center justify-center h-10 px-4 rounded-md bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-[var(--rm-yellow-300)] cursor-pointer">
+              <button className="w-full inline-flex items-center justify-center h-10 px-4 rounded-sm bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-[var(--rm-yellow-300)] cursor-pointer">
                 Попробовать
               </button>
             </div>

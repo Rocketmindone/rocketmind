@@ -20,7 +20,7 @@ export function CopyButton({ value, label, iconColor }: { value: string; label?:
   return (
     <button
       onClick={handleCopy}
-      className={`inline-flex items-center justify-center w-7 h-7 rounded-md
+      className={`inline-flex items-center justify-center w-7 h-7 rounded-sm
                  ${iconColor ? "hover:bg-current/10" : "text-muted-foreground hover:text-foreground hover:bg-accent"}
                  transition-all duration-150 cursor-pointer shrink-0`}
       style={iconColor ? { color: iconColor } : undefined}

@@ -139,7 +139,7 @@ function ServiceCard({
             <Card className="border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] h-full group/card">
                 <CardContent className="p-6 md:p-8 flex flex-col h-full">
                     <div
-                        className="w-10 h-10 rounded-md flex items-center justify-center mb-5 transition-shadow duration-300"
+                        className="w-10 h-10 rounded-sm flex items-center justify-center mb-5 transition-shadow duration-300"
                         style={{ backgroundColor: `color-mix(in srgb, ${accentVar} 15%, transparent)` }}
                     >
                         <Icon size={20} style={{ color: accentVar }} />
@@ -168,7 +168,7 @@ function ServiceCard({
 /* ═══════ METHODOLOGY CARD ═══════ */
 function MethodCard({ title, description }: { title: string; description: string }) {
     return (
-        <div className="p-6 rounded-md border border-border bg-card/50 hover:bg-card transition-colors duration-300 group">
+        <div className="p-6 rounded-lg border border-border bg-card/50 hover:bg-card transition-colors duration-300 group">
             <h4 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-16)] uppercase tracking-[-0.005em] leading-[1.3] mb-2">
                 {title}
             </h4>
@@ -446,7 +446,7 @@ export default function SitePage() {
                     <div className="grid grid-cols-1 lg:grid-cols-[38fr_62fr] gap-10">
                         {/* Left — Description */}
                         <div className="space-y-6">
-                            <div className="p-6 md:p-8 rounded-md border border-border bg-card">
+                            <div className="p-6 md:p-8 rounded-lg border border-border bg-card">
                                 <GraduationCap size={24} className="text-[var(--rm-yellow-100)] mb-4" />
                                 <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-25)] uppercase tracking-[-0.005em] mb-3">
                                     Практикум по бизнес-дизайну для команд
@@ -457,7 +457,7 @@ export default function SitePage() {
                                 </p>
                             </div>
 
-                            <div className="p-6 md:p-8 rounded-md border border-border bg-card">
+                            <div className="p-6 md:p-8 rounded-lg border border-border bg-card">
                                 <BookOpen size={24} className="text-[var(--rm-violet-100)] mb-4" />
                                 <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-25)] uppercase tracking-[-0.005em] mb-3">
                                     Бизнес-дизайн. Быстрый старт
@@ -477,7 +477,7 @@ export default function SitePage() {
                             >
                                 Программы с ведущими бизнес-школами
                             </Badge>
-                            <div className="p-6 md:p-10 rounded-md border border-border bg-muted/30 relative overflow-hidden">
+                            <div className="p-6 md:p-10 rounded-lg border border-border bg-muted/30 relative overflow-hidden">
                                 <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[var(--rm-violet-100)] to-[var(--rm-yellow-100)]" />
                                 <p className="text-[length:var(--text-19)] md:text-[length:var(--text-25)] leading-[1.618] max-w-[600px]">
                                     Обучаем топ-менеджеров крупных компаний, помогаем трансформировать бизнес
@@ -533,7 +533,7 @@ export default function SitePage() {
                     </div>
 
                     {/* PIK Block */}
-                    <div className="p-8 md:p-12 rounded-md border border-[var(--rm-violet-100)]/30 bg-[var(--rm-violet-900)] relative overflow-hidden">
+                    <div className="p-8 md:p-12 rounded-lg border border-[var(--rm-violet-100)]/30 bg-[var(--rm-violet-900)] relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[var(--rm-violet-100)] rounded-full blur-[200px] opacity-10 pointer-events-none" />
                         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-[62fr_38fr] gap-8 items-center">
                             <div>
@@ -613,7 +613,7 @@ export default function SitePage() {
                         ].map((c, i) => (
                             <div
                                 key={i}
-                                className="p-6 rounded-md border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] group cursor-pointer flex flex-col"
+                                className="p-6 rounded-lg border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] group cursor-pointer flex flex-col"
                             >
                                 <div className="flex-1">
                                     <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-16)] uppercase tracking-[-0.005em] leading-[1.3] mb-3 group-hover:text-[var(--rm-yellow-100)] transition-colors">

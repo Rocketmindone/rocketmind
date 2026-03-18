@@ -8,7 +8,7 @@ export function ContactForm() {
             {/* Ambient Background Glow for dark areas if needed, assuming bg-background here */}
             <div className="container mx-auto px-5 lg:px-20 relative z-10">
                 <div className="max-w-3xl mx-auto">
-                    <div className="flex flex-col gap-10 rounded-xl border border-border bg-card p-6 md:p-12 bracket md:shadow-glow-subtle">
+                    <div className="flex flex-col gap-10 rounded-lg border border-border bg-card p-6 md:p-12 bracket md:shadow-glow-subtle">
                         <div className="text-center">
                             <h2 className="font-heading font-bold text-[32px] md:text-[40px] uppercase text-foreground tracking-[-0.01em] mb-4">
                                 Связаться с нами

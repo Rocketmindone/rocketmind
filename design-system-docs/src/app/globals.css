@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700;800&family=Roboto:wght@400;500&family=Shantell+Sans:wght@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700;800&family=Roboto:wght@400;500&family=Roboto+Mono:wght@400&family=Shantell+Sans:wght@400&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -67,7 +67,7 @@
   --text-size-80: var(--text-80);
 
   --radius-sm: 0.25rem;
-  --radius-md: 0.375rem;
+  --radius-md: 0.25rem;
   --radius-lg: 0.5rem;
   --radius-xl: 0.75rem;
   --radius-2xl: 1rem;
@@ -162,10 +162,47 @@
   --color-green-fg-subtle: var(--rm-green-fg-subtle);
 }
 
+@layer components {
+  .ds-token-chip {
+    display: inline-flex;
+    max-width: 100%;
+    align-items: center;
+    gap: 0.25rem;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--rm-gray-1);
+    padding: 0.125rem 0.5rem;
+    font-family: var(--font-caption-family);
+    font-size: var(--text-12);
+    line-height: 1.4;
+    letter-spacing: 0.01em;
+    color: var(--foreground);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+  }
+
+  .ds-token-caption {
+    font-family: var(--font-caption-family);
+    font-size: var(--text-12);
+    line-height: 1.4;
+    letter-spacing: 0.01em;
+  }
+
+  .ds-token-copy {
+    font-family: var(--font-body);
+    font-size: var(--text-14);
+    line-height: 1.4;
+    color: var(--muted-foreground);
+  }
+}
+
 :root {
   /* === Font families === */
   --font-heading-family: 'Roboto Condensed', sans-serif;
   --font-mono-family: 'Loos Condensed', sans-serif;
+  --font-caption-family: 'Roboto Mono', monospace;
   --font-body: 'Roboto', sans-serif;
   --font-accent-family: 'Shantell Sans', cursive;
 
@@ -216,8 +253,8 @@
   --card-foreground: var(--rm-gray-fg-main);
   --popover: #FFFFFF;
   --popover-foreground: var(--rm-gray-fg-main);
-  --secondary: var(--rm-gray-1);
-  --secondary-foreground: var(--rm-gray-fg-main);
+  --secondary: #121212;
+  --secondary-foreground: #FFFFFF;
   --accent-foreground: var(--rm-gray-fg-main);
   --destructive: #ED4843;
   --destructive-foreground: #FFFFFF;
@@ -258,8 +295,8 @@
   --rm-yellow-100: #FFCC00;
   --rm-yellow-300: #FFE066;
   --rm-yellow-500: #FFF0AA;
-  --rm-yellow-700: #FFF7CC;
-  --rm-yellow-900: #FFFEF3;
+  --rm-yellow-700: #FFF4BE;
+  --rm-yellow-900: #FFF9D9;
   --rm-yellow-fg: #3D2E00;        /* тёмно-коричневый — на solid #FFCC00 */
   --rm-yellow-fg-subtle: #5C4200; /* на 900/700/500 фоне */
 
@@ -268,7 +305,7 @@
   --rm-violet-300: #C4A0FB;
   --rm-violet-500: #DCC8FF;
   --rm-violet-700: #EDE0FF;
-  --rm-violet-900: #FBFAFE;
+  --rm-violet-900: #F7F2FE;
   --rm-violet-fg: #FFFFFF;
   --rm-violet-fg-subtle: #3D1A8A;
 
@@ -277,7 +314,7 @@
   --rm-terracotta-300: #FFA07A;
   --rm-terracotta-500: #FFD6AD;
   --rm-terracotta-700: #FFECE0;
-  --rm-terracotta-900: #FFFAF7;
+  --rm-terracotta-900: #FFF3EB;
   --rm-terracotta-fg: #FFFFFF;
   --rm-terracotta-fg-subtle: #5C1A00;
 
@@ -286,7 +323,7 @@
   --rm-sky-300: #8ADCF2;
   --rm-sky-500: #C3ECF7;
   --rm-sky-700: #E0F6FB;
-  --rm-sky-900: #F7FDFF;
+  --rm-sky-900: #EBF9FD;
   --rm-sky-fg: #FFFFFF;
   --rm-sky-fg-subtle: #0D4D5C;
 
@@ -295,7 +332,7 @@
   --rm-pink-300: #FF8FCA;
   --rm-pink-500: #FFB8D9;
   --rm-pink-700: #FFE0EF;
-  --rm-pink-900: #FFF8FC;
+  --rm-pink-900: #FFECF5;
   --rm-pink-fg: #FFFFFF;
   --rm-pink-fg-subtle: #6B0033;
 
@@ -304,7 +341,7 @@
   --rm-blue-300: #8A94EC;
   --rm-blue-500: #BFC4F3;
   --rm-blue-700: #E0E2FA;
-  --rm-blue-900: #F9FAFF;
+  --rm-blue-900: #F2F3FE;
   --rm-blue-fg: #FFFFFF;
   --rm-blue-fg-subtle: #0D1466;
 
@@ -313,7 +350,7 @@
   --rm-red-300: #F48A87;
   --rm-red-500: #FFBCBA;
   --rm-red-700: #FFE0DF;
-  --rm-red-900: #FFF9F8;
+  --rm-red-900: #FFECEB;
   --rm-red-fg: #FFFFFF;
   --rm-red-fg-subtle: #5C0A08;
 
@@ -321,8 +358,8 @@
   --rm-green-100: #9AF576;
   --rm-green-300: #C0F9A8;
   --rm-green-500: #D8F4CD;
-  --rm-green-700: #ECFAE6;
-  --rm-green-900: #F7FEF3;
+  --rm-green-700: #E4F8DC;
+  --rm-green-900: #F0FBEA;
   --rm-green-fg: #1A4A05;        /* зелёный светлый — тёмный текст */
   --rm-green-fg-subtle: #1A4A05;
 
@@ -342,7 +379,7 @@
   --border-on-colored: #7D61B1;
 
   /* === Border Radius === */
-  --radius: 0.375rem;
+  --radius: 0.25rem;
 
   /* === Shadows (flat) === */
   --shadow-sm: none;
@@ -380,6 +417,16 @@
   --sidebar-ring: #FFCC00;
 }
 
+code {
+  font-family: var(--font-caption-family);
+  font-weight: 400;
+}
+
+[class*="text-[length:var(--text-12)]"][class*="text-muted-foreground"]:not([class*="uppercase"]) {
+  font-family: var(--font-caption-family) !important;
+  font-weight: 400;
+}
+
 .dark {
   /* === Rocketmind Gray Scale (Dark) ===
    * 1 — Subtle surface          (bg-rm-gray-1)
@@ -414,8 +461,8 @@
   --card-foreground: var(--rm-gray-fg-main);
   --popover: #121212;
   --popover-foreground: var(--rm-gray-fg-main);
-  --secondary: var(--rm-gray-1);
-  --secondary-foreground: var(--rm-gray-fg-main);
+  --secondary: #FFFFFF;
+  --secondary-foreground: #121212;
   --accent-foreground: var(--rm-gray-fg-main);
   --destructive: #FF6B6B;
   --destructive-foreground: #FFFFFF;

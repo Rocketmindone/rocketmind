@@ -13,60 +13,60 @@ const badgeVariants = cva(
 
         // ── Yellow ───────────────────────────────────────────────────────
         "yellow-solid":
-          "bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)]",
+          "bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] border-[var(--rm-yellow-700)]",
         "yellow-subtle":
-          "bg-[var(--rm-yellow-900)] text-[var(--rm-yellow-fg-subtle)]",
+          "bg-[var(--rm-yellow-900)] text-[var(--rm-yellow-fg-subtle)] border-[var(--rm-yellow-700)]",
 
         // ── Violet ───────────────────────────────────────────────────────
         "violet-solid":
-          "bg-[var(--rm-violet-100)] text-[var(--rm-violet-fg)]",
+          "bg-[var(--rm-violet-100)] text-[var(--rm-violet-fg)] border-[var(--rm-violet-700)]",
         "violet-subtle":
-          "bg-[var(--rm-violet-900)] text-[var(--rm-violet-fg-subtle)]",
+          "bg-[var(--rm-violet-900)] text-[var(--rm-violet-fg-subtle)] border-[var(--rm-violet-700)]",
 
         // ── Sky ──────────────────────────────────────────────────────────
         "sky-solid":
-          "bg-[var(--rm-sky-100)] text-[var(--rm-sky-fg)]",
+          "bg-[var(--rm-sky-100)] text-[var(--rm-sky-fg)] border-[var(--rm-sky-700)]",
         "sky-subtle":
-          "bg-[var(--rm-sky-900)] text-[var(--rm-sky-fg-subtle)]",
+          "bg-[var(--rm-sky-900)] text-[var(--rm-sky-fg-subtle)] border-[var(--rm-sky-700)]",
 
         // ── Terracotta ───────────────────────────────────────────────────
         "terracotta-solid":
-          "bg-[var(--rm-terracotta-100)] text-[var(--rm-terracotta-fg)]",
+          "bg-[var(--rm-terracotta-100)] text-[var(--rm-terracotta-fg)] border-[var(--rm-terracotta-700)]",
         "terracotta-subtle":
-          "bg-[var(--rm-terracotta-900)] text-[var(--rm-terracotta-fg-subtle)]",
+          "bg-[var(--rm-terracotta-900)] text-[var(--rm-terracotta-fg-subtle)] border-[var(--rm-terracotta-700)]",
 
         // ── Pink ─────────────────────────────────────────────────────────
         "pink-solid":
-          "bg-[var(--rm-pink-100)] text-[var(--rm-pink-fg)]",
+          "bg-[var(--rm-pink-100)] text-[var(--rm-pink-fg)] border-[var(--rm-pink-700)]",
         "pink-subtle":
-          "bg-[var(--rm-pink-900)] text-[var(--rm-pink-fg-subtle)]",
+          "bg-[var(--rm-pink-900)] text-[var(--rm-pink-fg-subtle)] border-[var(--rm-pink-700)]",
 
         // ── Blue ─────────────────────────────────────────────────────────
         "blue-solid":
-          "bg-[var(--rm-blue-100)] text-[var(--rm-blue-fg)]",
+          "bg-[var(--rm-blue-100)] text-[var(--rm-blue-fg)] border-[var(--rm-blue-700)]",
         "blue-subtle":
-          "bg-[var(--rm-blue-900)] text-[var(--rm-blue-fg-subtle)]",
+          "bg-[var(--rm-blue-900)] text-[var(--rm-blue-fg-subtle)] border-[var(--rm-blue-700)]",
 
         // ── Red ──────────────────────────────────────────────────────────
         "red-solid":
-          "bg-[var(--rm-red-100)] text-[var(--rm-red-fg)]",
+          "bg-[var(--rm-red-100)] text-[var(--rm-red-fg)] border-[var(--rm-red-700)]",
         "red-subtle":
-          "bg-[var(--rm-red-900)] text-[var(--rm-red-fg-subtle)]",
+          "bg-[var(--rm-red-900)] text-[var(--rm-red-fg-subtle)] border-[var(--rm-red-700)]",
 
         // ── Green ────────────────────────────────────────────────────────
         "green-solid":
-          "bg-[var(--rm-green-100)] text-[var(--rm-green-fg)]",
+          "bg-[var(--rm-green-100)] text-[var(--rm-green-fg)] border-[var(--rm-green-700)]",
         "green-subtle":
-          "bg-[var(--rm-green-900)] text-[var(--rm-green-fg-subtle)]",
+          "bg-[var(--rm-green-900)] text-[var(--rm-green-fg-subtle)] border-[var(--rm-green-700)]",
 
         // ── Legacy shadcn aliases (backward compat) ──────────────────────
         // "default" was primary/yellow solid; "secondary" was gray neutral
         default:
-          "bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)]",
+          "bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] border-[var(--rm-yellow-700)]",
         secondary:
           "bg-[var(--rm-gray-1)] text-[var(--rm-gray-fg-sub)] border-[var(--border)]",
         destructive:
-          "bg-[var(--rm-red-100)] text-[var(--rm-red-fg)]",
+          "bg-[var(--rm-red-100)] text-[var(--rm-red-fg)] border-[var(--rm-red-700)]",
         outline:
           "border-border text-foreground",
       },

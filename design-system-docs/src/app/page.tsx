@@ -18,9 +18,16 @@ import { toast } from "sonner"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
 import { GridGuides } from "@/components/ui/guide-grid"
 import { SiteHeader } from "@/components/ui/site-header"
+import { SearchComboboxShowcase } from "@/components/ui/search-combobox-showcase"
+import { TextareaShowcase } from "@/components/ui/textarea-showcase"
+import { CheckboxShowcase } from "@/components/ui/checkbox-showcase"
+import { RadioShowcase } from "@/components/ui/radio-showcase"
+import { SwitchShowcase } from "@/components/ui/switch-showcase"
+import { NoteShowcase } from "@/components/ui/note-showcase"
+import { TableShowcase } from "@/components/ui/table-showcase"
 import { Accordion } from "@base-ui/react"
 
-const DS_VERSION = "1.5.0"
+const DS_VERSION = "1.5.6"
 
 /* ───────── COLOR BLOCK HELPERS ───────── */
 
@@ -174,8 +181,18 @@ function FgRow({ token }: { token: string }) {
   )
 }
 
-const DS_DATE = "2026-03-17"
+const DS_DATE = "2026-03-18"
 const BASE_PATH = process.env.NODE_ENV === "production" ? "/rocketmind-design-system" : ""
+
+function TokenChip({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode
+  className?: string
+}) {
+  return <code className={`ds-token-chip ${className}`.trim()}>{children}</code>
+}
 
 /* ───────── NAV DATA ───────── */
 type SubSection = { id: string; label: string }
@@ -205,7 +222,15 @@ const sections: NavSection[] = [
   { id: "components", label: "Компоненты", subsections: [
     { id: "components-buttons", label: "Кнопки" },
     { id: "components-badges",  label: "Бейджи" },
+    { id: "components-tabs",    label: "Табы" },
+    { id: "components-checkboxes", label: "Чекбоксы" },
+    { id: "components-radio",   label: "Радио" },
+    { id: "components-switch",  label: "Тумблер" },
+    { id: "components-notes",   label: "Примечания / Notes" },
+    { id: "components-tables",  label: "Таблицы" },
     { id: "components-inputs",  label: "Инпуты" },
+    { id: "components-textarea",  label: "Textarea" },
+    { id: "components-search",  label: "Поиск / Combobox" },
     { id: "components-cards",   label: "Карточки" },
   ]},
   { id: "tooltips", label: "Тултипы", subsections: [
@@ -462,7 +487,7 @@ function TooltipDemo({ label, content }: { label: string; content: React.ReactNo
           className="tooltip-enter fixed z-50 pointer-events-none"
           style={{ top: pos.top, left: pos.left, transform: "translateX(-50%)" }}
         >
-          <div className="rounded-lg border border-border bg-popover shadow-xl p-3 w-48 text-[length:var(--text-12)] leading-relaxed">
+          <div className="rounded-sm border border-border bg-popover shadow-xl p-3 w-48 text-[length:var(--text-12)] leading-relaxed">
             {content}
           </div>
         </div>
@@ -492,7 +517,7 @@ function MascotCard({ mascot, activeState }: { mascot: typeof MASCOTS[0]; active
   }
 
   return (
-    <div className="flex flex-col rounded-sm border border-border overflow-hidden">
+    <div className="flex flex-col rounded-lg border border-border overflow-hidden">
       <div className="bg-rm-gray-2/30 flex items-end justify-center h-44 relative">
         <img
           src={imgPath}
@@ -540,7 +565,7 @@ function MascotCard({ mascot, activeState }: { mascot: typeof MASCOTS[0]; active
             className="tooltip-enter fixed z-50 w-56 pointer-events-none"
             style={{ top: tooltip.top, right: tooltip.right }}
           >
-            <div className="rounded-lg border border-border bg-popover shadow-xl p-3 text-[length:var(--text-12)] leading-relaxed">
+            <div className="rounded-sm border border-border bg-popover shadow-xl p-3 text-[length:var(--text-12)] leading-relaxed">
               <p className="font-semibold text-foreground mb-0.5">{mascot.role}</p>
               <p className="text-muted-foreground mb-2 italic">{mascot.character}</p>
               <ul className="space-y-1">
@@ -739,7 +764,7 @@ function DotGridDemo() {
         </button>
       </div>
       <div
-        className="relative rounded-md border border-border overflow-hidden h-[220px] cursor-crosshair"
+        className="relative rounded-lg border border-border overflow-hidden h-[220px] cursor-crosshair"
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
       >
@@ -768,7 +793,7 @@ function AnimatedGridLinesDemo() {
       >
         ↺ Повторить
       </button>
-      <div className="relative rounded-md border border-border overflow-hidden h-[280px] bg-background">
+      <div className="relative rounded-lg border border-border overflow-hidden h-[280px] bg-background">
         <style>{`
           @keyframes line-h {
             from { opacity: 0; transform: scaleX(0); }
@@ -849,14 +874,14 @@ function TokenRow({
   desc: string
 }) {
   return (
-    <div className="flex items-center gap-3 py-2 px-3 rounded-md hover:bg-rm-gray-3/50 transition-colors group">
-      <code className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] text-foreground bg-rm-gray-2 px-2 py-0.5 rounded min-w-[180px]">
+    <div className="flex items-center gap-3 py-2 px-3 rounded-sm hover:bg-rm-gray-3/50 transition-colors group">
+      <TokenChip className="min-w-[180px]">
         {token}
-      </code>
-      <span className="text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)] min-w-[100px]">
+      </TokenChip>
+      <span className="ds-token-caption text-muted-foreground min-w-[100px]">
         {value}
       </span>
-      <span className="text-[length:var(--text-14)] text-muted-foreground flex-1">{desc}</span>
+      <span className="ds-token-copy flex-1">{desc}</span>
       <CopyButton value={token} label={token} />
     </div>
   )
@@ -867,13 +892,13 @@ function TimingRow({ token, ms, desc }: { token: string; ms: number; desc: strin
   const maxMs = 1600
   const width = Math.round((ms / maxMs) * 100)
   return (
-    <div className="py-2.5 px-3 rounded-md hover:bg-rm-gray-3/50 transition-colors group">
+    <div className="py-2.5 px-3 rounded-sm hover:bg-rm-gray-3/50 transition-colors group">
       <div className="flex items-center gap-3 mb-1.5">
-        <code className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] text-foreground bg-rm-gray-2 px-2 py-0.5 rounded min-w-[200px]">
+        <TokenChip className="min-w-[200px]">
           {token}
-        </code>
-        <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] text-muted-foreground min-w-[50px]">{ms}ms</span>
-        <span className="text-[length:var(--text-14)] text-muted-foreground flex-1">{desc}</span>
+        </TokenChip>
+        <span className="ds-token-caption text-muted-foreground min-w-[50px]">{ms}ms</span>
+        <span className="ds-token-copy flex-1">{desc}</span>
         <CopyButton value={token} label={token} />
       </div>
       <div className="h-1.5 bg-rm-gray-2 rounded-full overflow-hidden ml-3">
@@ -912,7 +937,7 @@ function EasingDemo({ token, curve, desc }: { token: string; curve: string; desc
     <div className="p-4 bg-card">
       <div className="flex items-start justify-between mb-3 gap-2">
         <div>
-          <code className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] text-foreground bg-rm-gray-2 px-1.5 py-0.5 rounded">{token}</code>
+          <code className="text-[length:var(--text-12)] font-[family-name:var(--font-caption-family)] text-foreground bg-rm-gray-2 px-1.5 py-0.5 rounded">{token}</code>
           <p className="text-[length:var(--text-12)] text-muted-foreground mt-1 leading-relaxed">{desc}</p>
         </div>
         <button
@@ -923,7 +948,7 @@ function EasingDemo({ token, curve, desc }: { token: string; curve: string; desc
           Play
         </button>
       </div>
-      <div className="h-8 bg-rm-gray-2/50 rounded-md relative overflow-hidden flex items-center px-2">
+      <div className="h-8 bg-rm-gray-2/50 rounded-sm relative overflow-hidden flex items-center px-2">
         <div ref={ballRef} className="w-4 h-4 rounded-full bg-[var(--rm-yellow-100)] shrink-0" style={{ transform: "translateX(0)" }} />
       </div>
       <p className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] text-muted-foreground/60 mt-2 truncate">{curve}</p>
@@ -934,7 +959,7 @@ function EasingDemo({ token, curve, desc }: { token: string; curve: string; desc
 /* ───────── ANIMATION DEMO CARD ───────── */
 function AnimDemoCard({ label, desc, children }: { label: string; desc: string; children: React.ReactNode }) {
   return (
-    <div className="p-5 rounded-md border border-border bg-card flex flex-col gap-3">
+    <div className="p-5 rounded-lg border border-border bg-card flex flex-col gap-3">
       <div>
         <p className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] uppercase tracking-wider text-foreground font-medium">{label}</p>
         <p className="text-[length:var(--text-12)] text-muted-foreground mt-0.5 leading-relaxed">{desc}</p>
@@ -960,7 +985,7 @@ function ToggleAnimCard({
   }
 
   return (
-    <div className="p-4 rounded-md border border-border bg-card flex flex-col gap-3">
+    <div className="p-4 rounded-lg border border-border bg-card flex flex-col gap-3">
       <div>
         <p className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] uppercase tracking-wider text-foreground font-medium">{label}</p>
         <p className="text-[length:var(--text-12)] text-muted-foreground mt-0.5 leading-relaxed">{desc}</p>
@@ -980,6 +1005,54 @@ function ToggleAnimCard({
       >
         Воспроизвести
       </button>
+    </div>
+  )
+}
+
+function RadiusTokenCard({
+  label,
+  value,
+  token,
+  tailwind,
+  usage,
+  note,
+  children,
+}: {
+  label: string
+  value: string
+  token: string
+  tailwind: string
+  usage: string
+  note: string
+  children: React.ReactNode
+}) {
+  return (
+    <div className="rounded-lg border border-border bg-card overflow-hidden">
+      <div className="border-b border-border px-4 py-3">
+        <div className="flex items-center gap-2 mb-1.5">
+          <Badge variant="outline" className="px-2 py-0">{label}</Badge>
+          <span className="text-[length:var(--text-14)] font-[family-name:var(--font-mono-family)] font-medium">{value}</span>
+        </div>
+        <p className="text-[length:var(--text-12)] text-muted-foreground">{usage}</p>
+      </div>
+
+      <div className="p-4 bg-rm-gray-2/20">
+        {children}
+      </div>
+
+      <div className="border-t border-border px-4 py-3 space-y-2">
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] uppercase tracking-[0.08em] text-muted-foreground font-[family-name:var(--font-mono-family)]">Token</span>
+          <TokenChip>{token}</TokenChip>
+          <CopyButton value={token} label={`Токен: ${token}`} />
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] uppercase tracking-[0.08em] text-muted-foreground font-[family-name:var(--font-mono-family)]">Tailwind</span>
+          <TokenChip>{tailwind}</TokenChip>
+          <CopyButton value={tailwind} label={`Tailwind: ${tailwind}`} />
+        </div>
+        <p className="text-[length:var(--text-12)] text-muted-foreground">{note}</p>
+      </div>
     </div>
   )
 }
@@ -1062,10 +1135,66 @@ type VersionEntry = {
 
 const VERSION_HISTORY: VersionEntry[] = [
   {
+    version: "1.5.6",
+    date: "2026-03-18",
+    title: "Tables for DS Web",
+    current: true,
+    added: [
+      "В раздел «Компоненты» добавлен новый подраздел Таблицы с инструкцией и живыми примерами",
+      "Зафиксированы основные паттерны таблиц: basic, striped, bordered, interactive, operational и large dataset",
+      "Добавлен showcase для базовой, striped, bordered, interactive и operational-таблиц на токенах Rocketmind",
+    ],
+    improved: [
+      "Virtualized table адаптирован как large dataset pattern: визуально без нового стиля, с progressive reveal через `Show more`",
+      "Документация синхронизирована между `design-system.md` и `design-system-docs`",
+    ],
+  },
+  {
+    version: "1.5.5",
+    date: "2026-03-18",
+    title: "Checkbox + Radio for DS Web",
+    added: [
+      "В раздел «Компоненты» добавлены новые подразделы Чекбоксы и Радио с инструкцией и живыми примерами",
+      "Зафиксированы состояния checkbox: default, disabled, disabled checked, disabled indeterminate, indeterminate",
+      "Зафиксированы сценарии radio: default, disabled, required, headless, standalone",
+      "Добавлены UI-примитивы Checkbox и Radio на токенах Rocketmind для дальнейшего переиспользования",
+    ],
+    improved: [
+      "Семантика сведена к operational-набору Rocketmind без лишних декоративных вариантов",
+      "Документация синхронизирована между `design-system.md` и `design-system-docs`",
+    ],
+  },
+  {
+    version: "1.5.3",
+    date: "2026-03-18",
+    title: "Textarea for DS Web",
+    added: [
+      "В раздел «Компоненты» добавлен новый подраздел Textarea с инструкцией и живыми примерами",
+      "Зафиксированы состояния Textarea: default, disabled и error",
+      "Добавлен UI-примитив Textarea с вариантами `default` и `chat` на токенах Rocketmind",
+    ],
+    improved: [
+      "Multiline-поле вынесено из частного примера внутри Inputs в отдельный компонентный паттерн",
+      "Документация синхронизирована между `design-system.md` и `design-system-docs`",
+    ],
+  },
+  {
+    version: "1.5.1",
+    date: "2026-03-17",
+    title: "Roboto Mono for Caption & Code",
+    added: [
+      "В раздел «Шрифты» добавлен Roboto Mono как отдельная гарнитура для caption и code",
+      "В подраздел «Типографика» добавлены отдельные начертания Caption-14 и Code-14",
+    ],
+    improved: [
+      "Все code-элементы на странице используют Roboto Mono Regular через глобальное правило",
+      "Caption-стили на странице дизайн-системы приведены к Roboto Mono Regular без изменения label/navigation/button-паттернов",
+    ],
+  },
+  {
     version: "1.5.0",
     date: "2026-03-17",
     title: "Loos Condensed & Badge System Cleanup",
-    current: true,
     added: [
       "Полный summary версии 1.5.0 добавлен в конец страницы дизайн-системы",
       "Сайдбарный бейдж версии приведён к общему стилю Badge-компонента",
@@ -1169,7 +1298,7 @@ function VersionHistory() {
         {VERSION_HISTORY.map((entry) => {
           const isOpen = openVersions.includes(entry.version)
           return (
-            <div key={entry.version} className="rounded-md border border-border overflow-hidden">
+            <div key={entry.version} className="rounded-lg border border-border overflow-hidden">
               <button
                 onClick={() => toggle(entry.version)}
                 className="w-full flex items-center gap-4 p-4 text-left hover:bg-rm-gray-2/50 transition-colors"
@@ -1521,7 +1650,7 @@ export default function DesignSystemPage() {
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {group.items.map((item) => (
-                    <div key={item.file} className="rounded-sm border border-border overflow-hidden">
+                    <div key={item.file} className="rounded-lg border border-border overflow-hidden">
                       <div className="flex items-center justify-center p-8" style={{ backgroundColor: item.bg }}>
                         <img src={`${BASE_PATH}/${item.file}.svg`} alt={item.label} className={`${group.imgH} w-auto`} />
                       </div>
@@ -1534,7 +1663,7 @@ export default function DesignSystemPage() {
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <code className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] text-muted-foreground bg-rm-gray-2 px-2 py-0.5 rounded flex-1 truncate">
+                          <code className="text-[length:var(--text-12)] font-[family-name:var(--font-caption-family)] text-muted-foreground bg-rm-gray-2 px-2 py-0.5 rounded flex-1 truncate">
                             {item.imgClass}
                           </code>
                           <CopyButton value={item.imgClass} label={item.label} />
@@ -1584,7 +1713,7 @@ export default function DesignSystemPage() {
                 </div>
               ))}
             </div>
-            <div className="rounded-md border border-border bg-rm-gray-2/40 px-4 py-3 text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)] mb-10 leading-relaxed">
+            <div className="rounded-lg border border-border bg-rm-gray-2/40 px-4 py-3 text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)] mb-10 leading-relaxed">
               Background (#FAFAFA / #0A0A0A) — фон страницы, всегда первый слой.
               Card (#FFFFFF / #121212) — поверхность карточек и поповеров поверх Background.
             </div>
@@ -1731,11 +1860,11 @@ export default function DesignSystemPage() {
               Инвертированные поверхности
             </h3>
             <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">
-              Блоки с акцентным фоном. Добавь класс <code className="font-[family-name:var(--font-mono-family)] text-foreground">.on-{"{color}"}</code> на контейнер —
-              все дочерние токены (<code className="font-[family-name:var(--font-mono-family)] text-foreground">--foreground</code>, <code className="font-[family-name:var(--font-mono-family)] text-foreground">--border</code>) автоматически инвертируются.
+              Блоки с акцентным фоном. Добавь класс <code className="font-[family-name:var(--font-caption-family)] text-foreground">.on-{"{color}"}</code> на контейнер —
+              все дочерние токены (<code className="font-[family-name:var(--font-caption-family)] text-foreground">--foreground</code>, <code className="font-[family-name:var(--font-caption-family)] text-foreground">--border</code>) автоматически инвертируются.
             </p>
             {/* Yellow block — главный CTA, на всю ширину */}
-            <div className="on-yellow rounded-xl px-10 py-14 mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+            <div className="on-yellow rounded-lg px-10 py-14 mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-8">
               <div className="flex-1">
                 <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.1em] mb-4 opacity-60">Брендовый блок · .on-yellow</p>
                 <h4 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-32)] uppercase tracking-[-0.01em] mb-3 leading-tight">
@@ -1755,7 +1884,7 @@ export default function DesignSystemPage() {
                 </button>
               </div>
             </div>
-            <div className="rounded-md border border-border bg-rm-gray-2/40 px-4 py-3 text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)] leading-relaxed">
+            <div className="rounded-lg border border-border bg-rm-gray-2/40 px-4 py-3 text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)] leading-relaxed">
               <span className="text-foreground font-medium">.on-yellow</span> — основной CTA-блок бренда, hero-секции, highlight-полосы.
               Используй только один такой блок на экране. Остальные .on-* — для категориальной маркировки секций.
             </div>
@@ -1766,7 +1895,7 @@ export default function DesignSystemPage() {
           {/* ═══════ 2. TYPOGRAPHY ═══════ */}
           <Section id="typography" title="2. Типография">
             <p className="text-muted-foreground mb-8">
-              4 шрифта с чёткими ролями. 4 категории стилей: Heading, Label, Copy, Accent. Размерная шкала на золотом сечении (phi = 1.618) от минимального размера 12px.
+              5 шрифтов с чёткими ролями. 4 категории стилей: Heading, Label, Copy, Accent. Для code и caption используется отдельная моноширинная гарнитура Roboto Mono Regular. Размерная шкала на золотом сечении (phi = 1.618) от минимального размера 12px.
             </p>
 
             {/* 2.1 ШРИФТЫ */}
@@ -1777,12 +1906,13 @@ export default function DesignSystemPage() {
               {(() => {
                 const fonts = [
                   { family: "Roboto Condensed", role: "Заголовки (H1–H4)", example: "ЗАГОЛОВОК СТРАНИЦЫ", css: "font-family: 'Roboto Condensed', sans-serif", fontClass: "font-[family-name:var(--font-heading-family)] font-bold uppercase" },
-                  { family: "Loos Condensed", role: "Навигация, кнопки, код", example: "НАВИГАЦИЯ / КНОПКИ", css: "font-family: 'Loos Condensed', sans-serif", fontClass: "font-[family-name:var(--font-mono-family)] font-medium uppercase tracking-wider" },
+                  { family: "Loos Condensed", role: "Навигация, кнопки, UI-label", example: "НАВИГАЦИЯ / КНОПКИ", css: "font-family: 'Loos Condensed', sans-serif", fontClass: "font-[family-name:var(--font-mono-family)] font-medium uppercase tracking-wider" },
                   { family: "Roboto", role: "Основной текст, body", example: "Основной текст для описаний и контента страниц", css: "font-family: 'Roboto', sans-serif", fontClass: "" },
+                  { family: "Roboto Mono", role: "Code, caption, технические подписи", example: "const caseId = 'RM-2048'", css: "font-family: 'Roboto Mono', monospace", fontClass: "font-[family-name:var(--font-caption-family)]" },
                   { family: "Shantell Sans", role: "Акцентные подписи, стикеры", example: "Рукописная подпись агента", css: "font-family: 'Shantell Sans', cursive", fontClass: "font-[family-name:var(--font-accent-family)]" },
                 ]
                 return fonts.map((f, i) => (
-                  <div key={f.family} className={`p-4 ${i % 2 === 0 ? "md:border-r border-border" : ""} ${i < 2 ? "border-b border-border" : ""}`}>
+                  <div key={f.family} className={`p-4 ${i % 2 === 0 ? "md:border-r border-border" : ""} ${i < fonts.length - 1 ? "border-b border-border" : ""} ${i === fonts.length - 1 ? "md:col-span-2" : ""}`}>
                     <div className="flex items-center justify-between mb-1">
                       <p className="text-[length:var(--text-16)] font-medium">{f.family}</p>
                       <CopyButton value={f.css} label={f.family} />
@@ -1835,7 +1965,8 @@ export default function DesignSystemPage() {
                     { label: "Copy-24",      size: "24px", mobileSize: "19px", weight: "400", cls: "leading-[1.32]",                                                                                          tailwind: "text-[length:var(--text-19)] md:text-[length:var(--text-25)]" },
                     { label: "Copy-18",      size: "18px", mobileSize: "17px", weight: "400", cls: "leading-[1.32]",                                                                                                tailwind: "text-[length:var(--text-16)] md:text-[length:var(--text-19)]" },
                     { label: "Copy-16",      size: "16px", mobileSize: "16px", weight: "400", cls: "leading-[1.32]",                                                                                               tailwind: "text-[length:var(--text-16)]" },
-                    { label: "Copy-14",      size: "14px", mobileSize: "14px", weight: "400", cls: "leading-[1.4] tracking-[0.01em]",                                                                              tailwind: "text-[length:var(--text-14)]" },
+                    { label: "Caption-14",   size: "14px", mobileSize: "14px", weight: "400", cls: "font-[family-name:var(--font-caption-family)] leading-[1.4] tracking-[0.01em]",                             tailwind: "text-[length:var(--text-14)] font-[family-name:var(--font-caption-family)] leading-[1.4] tracking-[0.01em]" },
+                    { label: "Code-14",      size: "14px", mobileSize: "14px", weight: "400", cls: "font-[family-name:var(--font-caption-family)] leading-[1.4] tracking-[0.02em]",                             tailwind: "text-[length:var(--text-14)] font-[family-name:var(--font-caption-family)] leading-[1.4] tracking-[0.02em]" },
                     { label: "Copy-12",      size: "12px", mobileSize: "12px", weight: "400", cls: "leading-[1.4] tracking-[0.02em]",                                                                              tailwind: "text-[length:var(--text-12)]" },
                   ].map((t, i, arr) => (
                     <div key={t.label} className={`flex items-center gap-4 py-3 px-4 hover:bg-rm-gray-2/40 transition-colors group ${i < arr.length - 1 ? "border-b border-border" : ""}`}>
@@ -1843,7 +1974,7 @@ export default function DesignSystemPage() {
                         {t.label}
                       </Badge>
                       <span className={`flex-1 ${t.cls}`} style={{ fontSize: t.size }}>
-                        {t.label === "Nav/Btn" ? "BUTTON TEXT" : "Пример текста"}
+                        {t.label === "Code-14" ? "const caseId = 'RM-2048'" : "Пример текста"}
                       </span>
                       <span className="text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)] hidden sm:flex items-center gap-1 shrink-0 w-28 justify-end">
                         <span className="text-[length:var(--text-12)] leading-none">🖥</span>{t.size} / {t.weight}
@@ -1997,16 +2128,28 @@ export default function DesignSystemPage() {
                       twCopy: "text-[length:var(--text-16)] leading-[1.32]",
                     },
                     {
-                      label: "Copy-14",
-                      text: "Подключите нужного агента, опишите задачу в свободной форме и получите профессиональный результат без лишних усилий.",
-                      cls: "leading-[1.4] tracking-[0.01em]",
+                      label: "Caption-14",
+                      text: "Подпись к кейсу: результат сформирован агентом автоматически и доступен для повторного запуска.",
+                      cls: "font-[family-name:var(--font-caption-family)] leading-[1.4] tracking-[0.01em]",
                       size: "14px",
                       mobileSize: "14px",
                       letterSpacing: "0.01em",
                       figmaSpacing: "1%",
                       lineHeight: "1.4",
                       figmaLineHeight: "140%",
-                      twCopy: "text-[length:var(--text-14)] leading-[1.4] tracking-[0.01em]",
+                      twCopy: "text-[length:var(--text-14)] font-[family-name:var(--font-caption-family)] leading-[1.4] tracking-[0.01em]",
+                    },
+                    {
+                      label: "Code-14",
+                      text: "curl -X POST /api/cases/RM-2048/run",
+                      cls: "font-[family-name:var(--font-caption-family)] leading-[1.4] tracking-[0.02em]",
+                      size: "14px",
+                      mobileSize: "14px",
+                      letterSpacing: "0.02em",
+                      figmaSpacing: "2%",
+                      lineHeight: "1.4",
+                      figmaLineHeight: "140%",
+                      twCopy: "text-[length:var(--text-14)] font-[family-name:var(--font-caption-family)] leading-[1.4] tracking-[0.02em]",
                     },
                     {
                       label: "Copy-12",
@@ -2033,22 +2176,22 @@ export default function DesignSystemPage() {
                         <div className="flex items-center gap-1.5">
                           <span className="text-[length:var(--text-12)] leading-none">🖥</span>
                           <span className="text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)]">size</span>
-                          <code className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] text-foreground bg-rm-gray-2 px-1.5 py-0.5 rounded">{t.size}</code>
+                          <code className="text-[length:var(--text-12)] font-[family-name:var(--font-caption-family)] text-foreground bg-rm-gray-2 px-1.5 py-0.5 rounded">{t.size}</code>
                         </div>
                         <div className="flex items-center gap-1.5">
                           <span className="text-[length:var(--text-12)] leading-none">📱</span>
                           <span className="text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)]">size</span>
-                          <code className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] text-foreground bg-rm-gray-2 px-1.5 py-0.5 rounded">{t.mobileSize}</code>
+                          <code className="text-[length:var(--text-12)] font-[family-name:var(--font-caption-family)] text-foreground bg-rm-gray-2 px-1.5 py-0.5 rounded">{t.mobileSize}</code>
                         </div>
                         <div className="flex items-center gap-1.5">
                           <span className="text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)] uppercase tracking-wider">spacing</span>
-                          <code className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] text-foreground bg-rm-gray-2 px-1.5 py-0.5 rounded">{t.letterSpacing}</code>
-                          <code className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] text-muted-foreground bg-rm-gray-2 px-1.5 py-0.5 rounded">{t.figmaSpacing}</code>
+                          <code className="text-[length:var(--text-12)] font-[family-name:var(--font-caption-family)] text-foreground bg-rm-gray-2 px-1.5 py-0.5 rounded">{t.letterSpacing}</code>
+                          <code className="text-[length:var(--text-12)] font-[family-name:var(--font-caption-family)] text-muted-foreground bg-rm-gray-2 px-1.5 py-0.5 rounded">{t.figmaSpacing}</code>
                         </div>
                         <div className="flex items-center gap-1.5">
                           <span className="text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)] uppercase tracking-wider">line-h</span>
-                          <code className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] text-foreground bg-rm-gray-2 px-1.5 py-0.5 rounded">{t.lineHeight}</code>
-                          <code className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] text-muted-foreground bg-rm-gray-2 px-1.5 py-0.5 rounded">{t.figmaLineHeight}</code>
+                          <code className="text-[length:var(--text-12)] font-[family-name:var(--font-caption-family)] text-foreground bg-rm-gray-2 px-1.5 py-0.5 rounded">{t.lineHeight}</code>
+                          <code className="text-[length:var(--text-12)] font-[family-name:var(--font-caption-family)] text-muted-foreground bg-rm-gray-2 px-1.5 py-0.5 rounded">{t.figmaLineHeight}</code>
                         </div>
                         <CopyButton value={t.twCopy} label={`${t.label} classes`} />
                       </div>
@@ -2125,12 +2268,12 @@ export default function DesignSystemPage() {
                       { label: "Gutter", val: `${g.gutter}px` },
                       { label: "Margin", val: `${g.margin}px` },
                     ].map((s) => (
-                      <div key={s.label} className="flex flex-col gap-0.5 bg-rm-gray-2 rounded-md px-3 py-2 min-w-[90px]">
+                      <div key={s.label} className="flex flex-col gap-0.5 bg-rm-gray-2 rounded-sm px-3 py-2 min-w-[90px]">
                         <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] uppercase tracking-wider text-muted-foreground">{s.label}</span>
                         <span className="text-[length:var(--text-14)] font-[family-name:var(--font-mono-family)] font-medium">{s.val}</span>
                       </div>
                     ))}
-                    <div className="flex flex-col gap-0.5 bg-rm-gray-2 rounded-md px-3 py-2 min-w-[90px]">
+                    <div className="flex flex-col gap-0.5 bg-rm-gray-2 rounded-sm px-3 py-2 min-w-[90px]">
                       <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] uppercase tracking-wider text-muted-foreground">Tailwind</span>
                       <div className="flex items-center gap-1">
                         <span className="text-[length:var(--text-14)] font-[family-name:var(--font-mono-family)] font-medium">{g.tw}</span>
@@ -2146,7 +2289,7 @@ export default function DesignSystemPage() {
                       i % 2 === 0 ? "1fr" : "1px"
                     ).join(" ")
                     return (
-                      <div className="border border-border rounded-md overflow-hidden select-none">
+                      <div className="border border-border rounded-lg overflow-hidden select-none">
                         {/* Margin labels row */}
                         <div className="flex h-6 text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] text-muted-foreground/70 border-b border-dashed border-border/40">
                           <div className="flex items-center justify-center border-r border-dashed border-muted-foreground/30"
@@ -2215,7 +2358,7 @@ export default function DesignSystemPage() {
                   <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] text-muted-foreground/50">3 + 9 col</span>
                 </div>
                 <div
-                  className="rounded-md overflow-hidden border border-border"
+                  className="rounded-lg overflow-hidden border border-border"
                   style={{
                     display: "grid",
                     gap: "1px",
@@ -2253,7 +2396,7 @@ export default function DesignSystemPage() {
                   <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] text-muted-foreground/50">7 + 5 col · ≈ φ</span>
                 </div>
                 <div
-                  className="rounded-md overflow-hidden border border-border"
+                  className="rounded-lg overflow-hidden border border-border"
                   style={{
                     display: "grid",
                     gap: "1px",
@@ -2287,7 +2430,7 @@ export default function DesignSystemPage() {
                   <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] text-muted-foreground/50">7+5 / 4+4+4</span>
                 </div>
                 <div
-                  className="rounded-md overflow-hidden border border-border"
+                  className="rounded-lg overflow-hidden border border-border"
                   style={{
                     display: "grid",
                     gap: "1px",
@@ -2328,7 +2471,7 @@ export default function DesignSystemPage() {
                   <span className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] text-muted-foreground/50">12 / 8+4</span>
                 </div>
                 <div
-                  className="rounded-md overflow-hidden border border-border"
+                  className="rounded-lg overflow-hidden border border-border"
                   style={{
                     display: "grid",
                     gap: "1px",
@@ -2366,25 +2509,30 @@ export default function DesignSystemPage() {
             </h3>
             <p className="text-[length:var(--text-14)] text-muted-foreground mb-6 max-w-[640px]">
               Сетка — часть дизайн-кода. Направляющие линии между колонками — не декор, а материализация структуры.
-              Реальные 1px CSS-колонки задают ритм и видимый каркас. <code className="bg-rm-gray-2 px-1.5 py-0.5 rounded text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)]">guideVisible</code> управляет видимостью без изменения раскладки.
+              Реальные 1px CSS-колонки задают ритм и видимый каркас. <code className="bg-rm-gray-2 px-1.5 py-0.5 rounded text-[length:var(--text-12)] font-[family-name:var(--font-caption-family)]">guideVisible</code> управляет видимостью без изменения раскладки.
             </p>
 
             {/* Механика: три состояния */}
             <p className="text-[length:var(--text-12)] font-medium text-muted-foreground mb-3">Механика: от пустой сетки к контенту</p>
             <p className="text-[length:var(--text-12)] text-muted-foreground mb-4">
               Принцип: вместо CSS gap — реальные 1px CSS-колонки.
-              {" "}<code className="bg-rm-gray-2 px-1 rounded font-[family-name:var(--font-mono-family)]">cols=4</code> →
-              {" "}template = <code className="bg-rm-gray-2 px-1 rounded font-[family-name:var(--font-mono-family)]">&quot;1fr 1px 1fr 1px 1fr 1px 1fr&quot;</code>
+              {" "}<code className="bg-rm-gray-2 px-1 rounded font-[family-name:var(--font-caption-family)]">cols=4</code> →
+              {" "}template = <code className="bg-rm-gray-2 px-1 rounded font-[family-name:var(--font-caption-family)]">&quot;1fr 1px 1fr 1px 1fr 1px 1fr&quot;</code>
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
               {/* 1: только направляющие */}
               <div className="space-y-2">
                 <p className="text-[length:var(--text-12)] font-medium">1. Направляющие без контента</p>
-                <div className="border rounded-[var(--radius-lg)]" style={{ minHeight: 120 }}>
+                <div className="border rounded-[var(--radius-lg)]">
                   <GridGuides cols={3} guideVisible={true} cellPadding={16} rowGap={0}>
                     {Array.from({ length: 3 }, (_, i) => (
-                      <div key={i} style={{ height: 88 }} />
+                      <Card key={i} size="sm" className="invisible">
+                        <CardHeader>
+                          <Badge>Пусто</Badge>
+                          <CardTitle>Функция</CardTitle>
+                        </CardHeader>
+                      </Card>
                     ))}
                   </GridGuides>
                 </div>
@@ -2398,7 +2546,7 @@ export default function DesignSystemPage() {
                     {["AI", "Авто", "Быстро"].map((label) => (
                       <Card key={label} size="sm">
                         <CardHeader>
-                          <Badge>{label}</Badge>
+                          <Badge className="w-fit self-start">{label}</Badge>
                           <CardTitle>Функция</CardTitle>
                         </CardHeader>
                       </Card>
@@ -2415,7 +2563,7 @@ export default function DesignSystemPage() {
                     {["AI", "Авто", "Быстро"].map((label) => (
                       <Card key={label} size="sm">
                         <CardHeader>
-                          <Badge>{label}</Badge>
+                          <Badge className="w-fit self-start">{label}</Badge>
                           <CardTitle>Функция</CardTitle>
                         </CardHeader>
                       </Card>
@@ -2427,15 +2575,15 @@ export default function DesignSystemPage() {
 
             {/* Два режима */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-              <div className="space-y-2 bg-rm-gray-2/30 rounded-[var(--radius-lg)] p-4">
-                <Badge variant="default">Лендинг / маркетинг</Badge>
+              <div className="space-y-2 bg-rm-gray-2/30 rounded-[var(--radius-lg)] border border-border p-4">
+                <Badge variant="default" className="w-fit self-start">Лендинг / маркетинг</Badge>
                 <p className="text-[length:var(--text-14)] font-medium">guideVisible = true</p>
                 <p className="text-[length:var(--text-12)] text-muted-foreground">
                   Направляющие видны как часть визуального языка. Структура читается через линии.
                 </p>
               </div>
-              <div className="space-y-2 bg-rm-gray-2/30 rounded-[var(--radius-lg)] p-4">
-                <Badge variant="secondary">SaaS-интерфейс</Badge>
+              <div className="space-y-2 bg-rm-gray-2/30 rounded-[var(--radius-lg)] border border-border p-4">
+                <Badge variant="secondary" className="w-fit self-start">SaaS-интерфейс</Badge>
                 <p className="text-[length:var(--text-14)] font-medium">guideVisible = false</p>
                 <p className="text-[length:var(--text-12)] text-muted-foreground">
                   Те же 1px-колонки, но прозрачны. Раскладка идентична — меняется только вид.
@@ -2445,7 +2593,7 @@ export default function DesignSystemPage() {
 
             {/* Пример: 3 колонки с направляющими */}
             <p className="text-[length:var(--text-12)] font-medium text-muted-foreground mb-3">Пример: 3 колонки с направляющими</p>
-            <div className="border rounded-[var(--radius-xl)] mb-2">
+            <div className="border rounded-[var(--radius-lg)] mb-2">
               <GridGuides cols={3} guideVisible={true} cellPadding={12} rowGap={0}>
                 {[
                   { badge: "AI", title: "Анализ кейса", desc: "Агент обрабатывает документы и формирует сводку." },
@@ -2454,7 +2602,7 @@ export default function DesignSystemPage() {
                 ].map((c) => (
                   <Card key={c.title}>
                     <CardHeader>
-                      <Badge>{c.badge}</Badge>
+                      <Badge className="w-fit self-start">{c.badge}</Badge>
                       <CardTitle>{c.title}</CardTitle>
                       <p className="text-[length:var(--text-14)] text-muted-foreground">{c.desc}</p>
                     </CardHeader>
@@ -2473,34 +2621,34 @@ export default function DesignSystemPage() {
               Секция Features / «Что умеет сервис» — мозаика карточек разного размера. Минимум 4, максимум 6 ячеек. Ни одна строка не одинакова (принцип асимметрии φ).
             </p>
             <div className="grid grid-cols-12 gap-2 mb-2">
-              <div className="col-span-6 border border-border rounded-sm bg-card p-4 flex flex-col gap-1.5 min-h-[100px]">
+              <div className="col-span-6 border border-border rounded-lg bg-card p-4 flex flex-col gap-1.5 min-h-[100px]">
                 <Badge className="w-fit">AI</Badge>
                 <p className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-14)] uppercase">Анализ кейса</p>
                 <p className="text-[length:var(--text-12)] text-muted-foreground">Агент обрабатывает документы и формирует сводку.</p>
               </div>
-              <div className="col-span-6 border border-border rounded-sm bg-card p-4 flex flex-col gap-1.5 min-h-[100px]">
+              <div className="col-span-6 border border-border rounded-lg bg-card p-4 flex flex-col gap-1.5 min-h-[100px]">
                 <Badge variant="secondary" className="w-fit">Авто</Badge>
                 <p className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-14)] uppercase">Классификация</p>
                 <p className="text-[length:var(--text-12)] text-muted-foreground">Определяет тип дела и маршрутизирует.</p>
               </div>
-              <div className="col-span-4 border border-border rounded-sm bg-card p-4 flex flex-col gap-1.5 min-h-[80px]">
+              <div className="col-span-4 border border-border rounded-lg bg-card p-4 flex flex-col gap-1.5 min-h-[80px]">
                 <Badge className="w-fit">Быстро</Badge>
                 <p className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-14)] uppercase">Ответ за секунды</p>
               </div>
               <div
-                className="col-span-8 border rounded-sm p-5 min-h-[80px] flex items-center"
+                className="col-span-8 border rounded-lg p-5 min-h-[80px] flex items-center"
                 style={{ backgroundColor: "var(--rm-yellow-10)", borderColor: "var(--rm-yellow-50)" }}
               >
                 <p className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-24)] md:text-[length:var(--text-32)] uppercase tracking-tight leading-tight">
                   AI-система для ведения кейсов
                 </p>
               </div>
-              <div className="col-span-5 border border-border rounded-sm bg-card p-4 flex flex-col gap-1.5 min-h-[80px]">
+              <div className="col-span-5 border border-border rounded-lg bg-card p-4 flex flex-col gap-1.5 min-h-[80px]">
                 <Badge variant="secondary" className="w-fit">n8n</Badge>
                 <p className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-14)] uppercase">Интеграции</p>
                 <p className="text-[length:var(--text-12)] text-muted-foreground">Подключается к любому воркфлоу.</p>
               </div>
-              <div className="col-span-7 border border-border rounded-sm bg-card p-4 flex flex-col gap-1.5 min-h-[80px]">
+              <div className="col-span-7 border border-border rounded-lg bg-card p-4 flex flex-col gap-1.5 min-h-[80px]">
                 <Badge className="w-fit">Оплата</Badge>
                 <p className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-14)] uppercase">Ссылка на оплату</p>
                 <p className="text-[length:var(--text-12)] text-muted-foreground">Агент формирует ответ со ссылкой автоматически.</p>
@@ -2516,35 +2664,99 @@ export default function DesignSystemPage() {
           {/* ═══════ 4. RADIUS & SHADOWS ═══════ */}
           <Section id="radius-shadows" title="4. Скругления">
             <p className="text-muted-foreground mb-6">
-              <strong>Flat стиль.</strong> Никаких box-shadow. Лёгкое скругление — 3 токена по вложенности и размеру объекта.
-              Full только как выделительный элемент в самостоятельных блоках.
+              <strong>Flat стиль.</strong> Скругление объясняет тип объекта: <strong>4px</strong> для controls, <strong>8px</strong> для surface,
+              <strong> full</strong> только для самостоятельных pill / avatar-элементов. Тени не используются.
             </p>
 
             <h3 id="radius-scale" className="scroll-mt-20 font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-24)] md:text-[length:var(--text-32)] uppercase tracking-[-0.01em] mb-4">
-              Border Radius
+              Наглядные сценарии
             </h3>
-            <div className="flex flex-wrap gap-6 mb-8">
-              {[
-                { label: "sm", value: "4px", tw: "rounded-sm", usage: "Button, Input, Badge, Tag, Chip, Tooltip, kbd" },
-                { label: "md", value: "6px", tw: "rounded-md", usage: "Card, Select, Dropdown" },
-                { label: "lg", value: "8px", tw: "rounded-lg", usage: "Крупные блоки: Card, Modal, Panel, Sidebar, Toast" },
-                { label: "full", value: "9999px", tw: "rounded-full", usage: "Акцентный элемент: Avatar, счётчик, pill-label в standalone-блоках" },
-              ].map((r) => (
-                <div key={r.label} className="flex flex-col gap-3 w-44">
-                  <div
-                    className="w-full h-20 border-2 border-[var(--rm-yellow-100)]"
-                    style={{ borderRadius: r.value, backgroundColor: "color-mix(in srgb, var(--rm-yellow-100) 10%, transparent)" }}
-                  />
-                  <div>
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <span className="text-[length:var(--text-14)] font-[family-name:var(--font-mono-family)] font-medium">{r.value}</span>
-                      <Badge variant="outline" className="text-[length:var(--text-12)] px-1.5 py-0">{r.label}</Badge>
-                      <CopyButton value={r.tw} label={r.label} />
-                    </div>
-                    <p className="text-[length:var(--text-12)] text-muted-foreground leading-snug">{r.usage}</p>
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 mb-8">
+              <RadiusTokenCard
+                label="sm"
+                value="4px"
+                token="--radius-sm"
+                tailwind="rounded-sm"
+                usage="Мелкие controls: button, input, select, dropdown, badge, tooltip."
+                note="Если элемент нажимается или вводит данные, почти всегда это 4px."
+              >
+                <div className="space-y-3">
+                  <div className="flex flex-wrap gap-2">
+                    <button className="h-9 px-4 rounded-sm bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em]">
+                      Создать
+                    </button>
+                    <button className="h-9 px-4 rounded-sm border border-border bg-background text-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em]">
+                      Фильтр
+                    </button>
+                    <span className="inline-flex items-center h-7 px-2 rounded-sm bg-rm-gray-2 text-muted-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em]">
+                      AI
+                    </span>
+                  </div>
+                  <div className="h-10 px-3 rounded-sm border border-border bg-background flex items-center text-[length:var(--text-14)] text-muted-foreground">
+                    case@rocketmind.ai
+                  </div>
+                  <div className="w-fit min-w-[180px] p-3 rounded-sm border border-border bg-popover">
+                    <p className="text-[length:var(--text-12)] font-medium">Dropdown / Tooltip</p>
+                    <p className="text-[length:var(--text-12)] text-muted-foreground">Редактировать</p>
                   </div>
                 </div>
-              ))}
+              </RadiusTokenCard>
+
+              <RadiusTokenCard
+                label="lg"
+                value="8px"
+                token="--radius-lg"
+                tailwind="rounded-lg"
+                usage="Surface-уровень: card, modal, panel, sidebar, toast."
+                note="Если элемент является контейнером контента или самостоятельной поверхностью, это 8px."
+              >
+                <div className="space-y-3">
+                  <div className="rounded-lg border border-border bg-card p-4">
+                    <Badge className="w-fit mb-3">Кейс</Badge>
+                    <p className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-16)] uppercase mb-1">Карточка результата</p>
+                    <p className="text-[length:var(--text-12)] text-muted-foreground">Контейнер контента, поэтому использует surface-radius 8px.</p>
+                  </div>
+                  <div className="rounded-lg border border-border bg-card p-4 flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full bg-[var(--rm-yellow-100)] shrink-0" />
+                    <div>
+                      <p className="text-[length:var(--text-12)] font-medium">Toast / Notice</p>
+                      <p className="text-[length:var(--text-12)] text-muted-foreground">Та же surface-логика.</p>
+                    </div>
+                  </div>
+                </div>
+              </RadiusTokenCard>
+
+              <RadiusTokenCard
+                label="full"
+                value="9999px"
+                token="--radius-full"
+                tailwind="rounded-full"
+                usage="Только standalone-pill: avatar, counter, isolated accent label."
+                note="Не использовать для основных кнопок, инпутов и карточек — это ломает flat-характер системы."
+              >
+                <div className="space-y-3">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <div className="w-12 h-12 rounded-full border border-border bg-rm-gray-2 flex items-center justify-center font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase">
+                      AI
+                    </div>
+                    <span className="inline-flex items-center h-8 px-3 rounded-full border border-border bg-background font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em]">
+                      Standalone label
+                    </span>
+                    <span className="inline-flex items-center justify-center min-w-8 h-8 px-2 rounded-full bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase">
+                      12
+                    </span>
+                  </div>
+                  <div className="rounded-lg border border-dashed border-border bg-background p-3">
+                    <p className="text-[length:var(--text-12)] text-muted-foreground">`full` живёт как отдельный маркер, а не как основной radius контейнера.</p>
+                  </div>
+                </div>
+              </RadiusTokenCard>
+            </div>
+
+            <div className="rounded-lg border border-border bg-rm-gray-2/30 p-4">
+              <p className="text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)]">
+                В этом блоке две отдельные кнопки копирования: одна копирует CSS token, вторая — Tailwind class. Больше нет смешения между визуальным примером и тем, что попадает в буфер.
+              </p>
             </div>
 
           </Section>
@@ -2596,7 +2808,7 @@ export default function DesignSystemPage() {
                     desc: "Второстепенное действие рядом с primary. Фильтры, переключатели.",
                     token: "btn-secondary",
                     render: (h, px, fs) => (
-                      <button className={`inline-flex items-center justify-center gap-2 ${h} ${px} rounded-sm border border-border bg-[var(--rm-gray-1)] text-foreground ${mono} ${fs} uppercase tracking-[0.08em] transition-all duration-150 hover:bg-[var(--rm-gray-2)] active:bg-[var(--rm-gray-3)] cursor-pointer`}>
+                      <button className={`inline-flex items-center justify-center gap-2 ${h} ${px} rounded-sm border border-transparent bg-secondary text-secondary-foreground ${mono} ${fs} uppercase tracking-[0.08em] transition-all duration-150 hover:opacity-[0.88] active:opacity-[0.76] cursor-pointer`}>
                         Подробнее
                       </button>
                     ),
@@ -2604,10 +2816,10 @@ export default function DesignSystemPage() {
                   {
                     id: "ghost",
                     name: "Ghost",
-                    desc: "Тихое действие без фона. Навигация, вспомогательные inline-действия.",
+                    desc: "Тихое нейтральное действие в старом стиле Secondary: серый фон и border.",
                     token: "btn-ghost",
                     render: (h, px, fs) => (
-                      <button className={`inline-flex items-center justify-center gap-2 ${h} ${px} rounded-sm bg-transparent text-muted-foreground ${mono} ${fs} uppercase tracking-[0.08em] transition-all duration-150 hover:bg-[var(--rm-gray-2)] hover:text-foreground active:bg-[var(--rm-gray-3)] active:text-foreground cursor-pointer`}>
+                      <button className={`inline-flex items-center justify-center gap-2 ${h} ${px} rounded-sm border border-border bg-[var(--rm-gray-1)] text-foreground ${mono} ${fs} uppercase tracking-[0.08em] transition-all duration-150 hover:bg-[var(--rm-gray-2)] active:bg-[var(--rm-gray-3)] cursor-pointer`}>
                         Отмена
                       </button>
                     ),
@@ -2672,13 +2884,13 @@ export default function DesignSystemPage() {
                     <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">bg #FFE040 (–10%)</span>
                   </div>
                   <div className="flex flex-col items-start gap-1.5">
-                    <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-sm border border-border bg-[var(--rm-gray-2)] text-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em]">
+                    <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-sm border border-transparent bg-secondary text-secondary-foreground opacity-[0.88] font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em]">
                       Secondary
                     </button>
-                    <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">bg --rm-gray-2</span>
+                    <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">opacity 0.88</span>
                   </div>
                   <div className="flex flex-col items-start gap-1.5">
-                    <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-sm bg-[var(--rm-gray-2)] text-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em]">
+                    <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-sm border border-border bg-[var(--rm-gray-2)] text-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em]">
                       Ghost
                     </button>
                     <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">bg --rm-gray-2</span>
@@ -2700,13 +2912,13 @@ export default function DesignSystemPage() {
                     <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">bg #E6B800 (–20%)</span>
                   </div>
                   <div className="flex flex-col items-start gap-1.5">
-                    <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-sm border border-border bg-[var(--rm-gray-3)] text-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em]">
+                    <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-sm border border-transparent bg-secondary text-secondary-foreground opacity-[0.76] font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em]">
                       Secondary
                     </button>
-                    <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">bg --rm-gray-3</span>
+                    <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">opacity 0.76</span>
                   </div>
                   <div className="flex flex-col items-start gap-1.5">
-                    <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-sm bg-[var(--rm-gray-3)] text-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em]">
+                    <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-sm border border-border bg-[var(--rm-gray-3)] text-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em]">
                       Ghost
                     </button>
                     <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">bg --rm-gray-3</span>
@@ -2728,16 +2940,16 @@ export default function DesignSystemPage() {
                     <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">opacity-40</span>
                   </div>
                   <div className="flex flex-col items-start gap-1.5">
-                    <button disabled className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-sm border border-border bg-[var(--rm-gray-1)] text-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em] transition-all duration-150 disabled:opacity-40 disabled:pointer-events-none disabled:cursor-not-allowed">
+                    <button disabled className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-sm border border-transparent bg-secondary text-secondary-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em] transition-all duration-150 disabled:opacity-40 disabled:pointer-events-none disabled:cursor-not-allowed">
                       Secondary
                     </button>
                     <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">opacity-40</span>
                   </div>
                   <div className="flex flex-col items-start gap-1.5">
-                    <button disabled className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-sm bg-transparent text-muted-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em] transition-all duration-150 disabled:opacity-30 disabled:pointer-events-none disabled:cursor-not-allowed">
+                    <button disabled className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-sm border border-border bg-[var(--rm-gray-1)] text-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em] transition-all duration-150 disabled:opacity-40 disabled:pointer-events-none disabled:cursor-not-allowed">
                       Ghost
                     </button>
-                    <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">opacity-30</span>
+                    <span className="text-[10px] text-muted-foreground font-[family-name:var(--font-mono-family)]">opacity-40</span>
                   </div>
                   <div className="flex flex-col items-start gap-1.5">
                     <button disabled className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-sm bg-destructive text-white font-[family-name:var(--font-mono-family)] text-[length:var(--text-13)] uppercase tracking-[0.08em] transition-all duration-150 disabled:opacity-40 disabled:pointer-events-none disabled:cursor-not-allowed">
@@ -2790,7 +3002,7 @@ export default function DesignSystemPage() {
                 ]
 
                 return (
-                  <div className="border border-border rounded-sm overflow-hidden">
+                  <div className="border border-border rounded-lg overflow-hidden">
                     {/* Header row */}
                     <div className="grid border-b border-border" style={{ gridTemplateColumns: "120px 1fr 1fr 1fr" }}>
                       <div className={`px-3 py-2 bg-[var(--rm-gray-1)] text-[10px] ${mono} uppercase tracking-wider text-muted-foreground border-r border-border`}>Цвет</div>
@@ -2824,7 +3036,7 @@ export default function DesignSystemPage() {
               })()}
 
               {/* Usage examples */}
-              <div className="mt-6 border border-border rounded-sm overflow-hidden">
+              <div className="mt-6 border border-border rounded-lg overflow-hidden">
                 <p className="px-4 py-2 text-[10px] font-[family-name:var(--font-mono-family)] uppercase tracking-wider text-muted-foreground bg-[var(--rm-gray-1)] border-b border-border">Контекстные примеры</p>
                 <div className="px-4 py-4 flex flex-col gap-4">
                   {/* Card with badges */}
@@ -2864,23 +3076,247 @@ export default function DesignSystemPage() {
               </div>
 
               {/* Token reference */}
-              <div className="mt-4 border border-border rounded-sm overflow-hidden">
+              <div className="mt-4 border border-border rounded-lg overflow-hidden">
                 <p className="px-4 py-2 text-[10px] font-[family-name:var(--font-mono-family)] uppercase tracking-wider text-muted-foreground bg-[var(--rm-gray-1)] border-b border-border">Токены</p>
                 <div className="px-4 py-3 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-1">
                   {[
                     ["neutral", "bg: --rm-gray-1 + border: --border · text: --rm-gray-fg-sub"],
-                    ["{color}-subtle", "bg: --rm-{color}-900 · text: --rm-{color}-fg-subtle"],
+                    ["{color}-subtle", "bg: --rm-{color}-900 + border: --rm-{color}-700 · text: --rm-{color}-fg-subtle"],
                     ["SM 20px", "h-5 · label-12 · tracking-[0.04em]"],
                     ["MD 24px", "h-6 · label-12 · tracking-[0.04em]"],
                     ["LG 28px", "h-7 · label-14 · tracking-[0.04em]"],
                   ].map(([token, desc]) => (
                     <div key={token} className="flex gap-2 py-0.5">
-                      <code className="text-[11px] font-[family-name:var(--font-mono-family)] text-[var(--rm-yellow-fg-subtle)] bg-[var(--rm-yellow-900)] px-1.5 rounded-sm shrink-0">{token}</code>
+                      <code className="text-[11px] font-[family-name:var(--font-caption-family)] text-[var(--rm-yellow-fg-subtle)] bg-[var(--rm-yellow-900)] px-1.5 rounded-sm shrink-0">{token}</code>
                       <span className="text-[11px] text-muted-foreground font-[family-name:var(--font-mono-family)]">{desc}</span>
                     </div>
                   ))}
                 </div>
               </div>
+            </div>
+
+            {/* ── Табы ── */}
+            <div className="mb-12">
+              <h3 id="components-tabs" className="scroll-mt-20 font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-24)] md:text-[length:var(--text-32)] uppercase tracking-[-0.01em] mb-2">Табы</h3>
+              <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">
+                Tabs переключают соседние панели без смены экрана. `Default` подходит для равноправных наборов данных, `secondary` для тихой локальной навигации.
+              </p>
+
+              <div className="overflow-auto rounded-lg border border-border mb-6">
+                <table className="w-full min-w-[960px] text-[length:var(--text-14)]">
+                  <thead>
+                    <tr className="border-b border-border bg-rm-gray-2/30">
+                      <th className="w-[32%] text-left px-4 py-3 font-medium">Ключевые сценарии</th>
+                      <th className="text-left px-4 py-3 font-medium">Пример</th>
+                    </tr>
+                  </thead>
+                  <tbody className="align-top">
+                    <tr className="border-b border-border">
+                      <td className="px-4 py-4">
+                        <p className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] uppercase tracking-[0.08em] text-foreground mb-1">Default</p>
+                        <p className="text-[length:var(--text-14)] text-muted-foreground">Сегментированный список с одной активной вкладкой. Используй для равноправных наборов данных.</p>
+                      </td>
+                      <td className="px-4 py-4">
+                        <Tabs defaultValue="apple" className="w-full">
+                          <TabsList>
+                            <TabsTrigger value="apple">Apple</TabsTrigger>
+                            <TabsTrigger value="orange">Orange</TabsTrigger>
+                            <TabsTrigger value="mango">Mango</TabsTrigger>
+                          </TabsList>
+                          <TabsContent value="apple" className="rounded-lg border border-border bg-card p-4">
+                            <p className="text-[length:var(--text-14)] text-foreground">Используй для переключения соседних наборов данных: «Все кейсы / Активные / Архив».</p>
+                          </TabsContent>
+                          <TabsContent value="orange" className="rounded-lg border border-border bg-card p-4">
+                            <p className="text-[length:var(--text-14)] text-foreground">Второй таб получает тот же контейнер панели без смены структуры.</p>
+                          </TabsContent>
+                          <TabsContent value="mango" className="rounded-lg border border-border bg-card p-4">
+                            <p className="text-[length:var(--text-14)] text-foreground">Активная вкладка: `bg-background`, `border-border`, текст `--foreground`.</p>
+                          </TabsContent>
+                        </Tabs>
+                      </td>
+                    </tr>
+
+                    <tr className="border-b border-border">
+                      <td className="px-4 py-4">
+                        <p className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] uppercase tracking-[0.08em] text-foreground mb-1">Disabled</p>
+                        <p className="text-[length:var(--text-14)] text-muted-foreground">Весь набор вкладок временно недоступен. Нужен для загрузки, пустого доступа или заблокированного модуля.</p>
+                      </td>
+                      <td className="px-4 py-4">
+                        <Tabs defaultValue="apple" className="w-full">
+                          <TabsList>
+                            <TabsTrigger value="apple" disabled>Apple</TabsTrigger>
+                            <TabsTrigger value="orange" disabled>Orange</TabsTrigger>
+                            <TabsTrigger value="mango" disabled>Mango</TabsTrigger>
+                          </TabsList>
+                          <TabsContent value="apple" className="rounded-lg border border-border bg-card p-4">
+                            <p className="text-[length:var(--text-14)] text-foreground">Отключение только через `disabled:opacity-40` и `pointer-events-none`, без отдельного серого фона.</p>
+                          </TabsContent>
+                        </Tabs>
+                      </td>
+                    </tr>
+
+                    <tr className="border-b border-border">
+                      <td className="px-4 py-4">
+                        <p className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] uppercase tracking-[0.08em] text-foreground mb-1">Disable Specific Tabs</p>
+                        <p className="text-[length:var(--text-14)] text-muted-foreground">Часть шагов заблокирована до выполнения условий. Хорошо работает в линейных сценариях.</p>
+                      </td>
+                      <td className="px-4 py-4">
+                        <Tabs defaultValue="brief" className="w-full">
+                          <TabsList>
+                            <TabsTrigger value="brief">Brief</TabsTrigger>
+                            <TabsTrigger value="analysis">Analysis</TabsTrigger>
+                            <TabsTrigger value="payment" disabled>Payment</TabsTrigger>
+                          </TabsList>
+                          <TabsContent value="brief" className="rounded-lg border border-border bg-card p-4">
+                            <p className="text-[length:var(--text-14)] text-foreground">Недоступные шаги остаются видимыми, чтобы пользователь понимал структуру потока.</p>
+                          </TabsContent>
+                          <TabsContent value="analysis" className="rounded-lg border border-border bg-card p-4">
+                            <p className="text-[length:var(--text-14)] text-foreground">Подходит для сценариев: сначала бриф, потом анализ, затем оплата.</p>
+                          </TabsContent>
+                        </Tabs>
+                      </td>
+                    </tr>
+
+                    <tr className="border-b border-border">
+                      <td className="px-4 py-4">
+                        <p className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] uppercase tracking-[0.08em] text-foreground mb-1">With Icons</p>
+                        <p className="text-[length:var(--text-14)] text-muted-foreground">Иконка работает как вспомогательный смысловой маркер и не заменяет текстовую метку.</p>
+                      </td>
+                      <td className="px-4 py-4">
+                        <Tabs defaultValue="agents" className="w-full">
+                          <TabsList>
+                            <TabsTrigger value="agents"><Rocket size={14} /> Agents</TabsTrigger>
+                            <TabsTrigger value="search"><Search size={14} /> Search</TabsTrigger>
+                            <TabsTrigger value="academy"><BookOpen size={14} /> Academy</TabsTrigger>
+                          </TabsList>
+                          <TabsContent value="agents" className="rounded-lg border border-border bg-card p-4">
+                            <p className="text-[length:var(--text-14)] text-foreground">Используй только известные 16px-иконки Lucide без цветных акцентов.</p>
+                          </TabsContent>
+                          <TabsContent value="search" className="rounded-lg border border-border bg-card p-4">
+                            <p className="text-[length:var(--text-14)] text-foreground">Иконка помогает быстрее сканировать вкладки на плотных экранах.</p>
+                          </TabsContent>
+                          <TabsContent value="academy" className="rounded-lg border border-border bg-card p-4">
+                            <p className="text-[length:var(--text-14)] text-foreground">Текст остаётся главным носителем смысла, иконка вторична.</p>
+                          </TabsContent>
+                        </Tabs>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td className="px-4 py-4">
+                        <p className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] uppercase tracking-[0.08em] text-foreground mb-1">Secondary</p>
+                        <p className="text-[length:var(--text-14)] text-muted-foreground">Более тихая навигация внутри секции с подчёркнутым активным состоянием. Отступ между вкладками увеличен.</p>
+                      </td>
+                      <td className="px-4 py-4">
+                        <Tabs defaultValue="overview" className="w-full">
+                          <TabsList variant="secondary" className="mb-4">
+                            <TabsTrigger value="overview">Overview</TabsTrigger>
+                            <TabsTrigger value="activity">Activity</TabsTrigger>
+                            <TabsTrigger value="files">Files</TabsTrigger>
+                          </TabsList>
+                          <TabsContent value="overview" className="rounded-lg border border-border bg-card p-4">
+                            <p className="text-[length:var(--text-14)] text-foreground">Вторичный вариант нужен для тихой навигации внутри уже выбранного объекта: кейса, агента, карточки результата.</p>
+                          </TabsContent>
+                          <TabsContent value="activity" className="rounded-lg border border-border bg-card p-4">
+                            <p className="text-[length:var(--text-14)] text-foreground">Secondary не используется как основной page-switcher на верхнем уровне экрана.</p>
+                          </TabsContent>
+                          <TabsContent value="files" className="rounded-lg border border-border bg-card p-4">
+                            <p className="text-[length:var(--text-14)] text-foreground">Активность показываем через жёлтое подчёркивание `--rm-yellow-100`, а не через второй контейнер.</p>
+                          </TabsContent>
+                        </Tabs>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="overflow-auto rounded-lg border border-border mb-6">
+                <table className="w-full text-[length:var(--text-14)]">
+                  <thead>
+                    <tr className="border-b border-border bg-rm-gray-2/30">
+                      <th className="text-left px-4 py-2 font-medium">Состояние / часть</th>
+                      <th className="text-left px-4 py-2 font-medium">Токены</th>
+                      <th className="text-left px-4 py-2 font-medium">Правило</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-muted-foreground">
+                    {[
+                      ["TabsList default", "bg --rm-gray-1 · border --border · radius --radius-sm", "Контейнер для сегментированных табов с общей подложкой."],
+                      ["TabsTrigger default", "text --muted-foreground", "Неактивный триггер остаётся нейтральным и не спорит с контентом."],
+                      ["Hover", "bg --rm-gray-2 · text --foreground", "Hover только на триггере, без glow и без тени."],
+                      ["Active", "bg --background · border --border · text --foreground", "Активный таб читается как вложенная поверхность внутри списка."],
+                      ["Focus-visible", "border --ring + ring 3px / 50%", "Клавиатурный фокус повторяет общую логику controls Rocketmind."],
+                      ["Disabled", "opacity 0.4", "Вкладка видна в иерархии, но не интерактивна."],
+                      ["Secondary active", "underline --rm-yellow-100", "Подчёркивание заменяет filled-background и работает как тихий индикатор."],
+                      ["Panel", "bg-card · border --border · radius --radius-lg", "Панель всегда остаётся обычной surface-поверхностью."],
+                    ].map(([part, token, rule]) => (
+                      <tr key={part} className="border-b border-border last:border-0">
+                        <td className="px-4 py-2 font-medium text-foreground">{part}</td>
+                        <td className="px-4 py-2 font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)]">{token}</td>
+                        <td className="px-4 py-2">{rule}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="rounded-lg border border-border overflow-hidden">
+                <div className="px-4 py-2 bg-[var(--rm-gray-1)] border-b border-border">
+                  <span className="text-[10px] font-[family-name:var(--font-mono-family)] uppercase tracking-wider text-muted-foreground">Инструкция</span>
+                </div>
+                <div className="p-4 space-y-2 text-[length:var(--text-14)] text-muted-foreground">
+                  <p>Используй табы только для соседних разделов, где контент должен меняться без перезагрузки и без смены URL.</p>
+                  <p>Лейблы короткие: 1–2 слова. Если текст длиннее, лучше переходить к segmented filter или sidebar-nav.</p>
+                  <p>Иконки разрешены только как вспомогательные. Цвет иконки всегда наследуется от текста триггера.</p>
+                  <p>`Default` подходит для фильтрации и переключения равноправных наборов данных. `Secondary` — для локальной навигации внутри уже выбранной сущности.</p>
+                  <p>Если шаг ещё нельзя открыть, не скрывай его: оставляй disabled-вкладку видимой, как в сценарии `Disable specific tabs`.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mb-12">
+              <h3 id="components-checkboxes" className="scroll-mt-20 font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-24)] md:text-[length:var(--text-32)] uppercase tracking-[-0.01em] mb-2">Чекбоксы</h3>
+              <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">
+                Паттерн для независимого yes/no-выбора. Основа: 16×16 control, общий focus-visible и один акцент для checked и indeterminate.
+              </p>
+
+              <CheckboxShowcase />
+            </div>
+
+            <div className="mb-12">
+              <h3 id="components-radio" className="scroll-mt-20 font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-24)] md:text-[length:var(--text-32)] uppercase tracking-[-0.01em] mb-2">Радио</h3>
+              <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">
+                Паттерн для выбора одного варианта из группы. Основа: 16×16 control, один активный выбор и headless-композиция внутри строки.
+              </p>
+
+              <RadioShowcase />
+            </div>
+
+            <div className="mb-12">
+              <h3 id="components-switch" className="scroll-mt-20 font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-24)] md:text-[length:var(--text-32)] uppercase tracking-[-0.01em] mb-2">Тумблер</h3>
+              <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">
+                Паттерн для немедленного on/off внутри настроек и сервисных строк. Основа: control-токены `--border`, `--ring`, `--rm-gray-1`, `--rm-yellow-100` и внешний контекст строки.
+              </p>
+
+              <SwitchShowcase />
+            </div>
+
+            <div className="mb-12">
+              <h3 id="components-notes" className="scroll-mt-20 font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-24)] md:text-[length:var(--text-32)] uppercase tracking-[-0.01em] mb-2">Примечания / Notes</h3>
+              <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">
+                Постоянные сервисные сообщения внутри экрана: подсказки, предупреждения, подтверждения и локальные CTA. Используют только operational-состояния и существующие status/surface-токены.
+              </p>
+
+              <NoteShowcase />
+            </div>
+
+            <div className="mb-12">
+              <h3 id="components-tables" className="scroll-mt-20 font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-24)] md:text-[length:var(--text-32)] uppercase tracking-[-0.01em] mb-2">Таблицы</h3>
+              <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">
+                Паттерн для плотных сравнимых данных: кейсы, платежи, документы, usage-отчёты. Таблица собирается на существующих surface, border, badge и control-токенах без отдельного декоративного стиля.
+              </p>
+
+              <TableShowcase />
             </div>
 
             {/* ── Инпуты ── */}
@@ -2972,23 +3408,7 @@ export default function DesignSystemPage() {
 
               {/* Special variants */}
               <div className="space-y-6">
-                <div className="p-6 rounded-md border border-border space-y-3">
-                  <div className="flex items-center justify-between">
-                    <Badge variant="outline" className="text-[length:var(--text-12)]">CHAT</Badge>
-                    <CopyButton
-                      value={`w-full min-h-[48px] max-h-[200px] px-4 py-3 rounded-sm border border-border bg-rm-gray-1 text-foreground text-[length:var(--text-16)] leading-[1.618] placeholder:text-muted-foreground resize-none overflow-auto transition-all duration-150 focus:outline-none focus:border-ring`}
-                      label="Chat Input"
-                    />
-                  </div>
-                  <p className="text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)]">Multiline textarea. Растёт по контенту, max-h-[200px].</p>
-                  <textarea
-                    placeholder="Напишите сообщение..."
-                    rows={2}
-                    className="w-full min-h-[48px] max-h-[200px] px-4 py-3 rounded-sm border border-border bg-rm-gray-1 text-foreground text-[length:var(--text-16)] leading-[1.618] placeholder:text-muted-foreground resize-none overflow-auto transition-all duration-150 focus:outline-none focus:border-ring max-w-md"
-                  />
-                </div>
-
-                <div className="p-6 rounded-md border border-border space-y-3">
+                <div className="p-6 rounded-lg border border-border space-y-3">
                   <div className="flex items-center justify-between">
                     <Badge variant="outline" className="text-[length:var(--text-12)]">CODE (OTP)</Badge>
                     <CopyButton
@@ -3009,7 +3429,7 @@ export default function DesignSystemPage() {
                   </div>
                 </div>
 
-                <div className="p-6 rounded-md border border-border space-y-3">
+                <div className="p-6 rounded-lg border border-border space-y-3">
                   <Badge variant="outline" className="text-[length:var(--text-12)]">WITH LABEL + ERROR</Badge>
                   <div className="flex flex-col gap-1.5 max-w-md">
                     <label className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground">
@@ -3028,6 +3448,24 @@ export default function DesignSystemPage() {
               </div>
             </div>
 
+            <div className="mb-12">
+              <h3 id="components-textarea" className="scroll-mt-20 font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-24)] md:text-[length:var(--text-32)] uppercase tracking-[-0.01em] mb-2">Textarea</h3>
+              <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">
+                Паттерн для multiline-ввода. Базовые состояния: default, disabled и error; focus меняет только border.
+              </p>
+
+              <TextareaShowcase />
+            </div>
+
+            <div className="mb-12">
+              <h3 id="components-search" className="scroll-mt-20 font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-24)] md:text-[length:var(--text-32)] uppercase tracking-[-0.01em] mb-2">Поиск / Combobox</h3>
+              <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">
+                Компонент поиска для Rocketmind: inline-search, подсказки, история, empty-state и запуск в модальном окне.
+              </p>
+
+              <SearchComboboxShowcase />
+            </div>
+
             {/* ── Карточки ── */}
             <div>
               <h3 id="components-cards" className="scroll-mt-20 font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-24)] md:text-[length:var(--text-32)] uppercase tracking-[-0.01em] mb-4">Карточки</h3>
@@ -3043,7 +3481,7 @@ export default function DesignSystemPage() {
                     Варианты бордера карточки
                   </h3>
                   <p className="text-muted-foreground text-[length:var(--text-14)] mb-8">
-                    Все карточки используют <code className="px-1 py-0.5 bg-rm-gray-2 rounded-sm text-[length:var(--text-12)]">bg-card</code>, <code className="px-1 py-0.5 bg-rm-gray-2 rounded-sm text-[length:var(--text-12)]">rounded-sm</code> и отличаются только поведением бордера при наведении.
+                    Все карточки используют <code className="px-1 py-0.5 bg-rm-gray-2 rounded-sm text-[length:var(--text-12)]">bg-card</code>, <code className="px-1 py-0.5 bg-rm-gray-2 rounded-sm text-[length:var(--text-12)]">rounded-lg</code> и отличаются только поведением бордера при наведении.
                   </p>
 
                   {/* Базовая структура */}
@@ -3052,14 +3490,14 @@ export default function DesignSystemPage() {
                     <p className="text-[length:var(--text-14)] text-muted-foreground mb-4">Фон, скругление, бордер. Без hover-реакции — для статичных блоков и отзывов.</p>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                       {[0, 1, 2, 3].map((i) => (
-                        <div key={i} className="h-24 rounded-sm border border-border bg-card" />
+                        <div key={i} className="h-24 rounded-lg border border-border bg-card" />
                       ))}
                     </div>
                     <p className="mt-3 font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] text-muted-foreground">
-                      <code>rounded-sm border border-border bg-card</code>
+                      <code className="font-[family-name:var(--font-caption-family)]">rounded-lg border border-border bg-card</code>
                     </p>
                     <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] text-muted-foreground">
-                      dark: <code>dark:border-white/[0.06]</code>
+                      dark: <code className="font-[family-name:var(--font-caption-family)]">dark:border-white/[0.06]</code>
                     </p>
                   </div>
 
@@ -3069,14 +3507,14 @@ export default function DesignSystemPage() {
                     <p className="text-[length:var(--text-14)] text-muted-foreground mb-4">Бордер меняется на <code className="px-1 py-0.5 bg-rm-gray-2 rounded-sm text-[length:var(--text-12)]">muted-foreground</code> — приглушённый, ненавязчивый. Используется в большинстве каталожных карточек.</p>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                       {[0, 1, 2, 3].map((i) => (
-                        <div key={i} className="h-24 rounded-sm border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer" />
+                        <div key={i} className="h-24 rounded-lg border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer" />
                       ))}
                     </div>
                     <p className="mt-3 font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] text-muted-foreground">
-                      <code>hover:border-muted-foreground</code>
+                      <code className="font-[family-name:var(--font-caption-family)]">hover:border-muted-foreground</code>
                     </p>
                     <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] text-muted-foreground">
-                      dark: <code>dark:hover:border-white/[0.20]</code>
+                      dark: <code className="font-[family-name:var(--font-caption-family)]">dark:hover:border-white/[0.20]</code>
                     </p>
                   </div>
 
@@ -3088,7 +3526,7 @@ export default function DesignSystemPage() {
                       {[0, 1, 2, 3].map((i) => (
                         <div
                           key={i}
-                          className="relative h-24 rounded-sm bg-card cursor-pointer transition-all duration-75 border border-border active:[border:2px_solid_var(--rm-yellow-100)]"
+                          className="relative h-24 rounded-lg bg-card cursor-pointer transition-all duration-75 border border-border active:[border:2px_solid_var(--rm-yellow-100)]"
                         >
                           <GlowingEffect
                             spread={40}
@@ -3103,7 +3541,7 @@ export default function DesignSystemPage() {
                       ))}
                     </div>
                     <p className="mt-3 font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] text-muted-foreground">
-                      <code>GlowingEffect variant="yellow" borderWidth={2}</code> — бордер <code>#FFCC00</code> следует за курсором · pressed — полный жёлтый контур
+                      <code className="font-[family-name:var(--font-caption-family)]">GlowingEffect variant=&quot;yellow&quot; borderWidth=&#123;2&#125;</code> — бордер <code className="font-[family-name:var(--font-caption-family)]">#FFCC00</code> следует за курсором · pressed — полный жёлтый контур
                     </p>
                   </div>
                 </TabsContent>
@@ -3134,7 +3572,7 @@ export default function DesignSystemPage() {
                 <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-2">S — Узкая</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                   {[1,2,3].map(i => (
-                    <div key={i} className="flex flex-col overflow-hidden rounded-sm border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
+                    <div key={i} className="flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
                       <div className="h-36 bg-rm-gray-2 overflow-hidden flex items-center justify-center text-muted-foreground"><Rocket size={28}/></div>
                       <div className="flex flex-col gap-3 p-5">
                         <span className="w-fit px-2 py-0.5 rounded-sm bg-rm-gray-2 font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground">Курс</span>
@@ -3152,7 +3590,7 @@ export default function DesignSystemPage() {
                 <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-2">M — Широкая</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   {[1,2].map(i => (
-                    <div key={i} className="flex flex-col overflow-hidden rounded-sm border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
+                    <div key={i} className="flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
                       <div className="h-44 bg-rm-gray-2 overflow-hidden flex items-center justify-center text-muted-foreground"><Rocket size={36}/></div>
                       <div className="flex flex-col gap-4 p-6">
                         <div className="flex items-center gap-2">
@@ -3180,7 +3618,7 @@ export default function DesignSystemPage() {
                 <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-2">L — Горизонтальная</p>
                 <div className="flex flex-col gap-3 mb-10">
                   {[1,2].map(i => (
-                    <div key={i} className="flex overflow-hidden rounded-sm border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
+                    <div key={i} className="flex overflow-hidden rounded-lg border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
                       <div className="w-48 flex-shrink-0 bg-rm-gray-2 flex items-center justify-center text-muted-foreground"><Rocket size={36}/></div>
                       <div className="flex flex-1 flex-col gap-3 p-6">
                         <div className="flex items-center gap-2">
@@ -3208,7 +3646,7 @@ export default function DesignSystemPage() {
                 <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-2">S — Узкая</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                   {[1,2,3].map(i => (
-                    <div key={i} className="flex flex-col overflow-hidden rounded-sm border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer group">
+                    <div key={i} className="flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer group">
                       <div className="h-40 bg-rm-gray-2 flex items-center justify-center"><User size={36} className="text-muted-foreground"/></div>
                       <div className="flex flex-col gap-3 p-5">
                         <div>
@@ -3230,7 +3668,7 @@ export default function DesignSystemPage() {
                 <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-2">M — Широкая</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   {[1,2].map(i => (
-                    <div key={i} className="flex flex-col overflow-hidden rounded-sm border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer group">
+                    <div key={i} className="flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer group">
                       <div className="h-52 bg-rm-gray-2 flex items-center justify-center"><User size={48} className="text-muted-foreground"/></div>
                       <div className="flex flex-col gap-4 p-6">
                         <div>
@@ -3255,7 +3693,7 @@ export default function DesignSystemPage() {
                 <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-2">L — Горизонтальная</p>
                 <div className="flex flex-col gap-3 mb-10">
                   {[1,2].map(i => (
-                    <div key={i} className="flex overflow-hidden rounded-sm border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
+                    <div key={i} className="flex overflow-hidden rounded-lg border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
                       <div className="w-52 flex-shrink-0 bg-rm-gray-2 flex items-center justify-center"><User size={48} className="text-muted-foreground"/></div>
                       <div className="flex flex-1 items-center gap-8 p-6">
                         <div className="flex flex-col gap-1 w-48 flex-shrink-0">
@@ -3284,7 +3722,7 @@ export default function DesignSystemPage() {
                 <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-2">S — Узкая</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                   {[1,2,3].map(i => (
-                    <div key={i} className="flex flex-col gap-4 p-5 rounded-sm border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
+                    <div key={i} className="flex flex-col gap-4 p-5 rounded-lg border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
                       <div className="relative w-fit">
                         <div className="w-14 h-14 rounded-full border-2 flex items-center justify-center bg-rm-gray-2" style={{borderColor:"var(--rm-yellow-50)"}}>
                           <Rocket size={20} className="text-[var(--rm-yellow-100)]"/>
@@ -3308,7 +3746,7 @@ export default function DesignSystemPage() {
                 <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-2">M — Широкая</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   {[1,2].map(i => (
-                    <div key={i} className="flex flex-col gap-5 p-6 rounded-sm border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
+                    <div key={i} className="flex flex-col gap-5 p-6 rounded-lg border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
                       <div className="flex items-center gap-4">
                         <div className="relative flex-shrink-0">
                           <div className="w-20 h-20 rounded-full border-2 flex items-center justify-center bg-rm-gray-2" style={{borderColor:"var(--rm-yellow-50)"}}>
@@ -3338,7 +3776,7 @@ export default function DesignSystemPage() {
                 <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-2">L — Горизонтальная</p>
                 <div className="flex flex-col gap-3 mb-10">
                   {[1,2].map(i => (
-                    <div key={i} className="flex items-center gap-6 p-6 rounded-sm border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
+                    <div key={i} className="flex items-center gap-6 p-6 rounded-lg border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
                       <div className="relative flex-shrink-0">
                         <div className="w-20 h-20 rounded-full border-2 flex items-center justify-center bg-rm-gray-2" style={{borderColor:"var(--rm-yellow-50)"}}>
                           <Rocket size={28} className="text-[var(--rm-yellow-100)]"/>
@@ -3366,7 +3804,7 @@ export default function DesignSystemPage() {
                 <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-2">S — Узкая</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                   {[1,2,3].map(i => (
-                    <div key={i} className="flex flex-col gap-4 p-5 rounded-sm border border-border bg-card dark:border-white/[0.06]">
+                    <div key={i} className="flex flex-col gap-4 p-5 rounded-lg border border-border bg-card dark:border-white/[0.06]">
                       <div className="flex gap-0.5 text-[var(--rm-yellow-100)]">{"★★★★★".split("").map((s,j)=><span key={j} className="text-[length:var(--text-14)]">{s}</span>)}</div>
                       <blockquote className="text-[length:var(--text-14)] italic leading-[1.5] text-foreground line-clamp-4">«Агент помог за 2 дня разобраться в структуре рынка, на что раньше уходило 2 недели.»</blockquote>
                       <div className="flex items-center gap-2.5 pt-3 border-t border-border mt-auto">
@@ -3383,7 +3821,7 @@ export default function DesignSystemPage() {
                 <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-2">M — Широкая</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   {[1,2].map(i => (
-                    <div key={i} className="flex flex-col gap-5 p-6 rounded-sm border border-border bg-card dark:border-white/[0.06]">
+                    <div key={i} className="flex flex-col gap-5 p-6 rounded-lg border border-border bg-card dark:border-white/[0.06]">
                       <div className="flex gap-0.5 text-[var(--rm-yellow-100)]">{"★★★★★".split("").map((s,j)=><span key={j} className="text-[length:var(--text-16)]">{s}</span>)}</div>
                       <blockquote className="text-[length:var(--text-16)] italic leading-[1.618] text-foreground">«Агент помог мне за 2 дня разобраться в структуре рынка, на что раньше уходило целых 2 недели работы аналитика.»</blockquote>
                       <div className="flex items-center gap-3 pt-4 border-t border-border">
@@ -3401,7 +3839,7 @@ export default function DesignSystemPage() {
                 <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-2">L — Горизонтальная</p>
                 <div className="flex flex-col gap-3 mb-10">
                   {[1,2].map(i => (
-                    <div key={i} className="flex gap-8 p-6 rounded-sm border border-border bg-card dark:border-white/[0.06]">
+                    <div key={i} className="flex gap-8 p-6 rounded-lg border border-border bg-card dark:border-white/[0.06]">
                       <div className="flex flex-col items-center gap-3 flex-shrink-0 w-36">
                         <div className="w-16 h-16 rounded-full bg-rm-gray-2 border border-border flex items-center justify-center text-muted-foreground"><User size={24}/></div>
                         <div className="text-center">
@@ -3428,7 +3866,7 @@ export default function DesignSystemPage() {
                 <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-2">S — Узкая</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                   {[1,2,3].map(i => (
-                    <div key={i} className="flex flex-col gap-3 p-5 rounded-sm border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
+                    <div key={i} className="flex flex-col gap-3 p-5 rounded-lg border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
                       <div className="flex items-center justify-between">
                         <span className="px-2 py-0.5 rounded-sm font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em]"
                           style={{backgroundColor:"var(--rm-green-900)",color:"var(--rm-green-100)"}}>Активен</span>
@@ -3450,7 +3888,7 @@ export default function DesignSystemPage() {
                 <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-2">M — Широкая</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   {[1,2].map(i => (
-                    <div key={i} className="flex flex-col gap-4 p-6 rounded-sm border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
+                    <div key={i} className="flex flex-col gap-4 p-6 rounded-lg border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
                       <div className="flex items-center justify-between">
                         <span className="px-2 py-0.5 rounded-sm font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em]"
                           style={{backgroundColor:"var(--rm-green-900)",color:"var(--rm-green-100)"}}>Активен</span>
@@ -3475,7 +3913,7 @@ export default function DesignSystemPage() {
                 <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-2">L — Горизонтальная</p>
                 <div className="flex flex-col gap-3 mb-10">
                   {[1,2].map(i => (
-                    <div key={i} className="flex items-center gap-6 p-6 rounded-sm border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
+                    <div key={i} className="flex items-center gap-6 p-6 rounded-lg border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
                       <div className="flex flex-col gap-1 w-40 flex-shrink-0">
                         <span className="px-2 py-0.5 rounded-sm w-fit font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em]"
                           style={{backgroundColor:"var(--rm-green-900)",color:"var(--rm-green-100)"}}>Активен</span>
@@ -3502,7 +3940,7 @@ export default function DesignSystemPage() {
                 <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-2">S — Узкая</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                   {[1,2,3].map(i => (
-                    <div key={i} className="flex flex-col overflow-hidden rounded-sm border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
+                    <div key={i} className="flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
                       <div className="relative h-32 bg-rm-gray-2 flex items-center justify-center">
                         <GraduationCap size={28} className="text-muted-foreground"/>
                         <div className="absolute inset-0 bg-gradient-to-t from-card/60 to-transparent"/>
@@ -3527,7 +3965,7 @@ export default function DesignSystemPage() {
                 <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-2">M — Широкая</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   {[1,2].map(i => (
-                    <div key={i} className="flex flex-col overflow-hidden rounded-sm border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
+                    <div key={i} className="flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
                       <div className="relative h-44 bg-rm-gray-2 flex items-center justify-center">
                         <GraduationCap size={40} className="text-muted-foreground"/>
                         <div className="absolute inset-0 bg-gradient-to-t from-card/60 to-transparent"/>
@@ -3559,7 +3997,7 @@ export default function DesignSystemPage() {
                 <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-2">L — Горизонтальная</p>
                 <div className="flex flex-col gap-3 mb-10">
                   {[1,2].map(i => (
-                    <div key={i} className="flex overflow-hidden rounded-sm border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
+                    <div key={i} className="flex overflow-hidden rounded-lg border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
                       <div className="w-52 flex-shrink-0 bg-rm-gray-2 flex items-center justify-center relative">
                         <GraduationCap size={40} className="text-muted-foreground"/>
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent to-card/20"/>
@@ -3596,7 +4034,7 @@ export default function DesignSystemPage() {
                 <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-2">S — Узкая</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                   {[1,2,3].map(i => (
-                    <div key={i} className="flex flex-col gap-3 p-5 rounded-sm border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
+                    <div key={i} className="flex flex-col gap-3 p-5 rounded-lg border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
                       <div className="w-10 h-10 rounded-sm border border-border bg-rm-gray-2 flex items-center justify-center text-muted-foreground flex-shrink-0">
                         <Wrench size={18}/>
                       </div>
@@ -3617,7 +4055,7 @@ export default function DesignSystemPage() {
                 <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-2">M — Широкая</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   {[1,2].map(i => (
-                    <div key={i} className="flex flex-col gap-4 p-6 rounded-sm border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
+                    <div key={i} className="flex flex-col gap-4 p-6 rounded-lg border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
                       <div className="w-12 h-12 rounded-sm border border-border bg-rm-gray-2 flex items-center justify-center text-muted-foreground flex-shrink-0">
                         <Wrench size={22}/>
                       </div>
@@ -3638,7 +4076,7 @@ export default function DesignSystemPage() {
                 <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-2">L — Горизонтальная</p>
                 <div className="flex flex-col gap-3 mb-10">
                   {[1,2].map(i => (
-                    <div key={i} className="flex items-center gap-6 p-6 rounded-sm border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
+                    <div key={i} className="flex items-center gap-6 p-6 rounded-lg border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
                       <div className="w-14 h-14 rounded-sm border border-border bg-rm-gray-2 flex items-center justify-center text-muted-foreground flex-shrink-0">
                         <Wrench size={24}/>
                       </div>
@@ -3666,7 +4104,7 @@ export default function DesignSystemPage() {
                 <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-2">S — Узкая</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                   {[1,2,3].map(i => (
-                    <div key={i} className="flex flex-col gap-3 p-5 rounded-sm border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
+                    <div key={i} className="flex flex-col gap-3 p-5 rounded-lg border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
                       <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
                         style={{backgroundColor:"var(--rm-yellow-900)"}}>
                         <Gem size={18} className="text-[var(--rm-yellow-100)]"/>
@@ -3688,7 +4126,7 @@ export default function DesignSystemPage() {
                 <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-2">M — Широкая</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   {[1,2].map(i => (
-                    <div key={i} className="flex flex-col gap-4 p-6 rounded-sm border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
+                    <div key={i} className="flex flex-col gap-4 p-6 rounded-lg border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
                       <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
                         style={{backgroundColor:"var(--rm-yellow-900)"}}>
                         <Gem size={22} className="text-[var(--rm-yellow-100)]"/>
@@ -3712,7 +4150,7 @@ export default function DesignSystemPage() {
                 <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-2">L — Горизонтальная</p>
                 <div className="flex flex-col gap-3">
                   {[1,2].map(i => (
-                    <div key={i} className="flex items-center gap-6 p-6 rounded-sm border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
+                    <div key={i} className="flex items-center gap-6 p-6 rounded-lg border border-border bg-card transition-all duration-150 hover:border-muted-foreground dark:border-white/[0.06] dark:hover:border-white/[0.20] cursor-pointer">
                       <div className="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0"
                         style={{backgroundColor:"var(--rm-yellow-900)"}}>
                         <Gem size={24} className="text-[var(--rm-yellow-100)]"/>
@@ -3743,7 +4181,7 @@ export default function DesignSystemPage() {
           {/* ═══════ 10. TOOLTIPS ═══════ */}
           <Section id="tooltips" title="10. Тултипы">
             <p className="text-muted-foreground mb-6">
-              Контекстные подсказки при наведении. Появляются поверх контента через <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-mono-family)]">position: fixed</code>, не обрезаются родителем. Анимация: 120ms ease-out, fade + translateY.
+              Контекстные подсказки при наведении. Появляются поверх контента через <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-caption-family)]">position: fixed</code>, не обрезаются родителем. Анимация: 120ms ease-out, fade + translateY.
             </p>
 
             <h3 id="tooltips-animation" className="scroll-mt-20 font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-24)] md:text-[length:var(--text-32)] uppercase tracking-[-0.01em] mb-4">
@@ -3765,7 +4203,7 @@ export default function DesignSystemPage() {
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
               {/* Простой текстовый */}
-              <div className="p-6 rounded-md border border-border flex flex-col items-center gap-4">
+              <div className="p-6 rounded-lg border border-border flex flex-col items-center gap-4">
                 <p className="text-[length:var(--text-12)] text-muted-foreground uppercase tracking-wider mb-2">Простой</p>
                 <TooltipDemo
                   label="Наведи на меня"
@@ -3773,7 +4211,7 @@ export default function DesignSystemPage() {
                 />
               </div>
               {/* С заголовком */}
-              <div className="p-6 rounded-md border border-border flex flex-col items-center gap-4">
+              <div className="p-6 rounded-lg border border-border flex flex-col items-center gap-4">
                 <p className="text-[length:var(--text-12)] text-muted-foreground uppercase tracking-wider mb-2">С заголовком</p>
                 <TooltipDemo
                   label="Наведи на меня"
@@ -3786,7 +4224,7 @@ export default function DesignSystemPage() {
                 />
               </div>
               {/* Со списком (как у маскотов) */}
-              <div className="p-6 rounded-md border border-border flex flex-col items-center gap-4">
+              <div className="p-6 rounded-lg border border-border flex flex-col items-center gap-4">
                 <p className="text-[length:var(--text-12)] text-muted-foreground uppercase tracking-wider mb-2">С описанием</p>
                 <TooltipDemo
                   label="Наведи на меня"
@@ -3820,7 +4258,7 @@ export default function DesignSystemPage() {
                 { rule: "Минимальная ширина 160px",   desc: "Контент не переносится слишком узко" },
                 { rule: "z-index: 50",                desc: "Всегда поверх контента, но под модалами (z-100+)" },
               ].map((item) => (
-                <div key={item.rule} className="flex gap-3 p-3 rounded-md border border-border">
+                <div key={item.rule} className="flex gap-3 p-3 rounded-lg border border-border">
                   <span className="text-[var(--rm-yellow-100)] mt-0.5 shrink-0">·</span>
                   <div>
                     <p className="text-[length:var(--text-14)] font-medium">{item.rule}</p>
@@ -3838,7 +4276,7 @@ export default function DesignSystemPage() {
             <p className="text-muted-foreground mb-6">
               Основная библиотека — <strong>Lucide Icons</strong>. Outline, 24px viewbox, stroke 2px (фиксированный).
               Цвет наследуется через currentColor. Толщина не масштабируется с размером:{" "}
-              <code className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] bg-rm-gray-3 px-1 py-0.5 rounded">strokeWidth={"{48/size}"}</code>.
+              <code className="text-[length:var(--text-12)] font-[family-name:var(--font-caption-family)] bg-rm-gray-3 px-1 py-0.5 rounded">strokeWidth={"{48/size}"}</code>.
             </p>
 
             <h3 id="icons-scale" className="scroll-mt-20 font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-24)] md:text-[length:var(--text-32)] uppercase tracking-[-0.01em] mb-4">
@@ -3854,7 +4292,7 @@ export default function DesignSystemPage() {
                 { size: 40, label: "2xl (40px)", tw: "size={40} strokeWidth={1.2}" },
               ].map((icon) => (
                 <div key={icon.size} className="flex flex-col items-center gap-2">
-                  <div className="flex items-center justify-center w-16 h-16 rounded-md border border-border">
+                  <div className="flex items-center justify-center w-16 h-16 rounded-lg border border-border">
                     <Rocket size={icon.size} strokeWidth={48/icon.size} className="text-muted-foreground" />
                   </div>
                   <div className="flex items-center gap-1">
@@ -3881,7 +4319,7 @@ export default function DesignSystemPage() {
                 { icon: <ChevronRight size={20} strokeWidth={2.4} />, name: "ChevronRight" },
                 { icon: <Loader2 size={20} strokeWidth={2.4} className="animate-spin" />, name: "Loader2" },
               ].map((item) => (
-                <div key={item.name} className="flex flex-col items-center gap-1.5 p-3 rounded-md border border-border hover:bg-rm-gray-3 transition-colors cursor-pointer group">
+                <div key={item.name} className="flex flex-col items-center gap-1.5 p-3 rounded-lg border border-border hover:bg-rm-gray-3 transition-colors cursor-pointer group">
                   <div className="text-muted-foreground group-hover:text-foreground transition-colors">
                     {item.icon}
                   </div>
@@ -4005,12 +4443,12 @@ export default function DesignSystemPage() {
                 </button>
               </AnimDemoCard>
 
-              <AnimDemoCard label="Ghost button hover" desc="Ghost button: hover заполняет фон muted. 100ms ease-standard.">
+              <AnimDemoCard label="Ghost button hover" desc="Ghost button использует прежний Secondary-style и на hover меняет серый фон. 100ms ease-standard.">
                 <button
-                  className="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-sm border border-border text-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase tracking-[0.08em] cursor-pointer select-none"
-                  style={{ transition: "background-color 100ms cubic-bezier(0.4,0,0.2,1)", backgroundColor: "transparent" }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = "var(--rm-gray-1)" }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = "transparent" }}
+                  className="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-sm border border-border bg-[var(--rm-gray-1)] text-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase tracking-[0.08em] cursor-pointer select-none"
+                  style={{ transition: "background-color 100ms cubic-bezier(0.4,0,0.2,1)" }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = "var(--rm-gray-2)" }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = "var(--rm-gray-1)" }}
                 >
                   Ghost button
                 </button>
@@ -4029,7 +4467,7 @@ export default function DesignSystemPage() {
 
               <AnimDemoCard label="Agent card hover" desc="Карточка агента: hover меняет border на фиолетовый. 200ms ease-spring.">
                 <div
-                  className="w-full p-4 rounded-md border bg-card cursor-pointer"
+                  className="w-full p-4 rounded-lg border bg-card cursor-pointer"
                   style={{ borderColor: "var(--border)", transition: "border-color 200ms cubic-bezier(0.34,1.56,0.64,1)" }}
                   onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = "var(--rm-violet-100)" }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = "var(--border)" }}
@@ -4074,14 +4512,14 @@ export default function DesignSystemPage() {
             <p className="text-[length:var(--text-14)] text-muted-foreground mb-4">Нажми кнопку, чтобы воспроизвести анимацию появления элемента.</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
               <ToggleAnimCard label="Dropdown / Tooltip" desc="Fade + slide 8px вниз. 300ms ease-enter." animClass="fade-in-down" animDuration="300ms" animEasing="cubic-bezier(0,0,0.2,1)">
-                <div className="w-full p-3 rounded-md border border-border bg-popover text-[length:var(--text-14)]">
+                <div className="w-full p-3 rounded-sm border border-border bg-popover text-[length:var(--text-14)]">
                   <p className="font-medium mb-1">Опции</p>
                   <p className="text-muted-foreground text-[length:var(--text-12)] py-0.5">Редактировать</p>
                   <p className="text-muted-foreground text-[length:var(--text-12)] py-0.5">Удалить</p>
                 </div>
               </ToggleAnimCard>
               <ToggleAnimCard label="Модальное окно" desc="Slide + scale от 0.98. 400ms ease-enter." animClass="slide-in-bottom" animDuration="400ms" animEasing="cubic-bezier(0,0,0.2,1)">
-                <div className="w-full p-4 rounded-md border border-border bg-card text-[length:var(--text-14)]">
+                <div className="w-full p-4 rounded-lg border border-border bg-card text-[length:var(--text-14)]">
                   <p className="font-medium mb-2">Диалог</p>
                   <p className="text-muted-foreground text-[length:var(--text-12)] mb-3">Вы уверены в этом действии?</p>
                   <div className="flex gap-2">
@@ -4091,7 +4529,7 @@ export default function DesignSystemPage() {
                 </div>
               </ToggleAnimCard>
               <ToggleAnimCard label="Toast / Notification" desc="Slide справа-налево. 300ms ease-enter." animClass="toast-enter" animDuration="300ms" animEasing="cubic-bezier(0,0,0.2,1)">
-                <div className="w-full p-3 rounded-md border border-border bg-card flex items-center gap-3">
+                <div className="w-full p-3 rounded-lg border border-border bg-card flex items-center gap-3">
                   <div className="w-2 h-2 rounded-full bg-green-500 shrink-0" />
                   <span className="text-[length:var(--text-12)]">Изменения сохранены</span>
                 </div>
@@ -4178,7 +4616,7 @@ export default function DesignSystemPage() {
             <h3 id="animations-a11y" className="scroll-mt-20 font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-24)] md:text-[length:var(--text-32)] uppercase tracking-[-0.01em] mb-4">
               8.8 Доступность (Reduced Motion)
             </h3>
-            <div className="p-4 rounded-md border border-border bg-rm-gray-2/30">
+            <div className="p-4 rounded-lg border border-border bg-rm-gray-2/30">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-[length:var(--text-14)] font-medium">prefers-reduced-motion: reduce</p>
                 <CopyButton
@@ -4187,7 +4625,7 @@ export default function DesignSystemPage() {
                 />
               </div>
               <p className="text-[length:var(--text-14)] text-muted-foreground">
-                Все анимации обязаны уважать системные настройки. Исключение — typing-indicator: заменяется на статичный <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-mono-family)]">•••</code>.
+                Все анимации обязаны уважать системные настройки. Исключение — typing-indicator: заменяется на статичный <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-caption-family)]">•••</code>.
               </p>
             </div>
 
@@ -4196,7 +4634,7 @@ export default function DesignSystemPage() {
               8.9 Animated Grid Lines
             </h3>
             <p className="text-[length:var(--text-14)] text-muted-foreground mb-4">
-              Тонкие линии hero-секции материализуют каркас дизайна. Только одноразовая анимация при загрузке — после появления статичны. Используется с токеном <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-mono-family)]">--duration-grid</code> (1600ms).
+              Тонкие линии hero-секции материализуют каркас дизайна. Только одноразовая анимация при загрузке — после появления статичны. Используется с токеном <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-caption-family)]">--duration-grid</code> (1600ms).
             </p>
             <AnimatedGridLinesDemo />
 
@@ -4236,7 +4674,7 @@ export default function DesignSystemPage() {
             <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-24)] md:text-[length:var(--text-32)] uppercase tracking-[-0.01em] mt-8 mb-4">
               Алгоритм
             </h3>
-            <div className="p-4 rounded-md border border-border bg-rm-gray-2/30 font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] text-muted-foreground space-y-1">
+            <div className="p-4 rounded-lg border border-border bg-rm-gray-2/30 font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] text-muted-foreground space-y-1">
               <p>distance = sqrt((x − mx)² + (y − my)²)</p>
               <p>t = clamp(1 − distance / LENS_RADIUS, 0, 1)</p>
               <p>scale = 1 + (MAX_SCALE − 1) × t²  // квадратичный easing</p>
@@ -4247,7 +4685,7 @@ export default function DesignSystemPage() {
             <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-24)] md:text-[length:var(--text-32)] uppercase tracking-[-0.01em] mt-8 mb-4">
               Применение
             </h3>
-            <div className="overflow-auto rounded-md border border-border">
+            <div className="overflow-auto rounded-lg border border-border">
               <table className="w-full text-[length:var(--text-14)]">
                 <thead>
                   <tr className="border-b border-border bg-rm-gray-2/30">
@@ -4274,7 +4712,7 @@ export default function DesignSystemPage() {
             </div>
 
             {/* a11y note */}
-            <div className="mt-6 p-4 rounded-md border border-border bg-rm-gray-2/30">
+            <div className="mt-6 p-4 rounded-lg border border-border bg-rm-gray-2/30">
               <p className="text-[length:var(--text-14)] font-medium mb-1">Доступность & Touch</p>
               <p className="text-[length:var(--text-14)] text-muted-foreground">
                 На touch-устройствах (<code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded">pointer: coarse</code>) линза отключается — сетка остаётся статичным декором.
@@ -4319,7 +4757,7 @@ export default function DesignSystemPage() {
             <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-24)] md:text-[length:var(--text-32)] uppercase tracking-[-0.01em] mb-4">
               Токены
             </h3>
-            <div className="overflow-auto rounded-md border border-border mb-8">
+            <div className="overflow-auto rounded-lg border border-border mb-8">
               <table className="w-full text-[length:var(--text-14)]">
                 <thead>
                   <tr className="border-b border-border bg-rm-gray-2/30">
@@ -4345,8 +4783,8 @@ export default function DesignSystemPage() {
                   ].map(([prop, token, value]) => (
                     <tr key={prop} className="border-b border-border last:border-0">
                       <td className="px-4 py-2 font-medium text-foreground">{prop}</td>
-                      <td className="px-4 py-2 font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)]">{token}</td>
-                      <td className="px-4 py-2">{value}</td>
+                      <td className="px-4 py-2"><TokenChip>{token}</TokenChip></td>
+                      <td className="px-4 py-2 text-[length:var(--text-14)] text-muted-foreground">{value}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -4358,7 +4796,7 @@ export default function DesignSystemPage() {
               Состояния
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-              <div className="rounded-md border border-border overflow-hidden">
+              <div className="rounded-lg border border-border overflow-hidden">
                 <div className="px-4 py-2 border-b border-border bg-rm-gray-2/30">
                   <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground">Default — top of page</span>
                 </div>
@@ -4384,7 +4822,7 @@ export default function DesignSystemPage() {
                 </div>
               </div>
 
-              <div className="rounded-md border border-border overflow-hidden">
+              <div className="rounded-lg border border-border overflow-hidden">
                 <div className="px-4 py-2 border-b border-border bg-rm-gray-2/30">
                   <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground">Scrolled — after 10px</span>
                 </div>
@@ -4415,7 +4853,7 @@ export default function DesignSystemPage() {
             <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-24)] md:text-[length:var(--text-32)] uppercase tracking-[-0.01em] mb-4">
               Применение
             </h3>
-            <div className="p-4 rounded-md border border-border bg-rm-gray-2/30 font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] text-muted-foreground">
+            <div className="p-4 rounded-lg border border-border bg-rm-gray-2/30 font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] text-muted-foreground">
               <p className="mb-1">{'<SiteHeader basePath={BASE_PATH} />'}</p>
               <p className="text-[length:var(--text-12)] text-muted-foreground/60">{'// basePath — для корректных путей к SVG-логотипам в prod'}</p>
             </div>
@@ -4434,7 +4872,7 @@ export default function DesignSystemPage() {
               Аккордион — FAQ
             </h3>
             <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">
-              Аккордион для секций FAQ и «Часто задаваемые вопросы». Числа слева — порядковые метки. Заголовок раскрытого пункта подсвечивается акцентным жёлтым. Плавное открытие через <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-mono-family)]">grid-template-rows</code> (200ms, ease-standard).
+              Аккордион для секций FAQ и «Часто задаваемые вопросы». Числа слева — порядковые метки. Заголовок раскрытого пункта подсвечивается акцентным жёлтым. Плавное открытие через <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-caption-family)]">grid-template-rows</code> (200ms, ease-standard).
             </p>
 
             <div className="-mx-5 md:-mx-10 border-y border-border py-10 px-5 md:px-10 mb-8">
@@ -4445,7 +4883,7 @@ export default function DesignSystemPage() {
             <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-24)] md:text-[length:var(--text-32)] uppercase tracking-[-0.01em] mb-4">
               Токены
             </h3>
-            <div className="overflow-auto rounded-md border border-border mb-8">
+            <div className="overflow-auto rounded-lg border border-border mb-8">
               <table className="w-full text-[length:var(--text-14)]">
                 <thead>
                   <tr className="border-b border-border bg-rm-gray-2/30">
@@ -4467,8 +4905,8 @@ export default function DesignSystemPage() {
                   ].map(([prop, token, desc]) => (
                     <tr key={prop} className="border-b border-border last:border-0">
                       <td className="px-4 py-2 font-medium text-foreground">{prop}</td>
-                      <td className="px-4 py-2 font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)]">{token}</td>
-                      <td className="px-4 py-2">{desc}</td>
+                      <td className="px-4 py-2"><TokenChip>{token}</TokenChip></td>
+                      <td className="px-4 py-2 text-[length:var(--text-14)] text-muted-foreground">{desc}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -4484,14 +4922,14 @@ export default function DesignSystemPage() {
           <section id="version-summary-150" className="scroll-mt-20 pb-16">
             <div className="mb-6">
               <h2 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-30)] md:text-[length:var(--text-52)] uppercase tracking-[-0.015em] leading-[1.05]">
-                Summary v1.5.0
+                Summary v1.5.6
               </h2>
             </div>
-            <div className="rounded-md border border-border overflow-hidden">
+            <div className="rounded-lg border border-border overflow-hidden">
               <div className="border-b border-border bg-rm-gray-2/30 px-5 py-4 flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-[length:var(--text-14)] font-medium">Loos Condensed, cleanup бейджей и обновлённая подача версии</p>
-                  <p className="text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)] mt-1">{DS_DATE}</p>
+                  <p className="text-[length:var(--text-14)] font-medium">Таблицы для Rocketmind DS Web</p>
+                  <p className="text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-caption-family)] mt-1">{DS_DATE}</p>
                 </div>
                 <Badge variant="neutral" size="md">v{DS_VERSION}</Badge>
               </div>
@@ -4499,17 +4937,17 @@ export default function DesignSystemPage() {
                 <div className="px-5 py-5 border-b md:border-b-0 md:border-r border-border">
                   <p className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] uppercase tracking-wider text-muted-foreground mb-3">Что обновили</p>
                   <ul className="space-y-2 text-[length:var(--text-14)] text-muted-foreground">
-                    <li className="flex gap-2"><span className="text-[var(--rm-yellow-100)] shrink-0">+</span><span>Шрифт label-типографики заменён: Roboto Mono → Loos Condensed.</span></li>
-                    <li className="flex gap-2"><span className="text-[var(--rm-yellow-100)] shrink-0">+</span><span>Токен <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-mono-family)]">--font-mono-family</code> обновлён и используется по всей системе.</span></li>
-                    <li className="flex gap-2"><span className="text-[var(--rm-yellow-100)] shrink-0">+</span><span>Badge-система упрощена до <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-mono-family)]">neutral</code> и цветных <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-mono-family)]">subtle</code>-вариантов.</span></li>
+                    <li className="flex gap-2"><span className="text-[var(--rm-yellow-100)] shrink-0">+</span><span>В раздел «Компоненты» добавлен новый подраздел <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-caption-family)]">Tables</code> с инструкцией и живыми примерами.</span></li>
+                    <li className="flex gap-2"><span className="text-[var(--rm-yellow-100)] shrink-0">+</span><span>Разобраны основные паттерны таблиц: <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-caption-family)]">Basic</code>, <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-caption-family)]">Striped</code>, <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-caption-family)]">Bordered</code>, <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-caption-family)]">Interactive</code>, <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-caption-family)]">Full featured</code> и <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-caption-family)]">Large dataset</code>.</span></li>
+                    <li className="flex gap-2"><span className="text-[var(--rm-yellow-100)] shrink-0">+</span><span>Добавлены примеры базовой, striped, bordered, interactive и operational-таблиц на существующих токенах surface, border, badge и control.</span></li>
                   </ul>
                 </div>
                 <div className="px-5 py-5">
                   <p className="text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] uppercase tracking-wider text-muted-foreground mb-3">Что почистили</p>
                   <ul className="space-y-2 text-[length:var(--text-14)] text-muted-foreground">
-                    <li className="flex gap-2"><span className="text-foreground shrink-0">-</span><span>Убран бейдж версии из шапки страницы.</span></li>
-                    <li className="flex gap-2"><span className="text-foreground shrink-0">-</span><span>Убраны бейджи версии у заголовков всех разделов.</span></li>
-                    <li className="flex gap-2"><span className="text-foreground shrink-0">-</span><span>Сайдбарный бейдж версии приведён к стандартному стилю всех badge-компонентов.</span></li>
+                    <li className="flex gap-2"><span className="text-foreground shrink-0">-</span><span>Virtualized table не превращена в отдельный визуальный стиль: в Rocketmind это технический способ рендера, а не новый компонентный skin.</span></li>
+                    <li className="flex gap-2"><span className="text-foreground shrink-0">-</span><span>Для row hover и row selected использованы только существующие токены <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-caption-family)]">--rm-gray-2</code>, <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-caption-family)]">--rm-yellow-900</code> и <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-caption-family)]">--rm-yellow-300</code>.</span></li>
+                    <li className="flex gap-2"><span className="text-foreground shrink-0">-</span><span>Статусы внутри таблиц не получили отдельную окраску текста: для семантики используются существующие <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-caption-family)]">Badge</code> и control-компоненты.</span></li>
                   </ul>
                 </div>
               </div>

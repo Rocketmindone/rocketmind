@@ -31,10 +31,10 @@ export function Header() {
                 </nav>
 
                 <div className="flex items-center gap-4">
-                    <button className="hidden sm:inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-mono text-[length:var(--text-12)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-[var(--rm-yellow-300)] hover:shadow-glow-yellow focus-visible:outline-none focus-visible:shadow-glow-yellow active:bg-[var(--rm-yellow-500)]">
+                    <button className="hidden sm:inline-flex items-center justify-center gap-2 h-10 px-4 rounded-sm bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-mono text-[length:var(--text-12)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-[var(--rm-yellow-300)] hover:shadow-glow-yellow focus-visible:outline-none focus-visible:shadow-glow-yellow active:bg-[var(--rm-yellow-500)]">
                         Оставить заявку
                     </button>
-                    <button className="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
+                    <button className="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="18" y2="18" /></svg>
                         <span className="sr-only">Toggle menu</span>
                     </button>

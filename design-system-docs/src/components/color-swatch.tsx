@@ -71,7 +71,7 @@ export function ColorSwatch({ name, token, lightHex, darkHex, className }: Color
         onClick={onClick}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
-        className="relative w-full h-20 rounded-md border border-border cursor-pointer"
+        className="relative w-full h-20 rounded-lg border border-border cursor-pointer"
         style={{ backgroundColor: lightHex }}
       >
         {hex && (
@@ -86,8 +86,8 @@ export function ColorSwatch({ name, token, lightHex, darkHex, className }: Color
       <div className="flex items-start justify-between gap-1">
         <div className="min-w-0">
           <p className="text-[length:var(--text-14)] font-medium truncate">{name}</p>
-          <p className="text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)] truncate">{token}</p>
-          <div className="flex gap-2 text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)]">
+          <code className="ds-token-chip max-w-full">{token}</code>
+          <div className="mt-1 flex gap-2 ds-token-caption text-muted-foreground">
             <span>L: {lightHex}</span>
             <span>D: {darkHex}</span>
           </div>
@@ -122,7 +122,7 @@ export function ColorSwatchLive({
         onClick={onClick}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
-        className="relative w-full h-20 rounded-md border border-border cursor-pointer"
+        className="relative w-full h-20 rounded-lg border border-border cursor-pointer"
         style={{ backgroundColor: `var(${cssVar})` }}
       >
         {hex && (
@@ -137,15 +137,15 @@ export function ColorSwatchLive({
       <div className="flex items-start justify-between gap-1">
         <div className="min-w-0">
           <p className="text-[length:var(--text-14)] font-medium truncate">{name}</p>
-          <p className="text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)] truncate">{token}</p>
+          <code className="ds-token-chip max-w-full">{token}</code>
           {(lightHex || darkHex) && (
-            <div className="flex flex-wrap gap-x-2 text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)]">
+            <div className="mt-1 flex flex-wrap gap-x-2 ds-token-caption text-muted-foreground">
               {lightHex && <span>L: {lightHex}</span>}
               {darkHex && <span>D: {darkHex}</span>}
             </div>
           )}
           {twClass && (
-            <p className="text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)] truncate">{twClass}</p>
+            <code className="ds-token-chip mt-1 max-w-full">{twClass}</code>
           )}
         </div>
         <CopyButton value={token} label={`Токен: ${token}`} />
