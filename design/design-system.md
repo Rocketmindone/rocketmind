@@ -4,7 +4,7 @@
 > Основана на компонентах **shadcn/ui** + кастомизация под бренд.
 > Источник правды для всех экранов: лендинг, авторизация, main app, каталог агентов.
 >
-> **Version:** 1.5.6 · **Updated:** 2026-03-18
+> **Version:** 1.5.7 · **Updated:** 2026-03-20
 
 ---
 
@@ -3004,6 +3004,38 @@ className="
 | Центр | Навигация (только лендинг) | `ghost`-кнопки или plain `<a>` |
 | Право | CTA «Попробовать» (лендинг) / Аватар юзера (app) | `Button primary lg` |
 
+### Landing navigation / dropdown
+
+Для маркетингового header допускается variant с выпадающими списками у первых пунктов навигации.
+
+| Часть | Значение |
+|------|----------|
+| Trigger | текущий label меню, chevron справа, без отдельной подложки в rest |
+| Trigger hover / open | только `text: --foreground`, panel без glow и без дополнительной тени |
+| Panel | `bg: --popover`, `border: --border`, `rounded-sm`, `p-3` |
+| Layout panel | grid `2 cols`, gap `6px` (`gap-1.5`) |
+| Item title | `--font-mono-family`, `--text-12`, uppercase, `tracking: 0.08em` |
+| Item description | `--text-13`, `text: --muted-foreground`, line-height `~1.45` |
+| Item hover | `bg: --rm-gray-2`, title `--foreground`, без shadow/glow |
+| Animation | opacity + translateY, `duration-200`, easing standard/smooth |
+
+```tsx
+<div className="absolute right-0 top-[calc(100%+12px)] w-[420px] rounded-sm border border-border bg-popover">
+  <ul className="grid grid-cols-2 gap-1.5 p-3">
+    <li>
+      <a className="flex min-h-[84px] flex-col rounded-sm border border-transparent p-2.5 hover:bg-[var(--rm-gray-2)]">
+        <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em]">
+          AI-консалтинг
+        </span>
+        <span className="mt-1 text-[13px] leading-[1.45] text-muted-foreground">
+          Стратегия внедрения ИИ в бизнес и в операционные процессы.
+        </span>
+      </a>
+    </li>
+  </ul>
+</div>
+```
+
 ### Токены
 
 ```css
@@ -3699,6 +3731,94 @@ if (reducedMotion) {
 
 ---
 
+### 8.11 Hero Background Noise & Bottom Fade
+
+Для тёмного hero-блока лендинга разрешён дополнительный декоративный слой поверх базового фона: мягкая подложка, статичный шум и нижний fade в фон страницы.
+
+#### Состав слоя
+
+| Слой | Токен / приём | Правило |
+|------|---------------|---------|
+| Base backdrop | `--background`, `--rm-yellow-100`, `--rm-gray-alpha-100` | Глубина строится через 2 radial-gradient + 1 vertical linear-gradient, без новых цветов |
+| Noise overlay | SVG noise, `mix-blend-mode: soft-light`, `opacity: 0.04–0.06` | Только статичный шум, без анимации |
+| Bottom fade | `linear-gradient(..., transparent 74%, var(--background) 100%)` | Fade применяется только к декоративному слою, контент не исчезает |
+
+#### Правила применения
+
+- Только для hero-секции лендинга и других full-bleed hero на тёмном фоне
+- Шум всегда декоративный: `pointer-events: none`, без интерактивности
+- Fade уходит в токен `--background`, а не в хардкодный HEX
+- Контент, логотипы и CTA располагаются выше fade-слоя и сохраняют полный контраст
+- Анимация шума запрещена; допускается только статичная текстура
+
+```css
+.hero-background-base {
+  background:
+    radial-gradient(circle at 16% 18%, color-mix(in srgb, var(--rm-yellow-100) 18%, transparent) 0%, transparent 34%),
+    radial-gradient(circle at 78% 8%, var(--rm-gray-alpha-100) 0%, transparent 30%),
+    linear-gradient(180deg, color-mix(in srgb, var(--background) 68%, black 32%) 0%, color-mix(in srgb, var(--background) 88%, black 12%) 54%, var(--background) 100%);
+}
+
+.hero-background-noise {
+  opacity: 0.055;
+  mix-blend-mode: soft-light;
+}
+
+.hero-background-fade {
+  background: linear-gradient(180deg, transparent 0%, transparent 74%, var(--background) 100%);
+}
+```
+
+---
+
+### 8.12 Hero Round Glass Lens
+
+#### Концепция
+
+Круглая hero-линза следует за курсором в пределах ограниченного смещения от базовой позиции и искажает уже собранную сцену внутри круга. Центр линзы остаётся почти стабильным, а основное fisheye/barrel-искажение собирается в кольце у края. Размытие внутри линзы не используется.
+
+#### Визуальные параметры
+
+| Параметр | Значение | Описание |
+|----------|---------|----------|
+| Диаметр | `280–360px` (`clamp(280px, 30vw, 360px)`) | Размер линзы в hero |
+| Outer stroke | `1px linear-gradient(62deg, #FFE900 1%, #A6A6A6 40%, rgba(64,64,64,0) 100%)` | Тонкая градиентная обводка по кругу |
+| Side flares | `blue-white chromatic accents` | Короткие световые вспышки слева и справа, как в макете |
+| Inner stroke | `none` | Внутренняя 1px-линия не используется |
+| Highlight | `radial-gradient` white/yellow | Лёгкий стеклянный блик без blur |
+| Pointer offset limit | `64px` | Максимальное смещение от базовой точки |
+
+#### Реализация
+
+Рекомендованный метод: WebGL canvas внутри контейнера линзы. Шейдер должен брать текстуру не из дублированных DOM-элементов внутри линзы, а из растеризованного снимка всей hero-сцены. Это даёт реальное искажение сцены без ручной сборки копии контента в линзе.
+
+Правила:
+- Не вставлять внутрь линзы отдельную копию wordmark, меню, логотипов или background-слоёв.
+- Не использовать blur как основной эффект линзы.
+- Держать центр линзы визуально спокойным; деформация должна усиливаться к краю.
+- На `pointer: coarse` линза остаётся статичной по позиции; на `prefers-reduced-motion: reduce` отключается следование за курсором и останавливаются дополнительные анимации.
+
+#### Вторичная hero-линза
+
+В hero допустима вторая большая линза-окружность без искажения сцены. Она использует такой же градиентный бордер, располагается справа за контентом и двигается за курсором в 3 раза медленнее и с амплитудой в 3 раза меньше, чем основная WebGL-линза.
+
+#### Шейдерная логика
+
+```glsl
+normalized = distance(localOffset, center) / radius
+rim = smoothstep(0.34, 0.98, normalized)
+rimBand = rim * (1.0 - smoothstep(0.82, 1.0, normalized))
+sampleOffset = localOffset * (1.0 - 0.22 * rimBand)
+sampleOffset -= direction * radius * 0.085 * pow(normalized, 3.0)
+```
+
+Смысл:
+- до ~`0.34R` искажение почти незаметно;
+- основная деформация живёт в кольце `0.34R → 0.82R`;
+- самый край остаётся читаемым за счёт мягкого затухания alpha.
+
+---
+
 ## 9. Маркетинг блоки
 
 Готовые блоки для лендинга и маркетинговых страниц. Используют токены дизайн-системы — стиль единый с основным приложением.
@@ -3885,3 +4005,20 @@ Accordion.Root
 - Удалён бейдж версии в шапке веб-страницы дизайн-системы.
 - Удалены бейджи версии у каждого раздела дизайн-системы.
 - Бейдж версии в боковом меню приведён к общему стилю всех badge-компонентов.
+
+---
+
+## 10. Сквозные блоки
+
+### 10.1 InfiniteLogoMarquee (Бесконечная бегущая строка логотипов)
+
+Бегущая строка логотипов партнеров/клиентов. 
+- **Анимация**: Горизонтальный бесконечный скролл (справа налево).
+- **Эффект угасания (Fade)**: Реализован через `mask-image` прозрачность по краям контейнера (без наложения градиентных плашек).
+- **Динамичность**: Логотипы загружаются серверным компонентом или в клиентском коде из папки с ассетами (читается напрямую по `fs`), так что список логотипов актуализируется автоматически при добавлении файлов в директорию.
+
+**Компонент:** `InfiniteLogoMarquee`
+**Путь:** `src/components/blocks/InfiniteLogoMarquee.tsx`
+
+Применение: Заменяет статичные блоки логотипов; устанавливается в HeroBlock или в любых других "сквозных" секциях, где требуется social proof.
+

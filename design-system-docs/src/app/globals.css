@@ -601,6 +601,23 @@ code {
   animation: fadeInUp 0.2s ease-out forwards;
 }
 
+@keyframes hero-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.partner-logo-marquee-track {
+  display: flex;
+  width: max-content;
+  flex-direction: row;
+  animation: hero-marquee var(--hero-marquee-duration, 14s) linear infinite;
+  will-change: transform;
+}
+
 /* Visual Language Elements */
 
 /* 5.1 Corner Brackets */

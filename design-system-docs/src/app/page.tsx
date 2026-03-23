@@ -26,8 +26,9 @@ import { SwitchShowcase } from "@/components/ui/switch-showcase"
 import { NoteShowcase } from "@/components/ui/note-showcase"
 import { TableShowcase } from "@/components/ui/table-showcase"
 import { Accordion } from "@base-ui/react"
+import { InfiniteLogoMarquee } from "@/components/blocks/InfiniteLogoMarquee"
 
-const DS_VERSION = "1.5.6"
+const DS_VERSION = "1.5.7"
 
 /* ───────── COLOR BLOCK HELPERS ───────── */
 
@@ -253,6 +254,7 @@ const sections: NavSection[] = [
   ]},
   { id: "cross-blocks", label: "Сквозные блоки", subsections: [
     { id: "cross-header", label: "Header" },
+    { id: "cross-marquee", label: "Logo Marquee" },
   ]},
   { id: "marketing-blocks", label: "Маркетинг блоки", subsections: [] },
 ]
@@ -4711,12 +4713,82 @@ export default function DesignSystemPage() {
               </table>
             </div>
 
+            <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-24)] md:text-[length:var(--text-32)] uppercase tracking-[-0.01em] mt-8 mb-4">
+              8.11 Hero Background Noise & Bottom Fade
+            </h3>
+            <p className="text-[length:var(--text-14)] text-muted-foreground mb-4">
+              Для тёмного hero допустим отдельный декоративный слой: мягкая подложка на токенах, статичный шум
+              и нижний fade в <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-caption-family)]">--background</code>.
+              Эффект применяется только к фону, а не к контенту.
+            </p>
+            <div className="space-y-2 mb-6">
+              {[
+                { token: "Base backdrop", value: "--background + --rm-yellow-100 + --rm-gray-alpha-100", desc: "2 radial-gradient и 1 vertical linear-gradient без новых цветов" },
+                { token: "Noise overlay", value: "soft-light · opacity 0.04-0.06", desc: "Только статичный SVG noise, без анимации" },
+                { token: "Bottom fade", value: "transparent 74% -> var(--background) 100%", desc: "Fade затрагивает только декоративный слой" },
+              ].map((t) => (
+                <TokenRow key={t.token} token={t.token} value={t.value} desc={t.desc} />
+              ))}
+            </div>
+            <div className="p-4 rounded-lg border border-border bg-rm-gray-2/30">
+              <p className="text-[length:var(--text-14)] font-medium mb-1">Правила</p>
+              <p className="text-[length:var(--text-14)] text-muted-foreground">
+                Используем только в full-bleed hero на тёмном фоне. Шум всегда неинтерактивный и статичный,
+                fade уходит в токен страницы, а логотип, copy и CTA остаются поверх слоя с полным контрастом.
+              </p>
+            </div>
+
+            <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-24)] md:text-[length:var(--text-32)] uppercase tracking-[-0.01em] mt-8 mb-4">
+              8.12 Hero Round Glass Lens
+            </h3>
+            <p className="text-[length:var(--text-14)] text-muted-foreground mb-4">
+              Круглая hero-линза искажает уже собранную сцену внутри круга через WebGL, без blur и без отдельной
+              DOM-копии контента внутри линзы. Центр остаётся почти стабильным, а fisheye/barrel-искажение усиливается
+              к краю.
+            </p>
+            <div className="space-y-2 mb-6">
+              {[
+                { token: "Diameter", value: "clamp(280px, 30vw, 360px)", desc: "Размер линзы в hero" },
+                { token: "Outer stroke", value: "1px linear-gradient(62deg, #FFE900 1%, #A6A6A6 40%, rgba(64,64,64,0) 100%)", desc: "Тонкая градиентная обводка по кругу" },
+                { token: "Side flares", value: "blue-white chromatic accents", desc: "Короткие световые вспышки слева и справа" },
+                { token: "Inner stroke", value: "none", desc: "Внутренняя 1px-линия не используется" },
+                { token: "Pointer offset limit", value: "64px", desc: "Максимальное смещение от базовой точки" },
+                { token: "Renderer", value: "WebGL + scene capture texture", desc: "Не дублировать контент внутри линзы" },
+              ].map((t) => (
+                <TokenRow key={t.token} token={t.token} value={t.value} desc={t.desc} />
+              ))}
+            </div>
+            <div className="p-4 rounded-lg border border-border bg-rm-gray-2/30 font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] text-muted-foreground space-y-1 mb-6">
+              <p>rim = smoothstep(0.34, 0.98, normalized)</p>
+              <p>rimBand = rim × (1 − smoothstep(0.82, 1.0, normalized))</p>
+              <p>sampleOffset = localOffset × (1 − 0.22 × rimBand)</p>
+              <p>sampleOffset −= direction × radius × 0.085 × normalized³</p>
+            </div>
+            <div className="p-4 rounded-lg border border-border bg-rm-gray-2/30">
+              <p className="text-[length:var(--text-14)] font-medium mb-1">Правила</p>
+              <p className="text-[length:var(--text-14)] text-muted-foreground">
+                Не вставляем внутрь линзы копию wordmark, меню, логотипов или background-слоёв. На
+                <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-caption-family)]"> pointer: coarse </code>
+                линза фиксируется на базовой позиции, а при
+                <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-caption-family)]"> prefers-reduced-motion: reduce </code>
+                отключается следование за курсором и дополнительные обновления сцены.
+              </p>
+            </div>
+            <div className="p-4 rounded-lg border border-border bg-rm-gray-2/30 mt-4">
+              <p className="text-[length:var(--text-14)] font-medium mb-1">Secondary Lens</p>
+              <p className="text-[length:var(--text-14)] text-muted-foreground">
+                Допустима вторая большая линза справа без искажения сцены. Она использует тот же градиентный бордер и
+                двигается за курсором в 3 раза медленнее и с амплитудой в 3 раза меньше, чем основная.
+              </p>
+            </div>
+
             {/* a11y note */}
             <div className="mt-6 p-4 rounded-lg border border-border bg-rm-gray-2/30">
               <p className="text-[length:var(--text-14)] font-medium mb-1">Доступность & Touch</p>
               <p className="text-[length:var(--text-14)] text-muted-foreground">
-                На touch-устройствах (<code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded">pointer: coarse</code>) линза отключается — сетка остаётся статичным декором.
-                При <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded">prefers-reduced-motion: reduce</code> анимация останавливается, сетка отрисовывается один раз.
+                На touch-устройствах (<code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded">pointer: coarse</code>) интерактивные hero-линзы фиксируются или отключаются,
+                а декоративные фоны остаются статичными. При <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded">prefers-reduced-motion: reduce</code> следование за курсором
+                и дополнительные анимации останавливаются.
               </p>
             </div>
           </Section>
@@ -4737,7 +4809,7 @@ export default function DesignSystemPage() {
             </h3>
             <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">
               Единая шапка для всех страниц. Sticky, backdrop blur при скролле.
-              Логотип → навигация → CTA. На мобайле: логотип + гамбургер.
+              Логотип слева, меню и CTA собраны в правой части экрана. На мобайле: логотип + гамбургер.
             </p>
 
             {/* ── Live preview ── */}

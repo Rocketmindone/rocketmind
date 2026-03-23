@@ -228,10 +228,14 @@ function CardItem({
       onDragEnd={onDragEnd}
       onDragOver={onDragOver}
       onDrop={onDrop}
-      className="rounded-lg px-2.5 pt-1.5 pb-2 group/card relative"
+      className="rounded-lg px-2.5 pt-1.5 pb-2 group/card relative transition-colors duration-300"
       style={{
-        backgroundColor: cssVar(weekColor, '900'),
-        border: `1px solid ${cssVar(weekColor, '300')}`,
+        backgroundColor: c.done 
+          ? `color-mix(in srgb, ${cssVar(weekColor, '900')}, transparent 40%)` 
+          : cssVar(weekColor, '900'),
+        border: `1px solid ${c.done 
+          ? `color-mix(in srgb, ${cssVar(weekColor, '300')}, transparent 60%)` 
+          : cssVar(weekColor, '300')}`,
         cursor: editing ? 'default' : 'grab',
       }}
     >
@@ -253,17 +257,16 @@ function CardItem({
           )}
         </button>
 
-        <div className="flex items-center gap-0.5">
+        <div className="flex-1 grid grid-cols-5 gap-1">
           {DAYS.map(day => {
             const active = (c.days ?? []).includes(day);
             return (
               <button
                 key={day}
                 onClick={() => onToggleDay(day)}
-                className="font-mono transition-colors leading-none"
+                className="font-mono transition-colors leading-none w-full"
                 style={{
                   fontSize: 9,
-                  width: 18,
                   height: 16,
                   borderRadius: 3,
                   backgroundColor: active ? cssVar(weekColor, '100') : cssVar(weekColor, '900'),
@@ -278,8 +281,6 @@ function CardItem({
             );
           })}
         </div>
-
-        <div className="flex-1" />
         {!locked && (
           <button
             onClick={onRemove}
@@ -313,7 +314,6 @@ function CardItem({
           className="space-y-0.5 cursor-text"
           onDoubleClick={locked ? undefined : startEdit}
           title={locked ? undefined : 'Двойной клик — редактировать'}
-          style={{ opacity: c.done ? 0.45 : 1 }}
         >
           {(lines.length > 0 ? lines : [c.label]).map((line, i) => (
             <li key={i} className="flex items-start gap-1.5 text-[length:var(--text-12)] leading-snug">
@@ -771,7 +771,7 @@ export default function GanttPage() {
 
                   {/* Week cells */}
                   {weeks.map(w => {
-                    const cards = row.cells[w.id] ?? [];
+                    const cards = row.cells?.[w.id] ?? [];
                     return (
                       <div
                         key={w.id}

@@ -196,7 +196,7 @@ export function TableShowcase() {
         </TableFrame>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[1.4fr_1fr]">
+      <div className="grid gap-6">
         <div className="rounded-lg border border-border overflow-hidden">
           <div className="flex flex-col gap-3 border-b border-border bg-[var(--rm-gray-1)] px-4 py-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
@@ -218,7 +218,7 @@ export function TableShowcase() {
           </div>
 
           <div className="overflow-x-auto bg-card">
-            <table className="w-full min-w-[620px] text-[length:var(--text-14)]">
+            <table className="w-full min-w-[760px] text-[length:var(--text-14)]">
               <thead>
                 <tr className="bg-[var(--rm-gray-1)]">
                   <th className="h-10 w-12 px-4 text-left align-middle border-b border-border">
@@ -232,7 +232,9 @@ export function TableShowcase() {
                   {[
                     "Кейс",
                     "Этап",
+                    "Канал",
                     "Сумма",
+                    "Обновлено",
                   ].map((cell) => (
                     <th
                       key={cell}
@@ -253,28 +255,36 @@ export function TableShowcase() {
                     caseName: "Аудит воронки продаж",
                     stage: "Нужна оплата",
                     stageBadge: "yellow-subtle" as const,
+                    channel: "Telegram",
                     amount: "24 000 ₽",
+                    updated: "5 мин назад",
                   },
                   {
                     id: "case-2",
                     caseName: "Юридический due diligence",
                     stage: "В работе",
                     stageBadge: "blue-subtle" as const,
+                    channel: "Web chat",
                     amount: "48 000 ₽",
+                    updated: "22 мин назад",
                   },
                   {
                     id: "case-3",
                     caseName: "AI-агент для HR",
                     stage: "Готово",
                     stageBadge: "green-subtle" as const,
+                    channel: "Email",
                     amount: "16 000 ₽",
+                    updated: "1 час назад",
                   },
                   {
                     id: "case-4",
                     caseName: "Разбор unit-экономики",
                     stage: "Ошибка webhook",
                     stageBadge: "red-subtle" as const,
+                    channel: "Web chat",
                     amount: "32 000 ₽",
+                    updated: "2 часа назад",
                   },
                 ].map((row) => {
                   const isSelected = selected.includes(row.id)
@@ -303,8 +313,14 @@ export function TableShowcase() {
                       <td className={`px-4 py-3 border-b ${isSelected ? "border-[var(--rm-yellow-300)]" : "border-border"}`}>
                         <Badge variant={row.stageBadge} size="sm">{row.stage}</Badge>
                       </td>
+                      <td className={`px-4 py-3 border-b text-muted-foreground ${isSelected ? "border-[var(--rm-yellow-300)]" : "border-border"}`}>
+                        {row.channel}
+                      </td>
                       <td className={`px-4 py-3 border-b font-[family-name:var(--font-caption-family)] text-foreground ${isSelected ? "border-[var(--rm-yellow-300)]" : "border-border"}`}>
                         {row.amount}
+                      </td>
+                      <td className={`px-4 py-3 border-b text-muted-foreground ${isSelected ? "border-[var(--rm-yellow-300)]" : "border-border"}`}>
+                        {row.updated}
                       </td>
                     </tr>
                   )
@@ -316,6 +332,7 @@ export function TableShowcase() {
                   <td className="px-4 py-3 border-t border-border font-medium text-foreground">
                     Subtotal
                   </td>
+                  <td className="px-4 py-3 border-t border-border" />
                   <td className="px-4 py-3 border-t border-border" />
                   <td className="px-4 py-3 border-t border-border font-[family-name:var(--font-caption-family)] text-foreground">
                     120 000 ₽

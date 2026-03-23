@@ -153,13 +153,13 @@ export function SiteHeader({ basePath = '', preview = false }: SiteHeaderProps) 
         </a>
 
         {/* ── Inner padded content ── */}
-        <div className="flex flex-1 items-center justify-between px-5 min-w-0">
+        <div className="flex flex-1 items-center px-5 min-w-0">
 
           {/* Text logo */}
           <a
             href="#"
             aria-label="Rocketmind"
-            className="flex items-center px-1 mr-4"
+            className="flex items-center px-1 mr-4 shrink-0"
           >
             <img
               src={`${basePath}/text_logo_dark_background_en.svg`}
@@ -173,77 +173,79 @@ export function SiteHeader({ basePath = '', preview = false }: SiteHeaderProps) 
             />
           </a>
 
-          {/* Desktop nav with dropdowns */}
-          <NavigationMenu className="hidden md:flex">
-            <NavigationMenuList>
-              {/* Услуги */}
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>Услуги</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[480px] grid-cols-2 gap-1.5 p-3">
-                    {SERVICES.map((item) => (
-                      <li key={item.title}><DropdownItem item={item} /></li>
-                    ))}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
+          <div className="hidden md:flex items-center gap-2 ml-auto pl-6">
+            {/* Desktop nav with dropdowns */}
+            <NavigationMenu className="flex justify-end">
+              <NavigationMenuList>
+                {/* Услуги */}
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger>Услуги</NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid w-[480px] grid-cols-2 gap-1.5 p-3">
+                      {SERVICES.map((item) => (
+                        <li key={item.title}><DropdownItem item={item} /></li>
+                      ))}
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
 
-              {/* Академия */}
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>Академия</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[480px] grid-cols-2 gap-1.5 p-3">
-                    {ACADEMY.map((item) => (
-                      <li key={item.title}><DropdownItem item={item} /></li>
-                    ))}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
+                {/* Академия */}
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger>Академия</NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid w-[480px] grid-cols-2 gap-1.5 p-3">
+                      {ACADEMY.map((item) => (
+                        <li key={item.title}><DropdownItem item={item} /></li>
+                      ))}
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
 
-              {/* ИИ-продукты */}
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>ИИ-продукты</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[480px] grid-cols-2 gap-1.5 p-3">
-                    {AI_PRODUCTS.map((item) => (
-                      <li key={item.title}><DropdownItem item={item} /></li>
-                    ))}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
+                {/* ИИ-продукты */}
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger>ИИ-продукты</NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid w-[480px] grid-cols-2 gap-1.5 p-3">
+                      {AI_PRODUCTS.map((item) => (
+                        <li key={item.title}><DropdownItem item={item} /></li>
+                      ))}
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
 
-              {/* Plain links */}
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <a
-                    href="#"
-                    className="inline-flex items-center px-3 py-2 rounded-sm font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
-                  >
-                    Тарифы
-                  </a>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <a
-                    href="#"
-                    className="inline-flex items-center px-3 py-2 rounded-sm font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
-                  >
-                    О нас
-                  </a>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
+                {/* Plain links */}
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <a
+                      href="#"
+                      className="inline-flex items-center px-3 py-2 rounded-sm font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
+                    >
+                      Тарифы
+                    </a>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <a
+                      href="#"
+                      className="inline-flex items-center px-3 py-2 rounded-sm font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
+                    >
+                      О нас
+                    </a>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
 
-          {/* Desktop CTA */}
-          <div className="hidden md:flex items-center gap-2 ml-4">
-            <button className="inline-flex items-center justify-center h-9 px-4 rounded-sm border border-transparent bg-secondary text-secondary-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] transition-all duration-150 hover:opacity-[0.88] active:opacity-[0.76] cursor-pointer">
-              Войти
-            </button>
-            <button className="inline-flex items-center justify-center h-9 px-4 rounded-sm bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-[var(--rm-yellow-300)] cursor-pointer">
-              Попробовать
-            </button>
+            {/* Desktop CTA */}
+            <div className="flex items-center gap-2 ml-4 shrink-0">
+              <button className="inline-flex items-center justify-center h-9 px-4 rounded-sm border border-transparent bg-secondary text-secondary-foreground font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] transition-all duration-150 hover:opacity-[0.88] active:opacity-[0.76] cursor-pointer">
+                Войти
+              </button>
+              <button className="inline-flex items-center justify-center h-9 px-4 rounded-sm bg-[var(--rm-yellow-100)] text-[var(--rm-yellow-fg)] font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-[0.08em] transition-all duration-150 hover:bg-[var(--rm-yellow-300)] cursor-pointer">
+                Попробовать
+              </button>
+            </div>
           </div>
 
           {/* Mobile hamburger */}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "UX/UI Outcomes"
+  short_description: "Implementation-ready UX/UI specs"
+  default_prompt: "Use $ux-ui-outcomes to turn a product brief into practical UX/UI specs and handoff."

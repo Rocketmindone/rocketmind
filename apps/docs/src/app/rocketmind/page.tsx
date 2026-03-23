@@ -1,36 +1,45 @@
-import React from 'react';
-import { Header } from '@/components/sections/Header';
-import { HeroSection } from '@/components/sections/HeroSection';
-import { ServicesGrid } from '@/components/sections/ServicesGrid';
-import { AcademySection } from '@/components/sections/AcademySection';
-import { MethodologySection } from '@/components/sections/MethodologySection';
-import { ContactForm } from '@/components/sections/ContactForm';
+import React from "react";
+import Image from "next/image";
+import Link from "next/link";
+
+import { HeroSection } from "@/components/sections/HeroSection";
+import { RocketmindMenu } from "@/components/sections/RocketmindMenu";
+import { ServicesGrid } from "@/components/sections/ServicesGrid";
 
 export const metadata = {
-    title: 'Rocketmind | Стратегия и бизнес-модели',
-    description: 'Помогаем командам искать, проверять и усиливать бизнес-модели, связывать стратегию с операционными действиями и переходить от продуктовой логики к платформенной и экосистемной архитектуре.',
+  title: "Rocketmind | Стратегия и бизнес-модели",
+  description:
+    "Помогаем командам искать, проверять и усиливать бизнес-модели, связывать стратегию с операционными действиями и переходить от продуктовой логики к платформенной и экосистемной архитектуре.",
 };
 
-export default function RocketmindPage() {
-    return (
-        <div className="min-h-screen bg-background flex flex-col font-body">
-            <Header />
-            <main className="flex-1">
-                <HeroSection />
-                <ServicesGrid />
-                <AcademySection />
-                <MethodologySection />
-                <ContactForm />
-            </main>
+export const dynamic = "force-dynamic";
 
-            {/* Simple Footer */}
-            <footer className="py-8 bg-background border-t border-border">
-                <div className="container mx-auto px-5 lg:px-20 flex justify-center text-center">
-                    <p className="text-muted-foreground font-mono text-[13px] tracking-[0.08em] uppercase">
-                        © {new Date().getFullYear()} Rocketmind. All rights reserved.
-                    </p>
-                </div>
-            </footer>
+export default function RocketmindPage() {
+  return (
+    <div className="dark flex min-h-screen flex-col bg-background font-body text-foreground">
+      <main className="flex-1">
+        <HeroSection />
+        <ServicesGrid />
+      </main>
+
+      <footer className="border-t border-border bg-background">
+        <div className="mx-auto flex h-16 max-w-[1512px] items-center justify-between gap-6 px-5 md:px-8 xl:px-14">
+          <Link href="/rocketmind" className="flex items-center">
+            <Image
+              src="/text_logo_dark_background_en.svg"
+              alt="Rocketmind"
+              width={90}
+              height={12}
+              className="h-auto w-[90px]"
+            />
+          </Link>
+
+          <RocketmindMenu
+            className="ml-auto hidden flex-1 items-center justify-end gap-12 lg:flex"
+            showDropdowns={false}
+          />
         </div>
-    );
+      </footer>
+    </div>
+  );
 }
