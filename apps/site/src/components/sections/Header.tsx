@@ -34,7 +34,7 @@ export function Header() {
             )}
         >
             <div className="mx-auto flex w-full max-w-[1512px] items-center justify-between gap-6 px-5 md:px-8 xl:px-14">
-                <Link href="/rocketmind" className="flex items-center">
+                <Link href="/" className="flex items-center">
                     <Image
                         src="/text_logo_dark_background_en.svg"
                         alt="Rocketmind"

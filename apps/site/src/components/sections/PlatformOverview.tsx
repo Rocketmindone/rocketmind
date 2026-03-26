@@ -92,7 +92,7 @@ export function PlatformOverview() {
                   <Image src="/images/platform-block/mascot-1.png" alt="Маскот" fill className="object-contain" />
                 </div>
                 <div className="relative ml-[90px] pr-2">
-                  <div className="absolute inset-0 -z-10 bg-[url('/images/platform-block/rectangle-bg.svg')] bg-cover opacity-80" />
+                  <Image src="/images/platform-block/rectangle-bg.svg" alt="" fill className="absolute inset-0 -z-10 object-cover opacity-80" />
                   <p className="font-['Roboto',sans-serif] text-[12px] leading-[1.36] tracking-[0.24px] text-[#e0e0e0] py-2">
                     Предложи бизнес-модель для моего продукта
                   </p>

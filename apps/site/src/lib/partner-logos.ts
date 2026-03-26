@@ -36,6 +36,7 @@ function formatLogoAlt(filename: string) {
 
 export async function resolveHeroLogosDirectory() {
   const candidateDirectories = [
+    path.resolve(process.cwd(), "public", "hero-logos"),
     path.resolve(process.cwd(), "assets", "hero-logos"),
     path.resolve(process.cwd(), "..", "assets", "hero-logos"),
     path.resolve(process.cwd(), "..", "..", "assets", "hero-logos"),
