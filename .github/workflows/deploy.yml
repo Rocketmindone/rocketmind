@@ -22,14 +22,16 @@ jobs:
         with:
           node-version: 20
       - name: Install dependencies
-        working-directory: design-system-docs
         run: npm install --legacy-peer-deps
-      - name: Build
-        working-directory: design-system-docs
-        run: npm run build
+      - name: Build UI package
+        run: npm run ui:build
+      - name: Build SaaS app
+        run: npm run build --workspace=apps/saas
+        env:
+          NODE_ENV: production
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: design-system-docs/out
+          path: apps/saas/out
 
   deploy:
     needs: build
