@@ -17,11 +17,11 @@ MASCOT_DIRS = [
 
 # Adjustments: agent -> { "scale": float, "files": None (all) or list of substrings }
 ADJUSTMENTS = {
-    "max":    {"scale": 1.15, "files": None},           # +15% all
-    "nick":   {"scale": 0.85, "files": None},           # -15% all
-    "mark":   {"scale": 0.85, "files": None},           # -15% all
-    "sergey": {"scale": 0.85, "files": None},           # -15% all
-    "alex":   {"scale": 0.85, "files": ["base", "confident"]},  # -15% base+confident only
+    "max":    {"scale": 0.95, "files": None},           # -5% all
+    "nick":   {"scale": 1.05, "files": None},           # +5% all
+    "mark":   {"scale": 1.05, "files": None},           # +5% all
+    "sergey": {"scale": 1.05, "files": None},           # +5% all
+    "alex":   {"scale": 1.05, "files": ["base", "confident"]},  # +5% base+confident only
 }
 
 
