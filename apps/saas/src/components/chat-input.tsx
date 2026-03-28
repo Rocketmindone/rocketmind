@@ -2,7 +2,6 @@
 
 import { useRef, useState } from "react";
 import { Button, Textarea, GlowingEffect } from "@rocketmind/ui";
-import { Send } from "lucide-react";
 
 interface ChatInputProps {
   onSend: (message: string) => void;
@@ -43,7 +42,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
             onKeyDown={handleKeyDown}
             placeholder="Введите сообщение..."
             disabled={disabled}
-            className="min-h-[44px] max-h-[160px] border-0 bg-transparent pr-12 focus-visible:ring-0 focus-visible:border-0"
+            className="border-0 bg-transparent pr-12 focus-visible:ring-0 focus-visible:border-0"
             rows={1}
           />
           <Button
@@ -51,9 +50,9 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
             variant={value.trim() ? "default" : "ghost"}
             onClick={handleSubmit}
             disabled={!value.trim() || disabled}
-            className="absolute right-2 bottom-2"
+            className="absolute right-2.5 bottom-2.5"
           >
-            <Send className="h-4 w-4" />
+            <span className="text-base font-bold leading-none">↑</span>
           </Button>
         </div>
       </div>
