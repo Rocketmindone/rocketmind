@@ -765,7 +765,7 @@ export function HeroSectionClient({ logos }: HeroSectionClientProps) {
 
               <Link
                 href="#contact"
-                className="font-heading text-[24px] font-bold uppercase leading-[1.2] tracking-[-0.01em] inline-flex items-center gap-3 text-foreground transition-[opacity,color] duration-150 hover:opacity-88"
+                className="heading-24 inline-flex items-center gap-3 text-foreground transition-[opacity,color] duration-150 hover:opacity-88"
               >
                 <span>Обсудить стратегию</span>
                 <ArrowRight size={20} strokeWidth={2.1} />
