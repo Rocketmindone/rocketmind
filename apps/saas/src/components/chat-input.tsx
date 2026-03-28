@@ -30,7 +30,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
   }
 
   return (
-    <div className="px-6 pb-4 pt-2">
+    <div className="px-6 pb-4">
       <div className="mx-auto max-w-2xl">
         <div className="relative rounded-sm border border-border bg-background/80 backdrop-blur-sm">
           <GlowingEffect variant="yellow" borderWidth={2} disabled={false} />
