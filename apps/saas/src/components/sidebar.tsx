@@ -162,8 +162,8 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
           </button>
         </div>
 
-        {/* Inline create new case */}
-        {isCreating && (
+        {/* Inline create new case — animated */}
+        <Collapsible open={isCreating}>
           <div className="pr-4 pb-3 flex flex-col gap-2">
             <Input
               ref={createInputRef}
@@ -194,7 +194,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
               </button>
             </div>
           </div>
-        )}
+        </Collapsible>
 
         {/* Divider after header */}
         <div className="h-px bg-border mr-4" />
@@ -556,6 +556,18 @@ function LogoHeader({ onClose }: { onClose?: () => void }) {
 
 // --- User menu (avatar dropdown) ---
 
+type FontSize = "sm" | "md" | "lg";
+
+const FONT_SIZE_MAP: Record<FontSize, string> = {
+  sm: "100%",
+  md: "112.5%",
+  lg: "125%",
+};
+
+function applyFontSize(size: FontSize) {
+  document.documentElement.style.fontSize = FONT_SIZE_MAP[size];
+}
+
 function UserMenu({
   user,
   onLogout,
@@ -564,6 +576,19 @@ function UserMenu({
   onLogout: () => void;
 }) {
   const { resolvedTheme, setTheme } = useTheme();
+  const [fontSize, setFontSize] = useState<FontSize>("sm");
+
+  useEffect(() => {
+    const saved = (localStorage.getItem("rm-font-size") as FontSize) ?? "sm";
+    setFontSize(saved);
+    applyFontSize(saved);
+  }, []);
+
+  function handleFontSize(size: FontSize) {
+    setFontSize(size);
+    localStorage.setItem("rm-font-size", size);
+    applyFontSize(size);
+  }
 
   return (
     <DropdownMenu>
@@ -581,6 +606,28 @@ function UserMenu({
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" side="top" className="z-[70] w-64">
+        {/* Font size */}
+        <div className="flex items-center gap-2 px-3 py-3">
+          <span className="flex-1 text-[length:var(--text-16)]">Размер текста</span>
+          <div className="flex gap-1">
+            {(["sm", "md", "lg"] as const).map((s, i) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => handleFontSize(s)}
+                className={`flex h-9 w-9 items-center justify-center rounded-sm font-medium transition-colors ${
+                  fontSize === s
+                    ? "bg-foreground text-background"
+                    : "text-muted-foreground hover:bg-rm-gray-1 hover:text-foreground"
+                }`}
+                style={{ fontSize: i === 0 ? "12px" : i === 1 ? "15px" : "18px" }}
+              >
+                Аа
+              </button>
+            ))}
+          </div>
+        </div>
+        <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
           className="h-auto py-3 text-[length:var(--text-16)] [&_svg]:!size-5"
