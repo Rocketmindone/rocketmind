@@ -1,7 +1,15 @@
 {
   "permissions": {
     "allow": [
-      "Read(//Users/Maxi/GitHub/**)"
+      "Read(//Users/Maxi/GitHub/**)",
+      "Bash(git add packages/ui/package.json)",
+      "Bash(gh run view 23662834604 --repo kizimmax/kizimmax.github.io --log-failed)",
+      "Bash(npm ls tw-animate-css --workspaces)",
+      "Bash(grep -r \"tw-animate-css\" /Users/Maxi/GitHub/Rocketmind/apps/*/package.json /Users/Maxi/GitHub/Rocketmind/packages/*/package.json)",
+      "Bash(grep -r '\"\"shadcn\"\"' /Users/Maxi/GitHub/Rocketmind/apps/*/package.json /Users/Maxi/GitHub/Rocketmind/packages/*/package.json)",
+      "Bash(gh run view 23662390664 --repo kizimmax/rocketmind-design-system --log)",
+      "Bash(gh run list --limit 3 --repo kizimmax/rocketmind-saas)",
+      "Bash(gh repo view kizimmax/rocketmind-saas --json defaultBranchRef,pushedAt,description)"
     ]
   }
 }

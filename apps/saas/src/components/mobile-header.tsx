@@ -112,7 +112,7 @@ export function MobileHeader() {
           {/* Sidebar panel */}
           <div
             className={cn(
-              "absolute left-0 top-0 h-full w-60 bg-background shadow-xl transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
+              "absolute left-0 top-0 h-full w-[312px] bg-background shadow-xl transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
               isOpen ? "translate-x-0" : "-translate-x-full",
             )}
           >

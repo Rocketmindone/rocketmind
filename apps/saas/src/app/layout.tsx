@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { ThemeProvider } from "@rocketmind/ui";
+import { ThemeProvider, Toaster } from "@rocketmind/ui";
 import { AuthProvider } from "@/lib/auth-context";
 
 export const metadata: Metadata = {
@@ -23,6 +23,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>{children}</AuthProvider>
+          <Toaster position="bottom-center" />
         </ThemeProvider>
       </body>
     </html>

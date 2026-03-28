@@ -34,8 +34,11 @@ import { useCases, useCaseAgents } from "@/lib/hooks";
 import { useAuth } from "@/lib/auth-context";
 import { getInitials } from "@/lib/utils";
 import type { Case } from "@/lib/types";
+import { toast } from "sonner";
 
 export function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
+  const drawerMode = !!onNavigate;
+
   const {
     activeCases,
     archivedCases,
@@ -55,6 +58,11 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
     searchParams?.get("caseId") ??
     undefined;
   const activeAgentId = searchParams?.get("agent") ?? null;
+
+  // In drawer mode: local accordion state, independent of URL navigation
+  const [drawerExpandedId, setDrawerExpandedId] = useState<string | null>(
+    activeCaseId ?? null
+  );
 
   const [isCreating, setIsCreating] = useState(false);
   const [newCaseName, setNewCaseName] = useState("");
@@ -80,8 +88,14 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
     const newCase = createCase(name);
     setNewCaseName("");
     setIsCreating(false);
+    toast.success(`Кейс «${name}» создан`);
     router.push(`/cases/${newCase.id}`);
     onNavigate?.();
+  }
+
+  function handleCancelCreate() {
+    setNewCaseName("");
+    setIsCreating(false);
   }
 
   function handleRenameCase() {
@@ -121,7 +135,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
 
         {/* Inline create new case */}
         {isCreating && (
-          <div className="pr-4 pb-3">
+          <div className="pr-4 pb-3 flex flex-col gap-2">
             <Input
               ref={createInputRef}
               size="sm"
@@ -130,10 +144,26 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
               onChange={(e) => setNewCaseName(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleCreateCase();
-                if (e.key === "Escape") setIsCreating(false);
+                if (e.key === "Escape") handleCancelCreate();
               }}
-              onBlur={handleCreateCase}
             />
+            {/* Explicit confirm/cancel — mobile-friendly, no onBlur trap */}
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={handleCreateCase}
+                className="flex-1 rounded-sm bg-foreground py-1.5 text-[length:var(--text-12)] font-medium text-background transition-opacity hover:opacity-80 active:opacity-70"
+              >
+                Создать
+              </button>
+              <button
+                type="button"
+                onClick={handleCancelCreate}
+                className="flex-1 rounded-sm border border-border py-1.5 text-[length:var(--text-12)] text-muted-foreground transition-colors hover:bg-rm-gray-1 hover:text-foreground"
+              >
+                Отмена
+              </button>
+            </div>
           </div>
         )}
 
@@ -154,18 +184,32 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
         )}
 
         {/* Case groups with dividers between them */}
-        {activeCases.map((c, idx) => (
+        {activeCases.map((c, idx) => {
+          // In drawer mode: expansion is local accordion state
+          // In desktop mode: expansion follows active URL case
+          const isExpanded = drawerMode
+            ? c.id === drawerExpandedId
+            : c.id === activeCaseId;
+
+          return (
           <div key={c.id}>
             <CaseItemWithAgents
               caseItem={c}
               isActive={c.id === activeCaseId}
+              isExpanded={isExpanded}
               activeAgentId={activeAgentId}
               isRenaming={c.id === renamingId}
               renameValue={renameValue}
               renameInputRef={renameInputRef}
               onSelect={() => {
-                router.push(`/cases/${c.id}`);
-                onNavigate?.();
+                if (drawerMode) {
+                  // Drawer: toggle accordion only, no navigation, no close
+                  setDrawerExpandedId((prev) =>
+                    prev === c.id ? null : c.id
+                  );
+                } else {
+                  router.push(`/cases/${c.id}`);
+                }
               }}
               onAgentSelect={(agentId) => {
                 router.push(`/cases/${c.id}?agent=${agentId}`);
@@ -177,13 +221,15 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
               onStartRename={() => startRename(c)}
               onArchive={() => archiveCase(c.id)}
               onDelete={() => deleteCase(c.id)}
+              onNavigate={onNavigate}
             />
             {/* Divider between case groups */}
             {idx < activeCases.length - 1 && (
               <div className="h-px bg-border mr-4" />
             )}
           </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Archive — pinned above footer */}
@@ -240,6 +286,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
 function CaseItemWithAgents({
   caseItem,
   isActive,
+  isExpanded,
   activeAgentId,
   isRenaming,
   renameValue,
@@ -252,9 +299,11 @@ function CaseItemWithAgents({
   onStartRename,
   onArchive,
   onDelete,
+  onNavigate,
 }: {
   caseItem: Case;
   isActive: boolean;
+  isExpanded: boolean;
   activeAgentId: string | null;
   isRenaming: boolean;
   renameValue: string;
@@ -267,6 +316,7 @@ function CaseItemWithAgents({
   onStartRename: () => void;
   onArchive: () => void;
   onDelete: () => void;
+  onNavigate?: () => void;
 }) {
   // Case group: padding 16px top/bottom/right, 0 left (inherited from pl-4 parent), gap 4px
   return (
@@ -296,7 +346,7 @@ function CaseItemWithAgents({
           {/* Chevron: 8×8px (h-2 w-2) */}
           <ChevronRight
             className={`h-2 w-2 shrink-0 transition-transform text-muted-foreground ${
-              isActive ? "rotate-90" : ""
+              isExpanded ? "rotate-90" : ""
             }`}
           />
           <span className="flex-1 truncate text-[length:var(--text-14)]">
@@ -332,12 +382,13 @@ function CaseItemWithAgents({
         </div>
       )}
 
-      {/* Agents — shown only when case is active */}
-      {isActive && (
+      {/* Agents — shown when case is expanded (drawer: local state; desktop: URL) */}
+      {isExpanded && (
         <CaseAgentsNested
           caseId={caseItem.id}
           activeAgentId={activeAgentId}
           onAgentSelect={onAgentSelect}
+          onNavigate={onNavigate}
         />
       )}
     </div>
@@ -350,10 +401,12 @@ function CaseAgentsNested({
   caseId,
   activeAgentId,
   onAgentSelect,
+  onNavigate,
 }: {
   caseId: string;
   activeAgentId: string | null;
   onAgentSelect: (agentId: string) => void;
+  onNavigate?: () => void;
 }) {
   const { agents } = useCaseAgents(caseId);
   const router = useRouter();
@@ -388,7 +441,10 @@ function CaseAgentsNested({
 
       {/* Add agent row */}
       <button
-        onClick={() => router.push(`/agents?caseId=${caseId}`)}
+        onClick={() => {
+          router.push(`/agents?caseId=${caseId}`);
+          onNavigate?.();
+        }}
         className="relative flex w-full items-center gap-2 rounded-sm py-1 pr-2 text-muted-foreground hover:bg-rm-gray-1 hover:text-foreground transition-colors group/add"
       >
         {/* Dashed border: 4px dash, 12px gap (3× rarer than default) */}
