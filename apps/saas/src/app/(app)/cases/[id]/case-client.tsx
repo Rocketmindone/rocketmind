@@ -55,7 +55,7 @@ export default function CaseClient({ id }: { id: string }) {
   }
 
   return (
-    <div className="relative flex h-full flex-col">
+    <div className="relative flex flex-1 flex-col min-h-0">
       {activeAgent ? (
         <Chat caseId={id} agent={activeAgent} />
       ) : (

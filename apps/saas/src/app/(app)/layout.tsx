@@ -27,7 +27,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   if (!user) return null;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
+    <div className="flex h-[100dvh] overflow-hidden bg-background">
       {/* Desktop sidebar */}
       <div className="hidden lg:flex">
         <Sidebar />
@@ -36,7 +36,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Mobile: header + content stacked */}
       <div className="flex flex-1 flex-col overflow-hidden">
         <MobileHeader />
-        <main className="flex-1 overflow-hidden">{children}</main>
+        <main className="flex flex-1 flex-col overflow-hidden">{children}</main>
       </div>
     </div>
   );

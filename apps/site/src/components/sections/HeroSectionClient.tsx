@@ -669,7 +669,7 @@ export function HeroSectionClient({ logos }: HeroSectionClientProps) {
           <div className="hero-background-fade" />
         </div>
 
-        <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-[1512px] flex-col px-5 pb-10 pt-6 md:px-8 md:pt-10 xl:px-14">
+        <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-[1512px] flex-col px-5 pb-6 pt-6 md:px-8 md:pb-10 md:pt-10 xl:px-14">
           <div className="hero-top-bar relative z-20 flex flex-col gap-6">
             <InfiniteLogoMarquee logos={logos} maxLogoHeight={breakpointKey === "mobile" ? 27 : 39} />
 
@@ -691,7 +691,7 @@ export function HeroSectionClient({ logos }: HeroSectionClientProps) {
             </div>
           </div>
 
-          <div className="relative flex flex-1 flex-col justify-center gap-[44px] py-8">
+          <div className="relative flex flex-1 flex-col justify-center gap-6 py-4 md:gap-[44px] md:py-8">
             <div ref={wordmarkRef} className="relative z-0 w-full">
               <Image
                 src="/text_logo_dark_background_en.svg"
@@ -738,10 +738,10 @@ export function HeroSectionClient({ logos }: HeroSectionClientProps) {
             </div>
           </div>
 
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,888px)_212px] lg:items-end lg:justify-between">
-            <div className="flex flex-col items-start gap-10">
-              <h1 className="heading-52 w-full max-w-[888px]">
-                <span className="block text-foreground">Помогаем бизнесу расти</span>
+          <div className="grid gap-6 md:gap-10 lg:grid-cols-[minmax(0,888px)_212px] lg:items-end lg:justify-between">
+            <div className="flex flex-col items-start gap-6 md:gap-10">
+              <h1 className="h2 w-full max-w-[888px]">
+                <span className="block text-foreground">Помогаем бизнесу&nbsp;расти</span>
                 <span className="block text-foreground">и масштабироваться</span>
                 <span className="hero-rotating-line-viewport relative block text-muted-foreground">
                   <AnimatePresence initial={false}>
@@ -765,10 +765,10 @@ export function HeroSectionClient({ logos }: HeroSectionClientProps) {
 
               <Link
                 href="#contact"
-                className="heading-24 inline-flex items-center gap-3 text-foreground transition-[opacity,color] duration-150 hover:opacity-88"
+                className="h4 inline-flex items-center gap-3 text-foreground transition-[opacity,color] duration-150 hover:opacity-88"
               >
                 <span>Обсудить стратегию</span>
-                <ArrowRight size={20} strokeWidth={2.1} />
+                <ArrowRight size={20} strokeWidth={2.1} className="text-primary" />
               </Link>
             </div>
 
@@ -778,10 +778,10 @@ export function HeroSectionClient({ logos }: HeroSectionClientProps) {
                 alt="Platform Innovation Kit"
                 width={200}
                 height={45}
-                className="h-[40px] w-auto shrink-0 md:h-[56px] lg:h-auto lg:w-[200px]"
+                className="h-[40px] w-auto min-w-0 flex-1 object-contain object-left md:h-[56px] lg:h-auto lg:flex-none lg:w-[200px]"
               />
               <p
-                className="text-left font-mono text-[10px] uppercase leading-[1.32] tracking-[0.01em] text-muted-foreground md:text-[14px] lg:text-right"
+                className="min-w-0 flex-1 text-left font-mono text-[10px] uppercase leading-[1.32] tracking-[0.01em] text-muted-foreground md:text-[14px] lg:flex-none lg:text-right"
                 style={platformTextStyle}
               >
                 Развиваем методологию

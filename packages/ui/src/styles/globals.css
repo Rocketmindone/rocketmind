@@ -184,14 +184,14 @@
   --text-18: 1.125rem;     /* label-18  · маркетинговые акценты, H4 mobile */
   --text-19: 1.1875rem;    /* copy-19   · lead, copy */
   --text-20: 1.25rem;      /* stats hero · промежуточный heading-accent */
-  --text-24: 1.5rem;       /* heading-24 · H4 */
+  --text-24: 1.5rem;       /* .h4 · H4 */
   --text-25: 1.5625rem;    /* copy-25   · marketing copy */
-  --text-28: 1.75rem;      /* heading-32 mobile · H3 mobile */
+  --text-28: 1.75rem;      /* .h3 mobile · H3 mobile */
   --text-30: 1.875rem;     /* heading-30 · H2 mobile */
-  --text-32: 2rem;         /* heading-32 · H3 */
+  --text-32: 2rem;         /* .h3 · H3 */
   --text-40: 2.5rem;       /* heading-40 · H1 mobile */
-  --text-52: 3.25rem;      /* heading-52 · H2 */
-  --text-80: 5rem;         /* heading-80 · H1 hero */
+  --text-52: 3.25rem;      /* .h2 · H2 */
+  --text-80: 5rem;         /* .h1 · H1 hero */
 
   /* === Rocketmind Gray Scale (Light) ===
    * 1 — Subtle surface          (bg-rm-gray-1)
@@ -559,10 +559,15 @@ code {
 
 /* ── Responsive Heading Utilities ──
  * Auto-apply mobile sizes from the DS heading table.
- * Usage:  <h1 class="heading-52">…</h1>
+ * Usage:  <h1 class="h1">…</h1>
  * Mobile (< 768px): smaller size. Desktop (≥ 768px): nominal size.
+ *
+ * .h1 — 80/40px, H1 Hero
+ * .h2 — 52/32px, H2, заголовки страниц
+ * .h3 — 32/28px, H3, подзаголовки секций
+ * .h4 — 24px,    H4, заголовки карточек
  */
-.heading-80 {
+.h1 {
   font-family: var(--font-heading-family);
   font-size: var(--text-40);   /* 40px mobile */
   font-weight: 800;
@@ -571,10 +576,10 @@ code {
   text-transform: uppercase;
 }
 @media (min-width: 768px) {
-  .heading-80 { font-size: var(--text-80); }
+  .h1 { font-size: var(--text-80); }
 }
 
-.heading-52 {
+.h2 {
   font-family: var(--font-heading-family);
   font-size: var(--text-32);   /* 32px mobile */
   font-weight: 700;
@@ -583,10 +588,10 @@ code {
   text-transform: uppercase;
 }
 @media (min-width: 768px) {
-  .heading-52 { font-size: var(--text-52); }
+  .h2 { font-size: var(--text-52); }
 }
 
-.heading-32 {
+.h3 {
   font-family: var(--font-heading-family);
   font-size: var(--text-28);   /* 28px mobile */
   font-weight: 700;
@@ -595,16 +600,19 @@ code {
   text-transform: uppercase;
 }
 @media (min-width: 768px) {
-  .heading-32 { font-size: var(--text-32); }
+  .h3 { font-size: var(--text-32); }
 }
 
-.heading-24 {
+.h4 {
   font-family: var(--font-heading-family);
-  font-size: var(--text-24);   /* 24px all breakpoints */
+  font-size: var(--text-20);   /* 20px mobile */
   font-weight: 700;
   line-height: 1.2;
   letter-spacing: -0.01em;
   text-transform: uppercase;
+}
+@media (min-width: 768px) {
+  .h4 { font-size: var(--text-24); }
 }
 
 /* Copy notification animation */

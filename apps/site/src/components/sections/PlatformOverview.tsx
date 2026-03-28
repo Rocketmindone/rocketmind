@@ -17,13 +17,11 @@ import { MascotCarousel } from "@/components/blocks/MascotCarousel";
    ─────────────────────────────────────────────────────────── */
 
 export function PlatformOverview() {
-  /* Carousel auto-scale via ResizeObserver */
+  /* Carousel auto-scale via ResizeObserver (desktop + tablet only) */
   const carouselDesktopRef = useRef<HTMLDivElement>(null);
   const carouselTabletRef = useRef<HTMLDivElement>(null);
-  const carouselMobileRef = useRef<HTMLDivElement>(null);
   const [dScale, setDScale] = useState(1);
   const [tScale, setTScale] = useState(1);
-  const [mScale, setMScale] = useState(0.55);
 
   useEffect(() => {
     function observe(
@@ -41,11 +39,9 @@ export function PlatformOverview() {
     }
     const d1 = observe(carouselDesktopRef, setDScale);
     const d2 = observe(carouselTabletRef, setTScale);
-    const d3 = observe(carouselMobileRef, setMScale);
     return () => {
       d1?.();
       d2?.();
-      d3?.();
     };
   }, []);
 
@@ -312,10 +308,10 @@ export function PlatformOverview() {
 
         {/* ═══════════════ MOBILE (< md) ═══════════════ */}
         <div className="flex flex-col md:hidden">
-          {/* Column 01 (444×716) — div01 + div02, SVG bg */}
+          {/* Column 01 (353×569) — div01 + div02, SVG bg */}
           <div
             className="relative w-full"
-            style={{ aspectRatio: "444 / 716" }}
+            style={{ aspectRatio: "353 / 569" }}
           >
             {/* SVG background — mobile Fibonacci spiral + grid */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -327,18 +323,18 @@ export function PlatformOverview() {
               draggable={false}
             />
 
-            {/* Div 01 (top 38.41% = 275/716) */}
+            {/* Div 01 (top 38.49% = 219/569) */}
             <div
               className="absolute overflow-hidden"
-              style={{ top: 0, left: 0, width: "100%", height: "38.408%" }}
+              style={{ top: 0, left: 0, width: "100%", height: "38.49%" }}
             >
-              {/* content at (24,24) in 444×275 cell */}
+              {/* content at (20,20) in 353×219 cell */}
               <div
-                className="absolute flex flex-col gap-3"
+                className="absolute flex flex-col gap-2"
                 style={{
-                  left: "5.405%",
-                  top: "8.727%",
-                  width: "89.189%",
+                  left: "5.67%",
+                  top: "9.13%",
+                  width: "88.67%",
                 }}
               >
                 <Heading label="Методология" title="бизнес-дизайн" />
@@ -351,23 +347,23 @@ export function PlatformOverview() {
               </div>
             </div>
 
-            {/* Div 02 (bottom 61.59% = 441/716) */}
+            {/* Div 02 (bottom 61.51% = 350/569) */}
             <div
               className="absolute overflow-hidden"
               style={{
-                top: "38.408%",
+                top: "38.49%",
                 left: 0,
                 width: "100%",
-                height: "61.592%",
+                height: "61.51%",
               }}
             >
-              {/* content at (24,24) in 444×441 cell */}
+              {/* content at (20,20) in 353×350 cell */}
               <div
-                className="absolute flex flex-col gap-3"
+                className="absolute flex flex-col gap-2"
                 style={{
-                  left: "5.405%",
-                  top: "5.442%",
-                  width: "89.189%",
+                  left: "5.67%",
+                  top: "5.71%",
+                  width: "88.67%",
                 }}
               >
                 <Heading
@@ -384,13 +380,13 @@ export function PlatformOverview() {
                 </BodyText>
               </div>
 
-              {/* Animated mascot carousel — at (24,308) in 444×441 → top 69.84% */}
+              {/* Animated mascot carousel — at (24,238) in 353×350 cell */}
               <div
                 className="absolute"
                 style={{
-                  left: "5.405%",
-                  bottom: "5%",
-                  width: "89.189%",
+                  left: "6.8%",
+                  bottom: "6.86%",
+                  width: "86.4%",
                 }}
               >
                 <MascotCarousel size="compact" />
@@ -398,9 +394,16 @@ export function PlatformOverview() {
             </div>
           </div>
 
-          {/* Column 02 / Div 03 — Канвасы */}
-          <div className="relative border border-t-0 border-[#404040] p-6">
-            <div className="relative z-10 flex flex-col gap-3">
+          {/* Column 02 / Div 03 — Канвасы (353×818) */}
+          <div
+            className="relative border border-t-0 border-[#404040]"
+            style={{ aspectRatio: "353 / 818" }}
+          >
+            {/* Content on top, z-10 since canvas overlaps */}
+            <div
+              className="absolute z-10 flex flex-col gap-2"
+              style={{ left: 20, top: 20, right: 20 }}
+            >
               <Heading
                 label="Канвасы"
                 title="цифровые платформы и&nbsp;экосистемы"
@@ -416,19 +419,12 @@ export function PlatformOverview() {
               </BodyText>
             </div>
 
-            {/* Carousel */}
+            {/* Canvas carousel — native size, clipped. Overlaps text area */}
             <div
-              ref={carouselMobileRef}
-              className="relative mt-6 overflow-hidden"
-              style={{ height: `${Math.round(623 * mScale)}px` }}
+              className="absolute bottom-0 left-0 w-full overflow-hidden"
+              style={{ top: "21.64%" }}
             >
-              <div
-                style={{
-                  width: 768,
-                  transformOrigin: "top left",
-                  transform: `scale(${mScale})`,
-                }}
-              >
+              <div style={{ paddingLeft: 20 }}>
                 <Canvas3DCarousel />
               </div>
             </div>
@@ -443,13 +439,13 @@ export function PlatformOverview() {
 
 function Heading({ label, title }: { label: string; title: string }) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-1 md:gap-2">
       <p
-        className="font-['Loos_Condensed',sans-serif] text-[18px] font-medium uppercase leading-[1.16] tracking-[0.02em] text-[#FFCC00]"
+        className="font-['Loos_Condensed',sans-serif] text-[16px] font-medium uppercase leading-[1.16] tracking-[0.02em] text-[#FFCC00] md:text-[18px]"
         dangerouslySetInnerHTML={{ __html: label }}
       />
       <p
-        className="font-['Roboto_Condensed',sans-serif] text-[32px] font-bold uppercase leading-[1.16] tracking-[-0.01em] text-[#F0F0F0]"
+        className="font-['Roboto_Condensed',sans-serif] text-[28px] font-bold uppercase leading-[1.16] tracking-[-0.01em] text-[#F0F0F0] md:text-[32px]"
         dangerouslySetInnerHTML={{ __html: title }}
       />
     </div>
@@ -458,7 +454,7 @@ function Heading({ label, title }: { label: string; title: string }) {
 
 function BodyText({ children }: { children: React.ReactNode }) {
   return (
-    <p className="font-['Roboto',sans-serif] text-[18px] font-normal leading-[1.2] text-[#F0F0F0]">
+    <p className="font-['Roboto',sans-serif] text-[14px] font-normal leading-[1.3] text-[#F0F0F0] md:text-[18px] md:leading-[1.2]">
       {children}
     </p>
   );

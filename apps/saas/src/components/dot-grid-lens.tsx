@@ -129,12 +129,15 @@ export function DotGridLens({
       mouse.y = -9999;
     }
 
-    const ro = new ResizeObserver(resize);
+    const ro = new ResizeObserver(() => {
+      resize();
+      draw();
+    });
     ro.observe(container);
     resize();
+    draw();
 
     if (isTouchOnly || reducedMotion) {
-      draw();
       return () => ro.disconnect();
     }
 
