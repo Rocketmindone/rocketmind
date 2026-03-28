@@ -62,7 +62,7 @@ export function Chat({ caseId, agent }: ChatProps) {
             onSuggestionClick={(text) => sendMessage(text)}
           />
         ) : (
-          <div className="mx-auto max-w-2xl space-y-4 px-4 py-4">
+          <div className="mx-auto max-w-2xl space-y-4 px-5 py-4">
             {messages.map((msg) => (
               <MessageBubble
                 key={msg.id}
