@@ -570,9 +570,9 @@ code {
 
 .heading-52 {
   font-family: var(--font-heading-family);
-  font-size: var(--text-30);   /* 30px mobile */
+  font-size: var(--text-32);   /* 32px mobile */
   font-weight: 700;
-  line-height: 1.05;
+  line-height: 1.08;
   letter-spacing: -0.02em;
   text-transform: uppercase;
 }
