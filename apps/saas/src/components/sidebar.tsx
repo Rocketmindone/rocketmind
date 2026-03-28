@@ -59,10 +59,17 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
     undefined;
   const activeAgentId = searchParams?.get("agent") ?? null;
 
-  // In drawer mode: local accordion state, independent of URL navigation
+  // Drawer mode: local accordion state, independent of URL navigation
   const [drawerExpandedId, setDrawerExpandedId] = useState<string | null>(
     activeCaseId ?? null
   );
+  // Desktop mode: local accordion state; syncs when agent navigation changes activeCaseId
+  const [desktopExpandedId, setDesktopExpandedId] = useState<string | null>(
+    activeCaseId ?? null
+  );
+  useEffect(() => {
+    if (!drawerMode && activeCaseId) setDesktopExpandedId(activeCaseId);
+  }, [activeCaseId, drawerMode]);
 
   const [pendingDeleteIds, setPendingDeleteIds] = useState<Set<string>>(new Set());
 
@@ -214,11 +221,9 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
 
         {/* Case groups with dividers between them */}
         {activeCases.map((c, idx) => {
-          // In drawer mode: expansion is local accordion state
-          // In desktop mode: expansion follows active URL case
           const isExpanded = drawerMode
             ? c.id === drawerExpandedId
-            : c.id === activeCaseId;
+            : c.id === desktopExpandedId;
 
           return (
           <div key={c.id}>
@@ -232,12 +237,14 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
               renameInputRef={renameInputRef}
               onSelect={() => {
                 if (drawerMode) {
-                  // Drawer: toggle accordion only, no navigation, no close
                   setDrawerExpandedId((prev) =>
                     prev === c.id ? null : c.id
                   );
                 } else {
-                  router.push(`/cases/${c.id}`);
+                  // Desktop: toggle accordion only, dialog opens via agent click
+                  setDesktopExpandedId((prev) =>
+                    prev === c.id ? null : c.id
+                  );
                 }
               }}
               onAgentSelect={(agentId) => {
