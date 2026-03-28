@@ -150,7 +150,14 @@ export function MobileHeader() {
     if (backdropRef.current) backdropRef.current.style.transition = "";
 
     if (ref.swiping && ref.dx < -SWIPE_THRESHOLD) {
-      close();
+      // Animate fully off-screen, then close and clear inline styles
+      if (panelRef.current) panelRef.current.style.transform = `translateX(-${PANEL_W}px)`;
+      if (backdropRef.current) backdropRef.current.style.opacity = "0";
+      setTimeout(() => {
+        close();
+        if (panelRef.current) panelRef.current.style.transform = "";
+        if (backdropRef.current) backdropRef.current.style.opacity = "";
+      }, 300);
     } else {
       // Snap back
       if (panelRef.current) panelRef.current.style.transform = "";

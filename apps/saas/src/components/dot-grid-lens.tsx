@@ -134,11 +134,16 @@ export function DotGridLens({
       draw();
     });
     ro.observe(container);
+
+    // Redraw whenever theme (dark/light) changes
+    const mo = new MutationObserver(() => draw());
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+
     resize();
     draw();
 
     if (isTouchOnly || reducedMotion) {
-      return () => ro.disconnect();
+      return () => { ro.disconnect(); mo.disconnect(); };
     }
 
     window.addEventListener("mousemove", onMouseMove);
@@ -148,6 +153,7 @@ export function DotGridLens({
     return () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
+      mo.disconnect();
       window.removeEventListener("mousemove", onMouseMove);
       document.documentElement.removeEventListener("mouseleave", onMouseLeave);
     };
