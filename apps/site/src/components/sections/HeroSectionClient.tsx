@@ -738,8 +738,8 @@ export function HeroSectionClient({ logos }: HeroSectionClientProps) {
             </div>
           </div>
 
-          <div className="grid gap-6 md:gap-10 lg:grid-cols-[minmax(0,888px)_212px] lg:items-end lg:justify-between">
-            <div className="flex flex-col items-start gap-6 md:gap-10">
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,888px)_212px] lg:items-end lg:justify-between">
+            <div className="flex flex-col items-start gap-6">
               <h1 className="h2 w-full max-w-[888px]">
                 <span className="block text-foreground">Помогаем бизнесу&nbsp;расти</span>
                 <span className="block text-foreground">и масштабироваться</span>
