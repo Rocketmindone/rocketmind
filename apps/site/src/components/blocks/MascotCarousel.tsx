@@ -79,10 +79,10 @@ interface SlotStyle {
      Алекс (next):   y=102,  80×80,   x=14
      Fade:           24px at top/bottom
 
-   Mobile (297:1195): card 393×108, mascot column 80×104
-     Ник (current):  y=12,   80×80,   x=0
-     Марк (prev):    y=-37,  64×64,   x=8
-     Алекс (next):   y=77,   64×64,   x=8
+   Mobile (300:1319): card 313×84, mascot column 80×80
+     Ник (current):  y=0,    80×80,   x=0
+     Марк (prev):    y=-46,  64×64,   x=8
+     Алекс (next):   y=62,   64×64,   x=8
      Fade:           15px at top/bottom
    ────────────────────────────────────────────────────────────── */
 
@@ -95,10 +95,10 @@ const DESKTOP_SLOTS: Record<Slot, SlotStyle> = {
 };
 
 const COMPACT_SLOTS: Record<Slot, SlotStyle> = {
-  exit: { top: -90, left: 8, size: 64, opacity: 0 },
-  prev: { top: -37, left: 8, size: 64, opacity: 0.6 },
-  current: { top: 12, left: 0, size: 80, opacity: 1 },
-  next: { top: 77, left: 8, size: 64, opacity: 0.6 },
+  exit: { top: -110, left: 8, size: 64, opacity: 0 },
+  prev: { top: -46, left: 8, size: 64, opacity: 0.6 },
+  current: { top: 0, left: 0, size: 80, opacity: 1 },
+  next: { top: 62, left: 8, size: 64, opacity: 0.6 },
   enter: { top: 130, left: 8, size: 64, opacity: 0 },
 };
 
@@ -198,7 +198,7 @@ export function MascotCarousel({
   return (
     <div
       className="flex w-full items-stretch overflow-hidden rounded-[8px] border border-[#404040] bg-[#121212]"
-      style={{ height: isCompact ? 108 : 140, padding: 2, gap: 7 }}
+      style={{ height: isCompact ? 84 : 140, padding: 2, gap: 7 }}
     >
       {/* ── Mascot column ── */}
       <div
@@ -253,7 +253,7 @@ export function MascotCarousel({
         className="flex flex-1 items-center"
         style={{
           gap: isCompact ? 16 : 24,
-          paddingRight: isCompact ? 32 : 40,
+          padding: isCompact ? '20px 20px 20px 0' : '0 40px 0 0',
         }}
       >
         <p
