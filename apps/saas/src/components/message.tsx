@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Button, GlowingEffect } from "@rocketmind/ui";
-import { ExternalLink } from "lucide-react";
+import { Copy, ExternalLink } from "lucide-react";
+import { toast } from "sonner";
 import type { Message, Agent } from "@/lib/types";
 import { formatTime, getInitials } from "@/lib/utils";
 
@@ -78,9 +79,15 @@ function AssistantMessage({
     return () => clearInterval(timer);
   }, [stream, message.content]);
 
+  function handleCopy() {
+    navigator.clipboard.writeText(message.content).then(() => {
+      toast.success("Скопировано в буфер обмена");
+    });
+  }
+
   return (
-    <div className="flex justify-start">
-      <div className="max-w-[75%] space-y-1">
+    <div className="flex justify-start gap-2">
+      <div className="min-w-0 max-w-[75%] space-y-1">
         {/* Agent identity above bubble */}
         {agent && (
           <div className="flex items-center gap-1.5 mb-1">
@@ -114,6 +121,18 @@ function AssistantMessage({
         <p className="text-[length:var(--text-12)] text-muted-foreground">
           {formatTime(message.created_at)}
         </p>
+      </div>
+
+      {/* Copy button — sticky so it stays visible while scrolling through long messages */}
+      <div className="self-stretch shrink-0">
+        <button
+          type="button"
+          onClick={handleCopy}
+          title="Копировать"
+          className="sticky top-2 flex h-7 w-7 items-center justify-center rounded-sm text-muted-foreground hover:bg-rm-gray-1 hover:text-foreground transition-colors"
+        >
+          <Copy className="h-3.5 w-3.5" />
+        </button>
       </div>
     </div>
   );
