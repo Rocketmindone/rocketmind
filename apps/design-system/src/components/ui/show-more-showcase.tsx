@@ -47,43 +47,30 @@ export function ShowMoreShowcase() {
             <ShowMore expanded={true} onClick={() => {}} />
           </div>
 
-          <div className="bg-background px-4 py-4 flex items-center">
-            <p className="text-[length:var(--text-14)] font-medium text-foreground">Custom label</p>
-          </div>
-          <div className="bg-background px-4 py-4">
-            <ShowMore expanded={false} onClick={() => {}} label="Ещё агенты" labelExpanded="Скрыть агентов" />
-          </div>
-          <div className="bg-background px-4 py-4">
-            <ShowMore expanded={true} onClick={() => {}} label="Ещё агенты" labelExpanded="Скрыть агентов" />
-          </div>
         </div>
       </div>
 
       {/* ── Live demos ── */}
       <div className="grid gap-6 lg:grid-cols-2">
 
-        {/* Demo 1: List */}
+        {/* Demo 1: List with fade overlap */}
         <div className="rounded-lg border border-border overflow-hidden">
           <div className="px-4 py-2 bg-[var(--rm-gray-1)] border-b border-border flex items-center justify-between">
-            <p className={`text-[10px] ${mono} uppercase tracking-wider text-muted-foreground`}>Список с раскрытием</p>
+            <p className={`text-[10px] ${mono} uppercase tracking-wider text-muted-foreground`}>Список · fade + overlap</p>
             <Badge variant="neutral" size="sm">LIST</Badge>
           </div>
-          <div className="p-4 space-y-2">
-            {ALL_AGENTS.slice(0, 3).map((agent) => (
-              <div key={agent.name} className="flex items-center gap-3 px-3 py-2 rounded-sm hover:bg-[var(--rm-gray-1)] transition-colors">
-                <span className="inline-flex size-7 shrink-0 items-center justify-center rounded-sm bg-[var(--rm-gray-2)] text-[length:var(--text-12)] text-muted-foreground">
-                  {agent.name[0]}
-                </span>
-                <div className="min-w-0">
-                  <p className="text-[length:var(--text-14)] text-foreground truncate">{agent.name}</p>
-                  <p className="text-[length:var(--text-12)] text-muted-foreground truncate">{agent.role}</p>
-                </div>
-              </div>
-            ))}
-
-            <ShowMorePanel expanded={listExpanded} className="space-y-2">
-              {ALL_AGENTS.slice(3).map((agent) => (
-                <div key={agent.name} className="flex items-center gap-3 px-3 py-2 rounded-sm hover:bg-[var(--rm-gray-1)] transition-colors">
+          <div className="p-4">
+            <ShowMorePanel
+              expanded={listExpanded}
+              fade
+              collapsedHeight={176}
+              className="space-y-2"
+            >
+              {ALL_AGENTS.map((agent) => (
+                <div
+                  key={agent.name}
+                  className="flex items-center gap-3 px-3 py-2 rounded-sm hover:bg-[var(--rm-gray-1)] transition-colors"
+                >
                   <span className="inline-flex size-7 shrink-0 items-center justify-center rounded-sm bg-[var(--rm-gray-2)] text-[length:var(--text-12)] text-muted-foreground">
                     {agent.name[0]}
                   </span>
@@ -94,28 +81,33 @@ export function ShowMoreShowcase() {
                 </div>
               ))}
             </ShowMorePanel>
-
             <ShowMore
               expanded={listExpanded}
               onClick={() => setListExpanded(!listExpanded)}
               label={`Ещё ${ALL_AGENTS.length - 3} агента`}
               labelExpanded="Скрыть"
+              fade
             />
           </div>
         </div>
 
-        {/* Demo 2: Text */}
+        {/* Demo 2: Text with fade overlap */}
         <div className="rounded-lg border border-border overflow-hidden">
           <div className="px-4 py-2 bg-[var(--rm-gray-1)] border-b border-border flex items-center justify-between">
-            <p className={`text-[10px] ${mono} uppercase tracking-wider text-muted-foreground`}>Описание с раскрытием</p>
+            <p className={`text-[10px] ${mono} uppercase tracking-wider text-muted-foreground`}>Текст · fade + overlap</p>
             <Badge variant="neutral" size="sm">TEXT</Badge>
           </div>
-          <div className="p-4 space-y-3">
-            <p className="text-[length:var(--text-14)] text-muted-foreground leading-relaxed">
-              AI-агент «Стратег» разрабатывает планы роста и анализирует рыночные возможности.
-              Специализируется на B2B-стратегиях и конкурентном анализе.
-            </p>
-            <ShowMorePanel expanded={textExpanded}>
+          <div className="p-4">
+            <ShowMorePanel
+              expanded={textExpanded}
+              fade
+              collapsedHeight={140}
+              className="space-y-3"
+            >
+              <p className="text-[length:var(--text-14)] text-muted-foreground leading-relaxed">
+                AI-агент «Стратег» разрабатывает планы роста и анализирует рыночные возможности.
+                Специализируется на B2B-стратегиях и конкурентном анализе.
+              </p>
               <p className="text-[length:var(--text-14)] text-muted-foreground leading-relaxed pb-1">
                 Агент интегрируется с CRM и аналитическими системами. Формирует еженедельные
                 стратегические отчёты, предлагает гипотезы роста и оценивает риски. Работает
@@ -125,14 +117,15 @@ export function ShowMoreShowcase() {
             <ShowMore
               expanded={textExpanded}
               onClick={() => setTextExpanded(!textExpanded)}
+              fade
             />
           </div>
         </div>
 
-        {/* Demo 3: Settings */}
+        {/* Demo 3: Settings — без fade (collapse to 0) */}
         <div className="rounded-lg border border-border overflow-hidden lg:col-span-2">
           <div className="px-4 py-2 bg-[var(--rm-gray-1)] border-b border-border flex items-center justify-between">
-            <p className={`text-[10px] ${mono} uppercase tracking-wider text-muted-foreground`}>Настройки / доп. опции</p>
+            <p className={`text-[10px] ${mono} uppercase tracking-wider text-muted-foreground`}>Настройки · без fade (collapse to 0)</p>
             <Badge variant="neutral" size="sm">SETTINGS</Badge>
           </div>
           <div className="p-4 space-y-3">
@@ -146,14 +139,12 @@ export function ShowMoreShowcase() {
                 <span className={`${mono} text-[length:var(--text-12)] text-muted-foreground uppercase`}>{value}</span>
               </div>
             ))}
-
             <ShowMore
               expanded={inlineExpanded}
               onClick={() => setInlineExpanded(!inlineExpanded)}
               label="Расширенные настройки"
               labelExpanded="Скрыть настройки"
             />
-
             <ShowMorePanel expanded={inlineExpanded} className="space-y-3">
               {[
                 { label: "Температура", value: "0.7" },
@@ -173,20 +164,29 @@ export function ShowMoreShowcase() {
       {/* ── Spec ── */}
       <SpecBlock title="Правила">
         <ul className="space-y-1.5 text-[length:var(--text-14)] text-muted-foreground list-disc pl-4">
-          <li>Используйте когда контент &gt; 3–5 элементов или текст &gt; 3 строк — обрезайте невидимую часть.</li>
-          <li>Кнопка всегда занимает полную ширину контейнера — линия тянется до краёв.</li>
           <li>
-            Оборачивайте скрытый контент в <code className="px-1 py-0.5 bg-[var(--rm-gray-2)] rounded-sm text-[length:var(--text-12)]">ShowMorePanel</code>
-            {" "}— он плавно анимирует высоту через CSS grid.
+            <code className="px-1 py-0.5 bg-[var(--rm-gray-2)] rounded-sm text-[length:var(--text-12)]">fade</code>
+            {" "}на обоих компонентах — показывает частичный контент с градиентом; кнопка заезжает поверх через{" "}
+            <code className="px-1 py-0.5 bg-[var(--rm-gray-2)] rounded-sm text-[length:var(--text-12)]">margin-top: -36px</code>.
           </li>
           <li>
-            Передавайте осмысленный <code className="px-1 py-0.5 bg-[var(--rm-gray-2)] rounded-sm text-[length:var(--text-12)]">label</code>
-            {" "}— «Ещё 5 агентов» лучше чем «Показать ещё».
+            Без <code className="px-1 py-0.5 bg-[var(--rm-gray-2)] rounded-sm text-[length:var(--text-12)]">fade</code>
+            {" "}— контент схлопывается до нуля; кнопка стоит ровно под ним.
           </li>
-          <li>Не вкладывайте ShowMore внутрь другого ShowMore — используйте пагинацию.</li>
           <li>
-            Анимация панели: <code className="px-1 py-0.5 bg-[var(--rm-gray-2)] rounded-sm text-[length:var(--text-12)]">--duration-smooth</code> (300ms) +{" "}
-            <code className="px-1 py-0.5 bg-[var(--rm-gray-2)] rounded-sm text-[length:var(--text-12)]">--ease-standard</code>.
+            Все скрытые элементы кладите внутрь{" "}
+            <code className="px-1 py-0.5 bg-[var(--rm-gray-2)] rounded-sm text-[length:var(--text-12)]">ShowMorePanel</code>.
+            При <code className="px-1 py-0.5 bg-[var(--rm-gray-2)] rounded-sm text-[length:var(--text-12)]">fade</code>{" "}
+            помещайте туда весь список — градиент подскажет что есть продолжение.
+          </li>
+          <li>
+            <code className="px-1 py-0.5 bg-[var(--rm-gray-2)] rounded-sm text-[length:var(--text-12)]">collapsedHeight</code>{" "}
+            подбирайте так, чтобы последний видимый элемент был срезан наполовину — это явный сигнал.
+          </li>
+          <li>
+            Если фон контейнера отличается от <code className="px-1 py-0.5 bg-[var(--rm-gray-2)] rounded-sm text-[length:var(--text-12)]">--background</code>,
+            передайте нужное значение в{" "}
+            <code className="px-1 py-0.5 bg-[var(--rm-gray-2)] rounded-sm text-[length:var(--text-12)]">fadeBg</code>.
           </li>
         </ul>
       </SpecBlock>

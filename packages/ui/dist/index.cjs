@@ -1451,9 +1451,11 @@ function ShowMore({
   onClick,
   label = "\u041F\u043E\u043A\u0430\u0437\u0430\u0442\u044C \u0435\u0449\u0451",
   labelExpanded = "\u0421\u043A\u0440\u044B\u0442\u044C",
+  fade = false,
+  fadeBg = "var(--background)",
   className
 }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime18.jsxs)(
+  const btn = /* @__PURE__ */ (0, import_jsx_runtime18.jsxs)(
     "button",
     {
       type: "button",
@@ -1461,7 +1463,7 @@ function ShowMore({
       "aria-expanded": expanded,
       className: cn(
         "group/show-more flex w-full items-center gap-3 py-1 text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:text-foreground",
-        className
+        !fade && className
       ),
       children: [
         /* @__PURE__ */ (0, import_jsx_runtime18.jsx)("span", { className: "h-px flex-1 bg-border transition-colors duration-[var(--duration-fast)] group-hover/show-more:bg-muted-foreground/30" }),
@@ -1483,8 +1485,36 @@ function ShowMore({
       ]
     }
   );
+  if (!fade) return btn;
+  return /* @__PURE__ */ (0, import_jsx_runtime18.jsxs)("div", { style: { position: "relative" }, className, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime18.jsx)(
+      "div",
+      {
+        "aria-hidden": true,
+        style: {
+          position: "absolute",
+          top: -72,
+          left: 0,
+          right: 0,
+          height: 72,
+          background: `linear-gradient(to bottom, transparent, ${fadeBg})`,
+          opacity: expanded ? 0 : 1,
+          transition: `opacity var(--duration-base) var(--ease-standard)`,
+          pointerEvents: "none",
+          zIndex: 9
+        }
+      }
+    ),
+    btn
+  ] });
 }
-function ShowMorePanel({ expanded, children, className }) {
+function ShowMorePanel({
+  expanded,
+  children,
+  className,
+  fade = false,
+  collapsedHeight = 180
+}) {
   return /* @__PURE__ */ (0, import_jsx_runtime18.jsx)(
     "div",
     {
@@ -1493,7 +1523,14 @@ function ShowMorePanel({ expanded, children, className }) {
         gridTemplateRows: expanded ? "1fr" : "0fr",
         transition: `grid-template-rows var(--duration-smooth) var(--ease-standard)`
       },
-      children: /* @__PURE__ */ (0, import_jsx_runtime18.jsx)("div", { style: { overflow: "hidden", minHeight: 0 }, className, children })
+      children: /* @__PURE__ */ (0, import_jsx_runtime18.jsx)(
+        "div",
+        {
+          style: { overflow: "hidden", minHeight: fade ? collapsedHeight : 0 },
+          className,
+          children
+        }
+      )
     }
   );
 }

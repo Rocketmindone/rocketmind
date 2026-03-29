@@ -166,19 +166,34 @@ interface ShowMoreProps {
     onClick: () => void;
     label?: string;
     labelExpanded?: string;
+    /**
+     * Fade mode: renders a gradient above the button that fades out
+     * the last portion of the collapsed content.
+     * Use together with ShowMorePanel fade + collapsedHeight.
+     */
+    fade?: boolean;
+    /** CSS color value for gradient end. Default: var(--background) */
+    fadeBg?: string;
     className?: string;
 }
-declare function ShowMore({ expanded, onClick, label, labelExpanded, className, }: ShowMoreProps): react_jsx_runtime.JSX.Element;
+declare function ShowMore({ expanded, onClick, label, labelExpanded, fade, fadeBg, className, }: ShowMoreProps): react_jsx_runtime.JSX.Element;
 interface ShowMorePanelProps {
     expanded: boolean;
     children: React$1.ReactNode;
     className?: string;
+    /**
+     * Show partial content when collapsed (instead of collapsing to zero).
+     * Pairs with fade on ShowMore for the gradient hint effect.
+     */
+    fade?: boolean;
+    /** Visible height when collapsed. Only used when fade=true. Default: 180 */
+    collapsedHeight?: number;
 }
 /**
  * Animated container for ShowMore content.
  * Uses CSS grid-template-rows trick for smooth height animation — no JS measurement needed.
  */
-declare function ShowMorePanel({ expanded, children, className }: ShowMorePanelProps): react_jsx_runtime.JSX.Element;
+declare function ShowMorePanel({ expanded, children, className, fade, collapsedHeight, }: ShowMorePanelProps): react_jsx_runtime.JSX.Element;
 
 declare function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>): react_jsx_runtime.JSX.Element;
 

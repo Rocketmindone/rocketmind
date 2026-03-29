@@ -9,6 +9,14 @@ interface ShowMoreProps {
   onClick: () => void
   label?: string
   labelExpanded?: string
+  /**
+   * Fade mode: renders a gradient above the button that fades out
+   * the last portion of the collapsed content.
+   * Use together with ShowMorePanel fade + collapsedHeight.
+   */
+  fade?: boolean
+  /** CSS color value for gradient end. Default: var(--background) */
+  fadeBg?: string
   className?: string
 }
 
@@ -17,16 +25,18 @@ function ShowMore({
   onClick,
   label = "Показать ещё",
   labelExpanded = "Скрыть",
+  fade = false,
+  fadeBg = "var(--background)",
   className,
 }: ShowMoreProps) {
-  return (
+  const btn = (
     <button
       type="button"
       onClick={onClick}
       aria-expanded={expanded}
       className={cn(
         "group/show-more flex w-full items-center gap-3 py-1 text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:text-foreground",
-        className
+        !fade && className
       )}
     >
       <span className="h-px flex-1 bg-border transition-colors duration-[var(--duration-fast)] group-hover/show-more:bg-muted-foreground/30" />
@@ -44,19 +54,56 @@ function ShowMore({
       <span className="h-px flex-1 bg-border transition-colors duration-[var(--duration-fast)] group-hover/show-more:bg-muted-foreground/30" />
     </button>
   )
+
+  if (!fade) return btn
+
+  return (
+    <div style={{ position: "relative" }} className={className}>
+      {/* Gradient that fades the bottom of collapsed content */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          top: -72,
+          left: 0,
+          right: 0,
+          height: 72,
+          background: `linear-gradient(to bottom, transparent, ${fadeBg})`,
+          opacity: expanded ? 0 : 1,
+          transition: `opacity var(--duration-base) var(--ease-standard)`,
+          pointerEvents: "none",
+          zIndex: 9,
+        }}
+      />
+      {btn}
+    </div>
+  )
 }
 
 interface ShowMorePanelProps {
   expanded: boolean
   children: React.ReactNode
   className?: string
+  /**
+   * Show partial content when collapsed (instead of collapsing to zero).
+   * Pairs with fade on ShowMore for the gradient hint effect.
+   */
+  fade?: boolean
+  /** Visible height when collapsed. Only used when fade=true. Default: 180 */
+  collapsedHeight?: number
 }
 
 /**
  * Animated container for ShowMore content.
  * Uses CSS grid-template-rows trick for smooth height animation — no JS measurement needed.
  */
-function ShowMorePanel({ expanded, children, className }: ShowMorePanelProps) {
+function ShowMorePanel({
+  expanded,
+  children,
+  className,
+  fade = false,
+  collapsedHeight = 180,
+}: ShowMorePanelProps) {
   return (
     <div
       style={{
@@ -65,7 +112,10 @@ function ShowMorePanel({ expanded, children, className }: ShowMorePanelProps) {
         transition: `grid-template-rows var(--duration-smooth) var(--ease-standard)`,
       }}
     >
-      <div style={{ overflow: "hidden", minHeight: 0 }} className={className}>
+      <div
+        style={{ overflow: "hidden", minHeight: fade ? collapsedHeight : 0 }}
+        className={className}
+      >
         {children}
       </div>
     </div>
