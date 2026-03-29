@@ -43,6 +43,7 @@ jobs:
           mkdir -p _out/ds
           cp -r apps/site/out/. _out/
           cp -r apps/design-system/out/. _out/ds/
+          touch _out/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _out
