@@ -6,6 +6,7 @@ on:
     paths:
       - 'apps/design-system/**'
       - 'packages/ui/**'
+  workflow_dispatch:
 
 permissions:
   contents: read

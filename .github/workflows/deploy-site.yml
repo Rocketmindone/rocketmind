@@ -6,6 +6,7 @@ on:
     paths:
       - 'apps/site/**'
       - 'packages/ui/**'
+  workflow_dispatch:
 
 permissions:
   contents: read
