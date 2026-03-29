@@ -1366,6 +1366,19 @@ function ShowMore({
     }
   );
 }
+function ShowMorePanel({ expanded, children, className }) {
+  return /* @__PURE__ */ jsx18(
+    "div",
+    {
+      style: {
+        display: "grid",
+        gridTemplateRows: expanded ? "1fr" : "0fr",
+        transition: `grid-template-rows var(--duration-smooth) var(--ease-standard)`
+      },
+      children: /* @__PURE__ */ jsx18("div", { style: { overflow: "hidden", minHeight: 0 }, className, children })
+    }
+  );
+}
 
 // src/components/ui/skeleton.tsx
 import { jsx as jsx19 } from "react/jsx-runtime";
@@ -1837,6 +1850,7 @@ export {
   SearchCombobox,
   Separator2 as Separator,
   ShowMore,
+  ShowMorePanel,
   Skeleton,
   Switch,
   Table,

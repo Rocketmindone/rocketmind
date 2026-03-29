@@ -226,8 +226,8 @@ export function ServicesGridClient({ sections }: ServicesGridClientProps) {
                             key={card.title}
                             className="flex flex-col border border-border [&:not(:first-child)]:border-l-0 p-8 bg-background"
                           >
-                            <div className="flex flex-col gap-6">
-                              <div className="flex flex-col gap-2 min-h-[156px]">
+                            <div className="flex flex-col gap-6 flex-1">
+                              <div className="flex flex-col gap-2">
                                 <h3 className="font-heading text-[24px] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-foreground">
                                   {card.title}
                                 </h3>
@@ -237,7 +237,7 @@ export function ServicesGridClient({ sections }: ServicesGridClientProps) {
                               </div>
                               <Link
                                 href={card.href ?? "#contact"}
-                                className="flex items-center justify-center border border-border bg-[#1a1a1a] px-5 py-[14px] font-['Loos_Condensed',sans-serif] text-[14px] font-medium uppercase tracking-[0.56px] text-foreground transition-colors hover:bg-[#242424] rounded-[4px]"
+                                className="mt-auto flex items-center justify-center border border-border bg-[#1a1a1a] px-5 py-[14px] font-['Loos_Condensed',sans-serif] text-[14px] font-medium uppercase tracking-[0.56px] text-foreground transition-colors hover:bg-[#242424] rounded-[4px]"
                               >
                                 Подробнее
                               </Link>

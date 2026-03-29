@@ -46,5 +46,31 @@ function ShowMore({
   )
 }
 
-export { ShowMore }
-export type { ShowMoreProps }
+interface ShowMorePanelProps {
+  expanded: boolean
+  children: React.ReactNode
+  className?: string
+}
+
+/**
+ * Animated container for ShowMore content.
+ * Uses CSS grid-template-rows trick for smooth height animation — no JS measurement needed.
+ */
+function ShowMorePanel({ expanded, children, className }: ShowMorePanelProps) {
+  return (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateRows: expanded ? "1fr" : "0fr",
+        transition: `grid-template-rows var(--duration-smooth) var(--ease-standard)`,
+      }}
+    >
+      <div style={{ overflow: "hidden", minHeight: 0 }} className={className}>
+        {children}
+      </div>
+    </div>
+  )
+}
+
+export { ShowMore, ShowMorePanel }
+export type { ShowMoreProps, ShowMorePanelProps }

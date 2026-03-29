@@ -83,6 +83,7 @@ __export(index_exports, {
   SearchCombobox: () => SearchCombobox,
   Separator: () => Separator2,
   ShowMore: () => ShowMore,
+  ShowMorePanel: () => ShowMorePanel,
   Skeleton: () => Skeleton,
   Switch: () => Switch,
   Table: () => Table,
@@ -1483,6 +1484,19 @@ function ShowMore({
     }
   );
 }
+function ShowMorePanel({ expanded, children, className }) {
+  return /* @__PURE__ */ (0, import_jsx_runtime18.jsx)(
+    "div",
+    {
+      style: {
+        display: "grid",
+        gridTemplateRows: expanded ? "1fr" : "0fr",
+        transition: `grid-template-rows var(--duration-smooth) var(--ease-standard)`
+      },
+      children: /* @__PURE__ */ (0, import_jsx_runtime18.jsx)("div", { style: { overflow: "hidden", minHeight: 0 }, className, children })
+    }
+  );
+}
 
 // src/components/ui/skeleton.tsx
 var import_jsx_runtime19 = require("react/jsx-runtime");
@@ -1955,6 +1969,7 @@ function InfiniteLogoMarquee({
   SearchCombobox,
   Separator,
   ShowMore,
+  ShowMorePanel,
   Skeleton,
   Switch,
   Table,
