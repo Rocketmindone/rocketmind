@@ -468,7 +468,7 @@ function CaseAgentsNested({
   const router = useRouter();
 
   return (
-    <>
+    <div className="flex flex-col gap-1">
       {agents.map((agent) => {
         const isSelected = agent.id === activeAgentId;
         return (
@@ -523,7 +523,7 @@ function CaseAgentsNested({
         </span>
         <span className="text-[length:var(--text-14)]">Агент</span>
       </button>
-    </>
+    </div>
   );
 }
 
