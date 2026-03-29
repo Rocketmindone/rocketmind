@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Button, GlowingEffect } from "@rocketmind/ui";
-import { Copy, ExternalLink } from "lucide-react";
+import { Copy, ExternalLink, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import type { Message, Agent } from "@/lib/types";
 import { formatTime, getInitials } from "@/lib/utils";
@@ -12,17 +12,19 @@ export function MessageBubble({
   message,
   agent,
   isNew,
+  onRepeat,
 }: {
   message: Message;
   agent?: Agent;
   isNew?: boolean;
+  onRepeat?: () => void;
 }) {
   switch (message.role) {
     case "user":
       return <UserMessage message={message} />;
     case "assistant":
       return (
-        <AssistantMessage message={message} agent={agent} stream={isNew} />
+        <AssistantMessage message={message} agent={agent} stream={isNew} onRepeat={onRepeat} />
       );
     case "system":
       return <SystemMessage message={message} />;
@@ -48,10 +50,12 @@ function AssistantMessage({
   message,
   agent,
   stream,
+  onRepeat,
 }: {
   message: Message;
   agent?: Agent;
   stream?: boolean;
+  onRepeat?: () => void;
 }) {
   const [displayedText, setDisplayedText] = useState(stream ? "" : message.content);
   const [isStreaming, setIsStreaming] = useState(!!stream);
@@ -86,8 +90,8 @@ function AssistantMessage({
   }
 
   return (
-    <div className="flex justify-start gap-2">
-      <div className="min-w-0 max-w-[90%] lg:max-w-[75%] space-y-1">
+    <div className="flex justify-start">
+      <div className="w-full lg:max-w-[75%] min-w-0 space-y-1">
         {/* Agent identity above bubble */}
         {agent && (
           <div className="flex items-center gap-1.5 mb-1">
@@ -118,21 +122,29 @@ function AssistantMessage({
             <span className="inline-block w-[2px] h-[1em] bg-foreground ml-0.5 align-text-bottom animate-blink" />
           )}
         </div>
-        <p className="text-[length:var(--text-12)] text-muted-foreground">
-          {formatTime(message.created_at)}
-        </p>
-      </div>
 
-      {/* Copy button — sticky so it stays visible while scrolling through long messages */}
-      <div className="self-stretch shrink-0">
-        <button
-          type="button"
-          onClick={handleCopy}
-          title="Копировать"
-          className="sticky top-2 flex h-7 w-7 items-center justify-center rounded-sm text-muted-foreground hover:bg-rm-gray-1 hover:text-foreground transition-colors"
-        >
-          <Copy className="h-3.5 w-3.5" />
-        </button>
+        {/* Bottom bar: time + actions */}
+        <div className="inline-flex items-center gap-1 rounded-sm bg-background px-2 py-1">
+          <span className="text-[length:var(--text-12)] text-muted-foreground pr-1">
+            {formatTime(message.created_at)}
+          </span>
+          <button
+            type="button"
+            onClick={handleCopy}
+            title="Копировать"
+            className="flex h-6 w-6 items-center justify-center rounded-sm text-muted-foreground hover:bg-rm-gray-1 hover:text-foreground transition-colors"
+          >
+            <Copy className="h-3.5 w-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={onRepeat}
+            title="Повторить"
+            className="flex h-6 w-6 items-center justify-center rounded-sm text-muted-foreground hover:bg-rm-gray-1 hover:text-foreground transition-colors"
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+          </button>
+        </div>
       </div>
     </div>
   );

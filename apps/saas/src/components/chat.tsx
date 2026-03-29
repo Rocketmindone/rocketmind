@@ -63,14 +63,20 @@ export function Chat({ caseId, agent }: ChatProps) {
           />
         ) : (
           <div className="mx-auto max-w-2xl space-y-4 px-5 py-4">
-            {messages.map((msg) => (
-              <MessageBubble
-                key={msg.id}
-                message={msg}
-                agent={agent}
-                isNew={msg.id === streamingMsgId}
-              />
-            ))}
+            {messages.map((msg, idx) => {
+              const prevUserMsg = msg.role === "assistant"
+                ? [...messages].slice(0, idx).reverse().find((m) => m.role === "user")
+                : undefined;
+              return (
+                <MessageBubble
+                  key={msg.id}
+                  message={msg}
+                  agent={agent}
+                  isNew={msg.id === streamingMsgId}
+                  onRepeat={prevUserMsg ? () => sendMessage(prevUserMsg.content) : undefined}
+                />
+              );
+            })}
             {isSending && <TypingIndicator />}
           </div>
         )}
