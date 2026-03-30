@@ -1,11 +1,6 @@
 name: Deploy SaaS to GitHub Pages (rocketmind-saas)
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'apps/saas/**'
-      - 'packages/ui/**'
   workflow_dispatch:
 
 jobs:

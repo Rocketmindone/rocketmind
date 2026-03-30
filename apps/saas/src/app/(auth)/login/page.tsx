@@ -158,7 +158,7 @@ export default function LoginPage() {
               exit="exit"
               transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
             >
-              <form onSubmit={handleEmailSubmit} className="space-y-6">
+              <form onSubmit={handleEmailSubmit} noValidate className="space-y-6">
                 <div className="space-y-3 text-center">
                   <h1 className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-32)] font-bold uppercase tracking-tight text-foreground">
                     Войти
@@ -170,7 +170,8 @@ export default function LoginPage() {
 
                 <div className="space-y-3">
                   <Input
-                    type="email"
+                    type="text"
+                    inputMode="email"
                     size="lg"
                     placeholder="email@example.com"
                     value={email}
@@ -195,7 +196,7 @@ export default function LoginPage() {
                   <Button
                     type="submit"
                     size="lg"
-                    className="w-full"
+                    className="h-12 w-full"
                     disabled={!email.trim() || emailLoading}
                   >
                     {emailLoading ? (
@@ -277,7 +278,7 @@ export default function LoginPage() {
                   <Button
                     onClick={handleVerify}
                     size="lg"
-                    className="w-full"
+                    className="h-12 w-full"
                     disabled={code.length !== CODE_LENGTH || codeLoading}
                   >
                     {codeLoading ? (
