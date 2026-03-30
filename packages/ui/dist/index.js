@@ -748,10 +748,10 @@ var InputOTP = React6.forwardRef(
             "aria-invalid": ariaInvalid,
             autoComplete: i === 0 ? "one-time-code" : "off",
             className: cn(
-              "w-14 h-14 text-center",
+              "size-11 text-center sm:size-14",
               "rounded-sm border border-border",
               "bg-rm-gray-1 text-foreground",
-              "font-[family-name:var(--font-mono-family)] text-[length:var(--text-25)] tracking-[0.08em]",
+              "font-[family-name:var(--font-mono-family)] text-[length:var(--text-20)] sm:text-[length:var(--text-25)] tracking-[0.08em]",
               "transition-all duration-150",
               "outline-none focus-visible:border-ring",
               "disabled:cursor-not-allowed disabled:opacity-40",
