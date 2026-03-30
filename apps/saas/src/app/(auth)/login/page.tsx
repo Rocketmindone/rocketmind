@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { Loader2 } from "lucide-react";
-import { Button, Input, InputOTP, Note } from "@rocketmind/ui";
+import { Button, Input, InputOTP } from "@rocketmind/ui";
 import { useAuth } from "@/lib/auth-context";
 
 const CODE_LENGTH = 6;
@@ -184,13 +184,14 @@ export default function LoginPage() {
                   />
 
                   {emailError && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -8 }}
+                    <motion.p
+                      initial={{ opacity: 0, y: -4 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.2 }}
+                      transition={{ duration: 0.15 }}
+                      className="text-[length:var(--text-12)] text-destructive"
                     >
-                      <Note variant="error">{emailError}</Note>
-                    </motion.div>
+                      {emailError}
+                    </motion.p>
                   )}
 
                   <Button
@@ -265,14 +266,14 @@ export default function LoginPage() {
                   />
 
                   {codeError && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -8 }}
+                    <motion.p
+                      initial={{ opacity: 0, y: -4 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="w-full"
+                      transition={{ duration: 0.15 }}
+                      className="text-[length:var(--text-12)] text-destructive"
                     >
-                      <Note variant="error">{codeError}</Note>
-                    </motion.div>
+                      {codeError}
+                    </motion.p>
                   )}
 
                   <Button
