@@ -710,15 +710,12 @@ export function HeroSectionClient({ logos }: HeroSectionClientProps) {
         </div>
 
         <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-[1512px] flex-col px-5 pb-6 pt-6 md:px-8 md:pb-10 md:pt-10 xl:px-14">
-          <div className="hero-top-bar relative z-20 flex flex-col gap-6">
-            <motion.div {...heroFadeUp(heroReady, 0)}>
-              <InfiniteLogoMarquee logos={logos} maxLogoHeight={breakpointKey === "mobile" ? 27 : 39} />
-            </motion.div>
+          <motion.div className="hero-top-bar relative z-20 flex flex-col gap-6" {...heroFadeUp(heroReady, 0)}>
+            <InfiniteLogoMarquee logos={logos} maxLogoHeight={breakpointKey === "mobile" ? 27 : 39} />
 
-            <motion.div
+            <div
               data-lens-hide="true"
               className="hero-top-bar-right flex shrink-0 items-start justify-between gap-4"
-              {...heroFadeUp(heroReady, 0.1)}
             >
               <div className="hero-top-bar-stats text-left">
                 <p className="font-heading text-[20px] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-foreground md:text-[24px]">
@@ -731,8 +728,8 @@ export function HeroSectionClient({ logos }: HeroSectionClientProps) {
               </div>
 
               <MobileNav />
-            </motion.div>
-          </div>
+            </div>
+          </motion.div>
 
           <div className="relative flex flex-1 flex-col justify-center gap-6 py-4 md:gap-[44px] md:py-8">
             <motion.div ref={wordmarkRef} className="relative z-0 w-full" {...heroFadeIn(heroReady, 0.15)}>
