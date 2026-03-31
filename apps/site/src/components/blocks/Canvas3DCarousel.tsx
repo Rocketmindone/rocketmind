@@ -3,14 +3,16 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 
+const BASE_PATH = process.env.NODE_ENV === "production" ? "/rocketmind" : "";
+
 const IMAGES = [
-  "/images/platform-block/canvas-7.png",
-  "/images/platform-block/canvas-6.png",
-  "/images/platform-block/canvas-5.png",
-  "/images/platform-block/canvas-4.png",
-  "/images/platform-block/canvas-3.png",
-  "/images/platform-block/canvas-2.png",
-  "/images/platform-block/canvas-1.png",
+  `${BASE_PATH}/images/platform-block/canvas-7.png`,
+  `${BASE_PATH}/images/platform-block/canvas-6.png`,
+  `${BASE_PATH}/images/platform-block/canvas-5.png`,
+  `${BASE_PATH}/images/platform-block/canvas-4.png`,
+  `${BASE_PATH}/images/platform-block/canvas-3.png`,
+  `${BASE_PATH}/images/platform-block/canvas-2.png`,
+  `${BASE_PATH}/images/platform-block/canvas-1.png`,
 ];
 
 /* Figma overlay opacities (node 202:2017):

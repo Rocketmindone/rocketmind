@@ -9,6 +9,8 @@ import React, {
 } from "react";
 import Image from "next/image";
 
+const BASE_PATH = process.env.NODE_ENV === "production" ? "/rocketmind" : "";
+
 /* ─── Agent data ─────────────────────────────────────────────
    All 8 agents with front-facing (base) images.
    Task texts generated from design system role descriptions.
@@ -16,42 +18,42 @@ import Image from "next/image";
 const AGENTS = [
   {
     name: "Ник",
-    image: "/ai-mascots/nick/nick-base.png",
+    image: `${BASE_PATH}/ai-mascots/nick/nick-base.png`,
     task: "Найду прорывную идею для твоего бизнеса",
   },
   {
     name: "Алекс",
-    image: "/ai-mascots/alex/alex_base.png",
+    image: `${BASE_PATH}/ai-mascots/alex/alex_base.png`,
     task: "Расскажи о продукте — я помогу начать",
   },
   {
     name: "Марк",
-    image: "/ai-mascots/mark/mark_base.png",
+    image: `${BASE_PATH}/ai-mascots/mark/mark_base.png`,
     task: "Спроектирую архитектуру твоей платформы",
   },
   {
     name: "Лида",
-    image: "/ai-mascots/lida/lida_base.png",
+    image: `${BASE_PATH}/ai-mascots/lida/lida_base.png`,
     task: "Проверю твою гипотезу на жизнеспособность",
   },
   {
     name: "Макс",
-    image: "/ai-mascots/max/max_base.png",
+    image: `${BASE_PATH}/ai-mascots/max/max_base.png`,
     task: "Найду слабые места в твоей бизнес-модели",
   },
   {
     name: "Софи",
-    image: "/ai-mascots/sophie/sophie_base.png",
+    image: `${BASE_PATH}/ai-mascots/sophie/sophie_base.png`,
     task: "Подготовлю программу обучения для команды",
   },
   {
     name: "Сергей",
-    image: "/ai-mascots/sergey/sergey_base.png",
+    image: `${BASE_PATH}/ai-mascots/sergey/sergey_base.png`,
     task: "Проанализирую рынок и покажу тренды",
   },
   {
     name: "Катя",
-    image: "/ai-mascots/kate/kate_base.png",
+    image: `${BASE_PATH}/ai-mascots/kate/kate_base.png`,
     task: "Покажу связи в твоей экосистеме",
   },
 ];

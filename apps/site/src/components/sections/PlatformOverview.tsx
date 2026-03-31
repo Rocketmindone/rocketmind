@@ -4,6 +4,8 @@ import React, { useRef, useState, useEffect } from "react";
 import { Canvas3DCarousel } from "@/components/blocks/Canvas3DCarousel";
 import { MascotCarousel } from "@/components/blocks/MascotCarousel";
 
+const BASE_PATH = process.env.NODE_ENV === "production" ? "/rocketmind" : "";
+
 /* ─────────────────────────────────────────────────────────────
    Figma source of truth:
      Desktop — node 259:985  (1400 × 867, 2 cols: 536 + 864)
@@ -56,7 +58,7 @@ export function PlatformOverview() {
           {/* SVG background — Fibonacci spiral + grid borders */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/platform-block/methodology-bg-desktop.svg"
+            src={`${BASE_PATH}/images/platform-block/methodology-bg-desktop.svg`}
             alt=""
             className="pointer-events-none absolute inset-0 h-full w-full select-none"
             aria-hidden="true"
@@ -191,7 +193,7 @@ export function PlatformOverview() {
             {/* SVG background — tablet Fibonacci spiral + grid */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/images/platform-block/methodology-bg-tablet.svg"
+              src={`${BASE_PATH}/images/platform-block/methodology-bg-tablet.svg`}
               alt=""
               className="pointer-events-none absolute inset-0 h-full w-full select-none"
               aria-hidden="true"
@@ -316,7 +318,7 @@ export function PlatformOverview() {
             {/* SVG background — mobile Fibonacci spiral + grid */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/images/platform-block/methodology-bg-mobile.svg"
+              src={`${BASE_PATH}/images/platform-block/methodology-bg-mobile.svg`}
               alt=""
               className="pointer-events-none absolute inset-0 h-full w-full select-none"
               aria-hidden="true"

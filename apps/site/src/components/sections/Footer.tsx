@@ -8,6 +8,8 @@ import {
   LEGAL_LINKS,
 } from "@/content/site-nav";
 
+const BASE_PATH = process.env.NODE_ENV === "production" ? "/rocketmind" : "";
+
 const COMPANY_LINKS = [
   { href: "/about", label: "О Rocketmind" },
   { href: "/cases", label: "Кейсы" },
@@ -63,7 +65,7 @@ export function Footer() {
         {/* Logo */}
         <Link href="/" className="inline-flex items-center">
           <Image
-            src="/text_logo_dark_background_en.svg"
+            src={`${BASE_PATH}/text_logo_dark_background_en.svg`}
             alt="Rocketmind"
             width={120}
             height={16}

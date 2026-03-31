@@ -9,6 +9,8 @@ import { cn } from "@/lib/utils";
 import { MobileNav } from "./MobileNav";
 import { RocketmindMenu } from "./RocketmindMenu";
 
+const BASE_PATH = process.env.NODE_ENV === "production" ? "/rocketmind" : "";
+
 export function Header() {
     const pathname = usePathname();
     const isHome = pathname === "/";
@@ -41,7 +43,7 @@ export function Header() {
             <div className="mx-auto flex w-full max-w-[1512px] items-center justify-between gap-6 px-5 md:px-8 xl:px-14">
                 <Link href="/" className="flex items-center">
                     <Image
-                        src="/text_logo_dark_background_en.svg"
+                        src={`${BASE_PATH}/text_logo_dark_background_en.svg`}
                         alt="Rocketmind"
                         width={144}
                         height={24}

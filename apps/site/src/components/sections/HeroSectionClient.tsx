@@ -18,6 +18,8 @@ import { RoundGlassLens } from "@/components/ui/round-glass-lens";
 import { rocketmindHeroRotatingLines } from "@/content/rocketmind-hero";
 import type { PartnerLogo } from "@/lib/partner-logos";
 
+const BASE_PATH = process.env.NODE_ENV === "production" ? "/rocketmind" : "";
+
 import { MobileNav } from "./MobileNav";
 import { RocketmindMenu } from "./RocketmindMenu";
 
@@ -698,7 +700,7 @@ export function HeroSectionClient({ logos }: HeroSectionClientProps) {
           <Image
             alt=""
             aria-hidden="true"
-            src="/hero-art/hero-bg.png"
+            src={`${BASE_PATH}/hero-art/hero-bg.png`}
             fill
             className="object-cover object-center"
             priority
@@ -732,7 +734,7 @@ export function HeroSectionClient({ logos }: HeroSectionClientProps) {
           <div className="relative flex flex-1 flex-col justify-center gap-6 py-4 md:gap-[44px] md:py-8">
             <motion.div ref={wordmarkRef} className="relative z-0 w-full" {...heroFadeIn(heroReady, 0.15)}>
               <Image
-                src="/text_logo_dark_background_en.svg"
+                src={`${BASE_PATH}/text_logo_dark_background_en.svg`}
                 alt="Rocketmind"
                 width={1600}
                 height={267}
@@ -817,7 +819,7 @@ export function HeroSectionClient({ logos }: HeroSectionClientProps) {
 
             <motion.div className="flex flex-row items-center gap-4 self-end lg:flex-col lg:items-end lg:gap-5" {...heroFadeUp(heroReady, 0.38)}>
               <Image
-                src="/hero-art/pik-logo.svg"
+                src={`${BASE_PATH}/hero-art/pik-logo.svg`}
                 alt="Platform Innovation Kit"
                 width={200}
                 height={45}

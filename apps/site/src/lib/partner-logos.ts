@@ -111,6 +111,6 @@ export async function getPartnerLogos(): Promise<PartnerLogo[]> {
     .map((filename) => ({
       alt: formatLogoAlt(filename),
       filename,
-      src: `/hero-logos/${filename}`,
+      src: `${process.env.NODE_ENV === "production" ? "/rocketmind" : ""}/hero-logos/${filename}`,
     }));
 }

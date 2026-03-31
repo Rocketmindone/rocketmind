@@ -5,6 +5,8 @@ import {
   AI_PRODUCTS,
 } from "@/content/site-nav";
 
+const BASE_PATH = process.env.NODE_ENV === "production" ? "/rocketmind" : "";
+
 const sectionsData: ServiceSection[] = [
   {
     trackName: "Консалтинг и стратегии",
@@ -35,7 +37,7 @@ const sectionsData: ServiceSection[] = [
         description:
           "Обучаем топ-менеджеров крупных компаний, помогаем трансформировать бизнес с помощью бизнес-дизайна",
         variant: "info" as const,
-        partnerLogos: ["/partners/partner-logo-1.png", "/partners/partner-logo-2.png"],
+        partnerLogos: [`${BASE_PATH}/partners/partner-logo-1.png`, `${BASE_PATH}/partners/partner-logo-2.png`],
       },
     ],
   },
