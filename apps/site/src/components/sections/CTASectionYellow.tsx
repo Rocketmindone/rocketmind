@@ -18,7 +18,7 @@ export function CTASectionYellow() {
   return (
     <section className="px-5 md:px-8 xl:px-14">
       <div className="mx-auto max-w-[1512px]">
-        <div className="bg-[#FFCC00] relative overflow-hidden rounded-[20px] aspect-[353/571] md:aspect-auto md:min-h-[320px] xl:min-h-[400px]">
+        <div className="bg-[#FFCC00] relative overflow-hidden rounded-none aspect-[353/571] md:aspect-auto md:min-h-[320px] xl:min-h-[400px]">
 
           {/* ── Mobile spiral — full-frame 353×571, below content ── */}
           <div
@@ -65,7 +65,7 @@ export function CTASectionYellow() {
               {/* Button — mobile: full-width, desktop: hug width */}
               <Link
                 href="#contact"
-                className="w-fit flex items-center justify-center bg-[#0A0A0A] text-[#F0F0F0] px-6 py-[14px] font-['Loos_Condensed',sans-serif] text-[16px] font-medium uppercase tracking-[0.04em] leading-[1.16] rounded-none transition-opacity hover:opacity-85 active:opacity-70"
+                className="w-fit flex items-center justify-center bg-[#0A0A0A] text-[#F0F0F0] px-6 py-[14px] font-['Loos_Condensed',sans-serif] text-[16px] font-medium uppercase tracking-[0.04em] leading-[1.16] rounded-sm transition-opacity hover:opacity-85 active:opacity-70"
               >
                 оставить заявку
               </Link>
