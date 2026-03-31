@@ -631,7 +631,7 @@ export function CasesSectionClient({ logos }: { logos: PartnerLogo[] }) {
                 {/* copy-18 token: 18px / 1.32 / 0 tracking
                     xl:pr-[200px] — right padding per Figma layout_WF4UU5
                     min-h: 18 × 1.32 × 3 ≈ 72px prevents jump on case switch */}
-                <p className="text-[16px] xl:text-[18px] leading-[1.32] text-[#939393] xl:pr-[200px] xl:min-h-[72px]">
+                <p className="text-[16px] xl:text-[18px] leading-[1.32] text-[#939393] 2xl:pr-[200px] xl:min-h-[72px]">
                   {nb(current.description)}
                 </p>
               </div>
@@ -645,7 +645,7 @@ export function CasesSectionClient({ logos }: { logos: PartnerLogo[] }) {
                     /* gap-1 mobile (4px per Figma), justify-between sm+ for equal-height grid cells */
                     <div key={i} className="flex flex-col gap-1 sm:gap-5 xl:justify-between">
                       {/* Value + Label — row layout, gap 12px (Figma layout_1456BS / layout_0J9AVS) */}
-                      <div className="flex flex-row items-center gap-3">
+                      <div className="flex flex-row items-center gap-3 sm:flex-col sm:items-start sm:gap-1 xl:flex-row xl:items-center xl:gap-3">
                         <div className="font-heading text-[52px] sm:text-[40px] xl:text-[52px] font-bold uppercase leading-[1.08] tracking-[-0.02em] text-[#F0F0F0] flex-none">
                           {stat.value}
                         </div>
