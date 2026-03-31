@@ -83,6 +83,8 @@ const sections: NavSection[] = [
   ]},
   { id: "marketing-blocks", label: "Маркетинг блоки", subsections: [
     { id: "marketing-blocks-faq",         label: "FAQ / Аккордион" },
+    { id: "marketing-blocks-cta-dark",    label: "CTA — Тёмный" },
+    { id: "marketing-blocks-cta-yellow",  label: "CTA — Жёлтый" },
     { id: "marketing-blocks-page-bottom", label: "Кейсы + CTA" },
   ]},
 ]

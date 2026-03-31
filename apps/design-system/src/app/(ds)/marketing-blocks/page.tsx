@@ -19,51 +19,170 @@ export default function MarketingBlocksPage() {
         <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">
           Аккордион для секций FAQ и «Часто задаваемые вопросы». Числа слева — порядковые метки. Заголовок раскрытого пункта подсвечивается акцентным жёлтым. Плавное открытие через <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-caption-family)]">grid-template-rows</code> (200ms, ease-standard).
         </p>
-
         <div className="-mx-5 md:-mx-10 border-y border-border py-10 px-5 md:px-10 mb-8">
           <Accordion05Demo />
         </div>
-
         <SpecBlock title="Токены">
-        <div className="overflow-auto rounded-lg border border-border">
-          <table className="w-full text-[length:var(--text-14)]">
-            <thead>
-              <tr className="border-b border-border bg-rm-gray-2/30">
-                <th className="text-left px-4 py-2 font-medium">Свойство</th>
-                <th className="text-left px-4 py-2 font-medium">Токен / значение</th>
-                <th className="text-left px-4 py-2 font-medium">Описание</th>
-              </tr>
-            </thead>
-            <tbody className="text-muted-foreground">
-              {[
-                ["Закрытый заголовок",   "text-foreground/20",              "Приглушённый текст"],
-                ["Открытый заголовок",   "text-primary (--rm-yellow-100)",   "Акцентный жёлтый"],
-                ["Hover заголовок",      "text-foreground/50",               "Промежуточное состояние"],
-                ["Типографика",          "--font-heading-family, uppercase",  "Bold, tracking -0.02em"],
-                ["Номер",               "--font-mono-family, --text-12",     "Tabular nums, mt-2"],
-                ["Контент",             "--text-14, text-muted-foreground",  "Отступ pl-6 / md:px-20"],
-                ["Разделитель",          "border-b border-border",           "Стандартный бордер ДС"],
-                ["Анимация",             "grid-template-rows, 200ms",        "--ease-standard (0.4,0,0.2,1)"],
-              ].map(([prop, token, desc]) => (
-                <tr key={prop} className="border-b border-border last:border-0">
-                  <td className="px-4 py-2 font-medium text-foreground">{prop}</td>
-                  <td className="px-4 py-2"><TokenChip>{token}</TokenChip></td>
-                  <td className="px-4 py-2 text-[length:var(--text-14)] text-muted-foreground">{desc}</td>
+          <div className="overflow-auto rounded-lg border border-border">
+            <table className="w-full text-[length:var(--text-14)]">
+              <thead>
+                <tr className="border-b border-border bg-rm-gray-2/30">
+                  <th className="text-left px-4 py-2 font-medium">Свойство</th>
+                  <th className="text-left px-4 py-2 font-medium">Токен / значение</th>
+                  <th className="text-left px-4 py-2 font-medium">Описание</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="text-muted-foreground">
+                {[
+                  ["Закрытый заголовок",  "text-foreground/20",              "Приглушённый текст"],
+                  ["Открытый заголовок",  "text-primary (--rm-yellow-100)",  "Акцентный жёлтый"],
+                  ["Hover заголовок",     "text-foreground/50",              "Промежуточное состояние"],
+                  ["Типографика",         "--font-heading-family, uppercase", "Bold, tracking -0.02em"],
+                  ["Номер",              "--font-mono-family, --text-12",    "Tabular nums, mt-2"],
+                  ["Контент",            "--text-14, text-muted-foreground", "Отступ pl-6 / md:px-20"],
+                  ["Разделитель",         "border-b border-border",          "Стандартный бордер ДС"],
+                  ["Анимация",            "grid-template-rows, 200ms",       "--ease-standard (0.4,0,0.2,1)"],
+                ].map(([prop, token, desc]) => (
+                  <tr key={prop} className="border-b border-border last:border-0">
+                    <td className="px-4 py-2 font-medium text-foreground">{prop}</td>
+                    <td className="px-4 py-2"><TokenChip>{token}</TokenChip></td>
+                    <td className="px-4 py-2 text-[length:var(--text-14)] text-muted-foreground">{desc}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </SpecBlock>
-      </Section>
 
-        {/* ── Кейсы + CTA (PageBottom) ── */}
+        {/* ── CTA — Тёмный ── */}
+        <SubSection id="marketing-blocks-cta-dark" title="CTA — Тёмный" />
+        <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">
+          Тёмный CTA-блок с желтой кнопкой и декоративным кругом с паттерном точек. Figma: 1400×424 px. Фон — <TokenChip>bg-[#0A0A0A]</TokenChip>, кнопка — <TokenChip>bg-[--rm-yellow-100]</TokenChip> с тёмным текстом.
+        </p>
+        {/* Live preview */}
+        <div className="-mx-5 md:-mx-10 border-y border-border overflow-hidden mb-8">
+          {/* Inline replica to avoid cross-app import */}
+          <div className="dark bg-[#0A0A0A] relative overflow-hidden min-h-[280px]">
+            {/* Decorative circle */}
+            <div className="absolute pointer-events-none" style={{ width: 560, height: 560, left: "calc(40%)", top: -130 }}>
+              <div className="w-full h-full rounded-full" style={{
+                backgroundImage: ["radial-gradient(circle at 50% 50%, transparent 86%, rgba(219,200,0,0.14) 100%)", "radial-gradient(rgba(255,255,255,0.1) 1.5px, transparent 1.5px)"].join(", "),
+                backgroundSize: "100% 100%, 24px 24px",
+                backgroundRepeat: "no-repeat, repeat",
+              }} />
+            </div>
+            <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(90deg, rgba(10,10,10,1) 38%, rgba(10,10,10,0) 80%)" }} />
+            <div className="relative z-10 flex flex-col gap-6 p-8 xl:p-14 xl:max-w-[640px]">
+              <div className="flex flex-col gap-3">
+                <div className="font-heading text-[22px] md:text-[36px] font-bold uppercase leading-[1.08] tracking-[-0.02em] text-white">
+                  Хотите увидеть, как команда Rocketmind решит вашу стратегическую задачу?
+                </div>
+                <p className="text-[13px] md:text-[15px] leading-[1.2] text-white/50">
+                  Заполните форму — мы проведём экспресс‑оценку ситуации, обозначим возможные сценарии решения и предложим следующий шаг
+                </p>
+              </div>
+              <div className="w-fit inline-flex items-center gap-3 bg-[#FFCC00] text-[#0A0A0A] px-6 py-[12px] font-['Loos_Condensed',sans-serif] text-[14px] font-medium uppercase tracking-[0.04em] rounded-[4px]">
+                Оставить заявку
+              </div>
+            </div>
+          </div>
+        </div>
+        <SpecBlock title="Токены">
+          <div className="overflow-auto rounded-lg border border-border">
+            <table className="w-full text-[length:var(--text-14)]">
+              <thead>
+                <tr className="border-b border-border bg-rm-gray-2/30">
+                  <th className="text-left px-4 py-2 font-medium">Свойство</th>
+                  <th className="text-left px-4 py-2 font-medium">Значение</th>
+                  <th className="text-left px-4 py-2 font-medium">Описание</th>
+                </tr>
+              </thead>
+              <tbody className="text-muted-foreground">
+                {[
+                  ["Фон секции",       "#0A0A0A",                          "bg-background (dark)"],
+                  ["Заголовок",        "#F0F0F0 (foreground)",             "H2, Roboto Condensed 700, 52px desktop"],
+                  ["Описание",         "text-muted-foreground",            "Copy 18, Roboto 400, 18px desktop"],
+                  ["Кнопка",          "#FFCC00 (--rm-yellow-100)",        "Жёлтая, text #0A0A0A"],
+                  ["Декор-круг",       "789×789 px, rgba(219,200,0,0.14)","Dot pattern + yellow glow"],
+                  ["Оверлей",          "linear-gradient 90deg 38%→80%",   "Gradient overlay тёмный→прозрачный"],
+                  ["Типографика кнопки","Loos Condensed 500, 16px, +4%",  "uppercase, border-radius 4px"],
+                ].map(([prop, val, desc]) => (
+                  <tr key={prop} className="border-b border-border last:border-0">
+                    <td className="px-4 py-2 font-medium text-foreground">{prop}</td>
+                    <td className="px-4 py-2"><TokenChip>{val}</TokenChip></td>
+                    <td className="px-4 py-2 text-muted-foreground">{desc}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </SpecBlock>
+
+        {/* ── CTA — Жёлтый ── */}
+        <SubSection id="marketing-blocks-cta-yellow" title="CTA — Жёлтый (золотое сечение)" />
+        <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">
+          Жёлтый CTA-блок с тёмной кнопкой и спиралью золотого сечения. Figma: 442-1532 (desktop 1401×400 px) / 443-1546 (mobile 353×571 px). Фон — <TokenChip>#FFCC00</TokenChip>, кнопка — <TokenChip>#0A0A0A</TokenChip> с текстом <TokenChip>#F0F0F0</TokenChip>.
+        </p>
+        {/* Live preview */}
+        <div className="-mx-5 md:-mx-10 border-y border-border overflow-hidden mb-8">
+          <div className="bg-[#FFCC00] relative overflow-hidden min-h-[280px]">
+            {/* Simplified spiral placeholder */}
+            <div className="absolute right-0 top-0 h-full w-[47%] pointer-events-none opacity-20"
+              style={{ backgroundImage: "radial-gradient(circle at 100% 50%, #000 0%, transparent 60%)" }} />
+            <div className="relative z-10 p-8 xl:p-14">
+              <div className="flex flex-col gap-6 max-w-[640px]">
+                <div className="flex flex-col gap-3">
+                  <div className="font-heading text-[22px] md:text-[36px] font-bold uppercase leading-[1.08] tracking-[-0.02em] text-[#0A0A0A]">
+                    Хотите увидеть, как команда Rocketmind решит вашу стратегическую задачу?
+                  </div>
+                  <p className="text-[13px] md:text-[15px] leading-[1.2] text-[#0A0A0A]/70">
+                    Заполните форму — мы проведём экспресс‑оценку ситуации, обозначим возможные сценарии решения и предложим следующий шаг
+                  </p>
+                </div>
+                <div className="w-full flex items-center justify-center bg-[#0A0A0A] text-[#F0F0F0] px-6 py-[12px] font-['Loos_Condensed',sans-serif] text-[14px] font-medium uppercase tracking-[0.04em] rounded-[4px]">
+                  оставить заявку
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <SpecBlock title="Токены">
+          <div className="overflow-auto rounded-lg border border-border">
+            <table className="w-full text-[length:var(--text-14)]">
+              <thead>
+                <tr className="border-b border-border bg-rm-gray-2/30">
+                  <th className="text-left px-4 py-2 font-medium">Свойство</th>
+                  <th className="text-left px-4 py-2 font-medium">Значение</th>
+                  <th className="text-left px-4 py-2 font-medium">Описание</th>
+                </tr>
+              </thead>
+              <tbody className="text-muted-foreground">
+                {[
+                  ["Фон секции",       "#FFCC00 (--rm-yellow-100)",        "Жёлтый"],
+                  ["Заголовок",        "#0A0A0A",                          "H2, 52px desktop / H4 24px mobile"],
+                  ["Описание",         "#0A0A0A",                          "18px desktop / 14px mobile"],
+                  ["Кнопка",          "#0A0A0A, text #F0F0F0",            "Инверсия; w-full в колонне"],
+                  ["Декор-спираль",    "SVG белая, right 47%, h-full",     "Спираль золотого сечения"],
+                  ["Высота desktop",   "min-h-[400px]",                    "1401×400 px по Figma"],
+                  ["Типографика кнопки","Loos Condensed 500, 16px, +4%",  "uppercase, border-radius 4px"],
+                ].map(([prop, val, desc]) => (
+                  <tr key={prop} className="border-b border-border last:border-0">
+                    <td className="px-4 py-2 font-medium text-foreground">{prop}</td>
+                    <td className="px-4 py-2"><TokenChip>{val}</TokenChip></td>
+                    <td className="px-4 py-2 text-muted-foreground">{desc}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </SpecBlock>
+
+        {/* ── PageBottom — Кейсы + CTA ── */}
         <SubSection id="marketing-blocks-page-bottom" title="Кейсы + отзывы + CTA" />
         <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">
           Стандартный нижний блок страницы — компонент <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-caption-family)]">PageBottom</code>.
           Добавляется на всех страницах сайта, кроме <strong className="text-foreground">/cases</strong> и <strong className="text-foreground">/media</strong>.
         </p>
-
         <div className="-mx-5 md:-mx-10 border-y border-border py-6 px-5 md:px-10 mb-8">
           <div className="flex flex-col gap-1 text-[length:var(--text-14)]">
             <div className="flex items-center gap-3 py-2 border-b border-border">
@@ -78,7 +197,6 @@ export default function MarketingBlocksPage() {
             </div>
           </div>
         </div>
-
         <SpecBlock title="Использование">
           <div className="overflow-auto rounded-lg border border-border">
             <table className="w-full text-[length:var(--text-14)]">
@@ -104,7 +222,7 @@ export default function MarketingBlocksPage() {
                     <td className="px-4 py-2 font-medium text-foreground">
                       <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded">{page}</code>
                     </td>
-                    <td className={`px-4 py-2 ${status === "✓" || status.startsWith("✓") ? "text-foreground" : "text-muted-foreground/50"}`}>
+                    <td className={`px-4 py-2 ${status.startsWith("✓") ? "text-foreground" : "text-muted-foreground/50"}`}>
                       {status}
                     </td>
                   </tr>
