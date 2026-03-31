@@ -5,70 +5,84 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Badge } from "@rocketmind/ui"
-import { ChevronRight, Menu, X } from "lucide-react"
+import {
+  ChevronRight, Menu, X, Pin, PinOff,
+  Layers, Palette, Type, LayoutGrid, Square, Package,
+  MessageSquare, Sparkles, Zap, LayoutDashboard, LayoutTemplate,
+} from "lucide-react"
 
 const BASE_PATH = process.env.NODE_ENV === "production" ? "/rocketmind/ds" : ""
 const DS_VERSION = "1.5.7"
-const DS_DATE = "2026-03-18"
+const DS_DATE = "2026-03-26"
+
+/** Compact rail width (px) — icon-only column always visible */
+const RAIL_W = 48
+/** Full sidebar width (px) — on hover-overlay or pinned */
+const FULL_W = 220
 
 type SubSection = { id: string; label: string }
-type NavSection = { id: string; label: string; subsections: SubSection[] }
+type NavSection = {
+  id: string
+  label: string
+  subsections: SubSection[]
+  Icon: React.ComponentType<{ size?: number; className?: string }>
+}
 
 const sections: NavSection[] = [
-  { id: "logos", label: "Логотипы", subsections: [] },
-  { id: "colors", label: "Цвета", subsections: [
+  { id: "logos",    label: "Логотипы",        subsections: [], Icon: Layers },
+  { id: "colors",   label: "Цвета",           Icon: Palette, subsections: [
     { id: "colors-bg",       label: "Фоны" },
     { id: "colors-gray",     label: "Серая шкала" },
     { id: "colors-accent",   label: "Акцентная" },
     { id: "colors-inverted", label: "Инвертированные" },
   ]},
-  { id: "typography", label: "Типография", subsections: [
+  { id: "typography", label: "Типография",    Icon: Type, subsections: [
     { id: "typography-fonts", label: "Шрифты" },
     { id: "typography-scale", label: "Типографика" },
   ]},
-  { id: "spacing", label: "Спейсинг и сетка", subsections: [
+  { id: "spacing", label: "Спейсинг и сетка", Icon: LayoutGrid, subsections: [
     { id: "spacing-scale",  label: "Шкала отступов" },
     { id: "spacing-grid",   label: "Сетка страницы" },
     { id: "spacing-phi",    label: "Пропорции (phi)" },
     { id: "spacing-visual", label: "Визуальный стиль" },
   ]},
-  { id: "radius-shadows", label: "Скругления", subsections: [
+  { id: "radius-shadows", label: "Скругления", Icon: Square, subsections: [
     { id: "radius-scale", label: "Border Radius" },
   ]},
-  { id: "components", label: "Компоненты", subsections: [
-    { id: "components-buttons",  label: "Кнопки" },
-    { id: "components-badges",   label: "Бейджи" },
-    { id: "components-tabs",     label: "Табы" },
+  { id: "components", label: "Компоненты",    Icon: Package, subsections: [
+    { id: "components-buttons",    label: "Кнопки" },
+    { id: "components-badges",     label: "Бейджи" },
+    { id: "components-tabs",       label: "Табы" },
     { id: "components-checkboxes", label: "Чекбоксы" },
-    { id: "components-radio",    label: "Радио" },
-    { id: "components-switch",   label: "Тумблер" },
-    { id: "components-notes",    label: "Примечания / Notes" },
-    { id: "components-tables",   label: "Таблицы" },
-    { id: "components-inputs",   label: "Инпуты" },
-    { id: "components-textarea", label: "Textarea" },
-    { id: "components-search",   label: "Поиск / Combobox" },
-    { id: "components-cards",    label: "Карточки" },
-    { id: "components-avatar",   label: "Аватар" },
-    { id: "components-dialog",   label: "Диалог" },
-    { id: "components-dropdown", label: "Dropdown Menu" },
-    { id: "components-separator", label: "Разделитель" },
-    { id: "components-skeleton", label: "Skeleton" },
-    { id: "components-scroll-area", label: "Scroll Area" },
-    { id: "components-toasts",   label: "Toasts" },
-    { id: "components-show-more", label: "Show More" },
-    { id: "components-slider",    label: "Слайдер" },
+    { id: "components-radio",      label: "Радио" },
+    { id: "components-switch",     label: "Тумблер" },
+    { id: "components-notes",      label: "Примечания / Notes" },
+    { id: "components-tables",     label: "Таблицы" },
+    { id: "components-inputs",     label: "Инпуты" },
+    { id: "components-textarea",   label: "Textarea" },
+    { id: "components-search",     label: "Поиск / Combobox" },
+    { id: "components-cards",      label: "Карточки" },
+    { id: "components-avatar",     label: "Аватар" },
+    { id: "components-dialog",     label: "Диалог" },
+    { id: "components-dropdown",   label: "Dropdown Menu" },
+    { id: "components-separator",  label: "Разделитель" },
+    { id: "components-skeleton",   label: "Skeleton" },
+    { id: "components-scroll-area",label: "Scroll Area" },
+    { id: "components-toasts",     label: "Toasts" },
+    { id: "components-show-more",  label: "Show More" },
+    { id: "components-slider",     label: "Слайдер" },
   ]},
-  { id: "tooltips", label: "Тултипы", subsections: [
+  { id: "tooltips", label: "Тултипы",         Icon: MessageSquare, subsections: [
     { id: "tooltips-animation", label: "Анимация" },
     { id: "tooltips-variants",  label: "Варианты" },
     { id: "tooltips-rules",     label: "Правила" },
   ]},
-  { id: "icons", label: "Иконки", subsections: [
+  { id: "icons",    label: "Иконки",           Icon: Sparkles, subsections: [
     { id: "icons-scale",   label: "Размерная шкала" },
     { id: "icons-lucide",  label: "Lucide" },
     { id: "icons-mascots", label: "Маскоты" },
   ]},
-  { id: "animations", label: "Анимации", subsections: [
+  { id: "animations", label: "Анимации",      Icon: Zap, subsections: [
     { id: "animations-timing",      label: "Timing-шкала" },
     { id: "animations-easing",      label: "Easing-кривые" },
     { id: "animations-micro",       label: "Микроинтерактивы" },
@@ -77,11 +91,11 @@ const sections: NavSection[] = [
     { id: "animations-a11y",        label: "Доступность" },
     { id: "animations-round-glass", label: "Round Glass Lens" },
   ]},
-  { id: "cross-blocks", label: "Сквозные блоки", subsections: [
+  { id: "cross-blocks", label: "Сквозные блоки", Icon: LayoutDashboard, subsections: [
     { id: "cross-header",  label: "Header" },
     { id: "cross-marquee", label: "Logo Marquee" },
   ]},
-  { id: "marketing-blocks", label: "Маркетинг блоки", subsections: [
+  { id: "marketing-blocks", label: "Маркетинг блоки", Icon: LayoutTemplate, subsections: [
     { id: "marketing-blocks-faq",         label: "FAQ / Аккордион" },
     { id: "marketing-blocks-cta-dark",    label: "CTA — Тёмный" },
     { id: "marketing-blocks-cta-yellow",  label: "CTA — Жёлтый" },
@@ -95,28 +109,50 @@ export default function DSLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const [mobileNav, setMobileNav] = useState(false)
   const [expandedId, setExpandedId] = useState<string | null>(null)
-  const [hoverArrowId, setHoverArrowId] = useState<string | null>(null)
-  const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pendingAnchorRef = useRef<string | null>(null)
 
-  // Derive active section from pathname: /logos → "logos", /radius-shadows → "radius-shadows"
+  /* ── Sidebar rail / overlay / pinned state ── */
+  const [pinned, setPinned] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const isExpanded = pinned || sidebarOpen
+  const sidebarW   = isExpanded ? FULL_W : RAIL_W
+
+  useEffect(() => {
+    if (localStorage.getItem("ds-sidebar-pinned") === "true") setPinned(true)
+  }, [])
+
+  const togglePinned = () => {
+    const next = !pinned
+    setPinned(next)
+    localStorage.setItem("ds-sidebar-pinned", String(next))
+    if (next) setSidebarOpen(false)
+  }
+
+  const onSidebarEnter = () => {
+    if (pinned) return
+    if (hoverTimer.current) clearTimeout(hoverTimer.current)
+    setSidebarOpen(true)
+  }
+  const onSidebarLeave = () => {
+    if (pinned) return
+    hoverTimer.current = setTimeout(() => setSidebarOpen(false), 150)
+  }
+
+  /* ── Active section from URL ── */
   const activeId = pathname.replace(/^\//, "") || "logos"
 
-  // Auto-expand active section + instant scroll on route changes
   useEffect(() => {
     setExpandedId(activeId)
     const pending = pendingAnchorRef.current
     if (pending) {
       pendingAnchorRef.current = null
-      // Two rAFs to let Next.js render the new page before scrolling
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           const el = document.getElementById(pending)
-          if (el) {
-            el.scrollIntoView({ behavior: "instant", block: "start" })
-          } else {
-            window.scrollTo({ top: 0, behavior: "instant" })
-          }
+          if (el) el.scrollIntoView({ behavior: "instant", block: "start" })
+          else window.scrollTo({ top: 0, behavior: "instant" })
         })
       })
     } else {
@@ -124,15 +160,7 @@ export default function DSLayout({ children }: { children: React.ReactNode }) {
     }
   }, [activeId])
 
-  const startHover = (id: string) => {
-    if (hoverTimeout.current) clearTimeout(hoverTimeout.current)
-    setHoverArrowId(id)
-  }
-  const endHover = () => {
-    hoverTimeout.current = setTimeout(() => setHoverArrowId(null), 200)
-  }
-
-  /* ── Sidebar yellow scroll indicator (positional) ── */
+  /* ── Yellow scroll-position indicator ── */
   const trackRef = useRef<HTMLDivElement>(null)
   const triggerRefs = useRef<Map<string, HTMLDivElement>>(new Map())
   const subnavInnerRefs = useRef<Map<string, HTMLDivElement>>(new Map())
@@ -141,56 +169,81 @@ export default function DSLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const measure = () => {
       const trigger = triggerRefs.current.get(activeId)
-      const track = trackRef.current
+      const track   = trackRef.current
       if (!trigger || !track) return
-      const trackH = track.clientHeight
-      const isExpanded = expandedId === activeId
-      const subnavInner = subnavInnerRefs.current.get(activeId)
-      const subnavH = isExpanded && subnavInner ? subnavInner.scrollHeight : 0
+      const trackH   = track.clientHeight
+      const isOpen   = expandedId === activeId
+      const inner    = subnavInnerRefs.current.get(activeId)
+      const subnavH  = isOpen && inner ? inner.scrollHeight : 0
       setIndicator({
         top:    (trigger.offsetTop / trackH) * 100,
         height: ((trigger.offsetHeight + subnavH) / trackH) * 100,
       })
     }
     measure()
-    const timer = setTimeout(measure, 310)
-    return () => clearTimeout(timer)
+    const t = setTimeout(measure, 310)
+    return () => clearTimeout(t)
   }, [activeId, expandedId])
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+
       {/* ───── HEADER ───── */}
       <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-sm">
-        <div className="max-w-[1280px] mx-auto px-5 flex items-center justify-between h-14">
-          <div className="flex items-center gap-3">
+        {/* Desktop header row — left-padding follows sidebar width */}
+        <div
+          className="hidden md:flex items-center justify-between h-14 pr-5 transition-[padding-left] duration-200"
+          style={{ paddingLeft: sidebarW + 20 }}
+        >
+          <div className="flex items-center gap-2">
+            {/* Pin toggle — near logo */}
             <button
-              className="md:hidden p-1 text-muted-foreground"
-              onClick={() => setMobileNav(!mobileNav)}
+              onClick={togglePinned}
+              title={pinned ? "Открепить меню" : "Закрепить меню"}
+              className="p-1.5 rounded text-muted-foreground hover:text-foreground transition-colors"
             >
-              {mobileNav ? <X size={20} /> : <Menu size={20} />}
+              {pinned ? <PinOff size={14} /> : <Pin size={14} />}
             </button>
-            <div className="flex items-center gap-2">
-              <img
-                src={`${BASE_PATH}/text_logo_dark_background_en.svg`}
-                alt="Rocketmind"
-                className="h-7 hidden dark:block"
-              />
-              <img
-                src={`${BASE_PATH}/text_logo_light_background_en.svg`}
-                alt="Rocketmind"
-                className="h-7 dark:hidden"
-              />
-            </div>
+            <img
+              src={`${BASE_PATH}/text_logo_dark_background_en.svg`}
+              alt="Rocketmind"
+              className="h-7 hidden dark:block"
+            />
+            <img
+              src={`${BASE_PATH}/text_logo_light_background_en.svg`}
+              alt="Rocketmind"
+              className="h-7 dark:hidden"
+            />
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)] hidden sm:block">
+            <span className="text-[length:var(--text-12)] text-muted-foreground font-[family-name:var(--font-mono-family)]">
               {DS_DATE}
             </span>
             <ThemeToggle />
           </div>
         </div>
 
-        {/* Mobile nav */}
+        {/* Mobile header row */}
+        <div className="md:hidden flex items-center justify-between h-14 px-5">
+          <div className="flex items-center gap-3">
+            <button className="p-1 text-muted-foreground" onClick={() => setMobileNav(!mobileNav)}>
+              {mobileNav ? <X size={20} /> : <Menu size={20} />}
+            </button>
+            <img
+              src={`${BASE_PATH}/text_logo_dark_background_en.svg`}
+              alt="Rocketmind"
+              className="h-7 hidden dark:block"
+            />
+            <img
+              src={`${BASE_PATH}/text_logo_light_background_en.svg`}
+              alt="Rocketmind"
+              className="h-7 dark:hidden"
+            />
+          </div>
+          <ThemeToggle />
+        </div>
+
+        {/* Mobile nav drawer */}
         {mobileNav && (
           <nav className="md:hidden border-t border-border bg-card px-5 py-3 space-y-1">
             {sections.map((s) => (
@@ -208,114 +261,189 @@ export default function DSLayout({ children }: { children: React.ReactNode }) {
         )}
       </header>
 
-      <div className="max-w-[1280px] mx-auto flex">
-        {/* ───── SIDEBAR NAV ───── */}
-        <aside className="relative hidden md:flex flex-col w-[220px] shrink-0 sticky top-14 self-start h-[calc(100vh-56px)] border-r border-border">
-          {/* ── Yellow scroll position indicator ── */}
-          <div ref={trackRef} className="absolute right-0 top-8 bottom-[60px] w-0.5 pointer-events-none z-10" aria-hidden>
+      {/* ───── SIDEBAR ─────
+          One component — rail (48px) or full (220px).
+          Inner div is always 220px wide; the aside clips it via overflow:hidden.
+          Rail zone  (left 48px): section icons / subsection first-2-chars
+          Overlay zone (right 172px): full labels — revealed as width animates
+          Yellow indicator is fixed at x = RAIL_W - 4 (right edge of icon zone)
+      ──── */}
+      <aside
+        className="fixed left-0 top-14 bottom-0 z-40 bg-background border-r border-border overflow-hidden transition-[width] duration-200 ease-out hidden md:block"
+        style={{ width: sidebarW }}
+        onMouseEnter={onSidebarEnter}
+        onMouseLeave={onSidebarLeave}
+      >
+        {/* Inner nav — always 220px wide; clips horizontally inside aside */}
+        <div className="relative w-[220px] h-full flex flex-col">
+
+          {/* Yellow position indicator — fixed at icon/text boundary */}
+          <div
+            ref={trackRef}
+            className="absolute top-8 bottom-[60px] pointer-events-none z-10"
+            style={{ left: RAIL_W - 4, width: 4 }}
+            aria-hidden
+          >
             <div
-              className="sidebar-indicator absolute left-0 right-0 bg-[var(--rm-yellow-100)]"
+              className="sidebar-indicator absolute inset-x-0 bg-[var(--rm-yellow-100)]"
               style={{ top: `${indicator.top}%`, height: `${indicator.height}%` }}
             />
           </div>
 
-          <div className="flex-1 overflow-y-auto py-8 pl-5 pr-0">
-            <nav className="relative space-y-0.5">
+          {/* Scrollable nav list */}
+          <div className="flex-1 overflow-y-auto overflow-x-hidden py-8">
+            <nav className="relative">
               {sections.map((s) => {
                 const isActive = activeId === s.id
-                const isClickOpen = expandedId === s.id
-                const isHoverOpen = hoverArrowId === s.id
-                const isOpen = isClickOpen || isHoverOpen
-                const hasSubs = s.subsections.length > 0
+                const isOpen   = expandedId === s.id
+                const hasSubs  = s.subsections.length > 0
+                const { Icon } = s
+
                 return (
                   <div key={s.id}>
+
+                    {/* ── Section trigger row ── */}
                     <div
                       className="flex items-center"
-                      ref={el => { if (el) triggerRefs.current.set(s.id, el); else triggerRefs.current.delete(s.id) }}
+                      style={{ height: 34 }}
+                      ref={(el) => {
+                        if (el) triggerRefs.current.set(s.id, el)
+                        else    triggerRefs.current.delete(s.id)
+                      }}
                     >
-                      {hasSubs ? (
+                      {/* Icon zone: w = RAIL_W */}
+                      <div
+                        className="shrink-0 flex items-center justify-center"
+                        style={{ width: RAIL_W }}
+                      >
+                        <Icon
+                          size={15}
+                          className={isActive ? "text-foreground" : "text-muted-foreground"}
+                        />
+                      </div>
+
+                      {/* Label + chevron — revealed when sidebar expands */}
+                      <Link
+                        href={`/${s.id}`}
+                        scroll={false}
+                        onClick={() => setExpandedId(s.id)}
+                        className={`flex-1 min-w-0 text-[length:var(--text-12)] font-[family-name:var(--font-mono-family)] uppercase tracking-wider whitespace-nowrap transition-colors ${
+                          isActive
+                            ? "text-foreground font-medium"
+                            : "text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        {s.label}
+                      </Link>
+                      {hasSubs && (
                         <button
-                          onMouseEnter={() => { if (!isClickOpen) startHover(s.id) }}
-                          onMouseLeave={endHover}
-                          onClick={() => { setHoverArrowId(null); setExpandedId(isActive ? s.id : (expandedId === s.id ? null : s.id)) }}
+                          onClick={() =>
+                            setExpandedId(isOpen ? null : s.id)
+                          }
                           className="shrink-0 w-6 self-stretch flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
                           aria-label={isOpen ? "Скрыть подразделы" : "Показать подразделы"}
                         >
                           <ChevronRight
                             size={12}
-                            className={`transition-transform duration-200 ${isClickOpen ? "rotate-90" : ""}`}
+                            className={`transition-transform duration-200 ${isOpen ? "rotate-90" : ""}`}
                           />
                         </button>
-                      ) : (
-                        <span className="shrink-0 w-6" aria-hidden />
                       )}
-                      <Link
-                        href={`/${s.id}`}
-                        scroll={false}
-                        onClick={() => setExpandedId(s.id)}
-                        className={`flex-1 py-1.5 text-[length:var(--text-12)] transition-colors
-                                   font-[family-name:var(--font-mono-family)] uppercase tracking-wider
-                                   ${isActive
-                                     ? "text-foreground font-medium"
-                                     : "text-muted-foreground hover:text-foreground"
-                                   }`}
-                      >
-                        {s.label}
-                      </Link>
                     </div>
+
+                    {/* ── Subsection rows (accordion) ── */}
                     {hasSubs && (
-                      <div
-                        className={`sidebar-subnav${isOpen ? " is-open" : ""}`}
-                        onMouseEnter={() => { if (isHoverOpen && !isClickOpen) startHover(s.id) }}
-                        onMouseLeave={endHover}
-                      >
+                      <div className={`sidebar-subnav${isOpen ? " is-open" : ""}`}>
                         <div
-                          className="sidebar-subnav-inner ml-3 pl-3 border-l border-border space-y-0.5 pb-1"
-                          ref={el => { if (el) subnavInnerRefs.current.set(s.id, el); else subnavInnerRefs.current.delete(s.id) }}
+                          className="sidebar-subnav-inner"
+                          ref={(el) => {
+                            if (el) subnavInnerRefs.current.set(s.id, el)
+                            else    subnavInnerRefs.current.delete(s.id)
+                          }}
                         >
                           {s.subsections.map((sub) => (
                             <a
                               key={sub.id}
                               href={`/${s.id}#${sub.id}`}
-                              className="block py-0.5 text-[length:var(--text-12)] text-muted-foreground hover:text-foreground transition-colors font-[family-name:var(--font-mono-family)] uppercase tracking-wider opacity-80"
+                              className="flex items-center"
+                              style={{ height: 26 }}
                               onClick={(e) => {
                                 e.preventDefault()
                                 if (activeId === s.id) {
-                                  // Already on correct page — scroll instantly
-                                  const el = document.getElementById(sub.id)
-                                  if (el) el.scrollIntoView({ behavior: "instant", block: "start" })
+                                  document.getElementById(sub.id)
+                                    ?.scrollIntoView({ behavior: "instant", block: "start" })
                                 } else {
-                                  // Navigate to section, then scroll after render
                                   pendingAnchorRef.current = sub.id
                                   router.push(`/${s.id}`, { scroll: false })
                                 }
                               }}
                             >
-                              {sub.label}
+                              {/* Abbreviated label in icon zone — aligns with section icons */}
+                              <div
+                                className="shrink-0 flex items-center justify-center"
+                                style={{ width: RAIL_W }}
+                              >
+                                <span className="text-[9px] font-[family-name:var(--font-mono-family)] text-muted-foreground/40 uppercase tracking-wider select-none">
+                                  {sub.label.slice(0, 2)}
+                                </span>
+                              </div>
+                              {/* Full label — visible in overlay */}
+                              <span className="flex-1 min-w-0 text-[length:var(--text-12)] text-muted-foreground hover:text-foreground transition-colors font-[family-name:var(--font-mono-family)] uppercase tracking-wider whitespace-nowrap opacity-80 pr-2">
+                                {sub.label}
+                              </span>
                             </a>
                           ))}
                         </div>
                       </div>
                     )}
+
                   </div>
                 )
               })}
             </nav>
           </div>
 
-          <div className="shrink-0 pl-10 pr-5 py-4 border-t border-border">
-            <Badge variant="neutral" size="md">
-              v{DS_VERSION}
-            </Badge>
-            <p className="text-[length:var(--text-12)] text-muted-foreground mt-1">{DS_DATE}</p>
+          {/* Version footer */}
+          <div className="shrink-0 border-t border-border" style={{ height: 60 }}>
+            <div className="flex items-center h-full">
+              {/* Icon zone */}
+              <div
+                className="shrink-0 flex items-center justify-center"
+                style={{ width: RAIL_W }}
+              >
+                <span className="text-[8px] font-[family-name:var(--font-mono-family)] text-muted-foreground/40 uppercase tracking-wider select-none">
+                  DS
+                </span>
+              </div>
+              {/* Version info — visible in overlay */}
+              <div className="min-w-0 overflow-hidden pr-3">
+                <Badge variant="neutral" size="md">v{DS_VERSION}</Badge>
+                <p className="text-[length:var(--text-12)] text-muted-foreground mt-1 whitespace-nowrap">
+                  {DS_DATE}
+                </p>
+              </div>
+            </div>
           </div>
-        </aside>
 
-        {/* ───── MAIN CONTENT ───── */}
-        <main className="flex-1 min-w-0 px-5 md:px-10 py-10 space-y-16">
+        </div>
+      </aside>
+
+      {/* ───── MAIN CONTENT ─────
+          margin-left = RAIL_W (always in rail mode)
+          margin-left = FULL_W when pinned
+          Marketing blocks inside pages control their own max-width,
+          so they get full benefit of the wider viewport.
+      ──── */}
+      <div
+        className={`transition-[padding-left] duration-200 ease-out ${
+          pinned ? "md:pl-[220px]" : "md:pl-12"
+        }`}
+      >
+        <main className="min-w-0 px-5 md:px-8 py-10 space-y-16">
           {children}
         </main>
       </div>
+
     </div>
   )
 }
