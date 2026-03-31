@@ -12,7 +12,7 @@ export type LogoMarqueeItem = {
 export type InfiniteLogoMarqueeProps = {
   className?: string;
   logos: LogoMarqueeItem[];
-  /** Duration of one full loop in seconds. Default: 25 */
+  /** Duration of one full loop in seconds. Default: 83 */
   speedSeconds?: number;
   /** Gap between logos in pixels. Default: 67 */
   gap?: number;
@@ -67,7 +67,7 @@ const buildFadeMask = (fadeWidth: number): CSSProperties => ({
 export function InfiniteLogoMarquee({
   className,
   logos,
-  speedSeconds = 25,
+  speedSeconds = 83,
   gap = 67,
   maxLogoHeight = 39,
   fadeWidth = 44,

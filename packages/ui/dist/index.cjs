@@ -1994,7 +1994,7 @@ var buildFadeMask = (fadeWidth) => ({
 function InfiniteLogoMarquee({
   className,
   logos,
-  speedSeconds = 25,
+  speedSeconds = 83,
   gap = 67,
   maxLogoHeight = 39,
   fadeWidth = 44,

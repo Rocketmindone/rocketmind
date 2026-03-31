@@ -281,7 +281,7 @@ type LogoMarqueeItem = {
 type InfiniteLogoMarqueeProps = {
     className?: string;
     logos: LogoMarqueeItem[];
-    /** Duration of one full loop in seconds. Default: 25 */
+    /** Duration of one full loop in seconds. Default: 83 */
     speedSeconds?: number;
     /** Gap between logos in pixels. Default: 67 */
     gap?: number;
