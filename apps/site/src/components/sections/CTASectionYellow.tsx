@@ -16,7 +16,7 @@ const BASE_PATH = process.env.NODE_ENV === "production" ? "/rocketmind" : "";
  */
 export function CTASectionYellow() {
   return (
-    <section className="px-5 md:px-8 xl:px-14">
+    <section className="px-5 md:px-8 xl:px-14 pb-5 md:pb-8 xl:pb-14">
       <div className="mx-auto max-w-[1512px]">
         <div className="bg-[#FFCC00] relative overflow-hidden rounded-none aspect-[353/571] md:aspect-auto md:min-h-[320px] xl:min-h-[400px]">
 
