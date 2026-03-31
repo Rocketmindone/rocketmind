@@ -43,7 +43,7 @@ export function CTASectionYellow() {
               src={`${BASE_PATH}/images/cta/golden-spiral-desktop.svg`}
               alt=""
               fill
-              className="object-contain object-right-top"
+              className="object-cover object-right"
               unoptimized
             />
           </div>
