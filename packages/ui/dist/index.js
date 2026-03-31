@@ -1825,7 +1825,7 @@ function InfiniteLogoMarquee({
     "div",
     {
       className: cn(
-        "relative w-full overflow-hidden partner-logo-marquee-wrapper",
+        "relative w-full overflow-hidden",
         className
       ),
       style: buildFadeMask(fadeWidth),

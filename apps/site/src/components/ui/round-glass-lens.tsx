@@ -505,6 +505,52 @@ export function RoundGlassLens(props: RoundGlassLensProps) {
     const scene = sceneRef.current;
     if (!glass || !canvas || !scene) return;
 
+    // ── CSS-only mode on mobile (<640px): gradient border ring, no WebGL ──────
+    if (window.innerWidth < 640) {
+      let mobileResizeObserver: ResizeObserver | null = null;
+
+      const syncMobile = () => {
+        const { x: cx, y: cy, xOffset: cxo, yOffset: cyo, anchorRef: car } = positionRef.current;
+        const sceneRect = scene.getBoundingClientRect();
+        const parent = (glass.offsetParent ?? document.body) as HTMLElement;
+        const parentRect = parent.getBoundingClientRect();
+        let vx: number;
+        let vy: number;
+        if (car?.current) {
+          const r = car.current.getBoundingClientRect();
+          vx = r.left + r.width / 2 + (cxo ?? 0);
+          vy = r.top + r.height / 2 + (cyo ?? 0);
+        } else if (cx !== undefined && cy !== undefined) {
+          vx = sceneRect.left + cx;
+          vy = sceneRect.top + cy;
+        } else {
+          vx = sceneRect.left + sceneRect.width / 2 + (cxo ?? 0);
+          vy = sceneRect.top + sceneRect.height / 2 + (cyo ?? 0);
+        }
+        glass.style.left = `${vx - parentRect.left}px`;
+        glass.style.top = `${vy - parentRect.top}px`;
+        glass.style.transform = "translate3d(-50%, -50%, 0)";
+      };
+
+      syncRef.current = syncMobile;
+      syncMobile();
+
+      if (typeof ResizeObserver !== "undefined") {
+        mobileResizeObserver = new ResizeObserver(syncMobile);
+        mobileResizeObserver.observe(scene);
+        mobileResizeObserver.observe(glass);
+        if (anchorRef?.current) mobileResizeObserver.observe(anchorRef.current);
+      }
+      window.addEventListener("resize", syncMobile);
+
+      return () => {
+        syncRef.current = null;
+        mobileResizeObserver?.disconnect();
+        window.removeEventListener("resize", syncMobile);
+      };
+    }
+
+    // ── Full WebGL mode (desktop) ─────────────────────────────────────────────
     const gl = canvas.getContext("webgl", {
       alpha: true,
       antialias: true,
