@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Badge } from "@rocketmind/ui"
 import {
-  ChevronRight, Menu, X, Pin, PinOff,
+  ChevronRight, Menu, X, PanelLeftOpen, PanelLeftClose,
   Layers, Palette, Type, LayoutGrid, Square, Package,
   MessageSquare, Sparkles, Zap, LayoutDashboard, LayoutTemplate,
 } from "lucide-react"
@@ -196,14 +196,6 @@ export default function DSLayout({ children }: { children: React.ReactNode }) {
           style={{ paddingLeft: sidebarW + 20 }}
         >
           <div className="flex items-center gap-2">
-            {/* Pin toggle — near logo */}
-            <button
-              onClick={togglePinned}
-              title={pinned ? "Открепить меню" : "Закрепить меню"}
-              className="p-1.5 rounded text-muted-foreground hover:text-foreground transition-colors"
-            >
-              {pinned ? <PinOff size={14} /> : <Pin size={14} />}
-            </button>
             <img
               src={`${BASE_PATH}/text_logo_dark_background_en.svg`}
               alt="Rocketmind"
@@ -276,6 +268,18 @@ export default function DSLayout({ children }: { children: React.ReactNode }) {
       >
         {/* Inner nav — always 220px wide; clips horizontally inside aside */}
         <div className="relative w-[220px] h-full flex flex-col">
+
+          {/* Pin toggle — aligned with section icons */}
+          <div className="shrink-0 flex items-center" style={{ height: 40 }}>
+            <button
+              onClick={togglePinned}
+              title={pinned ? "Открепить меню" : "Закрепить меню"}
+              className="flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              style={{ width: RAIL_W, height: 40 }}
+            >
+              {pinned ? <PanelLeftClose size={16} /> : <PanelLeftOpen size={16} />}
+            </button>
+          </div>
 
           {/* Yellow position indicator — fixed at icon/text boundary */}
           <div
