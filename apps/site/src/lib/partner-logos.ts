@@ -1,10 +1,16 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 
+import sharp from "sharp";
+
 export type PartnerLogo = {
   alt: string;
   filename: string;
   src: string;
+  /** Logical CSS width in px (PNG only — intrinsic pixels ÷ 3 for 3× assets) */
+  width?: number;
+  /** Logical CSS height in px (PNG only — intrinsic pixels ÷ 3 for 3× assets) */
+  height?: number;
 };
 
 const SUPPORTED_LOGO_EXTENSIONS = new Set([
@@ -36,10 +42,10 @@ function formatLogoAlt(filename: string) {
 
 export async function resolveHeroLogosDirectory() {
   const candidateDirectories = [
-    path.resolve(process.cwd(), "public", "hero-logos"),
-    path.resolve(process.cwd(), "assets", "hero-logos"),
-    path.resolve(process.cwd(), "..", "assets", "hero-logos"),
-    path.resolve(process.cwd(), "..", "..", "assets", "hero-logos"),
+    path.resolve(process.cwd(), "public", "clip-logos"),
+    path.resolve(process.cwd(), "assets", "clip-logos"),
+    path.resolve(process.cwd(), "..", "assets", "clip-logos"),
+    path.resolve(process.cwd(), "..", "..", "assets", "clip-logos"),
   ];
 
   for (const directory of candidateDirectories) {
@@ -77,12 +83,31 @@ export async function getHeroLogoFilePath(filename: string) {
   }
 }
 
+const PNG_SCALE = 3; // all PNG assets are exported at 3× — divide for logical CSS pixels
+
+async function getPngLogicalDimensions(
+  filePath: string,
+): Promise<{ width: number; height: number } | undefined> {
+  try {
+    const meta = await sharp(filePath).metadata();
+    if (meta.width && meta.height) {
+      return {
+        width: Math.round(meta.width / PNG_SCALE),
+        height: Math.round(meta.height / PNG_SCALE),
+      };
+    }
+  } catch {
+    // non-fatal — fall back to CSS-only sizing
+  }
+  return undefined;
+}
+
 export async function getPartnerLogos(): Promise<PartnerLogo[]> {
 
   const directory = await resolveHeroLogosDirectory();
   const entries = await fs.readdir(directory, { withFileTypes: true });
 
-  return entries
+  const filenames = entries
     .filter((entry) => entry.isFile())
     .map((entry) => entry.name)
     .filter((filename) =>
@@ -107,10 +132,23 @@ export async function getPartnerLogos(): Promise<PartnerLogo[]> {
       }
 
       return leftIndex - rightIndex;
-    })
-    .map((filename) => ({
-      alt: formatLogoAlt(filename),
-      filename,
-      src: `${process.env.NODE_ENV === "production" ? "/rocketmind" : ""}/hero-logos/${filename}`,
-    }));
+    });
+
+  const BASE = process.env.NODE_ENV === "production" ? "/rocketmind" : "";
+
+  return Promise.all(
+    filenames.map(async (filename) => {
+      const isPng = path.extname(filename).toLowerCase() === ".png";
+      const dims = isPng
+        ? await getPngLogicalDimensions(path.join(directory, filename))
+        : undefined;
+
+      return {
+        alt: formatLogoAlt(filename),
+        filename,
+        src: `${BASE}/clip-logos/${encodeURIComponent(filename)}`,
+        ...dims,
+      };
+    }),
+  );
 }

@@ -38,9 +38,9 @@ function formatLogoAlt(filename: string) {
 
 export async function resolveHeroLogosDirectory() {
   const candidateDirectories = [
-    path.resolve(process.cwd(), "assets", "hero-logos"),
-    path.resolve(process.cwd(), "..", "assets", "hero-logos"),
-    path.resolve(process.cwd(), "..", "..", "assets", "hero-logos"),
+    path.resolve(process.cwd(), "assets", "clip-logos"),
+    path.resolve(process.cwd(), "..", "assets", "clip-logos"),
+    path.resolve(process.cwd(), "..", "..", "assets", "clip-logos"),
   ];
 
   for (const directory of candidateDirectories) {
@@ -113,6 +113,6 @@ export async function getPartnerLogos(): Promise<PartnerLogo[]> {
     .map((filename) => ({
       alt: formatLogoAlt(filename),
       filename,
-      src: `/hero-logos/${filename}`,
+      src: `/clip-logos/${filename}`,
     }));
 }

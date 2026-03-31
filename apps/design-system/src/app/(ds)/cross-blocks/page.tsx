@@ -10,12 +10,12 @@ import { SiteHeader } from "@/components/ui/site-header"
 const BASE_PATH = process.env.NODE_ENV === "production" ? "/rocketmind/ds" : ""
 
 const DEMO_LOGOS: LogoMarqueeItem[] = [
-  { alt: "Билайн",           src: `${BASE_PATH}/hero-logos/beeline.svg`,   width: 125, height: 24 },
-  { alt: "РУСАЛ",             src: `${BASE_PATH}/hero-logos/rusal.svg`,     width: 113, height: 34 },
-  { alt: "Минцифры России",   src: `${BASE_PATH}/hero-logos/mintsifry.svg`, width: 146, height: 32 },
-  { alt: "ВТБ",              src: `${BASE_PATH}/hero-logos/vtb.svg`,       width: 90,  height: 33 },
-  { alt: "Т-Банк",           src: `${BASE_PATH}/hero-logos/tbank.svg`,     width: 116, height: 37 },
-  { alt: "Росатом",          src: `${BASE_PATH}/hero-logos/rosatom.svg`,   width: 109, height: 39 },
+  { alt: "Билайн",           src: `${BASE_PATH}/clip-logos/beeline.svg`,   width: 125, height: 24 },
+  { alt: "РУСАЛ",             src: `${BASE_PATH}/clip-logos/rusal.svg`,     width: 113, height: 34 },
+  { alt: "Минцифры России",   src: `${BASE_PATH}/clip-logos/mintsifry.svg`, width: 146, height: 32 },
+  { alt: "ВТБ",              src: `${BASE_PATH}/clip-logos/vtb.svg`,       width: 90,  height: 33 },
+  { alt: "Т-Банк",           src: `${BASE_PATH}/clip-logos/tbank.svg`,     width: 116, height: 37 },
+  { alt: "Росатом",          src: `${BASE_PATH}/clip-logos/rosatom.svg`,   width: 109, height: 39 },
 ]
 
 export default function CrossBlocksPage() {
@@ -201,8 +201,8 @@ export default function CrossBlocksPage() {
                 </thead>
                 <tbody className="text-muted-foreground">
                   {[
-                    ["Добавить логотип",   "Положить SVG в apps/site/public/hero-logos/. Имя = kebab-case slug, например sberbank.svg."],
-                    ["Удалить логотип",    "Удалить файл из apps/site/public/hero-logos/."],
+                    ["Добавить логотип",   "Положить SVG в apps/site/public/clip-logos/. Имя = kebab-case slug, например sberbank.svg."],
+                    ["Удалить логотип",    "Удалить файл из apps/site/public/clip-logos/."],
                     ["Изменить порядок",   "Отредактировать массив preferredOrder в apps/site/src/lib/partner-logos.ts."],
                   ].map(([action, instruction]) => (
                     <tr key={action} className="border-b border-border last:border-0">

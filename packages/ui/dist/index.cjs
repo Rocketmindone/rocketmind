@@ -1895,7 +1895,7 @@ function LogoSequence({
   return /* @__PURE__ */ (0, import_jsx_runtime26.jsx)(
     "div",
     {
-      className: "flex shrink-0 items-center py-[10px] pl-1",
+      className: "flex shrink-0 items-center py-[10px]",
       style: { gap: `${gap}px`, paddingRight: `${gap}px` },
       children: logos.map((logo) => /* @__PURE__ */ (0, import_jsx_runtime26.jsx)(
         "div",

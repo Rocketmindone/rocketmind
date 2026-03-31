@@ -35,7 +35,7 @@ function LogoSequence({
 }) {
   return (
     <div
-      className="flex shrink-0 items-center py-[10px] pl-1"
+      className="flex shrink-0 items-center py-[10px]"
       style={{ gap: `${gap}px`, paddingRight: `${gap}px` }}
     >
       {logos.map((logo) => (
