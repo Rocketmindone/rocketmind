@@ -441,7 +441,7 @@ export function PlatformOverview() {
 
 function Heading({ label, title }: { label: string; title: string }) {
   return (
-    <div className="flex flex-col gap-1 md:gap-2">
+    <div className="flex flex-col gap-4 md:gap-2">
       <p
         className="font-['Loos_Condensed',sans-serif] text-[16px] font-medium uppercase leading-[1.16] tracking-[0.02em] text-[#FFCC00] md:text-[18px]"
         dangerouslySetInnerHTML={{ __html: label }}

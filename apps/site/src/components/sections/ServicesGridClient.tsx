@@ -140,7 +140,7 @@ export function ServicesGridClient({ sections }: ServicesGridClientProps) {
                 >
                   {/* Header row */}
                   <div className="flex items-end justify-between gap-6 lg:gap-10 mb-6 md:mb-8 lg:mb-10 px-5 md:px-0">
-                    <div className="flex flex-col gap-2 md:gap-4 lg:gap-5 flex-1 min-w-0">
+                    <div className="flex flex-col gap-4 lg:gap-5 flex-1 min-w-0">
                       {/* Yellow track label — mobile/tablet only */}
                       <p className="lg:hidden font-['Loos_Condensed',sans-serif] font-medium text-[16px] md:text-[18px] uppercase leading-[1.16] tracking-[0.02em] text-[var(--rm-yellow-100)]">
                         {section.trackName}

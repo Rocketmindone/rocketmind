@@ -412,7 +412,7 @@ function TestimonialsColumn({
 
   return (
     <div className="flex flex-col gap-4 w-full lg:w-[320px]">
-      <span className="flex-none font-['Loos_Condensed',sans-serif] text-[18px] font-medium uppercase tracking-[0.02em] leading-[1.16] text-[#FFCC00]">
+      <span className="flex-none font-['Loos_Condensed',sans-serif] text-[16px] md:text-[18px] font-medium uppercase tracking-[0.02em] leading-[1.16] text-[#FFCC00]">
         Отзывы
       </span>
 
@@ -478,23 +478,27 @@ function CaseNavigator({
 }) {
   return (
     <div className="flex items-center gap-4 flex-wrap">
-      {CASES.map((_, i) => (
-        <span key={i} className="flex items-center gap-4">
+      <button
+        onClick={() => onSelect(activeCase)}
+        aria-label={`Кейс ${activeCase + 1}`}
+        className="font-['Loos_Condensed',sans-serif] text-[16px] font-medium uppercase tracking-[0.02em] leading-[1.16] text-[#F0F0F0] cursor-pointer"
+      >
+        {String(activeCase + 1).padStart(2, "0")}
+      </button>
+      <Slider animate animateKey={activeCase} animationDuration={CASE_DURATION_MS} />
+      {CASES.map((_, i) => {
+        if (i === activeCase) return null;
+        return (
           <button
+            key={i}
             onClick={() => onSelect(i)}
             aria-label={`Кейс ${i + 1}`}
-            className={[
-              "font-['Loos_Condensed',sans-serif] text-[18px] font-medium uppercase tracking-[0.02em] leading-[1.16] transition-colors cursor-pointer",
-              i === activeCase
-                ? "text-[#F0F0F0]"
-                : "text-[#939393] hover:text-[#F0F0F0]",
-            ].join(" ")}
+            className="font-['Loos_Condensed',sans-serif] text-[16px] font-medium uppercase tracking-[0.02em] leading-[1.16] text-[#939393] hover:text-[#F0F0F0] transition-colors cursor-pointer"
           >
             {String(i + 1).padStart(2, "0")}
           </button>
-          {i === activeCase && <Slider animate animateKey={activeCase} animationDuration={CASE_DURATION_MS} />}
-        </span>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -597,10 +601,15 @@ export function CasesSectionClient({ logos }: { logos: PartnerLogo[] }) {
           {/* ── RIGHT / TOP: Cases ──────────────────────────────────── */}
           <div ref={casesColumnRef} className="flex-1 flex flex-col order-1 lg:order-2 mb-10 lg:mb-0">
 
-            {/* Label — always visible */}
-            <span className="font-['Loos_Condensed',sans-serif] text-[18px] font-medium uppercase tracking-[0.02em] leading-[1.16] text-[#FFCC00] mb-2">
-              кейсы
-            </span>
+            {/* Label + mobile slider row */}
+            <div className="flex items-center justify-between gap-2.5 mb-4">
+              <span className="font-['Loos_Condensed',sans-serif] text-[16px] md:text-[18px] font-medium uppercase tracking-[0.02em] leading-[1.16] text-[#FFCC00]">
+                кейсы
+              </span>
+              <div className="block lg:hidden">
+                <CaseNavigator activeCase={activeCase} onSelect={switchToCase} />
+              </div>
+            </div>
 
             {/* Fading content: title, description, stats, result */}
             <div
@@ -624,10 +633,7 @@ export function CasesSectionClient({ logos }: { logos: PartnerLogo[] }) {
                     {nb(current.title)}
                   </h2>
                 </div>
-                {/* Mobile-only navigator — positioned between title and description per Figma mobile */}
-                <div className="block lg:hidden">
-                  <CaseNavigator activeCase={activeCase} onSelect={switchToCase} />
-                </div>
+                {/* Mobile navigator moved to label row above */}
                 {/* copy-18 token: 18px / 1.32 / 0 tracking
                     xl:pr-[200px] — right padding per Figma layout_WF4UU5
                     min-h: 18 × 1.32 × 3 ≈ 72px prevents jump on case switch */}
