@@ -10,12 +10,16 @@ import { SiteHeader } from "@/components/ui/site-header"
 const BASE_PATH = process.env.NODE_ENV === "production" ? "/rocketmind/ds" : ""
 
 const DEMO_LOGOS: LogoMarqueeItem[] = [
-  { alt: "Билайн",           src: `${BASE_PATH}/clip-logos/beeline.svg`,   width: 125, height: 24 },
-  { alt: "РУСАЛ",             src: `${BASE_PATH}/clip-logos/rusal.svg`,     width: 113, height: 34 },
-  { alt: "Минцифры России",   src: `${BASE_PATH}/clip-logos/mintsifry.svg`, width: 146, height: 32 },
-  { alt: "ВТБ",              src: `${BASE_PATH}/clip-logos/vtb.svg`,       width: 90,  height: 33 },
-  { alt: "Т-Банк",           src: `${BASE_PATH}/clip-logos/tbank.svg`,     width: 116, height: 37 },
-  { alt: "Росатом",          src: `${BASE_PATH}/clip-logos/rosatom.svg`,   width: 109, height: 39 },
+  { alt: "Билайн",          src: `${BASE_PATH}/clip-logos/bilaine.svg`,       width: 125, height: 24 },
+  { alt: "ВТБ",             src: `${BASE_PATH}/clip-logos/vtb.svg`,           width: 90,  height: 33 },
+  { alt: "Т-Банк",          src: `${BASE_PATH}/clip-logos/tbank.svg`,         width: 116, height: 37 },
+  { alt: "Росатом",         src: `${BASE_PATH}/clip-logos/rosatom.svg`,       width: 109, height: 39 },
+  { alt: "Минцифры",        src: `${BASE_PATH}/clip-logos/mincifr.svg`,       width: 146, height: 32 },
+  { alt: "РУСАЛ",           src: `${BASE_PATH}/clip-logos/ruslan.svg`,        width: 113, height: 34 },
+  { alt: "Газпромбанк",     src: `${BASE_PATH}/clip-logos/gazprombank.svg`,   width: 120, height: 36 },
+  { alt: "МТС",             src: `${BASE_PATH}/clip-logos/mtc.svg`,           width: 75,  height: 34 },
+  { alt: "ВКонтакте",       src: `${BASE_PATH}/clip-logos/vk.svg`,            width: 80,  height: 34 },
+  { alt: "X5 Group",        src: `${BASE_PATH}/clip-logos/x5.svg`,            width: 90,  height: 36 },
 ]
 
 export default function CrossBlocksPage() {

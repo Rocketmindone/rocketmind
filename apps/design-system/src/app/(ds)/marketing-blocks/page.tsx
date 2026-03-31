@@ -5,6 +5,7 @@ import { Separator } from "@rocketmind/ui"
 import { Section, SubSection, SpecBlock } from "@/components/ds/shared"
 import { TokenChip } from "@/components/ds/color-helpers"
 import { Accordion05Demo, VersionHistory } from "@/components/ds/shared"
+import { CasesSectionShowcase } from "@/components/ds/cases-section-showcase"
 
 export default function MarketingBlocksPage() {
   return (
@@ -177,10 +178,54 @@ export default function MarketingBlocksPage() {
           </div>
         </SpecBlock>
 
-        {/* ── PageBottom — Кейсы + CTA ── */}
-        <SubSection id="marketing-blocks-page-bottom" title="Кейсы + отзывы + CTA" />
+        {/* ── Кейсы + Отзывы ── */}
+        <SubSection id="marketing-blocks-cases" title="Кейсы + Отзывы" />
         <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">
-          Стандартный нижний блок страницы — компонент <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-caption-family)]">PageBottom</code>.
+          Блок кейсов и отзывов с бегущей строкой логотипов партнёров. Тёмный фон <TokenChip>#0A0A0A</TokenChip>. Левая колонна — отзывы с fade-маской, правая — кейс с заголовком, стат-блоком, результатом и навигатором.
+          Компонент <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-caption-family)]">CasesSection</code> из <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-caption-family)]">apps/site</code>.
+        </p>
+        <div className="-mx-5 md:-mx-10 border-y border-border overflow-hidden mb-8">
+          <CasesSectionShowcase />
+        </div>
+        <SpecBlock title="Токены и структура">
+          <div className="overflow-auto rounded-lg border border-border">
+            <table className="w-full text-[length:var(--text-14)]">
+              <thead>
+                <tr className="border-b border-border bg-rm-gray-2/30">
+                  <th className="text-left px-4 py-2 font-medium">Элемент</th>
+                  <th className="text-left px-4 py-2 font-medium">Значение</th>
+                  <th className="text-left px-4 py-2 font-medium">Описание</th>
+                </tr>
+              </thead>
+              <tbody className="text-muted-foreground">
+                {[
+                  ["Фон секции",       "#0A0A0A",                            "Тёмный (dark bg)"],
+                  ["Лейблы",           "#FFCC00 (--rm-yellow-100)",          "Loos Condensed 500, 18px, uppercase"],
+                  ["Заголовок кейса",  "#F0F0F0, Roboto Condensed 700",      "52px desktop / 36px md / 24px sm"],
+                  ["Текст отзывов",    "#939393",                            "14px, leading 1.4"],
+                  ["Отзывы fade",      "mask-image linear-gradient",         "Плавное исчезание сверху и снизу, 40px"],
+                  ["Стат-блок",        "border #404040, p-5/p-8",           "Grid 1→3 col, gap-4/gap-6"],
+                  ["Цифры статов",     "#F0F0F0, 52px desktop / 40px mob",  "Roboto Condensed 700"],
+                  ["Результат",        "#F0F0F0, Loos Condensed 500, 16px", "uppercase, tracking 0.04em"],
+                  ["Навигатор",        "#F0F0F0 / #939393",                  "Активный белый, остальные серые"],
+                  ["Logo Marquee",     "opacity-55",                         "InfiniteLogoMarquee reverse, py-8"],
+                  ["Разделители",      "#404040 (h-px)",                     "Сверху и снизу секции, вокруг марки"],
+                ].map(([el, val, desc]) => (
+                  <tr key={el} className="border-b border-border last:border-0">
+                    <td className="px-4 py-2 font-medium text-foreground">{el}</td>
+                    <td className="px-4 py-2"><TokenChip>{val}</TokenChip></td>
+                    <td className="px-4 py-2 text-muted-foreground">{desc}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </SpecBlock>
+
+        {/* ── PageBottom — Состав ── */}
+        <SubSection id="marketing-blocks-page-bottom" title="Состав PageBottom" />
+        <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">
+          Компонент-обёртка <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded font-[family-name:var(--font-caption-family)]">PageBottom</code> объединяет три самостоятельных блока в стандартную последовательность конца страницы.
           Добавляется на всех страницах сайта, кроме <strong className="text-foreground">/cases</strong> и <strong className="text-foreground">/media</strong>.
         </p>
         <div className="-mx-5 md:-mx-10 border-y border-border py-6 px-5 md:px-10 mb-8">
@@ -188,12 +233,17 @@ export default function MarketingBlocksPage() {
             <div className="flex items-center gap-3 py-2 border-b border-border">
               <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] text-muted-foreground w-6">1</span>
               <span className="font-medium text-foreground">CasesSection</span>
-              <span className="text-muted-foreground">— авто-ротация кейсов (15 с), факт-статы, отзывы (21 шт.), бегущая строка логотипов партнёров</span>
+              <span className="text-muted-foreground">— авто-ротация кейсов (15 с), отзывы, бегущая строка логотипов партнёров</span>
             </div>
-            <div className="flex items-center gap-3 py-2">
+            <div className="flex items-center gap-3 py-2 border-b border-border">
               <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] text-muted-foreground w-6">2</span>
               <span className="font-medium text-foreground">CTASection</span>
-              <span className="text-muted-foreground">— призыв к действию с жёлтой кнопкой (#contact), декоративный кружок с жёлтым свечением</span>
+              <span className="text-muted-foreground">— тёмный CTA с жёлтой кнопкой и декоративным кругом</span>
+            </div>
+            <div className="flex items-center gap-3 py-2">
+              <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] text-muted-foreground w-6">3</span>
+              <span className="font-medium text-foreground">Footer</span>
+              <span className="text-muted-foreground">— футер сайта</span>
             </div>
           </div>
         </div>

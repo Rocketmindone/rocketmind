@@ -85,7 +85,8 @@ const sections: NavSection[] = [
     { id: "marketing-blocks-faq",         label: "FAQ / Аккордион" },
     { id: "marketing-blocks-cta-dark",    label: "CTA — Тёмный" },
     { id: "marketing-blocks-cta-yellow",  label: "CTA — Жёлтый" },
-    { id: "marketing-blocks-page-bottom", label: "Кейсы + CTA" },
+    { id: "marketing-blocks-cases",       label: "Кейсы + Отзывы" },
+    { id: "marketing-blocks-page-bottom", label: "Состав PageBottom" },
   ]},
 ]
 
