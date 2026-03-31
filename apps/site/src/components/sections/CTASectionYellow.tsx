@@ -34,16 +34,17 @@ export function CTASectionYellow() {
             />
           </div>
 
-          {/* ── Desktop spiral — right ~47%, Figma 646×400 in 1400px frame ── */}
+          {/* ── Desktop spiral — height-bound, anchored right ── */}
           <div
-            className="absolute right-0 top-0 h-full w-[47%] pointer-events-none hidden md:block"
+            className="absolute right-0 top-0 bottom-0 pointer-events-none hidden md:flex items-center"
             aria-hidden="true"
           >
             <Image
               src={`${BASE_PATH}/images/cta/golden-spiral-desktop.svg`}
               alt=""
-              fill
-              className="object-contain object-right"
+              width={646}
+              height={400}
+              className="h-full w-auto object-contain"
               unoptimized
             />
           </div>
