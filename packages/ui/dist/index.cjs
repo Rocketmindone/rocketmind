@@ -85,6 +85,7 @@ __export(index_exports, {
   ShowMore: () => ShowMore,
   ShowMorePanel: () => ShowMorePanel,
   Skeleton: () => Skeleton,
+  Slider: () => Slider,
   Switch: () => Switch,
   Table: () => Table,
   TableBody: () => TableBody,
@@ -1827,14 +1828,80 @@ var Textarea = React11.forwardRef(
 );
 Textarea.displayName = "Textarea";
 
+// src/components/ui/slider.tsx
+var import_jsx_runtime25 = require("react/jsx-runtime");
+function Slider({
+  value = 0,
+  min = 0,
+  max = 1,
+  step,
+  width = 62,
+  className,
+  animate: animate2 = false,
+  animateKey,
+  animationDuration = 15e3,
+  animationDelay = 200,
+  onChange,
+  disabled = false
+}) {
+  const range = max - min || 1;
+  const ratio = Math.max(0, Math.min(1, (value - min) / range));
+  const fillPct = `${ratio * 100}%`;
+  const animStyle = (name) => ({
+    animationName: name,
+    animationDuration: `${animationDuration}ms`,
+    animationTimingFunction: "linear",
+    animationFillMode: "both",
+    animationDelay: `${animationDelay}ms`
+  });
+  return /* @__PURE__ */ (0, import_jsx_runtime25.jsxs)(
+    "div",
+    {
+      className: cn("relative flex-none", className),
+      style: { width: typeof width === "number" ? `${width}px` : width, height: "8px" },
+      children: [
+        /* @__PURE__ */ (0, import_jsx_runtime25.jsx)("div", { className: "absolute inset-x-0 top-[3px] h-[2px] bg-border" }),
+        /* @__PURE__ */ (0, import_jsx_runtime25.jsx)(
+          "div",
+          {
+            className: "absolute left-0 top-[3px] h-[2px] bg-foreground",
+            style: animate2 ? animStyle("rm-slider-fill") : { width: fillPct }
+          },
+          animate2 ? `fill-${String(animateKey)}` : void 0
+        ),
+        /* @__PURE__ */ (0, import_jsx_runtime25.jsx)(
+          "div",
+          {
+            className: "absolute top-0 w-2 h-2 rounded-full bg-foreground",
+            style: animate2 ? animStyle("rm-slider-dot") : { left: `calc(${fillPct} - 4px)` }
+          },
+          animate2 ? `dot-${String(animateKey)}` : void 0
+        ),
+        onChange && !disabled && /* @__PURE__ */ (0, import_jsx_runtime25.jsx)(
+          "input",
+          {
+            type: "range",
+            min,
+            max,
+            step,
+            value,
+            onChange: (e) => onChange(Number(e.currentTarget.value)),
+            className: "absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+          }
+        )
+      ]
+    }
+  );
+}
+
 // src/components/ui/tooltip.tsx
 var import_tooltip = require("@base-ui/react/tooltip");
-var import_jsx_runtime25 = require("react/jsx-runtime");
+var import_jsx_runtime26 = require("react/jsx-runtime");
 function TooltipProvider({
   delay = 0,
   ...props
 }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime25.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime26.jsx)(
     import_tooltip.Tooltip.Provider,
     {
       "data-slot": "tooltip-provider",
@@ -1844,10 +1911,10 @@ function TooltipProvider({
   );
 }
 function Tooltip({ ...props }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime25.jsx)(import_tooltip.Tooltip.Root, { "data-slot": "tooltip", ...props });
+  return /* @__PURE__ */ (0, import_jsx_runtime26.jsx)(import_tooltip.Tooltip.Root, { "data-slot": "tooltip", ...props });
 }
 function TooltipTrigger({ ...props }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime25.jsx)(import_tooltip.Tooltip.Trigger, { "data-slot": "tooltip-trigger", ...props });
+  return /* @__PURE__ */ (0, import_jsx_runtime26.jsx)(import_tooltip.Tooltip.Trigger, { "data-slot": "tooltip-trigger", ...props });
 }
 function TooltipContent({
   className,
@@ -1858,7 +1925,7 @@ function TooltipContent({
   children,
   ...props
 }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime25.jsx)(import_tooltip.Tooltip.Portal, { children: /* @__PURE__ */ (0, import_jsx_runtime25.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime26.jsx)(import_tooltip.Tooltip.Portal, { children: /* @__PURE__ */ (0, import_jsx_runtime26.jsx)(
     import_tooltip.Tooltip.Positioner,
     {
       align,
@@ -1866,7 +1933,7 @@ function TooltipContent({
       side,
       sideOffset,
       className: "isolate z-50",
-      children: /* @__PURE__ */ (0, import_jsx_runtime25.jsxs)(
+      children: /* @__PURE__ */ (0, import_jsx_runtime26.jsxs)(
         import_tooltip.Tooltip.Popup,
         {
           "data-slot": "tooltip-content",
@@ -1877,7 +1944,7 @@ function TooltipContent({
           ...props,
           children: [
             children,
-            /* @__PURE__ */ (0, import_jsx_runtime25.jsx)(import_tooltip.Tooltip.Arrow, { className: "z-50 size-2.5 translate-y-[calc(-50%-2px)] rotate-45 rounded-[2px] bg-foreground fill-foreground data-[side=bottom]:top-1 data-[side=inline-end]:top-1/2! data-[side=inline-end]:-left-1 data-[side=inline-end]:-translate-y-1/2 data-[side=inline-start]:top-1/2! data-[side=inline-start]:-right-1 data-[side=inline-start]:-translate-y-1/2 data-[side=left]:top-1/2! data-[side=left]:-right-1 data-[side=left]:-translate-y-1/2 data-[side=right]:top-1/2! data-[side=right]:-left-1 data-[side=right]:-translate-y-1/2 data-[side=top]:-bottom-2.5" })
+            /* @__PURE__ */ (0, import_jsx_runtime26.jsx)(import_tooltip.Tooltip.Arrow, { className: "z-50 size-2.5 translate-y-[calc(-50%-2px)] rotate-45 rounded-[2px] bg-foreground fill-foreground data-[side=bottom]:top-1 data-[side=inline-end]:top-1/2! data-[side=inline-end]:-left-1 data-[side=inline-end]:-translate-y-1/2 data-[side=inline-start]:top-1/2! data-[side=inline-start]:-right-1 data-[side=inline-start]:-translate-y-1/2 data-[side=left]:top-1/2! data-[side=left]:-right-1 data-[side=left]:-translate-y-1/2 data-[side=right]:top-1/2! data-[side=right]:-left-1 data-[side=right]:-translate-y-1/2 data-[side=top]:-bottom-2.5" })
           ]
         }
       )
@@ -1886,22 +1953,22 @@ function TooltipContent({
 }
 
 // src/components/ui/infinite-logo-marquee.tsx
-var import_jsx_runtime26 = require("react/jsx-runtime");
+var import_jsx_runtime27 = require("react/jsx-runtime");
 function LogoSequence({
   logos,
   gap,
   maxLogoHeight
 }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime26.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(
     "div",
     {
       className: "flex shrink-0 items-center py-[10px]",
       style: { gap: `${gap}px`, paddingRight: `${gap}px` },
-      children: logos.map((logo) => /* @__PURE__ */ (0, import_jsx_runtime26.jsx)(
+      children: logos.map((logo) => /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(
         "div",
         {
           className: "flex shrink-0 items-center justify-center opacity-90",
-          children: /* @__PURE__ */ (0, import_jsx_runtime26.jsx)(
+          children: /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(
             "img",
             {
               src: logo.src,
@@ -1939,7 +2006,7 @@ function InfiniteLogoMarquee({
   const marqueeStyle = {
     "--hero-marquee-duration": `${speedSeconds}s`
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime26.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(
     "div",
     {
       className: cn(
@@ -1947,9 +2014,9 @@ function InfiniteLogoMarquee({
         className
       ),
       style: buildFadeMask(fadeWidth),
-      children: /* @__PURE__ */ (0, import_jsx_runtime26.jsxs)("div", { className: `partner-logo-marquee-track${reverse ? " partner-logo-marquee-track--ltr" : ""}`, style: marqueeStyle, children: [
-        /* @__PURE__ */ (0, import_jsx_runtime26.jsx)(LogoSequence, { logos, gap, maxLogoHeight }),
-        /* @__PURE__ */ (0, import_jsx_runtime26.jsx)(LogoSequence, { logos, gap, maxLogoHeight })
+      children: /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("div", { className: `partner-logo-marquee-track${reverse ? " partner-logo-marquee-track--ltr" : ""}`, style: marqueeStyle, children: [
+        /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(LogoSequence, { logos, gap, maxLogoHeight }),
+        /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(LogoSequence, { logos, gap, maxLogoHeight })
       ] })
     }
   );
@@ -2010,6 +2077,7 @@ function InfiniteLogoMarquee({
   ShowMore,
   ShowMorePanel,
   Skeleton,
+  Slider,
   Switch,
   Table,
   TableBody,

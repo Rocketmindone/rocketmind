@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
-import { InfiniteLogoMarquee } from "@rocketmind/ui";
+import { InfiniteLogoMarquee, Slider } from "@rocketmind/ui";
 import type { PartnerLogo } from "@/lib/partner-logos";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -468,22 +468,6 @@ function TestimonialsColumn({
   );
 }
 
-function CaseProgressBar({ activeCase }: { activeCase: number }) {
-  return (
-    /* 62 × 8 px — matches Figma control geometry exactly */
-    <div className="relative flex-none w-[62px] h-[8px]">
-      <div className="absolute inset-x-0 top-[4px] h-[2px] bg-[#404040]" />
-      <div
-        key={`fill-${activeCase}`}
-        className="absolute left-0 top-[3px] h-[2px] bg-[#F0F0F0] cases-progress-bar"
-      />
-      <div
-        key={`dot-${activeCase}`}
-        className="absolute top-0 w-2 h-2 rounded-full bg-[#F0F0F0] cases-progress-dot"
-      />
-    </div>
-  );
-}
 
 function CaseNavigator({
   activeCase,
@@ -508,7 +492,7 @@ function CaseNavigator({
           >
             {String(i + 1).padStart(2, "0")}
           </button>
-          {i === activeCase && <CaseProgressBar activeCase={activeCase} />}
+          {i === activeCase && <Slider animate animateKey={activeCase} animationDuration={CASE_DURATION_MS} />}
         </span>
       ))}
     </div>

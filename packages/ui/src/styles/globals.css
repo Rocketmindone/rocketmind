@@ -872,3 +872,14 @@ code {
 .partner-logo-marquee-track--ltr {
   animation-name: hero-logo-marquee-ltr;
 }
+
+/* ── Slider ── */
+@keyframes rm-slider-fill {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+
+@keyframes rm-slider-dot {
+  from { left: 0px; }
+  to   { left: calc(100% - 8px); }
+}

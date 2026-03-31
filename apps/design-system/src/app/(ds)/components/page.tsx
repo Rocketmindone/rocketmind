@@ -3,7 +3,7 @@
 import React from "react"
 import {
   Avatar, AvatarFallback, AvatarImage,
-  Badge, GlowingEffect, ScrollArea, Separator, Skeleton,
+  Badge, GlowingEffect, ScrollArea, Separator, Skeleton, Slider,
   Tabs, TabsContent, TabsList, TabsTrigger,
 } from "@rocketmind/ui"
 import { Section, SubSection } from "@/components/ds/shared"
@@ -1367,6 +1367,39 @@ export default function ComponentsPage() {
             Кнопка-разделитель для скрытия избыточного контента. Пропсы: <code className="px-1 py-0.5 bg-rm-gray-2 rounded-sm text-[length:var(--text-12)]">expanded</code>, <code className="px-1 py-0.5 bg-rm-gray-2 rounded-sm text-[length:var(--text-12)]">onClick</code>, <code className="px-1 py-0.5 bg-rm-gray-2 rounded-sm text-[length:var(--text-12)]">label</code>, <code className="px-1 py-0.5 bg-rm-gray-2 rounded-sm text-[length:var(--text-12)]">labelExpanded</code>. Занимает всю ширину контейнера.
           </p>
           <ShowMoreShowcase />
+        </div>
+
+        {/* ── Slider ── */}
+        <div className="mb-12">
+          <SubSection id="components-slider" title="Слайдер" />
+          <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">
+            Минималистичный прогресс-слайдер 62×8 px из дизайн-системы. Трек — <code className="px-1 py-0.5 bg-rm-gray-2 rounded-sm text-[length:var(--text-12)]">border</code>, заливка и точка — <code className="px-1 py-0.5 bg-rm-gray-2 rounded-sm text-[length:var(--text-12)]">foreground</code>. Пропсы: <code className="px-1 py-0.5 bg-rm-gray-2 rounded-sm text-[length:var(--text-12)]">value</code>, <code className="px-1 py-0.5 bg-rm-gray-2 rounded-sm text-[length:var(--text-12)]">min</code>, <code className="px-1 py-0.5 bg-rm-gray-2 rounded-sm text-[length:var(--text-12)]">max</code>, <code className="px-1 py-0.5 bg-rm-gray-2 rounded-sm text-[length:var(--text-12)]">width</code>, <code className="px-1 py-0.5 bg-rm-gray-2 rounded-sm text-[length:var(--text-12)]">animate</code>, <code className="px-1 py-0.5 bg-rm-gray-2 rounded-sm text-[length:var(--text-12)]">animateKey</code>, <code className="px-1 py-0.5 bg-rm-gray-2 rounded-sm text-[length:var(--text-12)]">animationDuration</code>, <code className="px-1 py-0.5 bg-rm-gray-2 rounded-sm text-[length:var(--text-12)]">onChange</code>.
+          </p>
+          <div className="flex flex-col gap-8">
+            {/* Static */}
+            <div>
+              <p className="text-[length:var(--text-12)] text-muted-foreground mb-3">Статичный (value=0.4)</p>
+              <div className="flex items-center gap-6 p-6 border border-border rounded-sm bg-background">
+                <Slider value={0} />
+                <Slider value={0.4} />
+                <Slider value={1} />
+              </div>
+            </div>
+            {/* Animated */}
+            <div>
+              <p className="text-[length:var(--text-12)] text-muted-foreground mb-3">Анимированный (animate, 4 сек)</p>
+              <div className="flex items-center gap-6 p-6 border border-border rounded-sm bg-background">
+                <Slider animate animationDuration={4000} />
+              </div>
+            </div>
+            {/* Wide interactive */}
+            <div>
+              <p className="text-[length:var(--text-12)] text-muted-foreground mb-3">Интерактивный, ширина 200 px</p>
+              <div className="flex items-center gap-6 p-6 border border-border rounded-sm bg-background">
+                <Slider value={0.6} width={200} onChange={() => {}} />
+              </div>
+            </div>
+          </div>
         </div>
       </Section>
 

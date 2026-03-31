@@ -8,6 +8,7 @@ import {
   type CSSProperties,
   type RefObject,
 } from "react";
+import { Slider } from "@rocketmind/ui";
 import { createPortal } from "react-dom";
 
 // ── WebGL Shaders ─────────────────────────────────────────────────────────────
@@ -349,14 +350,13 @@ function ControlSlider({
         <span>{label}</span>
         <span>{format ? format(value) : value.toFixed(3)}</span>
       </div>
-      <input
-        type="range"
+      <Slider
+        width="100%"
+        value={value}
         min={min}
         max={max}
         step={step}
-        value={value}
-        disabled={disabled}
-        onChange={(event) => onChange(Number(event.currentTarget.value))}
+        onChange={disabled ? undefined : onChange}
       />
     </label>
   );

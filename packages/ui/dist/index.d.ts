@@ -227,6 +227,46 @@ declare const Textarea: React$1.ForwardRefExoticComponent<React$1.TextareaHTMLAt
     variant?: "default" | "chat" | null | undefined;
 } & class_variance_authority_types.ClassProp) | undefined) => string> & React$1.RefAttributes<HTMLTextAreaElement>>;
 
+interface SliderProps {
+    /** Current value (ignored in animate mode) */
+    value?: number;
+    /** Minimum value. Default 0. */
+    min?: number;
+    /** Maximum value. Default 1. */
+    max?: number;
+    /** Step increment (interactive mode only) */
+    step?: number;
+    /** Width in px or CSS string ("100%"). Default 62. */
+    width?: number | string;
+    /** Extra className on the root element */
+    className?: string;
+    /** Run CSS keyframe animation: fill 0 → 100% */
+    animate?: boolean;
+    /**
+     * Changing this value re-mounts the animated fill/dot, restarting the
+     * animation. Pass `activeCase` (or any key) that changes on each cycle.
+     */
+    animateKey?: unknown;
+    /** Animation duration in ms. Default 15 000. */
+    animationDuration?: number;
+    /** Animation delay in ms. Default 200. */
+    animationDelay?: number;
+    /** When provided, overlays an invisible <input type="range"> for interaction. */
+    onChange?: (value: number) => void;
+    disabled?: boolean;
+}
+/**
+ * Slider — визуальный индикатор прогресса / интерактивный слайдер.
+ *
+ * Figma: 62 × 8 px | track #border | fill + dot #foreground
+ *
+ * Режимы:
+ * - `animate` — CSS-анимация заполнения (прогресс-бар, блок кейсов)
+ * - `onChange` — интерактивный, поверх рисует невидимый <input type="range">
+ * - статический — отображает `value` без анимации и без взаимодействия
+ */
+declare function Slider({ value, min, max, step, width, className, animate, animateKey, animationDuration, animationDelay, onChange, disabled, }: SliderProps): react_jsx_runtime.JSX.Element;
+
 declare function TooltipProvider({ delay, ...props }: Tooltip$1.Provider.Props): react_jsx_runtime.JSX.Element;
 declare function Tooltip({ ...props }: Tooltip$1.Root.Props): react_jsx_runtime.JSX.Element;
 declare function TooltipTrigger({ ...props }: Tooltip$1.Trigger.Props): react_jsx_runtime.JSX.Element;
@@ -254,4 +294,4 @@ type InfiniteLogoMarqueeProps = {
 };
 declare function InfiniteLogoMarquee({ className, logos, speedSeconds, gap, maxLogoHeight, fadeWidth, reverse, }: InfiniteLogoMarqueeProps): react_jsx_runtime.JSX.Element | null;
 
-export { Avatar, AvatarFallback, AvatarImage, Badge, type BadgeSize, type BadgeVariant, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Checkbox, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger, DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuSeparator, DropdownMenuTrigger, GlowingEffect, InfiniteLogoMarquee, type InfiniteLogoMarqueeProps, Input, InputOTP, type InputOTPProps, type LogoMarqueeItem, NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, NavigationMenuViewport, Note, NoteDescription, NoteEyebrow, NoteTitle, Radio, ScrollArea, ScrollBar, SearchCombobox, type SearchComboboxOption, Separator, ShowMore, ShowMorePanel, type ShowMorePanelProps, type ShowMoreProps, Skeleton, Switch, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, Tabs, TabsContent, TabsList, TabsTrigger, Textarea, ThemeProvider, Toaster, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, avatarVariants, badgeVariants, buttonVariants, checkboxBaseClassName, cn, inputVariants, noteVariants, radioBaseClassName, tabsListVariants, textareaVariants };
+export { Avatar, AvatarFallback, AvatarImage, Badge, type BadgeSize, type BadgeVariant, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Checkbox, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger, DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuSeparator, DropdownMenuTrigger, GlowingEffect, InfiniteLogoMarquee, type InfiniteLogoMarqueeProps, Input, InputOTP, type InputOTPProps, type LogoMarqueeItem, NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, NavigationMenuViewport, Note, NoteDescription, NoteEyebrow, NoteTitle, Radio, ScrollArea, ScrollBar, SearchCombobox, type SearchComboboxOption, Separator, ShowMore, ShowMorePanel, type ShowMorePanelProps, type ShowMoreProps, Skeleton, Slider, type SliderProps, Switch, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, Tabs, TabsContent, TabsList, TabsTrigger, Textarea, ThemeProvider, Toaster, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, avatarVariants, badgeVariants, buttonVariants, checkboxBaseClassName, cn, inputVariants, noteVariants, radioBaseClassName, tabsListVariants, textareaVariants };
