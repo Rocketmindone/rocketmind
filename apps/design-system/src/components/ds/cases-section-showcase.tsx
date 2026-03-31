@@ -387,7 +387,7 @@ export function CasesSectionShowcase() {
               <div className="border border-[#404040] p-5 sm:p-6 xl:p-8">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
                   {current.stats.map((stat, i) => (
-                    <div key={i} className="flex flex-col gap-1 sm:justify-between sm:gap-5">
+                    <div key={i} className="flex flex-col gap-1 sm:gap-5 xl:justify-between">
                       <div className="flex flex-row items-center gap-3">
                         <div className="font-heading text-[52px] sm:text-[40px] xl:text-[52px] font-bold uppercase leading-[1.08] tracking-[-0.02em] text-[#F0F0F0] flex-none">
                           {stat.value}
