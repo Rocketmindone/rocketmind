@@ -3,7 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, ArrowUpRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowUpRight, ArrowRight } from "lucide-react";
 
 export type ServiceCard = {
   title: string;
@@ -19,9 +19,13 @@ export type ServiceCard = {
 export type ServiceSection = {
   trackName: string;
   headerHighlight: string;
+  /** Mobile title with line break (e.g. "Стратегия\nи бизнес-модели") */
+  mobileTitle?: string;
   description: string;
   /** Link for "Все" button */
   catalogHref?: string;
+  /** Label for mobile "Все" button (e.g. "Все продукты", "Все курсы") */
+  catalogLabel?: string;
   cards: ServiceCard[];
 };
 
@@ -32,16 +36,20 @@ type ServicesGridClientProps = {
 export function ServicesGridClient({ sections }: ServicesGridClientProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [cardsPerView, setCardsPerView] = useState(3);
+  const [isMobile, setIsMobile] = useState(false);
   const [carouselIndices, setCarouselIndices] = useState<Record<number, number>>(
     sections.reduce((acc, _, i) => ({ ...acc, [i]: 0 }), {})
   );
 
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const scrollRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  // Responsive cardsPerView
+  // Responsive
   useEffect(() => {
     const update = () => {
-      if (window.innerWidth < 768) setCardsPerView(1);
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (mobile) setCardsPerView(1);
       else if (window.innerWidth < 1280) setCardsPerView(2);
       else setCardsPerView(3);
     };
@@ -89,11 +97,7 @@ export function ServicesGridClient({ sections }: ServicesGridClientProps) {
 
   return (
     <section id="focus" className="dark bg-background text-foreground">
-      <div className="mx-auto w-full max-w-[1512px] px-5 md:px-8 xl:px-14">
-        {/*
-         * On mobile:  flex-col → tabs row first, then content sections stacked
-         * On desktop: grid [344px | 1fr] → tabs col sticky left, content col scrolls normally
-         */}
+      <div className="mx-auto w-full max-w-[1512px] md:px-8 xl:px-14">
         <div className="border-t border-border flex flex-col lg:grid lg:grid-cols-[344px_1fr] lg:gap-2 lg:items-start">
 
           {/* ── Tabs column: desktop only (sticky vertical) ──────────── */}
@@ -121,7 +125,6 @@ export function ServicesGridClient({ sections }: ServicesGridClientProps) {
           </div>
 
           {/* ── Content column ────────────────────────────────────────── */}
-          {/*   All 3 sections always in DOM, refs for IntersectionObserver */}
           <div className="flex flex-col min-w-0">
             {sections.map((section, sIdx) => {
               const carouselIndex = carouselIndices[sIdx];
@@ -135,25 +138,24 @@ export function ServicesGridClient({ sections }: ServicesGridClientProps) {
                   ref={(el) => { sectionRefs.current[sIdx] = el; }}
                   className="pt-8 lg:pt-14 pb-12 lg:pb-[108px] last:pb-8 lg:last:pb-14"
                 >
-                  {/* Header row: title + description on left, nav on right */}
-                  <div className="flex items-end justify-between gap-6 lg:gap-10 mb-8 lg:mb-10">
-
-                    {/* Title + description */}
-                    <div className="flex flex-col gap-4 lg:gap-5 flex-1 min-w-0">
-                      {/* Yellow track label — mobile/tablet only (replaces tabs) */}
-                      <p className="lg:hidden font-['Loos_Condensed',sans-serif] font-medium text-[18px] uppercase leading-[1.16] tracking-[0.02em] text-[var(--rm-yellow-100)]">
+                  {/* Header row */}
+                  <div className="flex items-end justify-between gap-6 lg:gap-10 mb-6 md:mb-8 lg:mb-10 px-5 md:px-0">
+                    <div className="flex flex-col gap-2 md:gap-4 lg:gap-5 flex-1 min-w-0">
+                      {/* Yellow track label — mobile/tablet only */}
+                      <p className="lg:hidden font-['Loos_Condensed',sans-serif] font-medium text-[16px] md:text-[18px] uppercase leading-[1.16] tracking-[0.02em] text-[var(--rm-yellow-100)]">
                         {section.trackName}
                       </p>
-                      <h2 className="font-heading text-[30px] md:text-[42px] lg:text-[52px] font-bold uppercase leading-[1.08] tracking-[-0.02em] text-foreground">
-                        {section.headerHighlight}
+                      {/* Title: mobile uses mobileTitle with line breaks */}
+                      <h2 className="font-heading text-[28px] md:text-[42px] lg:text-[52px] font-bold uppercase leading-[1.16] md:leading-[1.08] tracking-[-0.01em] md:tracking-[-0.02em] text-foreground whitespace-pre-line">
+                        {isMobile && section.mobileTitle ? section.mobileTitle : section.headerHighlight}
                       </h2>
-                      <p className="text-[15px] lg:text-[18px] leading-[1.2] text-muted-foreground max-w-[766px]">
+                      <p className="text-[14px] md:text-[15px] lg:text-[18px] leading-[1.32] md:leading-[1.2] text-muted-foreground max-w-[766px]">
                         {section.description}
                       </p>
                     </div>
 
-                    {/* Arrows + Все — all in one group */}
-                    <div className="flex items-center gap-2 shrink-0">
+                    {/* Arrows + Все — desktop/tablet */}
+                    <div className="hidden md:flex items-center gap-2 shrink-0">
                       <button
                         onClick={() => scrollCarousel(sIdx, "left")}
                         disabled={!canLeft}
@@ -179,74 +181,101 @@ export function ServicesGridClient({ sections }: ServicesGridClientProps) {
                   </div>
 
                   {/* Cards carousel */}
-                  <div className="overflow-hidden">
+                  {isMobile ? (
+                    /* ── Mobile: native horizontal scroll ── */
                     <div
-                      className="grid transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
-                      style={{
-                        gridTemplateColumns: `repeat(${section.cards.length}, 1fr)`,
-                        width: `${(section.cards.length * 100) / cardsPerView}%`,
-                        transform: `translateX(-${(carouselIndex * 100) / section.cards.length}%)`,
-                      }}
+                      ref={(el) => { scrollRefs.current[sIdx] = el; }}
+                      className="flex overflow-x-auto snap-x snap-mandatory px-5 [&::-webkit-scrollbar]:hidden"
+                      style={{ scrollbarWidth: "none" }}
                     >
                       {section.cards.map((card) =>
                         card.variant === "info" ? (
-                          // ── Info bubble card: no button, purple title, logos ──
-                          <article
-                            key={card.title}
-                            className="flex flex-col border border-border [&:not(:first-child)]:border-l-0 p-8 bg-[#A172F8]"
-                          >
-                            <div className="flex flex-col h-full gap-2">
-                              <div className="flex flex-col gap-2 min-h-[156px]">
-                                <h3 className="font-heading text-[24px] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#0A0A0A]">
-                                  {card.title}
-                                </h3>
-                                <p className="text-[14px] leading-[1.32] tracking-[0.01em] text-[#0A0A0A]">
-                                  {card.description}
-                                </p>
-                              </div>
-                              {/* Partner logos */}
-                              <div className="flex items-end justify-between gap-[clamp(16px,4vw,40px)] py-2 mt-auto">
-                                {card.partnerLogos ? (
-                                  card.partnerLogos.map((logo, i) => (
-                                    <Image key={i} src={logo.src} alt="" width={logo.width ?? 139} height={logo.height ?? 32} className="h-[clamp(36px,7vw,40px)] w-auto max-w-[45%] object-contain" unoptimized />
-                                  ))
-                                ) : (
-                                  // Placeholder until real logos are added
-                                  <>
-                                    <div className="h-[clamp(36px,7vw,40px)] w-[139px] max-w-[45%] bg-muted-foreground/15 rounded-sm" />
-                                    <div className="h-[clamp(36px,7vw,40px)] w-[108px] max-w-[45%] bg-muted-foreground/15 rounded-sm" />
-                                  </>
-                                )}
-                              </div>
-                            </div>
-                          </article>
+                          <MobileInfoCard key={card.title} card={card} />
                         ) : (
-                          // ── Regular card ──────────────────────────────────────
-                          <article
-                            key={card.title}
-                            className="flex flex-col border border-border [&:not(:first-child)]:border-l-0 p-8 bg-background"
-                          >
-                            <div className="flex flex-col gap-6 flex-1">
-                              <div className="flex flex-col gap-2">
-                                <h3 className="font-heading text-[24px] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-foreground">
-                                  {card.title}
-                                </h3>
-                                <p className="text-[14px] leading-[1.32] tracking-[0.01em] text-muted-foreground">
-                                  {card.description}
-                                </p>
-                              </div>
-                              <Link
-                                href={card.href ?? "#contact"}
-                                className="mt-auto flex items-center justify-center border border-border bg-[#1a1a1a] px-5 py-[14px] font-['Loos_Condensed',sans-serif] text-[14px] font-medium uppercase tracking-[0.56px] text-foreground transition-colors hover:bg-[#242424] rounded-[4px]"
-                              >
-                                Подробнее
-                              </Link>
-                            </div>
-                          </article>
+                          <MobileCard key={card.title} card={card} />
                         )
                       )}
                     </div>
-                  </div>
+                  ) : (
+                    /* ── Desktop/tablet: grid carousel ── */
+                    <div className="overflow-hidden">
+                      <div
+                        className="grid transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                        style={{
+                          gridTemplateColumns: `repeat(${section.cards.length}, 1fr)`,
+                          width: `${(section.cards.length * 100) / cardsPerView}%`,
+                          transform: `translateX(-${(carouselIndex * 100) / section.cards.length}%)`,
+                        }}
+                      >
+                        {section.cards.map((card) =>
+                          card.variant === "info" ? (
+                            <article
+                              key={card.title}
+                              className="flex flex-col border border-border [&:not(:first-child)]:border-l-0 p-8 bg-[#A172F8]"
+                            >
+                              <div className="flex flex-col h-full gap-2">
+                                <div className="flex flex-col gap-2 min-h-[156px]">
+                                  <h3 className="font-heading text-[24px] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#0A0A0A]">
+                                    {card.title}
+                                  </h3>
+                                  <p className="text-[14px] leading-[1.32] tracking-[0.01em] text-[#0A0A0A]">
+                                    {card.description}
+                                  </p>
+                                </div>
+                                <div className="flex items-end justify-between gap-[clamp(16px,4vw,40px)] py-2 mt-auto">
+                                  {card.partnerLogos ? (
+                                    card.partnerLogos.map((logo, i) => (
+                                      <Image key={i} src={logo.src} alt="" width={logo.width ?? 139} height={logo.height ?? 32} className="h-[clamp(36px,7vw,40px)] w-auto max-w-[45%] object-contain" unoptimized />
+                                    ))
+                                  ) : (
+                                    <>
+                                      <div className="h-[clamp(36px,7vw,40px)] w-[139px] max-w-[45%] bg-muted-foreground/15 rounded-sm" />
+                                      <div className="h-[clamp(36px,7vw,40px)] w-[108px] max-w-[45%] bg-muted-foreground/15 rounded-sm" />
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                            </article>
+                          ) : (
+                            <article
+                              key={card.title}
+                              className="flex flex-col border border-border [&:not(:first-child)]:border-l-0 p-8 bg-background"
+                            >
+                              <div className="flex flex-col gap-6 flex-1">
+                                <div className="flex flex-col gap-2">
+                                  <h3 className="font-heading text-[24px] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-foreground">
+                                    {card.title}
+                                  </h3>
+                                  <p className="text-[14px] leading-[1.32] tracking-[0.01em] text-muted-foreground">
+                                    {card.description}
+                                  </p>
+                                </div>
+                                <Link
+                                  href={card.href ?? "#contact"}
+                                  className="mt-auto flex items-center justify-center border border-border bg-[#1a1a1a] px-5 py-[14px] font-['Loos_Condensed',sans-serif] text-[14px] font-medium uppercase tracking-[0.56px] text-foreground transition-colors hover:bg-[#242424] rounded-[4px]"
+                                >
+                                  Подробнее
+                                </Link>
+                              </div>
+                            </article>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Mobile: catalog button under carousel */}
+                  {isMobile && section.catalogHref && (
+                    <div className="flex justify-end px-5 mt-4">
+                      <Link
+                        href={section.catalogHref}
+                        className="inline-flex items-center gap-3 border border-border bg-[#1a1a1a] text-foreground h-10 px-5 font-['Loos_Condensed',sans-serif] text-[14px] font-medium uppercase tracking-[0.04em] transition-colors hover:bg-[#242424] rounded-[4px]"
+                      >
+                        {section.catalogLabel ?? "Все"}
+                        <ArrowRight size={8} strokeWidth={2} />
+                      </Link>
+                    </div>
+                  )}
 
                 </div>
               );
@@ -256,5 +285,67 @@ export function ServicesGridClient({ sections }: ServicesGridClientProps) {
         </div>
       </div>
     </section>
+  );
+}
+
+/* ── Mobile card: 335px fixed, Figma specs ── */
+function MobileCard({ card }: { card: ServiceCard }) {
+  return (
+    <article
+      className="flex-none w-[335px] snap-start border border-border -ml-px first:ml-0 p-5 bg-background"
+    >
+      <div className="flex flex-col gap-8">
+        {/* Text area — fixed 140px */}
+        <div className="flex flex-col gap-2 h-[140px]">
+          <h3 className="font-heading text-[20px] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-foreground">
+            {card.title}
+          </h3>
+          <p className="text-[14px] leading-[1.32] tracking-[0.01em] text-muted-foreground">
+            {card.description}
+          </p>
+        </div>
+        {/* Button — full width */}
+        <Link
+          href={card.href ?? "#contact"}
+          className="flex items-center justify-center bg-[#121212] border border-border px-4 py-[14px] font-['Loos_Condensed',sans-serif] text-[14px] font-medium uppercase tracking-[0.04em] leading-[1.2] text-foreground transition-colors hover:bg-[#1a1a1a] rounded-[4px]"
+        >
+          Подробнее
+        </Link>
+      </div>
+    </article>
+  );
+}
+
+/* ── Mobile info card (purple): 335px, Figma specs ── */
+function MobileInfoCard({ card }: { card: ServiceCard }) {
+  return (
+    <article
+      className="flex-none w-[335px] snap-start border border-border -ml-px first:ml-0 p-5 bg-[#A172F8]"
+    >
+      <div className="flex flex-col gap-8 h-full">
+        {/* Text area — fixed 140px */}
+        <div className="flex flex-col gap-2 h-[140px]">
+          <h3 className="font-heading text-[20px] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#0A0A0A]">
+            {card.title}
+          </h3>
+          <p className="text-[14px] leading-[1.32] tracking-[0.01em] text-[#0A0A0A]">
+            {card.description}
+          </p>
+        </div>
+        {/* Partner logos */}
+        <div className="flex items-end justify-between gap-[39px] py-2 mt-auto max-w-[286px]">
+          {card.partnerLogos ? (
+            card.partnerLogos.map((logo, i) => (
+              <Image key={i} src={logo.src} alt="" width={logo.width ?? 139} height={logo.height ?? 32} className="h-8 w-auto object-contain" unoptimized />
+            ))
+          ) : (
+            <>
+              <div className="h-8 w-[139px] bg-muted-foreground/15 rounded-sm" />
+              <div className="h-8 w-[108px] bg-muted-foreground/15 rounded-sm" />
+            </>
+          )}
+        </div>
+      </div>
+    </article>
   );
 }
