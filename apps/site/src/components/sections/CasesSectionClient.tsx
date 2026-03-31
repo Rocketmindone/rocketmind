@@ -41,19 +41,19 @@ const CASES: Case[] = [
     stats: [
       {
         value: "50",
-        label: "участников проекта",
+        label: "участников\nпроекта",
         description:
           "Специалисты из четырёх регионов работали в единой методологии — сессии велись на двух языках одновременно",
       },
       {
         value: "4",
-        label: "региона мира",
+        label: "региона\nмира",
         description:
           "Объединили команды для совместной выработки стратегии и переосмысления продуктового портфеля компании",
       },
       {
         value: "20+",
-        label: "бизнес-инициатив",
+        label: "бизнес-\nинициатив",
         description:
           "Сгенерировали гипотезы с бизнес-моделями, оценили потенциал и риски для каждого из направлений роста",
       },
@@ -70,19 +70,19 @@ const CASES: Case[] = [
     stats: [
       {
         value: "30+",
-        label: "глубинных интервью",
+        label: "глубинных\nинтервью",
         description:
           "Изучили потребности клиентов на всех этапах: от выбора объекта до проживания, выявили ключевые зоны роста",
       },
       {
         value: "12",
-        label: "конкурентов изучено",
+        label: "конкурентов\nизучено",
         description:
           "Проанализировали конкурентный ландшафт и выявили белые пятна рынка для уникального позиционирования",
       },
       {
         value: "500+",
-        label: "источников информации",
+        label: "источников\nинформации",
         description:
           "Провели масштабное исследование трендов рынка недвижимости и экосистемных моделей в смежных отраслях",
       },
@@ -99,19 +99,19 @@ const CASES: Case[] = [
     stats: [
       {
         value: "40+",
-        label: "участников сессий",
+        label: "участников\nсессий",
         description:
           "Провели интервью и групповые сессии с представителями четырёх ключевых HR-подразделений компании",
       },
       {
         value: "30+",
-        label: "внутренних продуктов",
+        label: "внутренних\nпродуктов",
         description:
           "Проанализировали портфель HR-инструментов, выявили дублирование функций и незакрытые потребности сотрудников",
       },
       {
         value: "2",
-        label: "этапа проекта",
+        label: "этапа\nпроекта",
         description:
           "Провели диагностику и разработку решений последовательно — каждый этап строился на результатах предыдущего",
       },
@@ -128,19 +128,19 @@ const CASES: Case[] = [
     stats: [
       {
         value: "10",
-        label: "карт клиентского пути",
+        label: "карт\nклиентского пути",
         description:
           "Описали опыт клиента на критических этапах — от первого контакта до получения банковской услуги",
       },
       {
         value: "500+",
-        label: "опросов клиентов",
+        label: "опросов\nклиентов",
         description:
           "Собрали данные для значимых выводов о причинах отказа и падения клиентской лояльности в ключевых сегментах",
       },
       {
         value: "15",
-        label: "ключевых барьеров",
+        label: "ключевых\nбарьеров",
         description:
           "Ранжировали проблемные зоны по влиянию на конверсию и определили приоритеты для устранения барьеров",
       },
@@ -157,19 +157,19 @@ const CASES: Case[] = [
     stats: [
       {
         value: "50",
-        label: "проблемных интервью",
+        label: "проблемных\nинтервью",
         description:
           "Выявили реальные барьеры и потребности экспортёров, сформировали систему приоритетных клиентских сегментов",
       },
       {
         value: "8",
-        label: "продуктовых гипотез",
+        label: "продуктовых\nгипотез",
         description:
           "Структурировали гипотезы для тестирования, каждая подкреплена данными интервью и картами клиентского пути",
       },
       {
         value: "3+",
-        label: "карты пути клиента",
+        label: "карты пути\nклиента",
         description:
           "Визуализировали ключевые сценарии, выявив точки, которые тормозят конверсию и снижают клиентскую лояльность",
       },
@@ -620,14 +620,14 @@ export function CasesSectionClient({ logos }: { logos: PartnerLogo[] }) {
 
             {/* Fading content: title, description, stats, result */}
             <div
-              className="flex flex-col gap-11 transition-opacity"
+              className="flex flex-col gap-5 lg:gap-11 transition-opacity"
               style={{
                 opacity: fading ? 0 : 1,
                 transitionDuration: `${FADE_MS}ms`,
               }}
             >
-              {/* Title + Description — gap 20px per Figma layout_36XFLD */}
-              <div className="flex flex-col gap-5">
+              {/* Title + [mobile nav] + Description */}
+              <div className="flex flex-col gap-2 lg:gap-5">
                 <div className="flex flex-col gap-2">
                   {/*
                    * min-h reserves 3 lines at each breakpoint so the layout
@@ -639,6 +639,10 @@ export function CasesSectionClient({ logos }: { logos: PartnerLogo[] }) {
                   <h2 className="font-heading text-[24px] md:text-[36px] xl:text-[52px] font-bold uppercase leading-[1.08] tracking-[-0.02em] text-[#F0F0F0] min-h-[78px] md:min-h-[117px] xl:min-h-[168px]">
                     {nb(current.title)}
                   </h2>
+                </div>
+                {/* Mobile-only navigator — positioned between title and description per Figma mobile */}
+                <div className="block lg:hidden">
+                  <CaseNavigator activeCase={activeCase} onSelect={switchToCase} />
                 </div>
                 {/* copy-18 token: 18px / 1.32 / 0 tracking
                     xl:pr-[200px] — right padding per Figma layout_WF4UU5
@@ -652,21 +656,22 @@ export function CasesSectionClient({ logos }: { logos: PartnerLogo[] }) {
                   padding: 20px mob / 24px sm / 32px xl (Figma layout_PPFQJK: 32px)
                   gap between cards: 24px (Figma layout_PPFQJK gap: 24px) */}
               <div className="border border-[#404040] p-5 sm:p-6 xl:p-8">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
                   {current.stats.map((stat, i) => (
-                    /* justify-between: in equal-height grid cells header stays top, desc goes bottom */
-                    <div key={i} className="flex flex-col justify-between gap-5">
+                    /* gap-1 mobile (4px per Figma), justify-between sm+ for equal-height grid cells */
+                    <div key={i} className="flex flex-col gap-1 sm:justify-between sm:gap-5">
                       {/* Value + Label — row layout, gap 12px (Figma layout_1456BS / layout_0J9AVS) */}
                       <div className="flex flex-row items-center gap-3">
-                        <div className="font-heading text-[32px] sm:text-[40px] xl:text-[52px] font-bold uppercase leading-[1.08] tracking-[-0.02em] text-[#F0F0F0] flex-none">
+                        <div className="font-heading text-[52px] sm:text-[40px] xl:text-[52px] font-bold uppercase leading-[1.08] tracking-[-0.02em] text-[#F0F0F0] flex-none">
                           {stat.value}
                         </div>
-                        <div className="font-['Loos_Condensed',sans-serif] text-[13px] sm:text-[15px] xl:text-[18px] font-medium uppercase tracking-[0.02em] leading-[1.16] text-[#F0F0F0]">
-                          {nb(stat.label)}
+                        {/* whitespace-pre-wrap preserves \n line breaks for guaranteed 2-line labels */}
+                        <div className="font-['Loos_Condensed',sans-serif] text-[18px] font-medium uppercase tracking-[0.02em] leading-[1.16] text-[#F0F0F0] whitespace-pre-wrap">
+                          {stat.label}
                         </div>
                       </div>
-                      {/* copy-14 token: 14px / 1.4 / 0.01em (Figma style_M1DUJF) */}
-                      <p className="text-[14px] leading-[1.4] tracking-[0.01em] text-[#939393]">
+                      {/* 12px mobile / 14px sm+ */}
+                      <p className="text-[12px] sm:text-[14px] leading-[1.4] tracking-[0.01em] text-[#939393]">
                         {nb(stat.description)}
                       </p>
                     </div>
@@ -676,17 +681,21 @@ export function CasesSectionClient({ logos }: { logos: PartnerLogo[] }) {
 
             </div>
 
-            {/* Bottom row: result text LEFT (fading) + navigator RIGHT (static)
+            {/* Bottom row: result text LEFT (fading) + desktop navigator RIGHT (static)
                 align-items: flex-end → bottom-align text and nav (Figma layout_1B1LK2)
-                gap 80px desktop (lg+), stacked on mobile */}
-            <div className="mt-11 flex flex-col md:flex-row md:items-end md:justify-between gap-4 md:gap-[80px]">
+                gap 80px desktop (lg+), stacked on mobile
+                mt-5 mobile (20px) / mt-11 desktop (44px) per Figma */}
+            <div className="mt-5 lg:mt-11 flex flex-col md:flex-row md:items-end md:justify-between gap-4 md:gap-[80px]">
               <p
-                className="font-['Loos_Condensed',sans-serif] text-[14px] xl:text-[16px] font-medium uppercase tracking-[0.04em] leading-[1.16] text-[#F0F0F0] md:flex-1 transition-opacity"
+                className="font-['Loos_Condensed',sans-serif] text-[16px] font-medium uppercase tracking-[0.04em] leading-[1.16] text-[#F0F0F0] md:flex-1 transition-opacity"
                 style={{ opacity: fading ? 0 : 1, transitionDuration: `${FADE_MS}ms` }}
               >
                 {nb(current.result)}
               </p>
-              <CaseNavigator activeCase={activeCase} onSelect={switchToCase} />
+              {/* Desktop-only navigator — on mobile it sits between title and description */}
+              <div className="hidden lg:block">
+                <CaseNavigator activeCase={activeCase} onSelect={switchToCase} />
+              </div>
             </div>
 
           </div>
