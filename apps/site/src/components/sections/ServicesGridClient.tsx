@@ -185,8 +185,8 @@ export function ServicesGridClient({ sections }: ServicesGridClientProps) {
                     /* ── Mobile: native horizontal scroll ── */
                     <div
                       ref={(el) => { scrollRefs.current[sIdx] = el; }}
-                      className="flex overflow-x-auto snap-x snap-mandatory px-5 [&::-webkit-scrollbar]:hidden"
-                      style={{ scrollbarWidth: "none" }}
+                      className="flex overflow-x-auto snap-x snap-mandatory pl-5 [&::-webkit-scrollbar]:hidden"
+                      style={{ scrollbarWidth: "none", scrollPaddingLeft: 20 }}
                     >
                       {section.cards.map((card) =>
                         card.variant === "info" ? (
@@ -195,6 +195,8 @@ export function ServicesGridClient({ sections }: ServicesGridClientProps) {
                           <MobileCard key={card.title} card={card} />
                         )
                       )}
+                      {/* Right spacer so last card doesn't stick to edge */}
+                      <div className="flex-none w-5" aria-hidden="true" />
                     </div>
                   ) : (
                     /* ── Desktop/tablet: grid carousel ── */
