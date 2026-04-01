@@ -3,7 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, ArrowUpRight, ArrowRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowUpRight } from "lucide-react";
 
 export type ServiceCard = {
   title: string;
@@ -274,7 +274,7 @@ export function ServicesGridClient({ sections }: ServicesGridClientProps) {
                         className="inline-flex items-center gap-3 border border-border bg-[#1a1a1a] text-foreground h-10 px-5 font-['Loos_Condensed',sans-serif] text-[14px] font-medium uppercase tracking-[0.04em] transition-colors hover:bg-[#242424] rounded-[4px]"
                       >
                         {section.catalogLabel ?? "Все"}
-                        <ArrowRight size={8} strokeWidth={2} />
+                        <ArrowUpRight size={13} strokeWidth={2} />
                       </Link>
                     </div>
                   )}
