@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { ChevronUp } from "lucide-react";
 
 import {
   CONSULTING_SERVICES,
@@ -63,14 +66,24 @@ export function Footer() {
     <footer className="border-t border-border bg-background">
       {/* Main footer */}
       <div className="mx-auto max-w-[1512px] px-5 py-12 md:px-8 md:py-16 xl:px-14">
-        {/* Logo with descriptor */}
-        <Link href="/" className="inline-flex items-center">
-          <img
-            src={`${BASE_PATH}/with_descriptor_dark_background_en.svg`}
-            alt="Rocketmind"
-            className="h-[42px] w-auto"
-          />
-        </Link>
+        {/* Logo + scroll-to-top */}
+        <div className="flex items-center justify-between">
+          <Link href="/" className="inline-flex items-center">
+            <img
+              src={`${BASE_PATH}/with_descriptor_dark_background_en.svg`}
+              alt="Rocketmind"
+              className="h-[42px] w-auto"
+            />
+          </Link>
+          <button
+            type="button"
+            onClick={() => window.scrollTo({ top: 0 })}
+            aria-label="Наверх"
+            className="inline-flex items-center justify-center w-10 h-10 rounded-sm bg-secondary text-secondary-foreground transition-opacity duration-150 hover:opacity-[0.88] cursor-pointer"
+          >
+            <ChevronUp size={20} strokeWidth={2} />
+          </button>
+        </div>
 
         {/* Nav columns */}
         <div className="mt-10 grid grid-cols-2 gap-8 md:grid-cols-4 md:gap-12">
