@@ -7,6 +7,7 @@ import type { LogoMarqueeItem } from "@rocketmind/ui"
 import { Section, SubSection, SpecBlock } from "@/components/ds/shared"
 import { TokenChip } from "@/components/ds/color-helpers"
 import { RocketmindMenu } from "@/components/sections/RocketmindMenu"
+import { MobileNav } from "@/components/sections/MobileNav"
 
 const BASE_PATH = process.env.NODE_ENV === "production" ? "/rocketmind/ds" : ""
 
@@ -226,6 +227,52 @@ export default function CrossBlocksPage() {
                     <td className="px-4 py-2"><TokenChip>{type}</TokenChip></td>
                     <td className="px-4 py-2"><code>{href}</code></td>
                     <td className="px-4 py-2">{items}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </SpecBlock>
+
+        {/* ── MobileNav interactive demo ── */}
+        <SubSection id="cross-mobile-nav" title="MobileNav — Мобильное меню" />
+        <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">
+          Полноэкранное меню с круговой анимацией (clip-path circle). Белый фон, чёрный текст,
+          accordion-секции. Нажмите бургер, чтобы увидеть.
+        </p>
+
+        <div className="rounded-lg border border-border overflow-hidden mb-8 isolate relative z-0">
+          <div className="bg-[#0A0A0A] p-5 flex items-center justify-between">
+            <span className="font-mono text-[14px] uppercase tracking-[0.08em] text-muted-foreground">
+              Нажмите бургер →
+            </span>
+            <MobileNav />
+          </div>
+        </div>
+
+        <SpecBlock title="Параметры MobileNav">
+          <div className="overflow-auto rounded-lg border border-border">
+            <table className="w-full text-[length:var(--text-14)]">
+              <thead>
+                <tr className="border-b border-border bg-rm-gray-2/30">
+                  <th className="text-left px-4 py-2 font-medium">Параметр</th>
+                  <th className="text-left px-4 py-2 font-medium">Значение</th>
+                </tr>
+              </thead>
+              <tbody className="text-muted-foreground">
+                {[
+                  ["Бургер",      "2 бара, w-[40px] h-[10px], h-[2px] каждый. Трансформируется в X"],
+                  ["Открытие",    "clip-path: circle() из центра бургера → 2000px, 0.75s"],
+                  ["Закрытие",    "circle(2000px) → circle(0), 0.65s"],
+                  ["Фон",         "bg-white (#FFF), fixed inset-0, z-[55]"],
+                  ["Пункты",      "font-mono 22px font-light, uppercase, text-black"],
+                  ["Accordion",   "height: 0 → auto, opacity: 0 → 1, stagger 0.07s"],
+                  ["Escape",      "Закрывает по Escape"],
+                  ["z-index",     "Панель z-[55], бургер z-[60]"],
+                ].map(([param, value]) => (
+                  <tr key={param} className="border-b border-border last:border-0">
+                    <td className="px-4 py-2 font-medium text-foreground whitespace-nowrap">{param}</td>
+                    <td className="px-4 py-2">{value}</td>
                   </tr>
                 ))}
               </tbody>
