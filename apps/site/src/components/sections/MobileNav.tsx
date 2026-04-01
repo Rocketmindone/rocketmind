@@ -63,7 +63,10 @@ export function MobileNav({ className }: { className?: string }) {
     setIsOpen(true);
   }, []);
 
-  const close = useCallback(() => setIsOpen(false), []);
+  const close = useCallback(() => {
+    setIsOpen(false);
+    window.scrollTo(0, 0);
+  }, []);
 
   const toggleAccordion = useCallback((label: string) => {
     setAccordions((prev) => ({ ...prev, [label]: !prev[label] }));

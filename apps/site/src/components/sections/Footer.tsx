@@ -32,6 +32,8 @@ function FooterColumn({ title, links }: FooterColumnProps) {
           <li key={link.href}>
             <Link
               href={link.href}
+              scroll={false}
+              onClick={() => window.scrollTo(0, 0)}
               className="text-[14px] leading-[1.5] text-muted-foreground transition-colors duration-150 hover:text-foreground"
             >
               {link.label}
