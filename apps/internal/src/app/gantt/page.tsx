@@ -34,6 +34,12 @@ function cssVar(token: ColorToken, level: '100' | '300' | '500' | '700' | '900' 
   return `var(--rm-${token}-${level})`;
 }
 
+/** Text color readable on card (900) backgrounds in both light and dark themes */
+function cssCardText(token: ColorToken) {
+  if (token === 'neutral') return 'var(--foreground)';
+  return `var(--rm-${token}-fg-subtle)`;
+}
+
 const DAYS = ['пн', 'вт', 'ср', 'чт', 'пт'] as const;
 type Day = typeof DAYS[number];
 
@@ -355,7 +361,7 @@ function CardItem({
           ref={taRef}
           defaultValue={c.label}
           className="w-full bg-transparent outline-none resize-none text-[length:var(--text-12)] leading-snug"
-          style={{ color: c.done ? cssVar(weekColor, 'fg-subtle') : (weekColor === 'neutral' ? 'var(--foreground)' : cssVar(weekColor, '100')), minHeight: 32 }}
+          style={{ color: c.done ? cssVar(weekColor, 'fg-subtle') : cssCardText(weekColor), minHeight: 32 }}
           rows={Math.max(lines.length, 1)}
           onInput={e => autoResize(e.currentTarget)}
           onBlur={e => {
@@ -374,7 +380,7 @@ function CardItem({
           title={locked ? undefined : 'Двойной клик — редактировать'}
         >
           {(lines.length > 0 ? lines : [c.label]).map((line, i) => {
-            const openColor = weekColor === 'neutral' ? 'var(--foreground)' : cssVar(weekColor, '100');
+            const openColor = cssCardText(weekColor);
             return (
             <li key={i} className="flex items-start gap-1.5 text-[length:var(--text-12)] leading-snug">
               <span className="flex-shrink-0 mt-[3px] w-1 h-1 rounded-full" style={{ backgroundColor: openColor, opacity: c.done ? 0.4 : 0.7 }} />
