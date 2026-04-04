@@ -478,8 +478,8 @@ export default function GanttBoard({ dbPath, trackName, trackColor = 'yellow' }:
   const [title, setTitle] = useState(tmpl.title);
   const [subtitle, setSubtitle] = useState(tmpl.subtitle);
   const [locked, setLocked] = useState(false);
-  const [weekOffset, setWeekOffset] = useState(0);
-  const weekOffsetRef = useRef(0); // ref for persist closure
+  const [weekOffset, setWeekOffset] = useState(tmpl.startWeekIdx);
+  const weekOffsetRef = useRef(tmpl.startWeekIdx);
   const [showLockModal, setShowLockModal] = useState(false);
   const [syncStatus, setSyncStatus] = useState<'synced' | 'saving' | 'error' | 'loading'>('loading');
 
@@ -546,12 +546,12 @@ export default function GanttBoard({ dbPath, trackName, trackColor = 'yellow' }:
 
   // Week navigation — start near current week to avoid flash
   const [visibleStartIdx, setVisibleStartIdx] = useState(() => {
-    const cwIdx = getCurrentWeekIndex();
+    const localCurrent = getCurrentWeekIndex() - tmpl.startWeekIdx;
     const mobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches;
     const count = mobile ? 1 : VISIBLE_COUNT;
     const maxStart = Math.max(0, tmpl.weeks.length - count);
-    const ideal = mobile ? cwIdx : Math.max(0, cwIdx - 1);
-    return cwIdx > 0 ? Math.min(ideal, maxStart) : 0;
+    const ideal = mobile ? localCurrent : Math.max(0, localCurrent - 1);
+    return localCurrent >= 0 ? Math.min(ideal, maxStart) : 0;
   });
 
   // Summary loading
