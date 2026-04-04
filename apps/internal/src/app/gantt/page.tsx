@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { ref, onValue, get, set, update } from 'firebase/database';
+import { ref, onValue, get, set, update, remove } from 'firebase/database';
 import { db } from '@/lib/firebase';
 import GanttBoard from './GanttBoard';
 
@@ -10,25 +10,19 @@ type TrackInfo = { name: string; color?: string; archived?: boolean };
 const LOCK_PASSWORD = '2345';
 
 const ACCENT_COLORS = [
-  { token: 'yellow',     label: 'Жёлтый',     css100: 'var(--rm-yellow-100)',     css900: 'var(--rm-yellow-900)' },
-  { token: 'violet',     label: 'Фиолетовый', css100: 'var(--rm-violet-100)',     css900: 'var(--rm-violet-900)' },
-  { token: 'sky',        label: 'Голубой',     css100: 'var(--rm-sky-100)',        css900: 'var(--rm-sky-900)' },
-  { token: 'terracotta', label: 'Терракота',   css100: 'var(--rm-terracotta-100)', css900: 'var(--rm-terracotta-900)' },
-  { token: 'pink',       label: 'Розовый',     css100: 'var(--rm-pink-100)',       css900: 'var(--rm-pink-900)' },
-  { token: 'blue',       label: 'Синий',       css100: 'var(--rm-blue-100)',       css900: 'var(--rm-blue-900)' },
-  { token: 'red',        label: 'Красный',     css100: 'var(--rm-red-100)',        css900: 'var(--rm-red-900)' },
-  { token: 'green',      label: 'Зелёный',     css100: 'var(--rm-green-100)',      css900: 'var(--rm-green-900)' },
+  { token: 'yellow',     label: 'Жёлтый',     css100: 'var(--rm-yellow-100)' },
+  { token: 'violet',     label: 'Фиолетовый', css100: 'var(--rm-violet-100)' },
+  { token: 'sky',        label: 'Голубой',     css100: 'var(--rm-sky-100)' },
+  { token: 'terracotta', label: 'Терракота',   css100: 'var(--rm-terracotta-100)' },
+  { token: 'pink',       label: 'Розовый',     css100: 'var(--rm-pink-100)' },
+  { token: 'blue',       label: 'Синий',       css100: 'var(--rm-blue-100)' },
+  { token: 'red',        label: 'Красный',     css100: 'var(--rm-red-100)' },
+  { token: 'green',      label: 'Зелёный',     css100: 'var(--rm-green-100)' },
 ] as const;
 
 function slugify(name: string): string {
   const map: Record<string, string> = { а:'a',б:'b',в:'v',г:'g',д:'d',е:'e',ё:'yo',ж:'zh',з:'z',и:'i',й:'y',к:'k',л:'l',м:'m',н:'n',о:'o',п:'p',р:'r',с:'s',т:'t',у:'u',ф:'f',х:'h',ц:'ts',ч:'ch',ш:'sh',щ:'shch',ъ:'',ы:'y',ь:'',э:'e',ю:'yu',я:'ya' };
-  return name
-    .toLowerCase()
-    .split('')
-    .map(c => map[c] ?? c)
-    .join('')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '');
+  return name.toLowerCase().split('').map(c => map[c] ?? c).join('').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
 function getTrackFromURL(): string | null {
@@ -45,6 +39,59 @@ function getTrackFromURL(): string | null {
 function accentCSS(color?: string) {
   return ACCENT_COLORS.find(c => c.token === color) ?? ACCENT_COLORS[0];
 }
+
+// ─── Toast ───────────────────────────────────────────────────────────────────
+
+type Toast = { id: number; message: string; onUndo?: () => void };
+let nextToastId = 0;
+
+function ToastContainer({ toasts, onDismiss }: { toasts: Toast[]; onDismiss: (id: number) => void }) {
+  if (toasts.length === 0) return null;
+  return (
+    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 pointer-events-none">
+      {toasts.map(t => (
+        <div key={t.id} className="pointer-events-auto flex items-center gap-3 bg-card border border-border rounded-lg px-4 py-2.5 shadow-lg text-[length:var(--text-14)] text-foreground animate-[slideUp_200ms_ease-out]">
+          <span>{t.message}</span>
+          {t.onUndo && (
+            <button onClick={() => { t.onUndo!(); onDismiss(t.id); }} className="font-bold text-[color:var(--rm-yellow-100)] hover:underline">
+              Отменить
+            </button>
+          )}
+          <button onClick={() => onDismiss(t.id)} className="text-muted-foreground hover:text-foreground ml-1">✕</button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ─── Color picker (shared between create and edit) ───────────────────────────
+
+function ColorPicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  return (
+    <div className="flex gap-1.5 flex-wrap">
+      {ACCENT_COLORS.map(c => (
+        <button
+          key={c.token}
+          onClick={() => onChange(c.token)}
+          className="w-7 h-7 rounded-full transition-all flex items-center justify-center"
+          style={{
+            backgroundColor: c.css100,
+            boxShadow: value === c.token ? `0 0 0 2px var(--background), 0 0 0 4px ${c.css100}` : 'none',
+          }}
+          title={c.label}
+        >
+          {value === c.token && (
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="var(--background)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M2.5 6l2.5 2.5 4.5-5" />
+            </svg>
+          )}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ─── Main ────────────────────────────────────────────────────────────────────
 
 export default function GanttPage() {
   const [trackSlug, setTrackSlug] = useState<string | null>(null);
@@ -90,6 +137,24 @@ export default function GanttPage() {
   const [showArchived, setShowArchived] = useState(false);
   const nameRef = useRef<HTMLInputElement>(null);
 
+  // ── Edit state ───────────────────────────────────────────────────────────
+  const [editingSlug, setEditingSlug] = useState<string | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editColor, setEditColor] = useState('yellow');
+  const editNameRef = useRef<HTMLInputElement>(null);
+
+  // ── Toast state ──────────────────────────────────────────────────────────
+  const [toasts, setToasts] = useState<Toast[]>([]);
+  const dismissToast = useCallback((id: number) => setToasts(ts => ts.filter(t => t.id !== id)), []);
+  const showToast = useCallback((message: string, onUndo?: () => void, duration = 5000) => {
+    const id = ++nextToastId;
+    setToasts(ts => [...ts, { id, message, onUndo }]);
+    setTimeout(() => setToasts(ts => ts.filter(t => t.id !== id)), duration);
+  }, []);
+
+  // ── Deleted tracks backup (in-memory) ────────────────────────────────────
+  const deletedBackups = useRef<Record<string, { track: TrackInfo; data: unknown }>>({});
+
   useEffect(() => {
     document.documentElement.classList.add('dark');
     document.documentElement.classList.remove('light');
@@ -123,6 +188,10 @@ export default function GanttPage() {
     setSlugError('');
   }, [newSlug, tracks]);
 
+  useEffect(() => {
+    if (editingSlug) editNameRef.current?.focus();
+  }, [editingSlug]);
+
   const handlePinSubmit = useCallback(() => {
     if (pin === LOCK_PASSWORD) { setAuthed(true); setPinError(false); }
     else { setPinError(true); setPin(''); pinRef.current?.focus(); }
@@ -144,6 +213,41 @@ export default function GanttPage() {
   const restoreTrack = useCallback(async (slug: string) => {
     await update(ref(db, `gantt_config/tracks/${slug}`), { archived: false });
   }, []);
+
+  const startEdit = useCallback((slug: string, info: TrackInfo) => {
+    setEditingSlug(slug);
+    setEditName(info.name);
+    setEditColor(info.color ?? 'yellow');
+  }, []);
+
+  const saveEdit = useCallback(async () => {
+    if (!editingSlug || !editName.trim()) return;
+    await update(ref(db, `gantt_config/tracks/${editingSlug}`), { name: editName.trim(), color: editColor });
+    setEditingSlug(null);
+  }, [editingSlug, editName, editColor]);
+
+  const cancelEdit = useCallback(() => setEditingSlug(null), []);
+
+  const deleteTrack = useCallback(async (slug: string) => {
+    if (!tracks) return;
+    const trackInfo = tracks[slug];
+    // Read track data for backup
+    const dataSnap = await get(ref(db, `gantt_tracks/${slug}`));
+    const trackData = dataSnap.val();
+    // Store backup in memory
+    deletedBackups.current[slug] = { track: trackInfo, data: trackData };
+    // Delete from Firebase
+    await remove(ref(db, `gantt_config/tracks/${slug}`));
+    if (trackData) await remove(ref(db, `gantt_tracks/${slug}`));
+    // Toast with undo
+    showToast(`Трек «${trackInfo.name}» удалён`, async () => {
+      const backup = deletedBackups.current[slug];
+      if (!backup) return;
+      await set(ref(db, `gantt_config/tracks/${slug}`), backup.track);
+      if (backup.data) await set(ref(db, `gantt_tracks/${slug}`), backup.data);
+      delete deletedBackups.current[slug];
+    }, 10000);
+  }, [tracks, showToast]);
 
   const navigateToTrack = useCallback((slug: string) => {
     const base = window.location.pathname.replace(/\/$/, '');
@@ -235,17 +339,45 @@ export default function GanttPage() {
             {/* Active tracks */}
             {activeTracks.map(([slug, info]) => {
               const accent = accentCSS(info.color);
+              const isEditing = editingSlug === slug;
+
+              if (isEditing) {
+                return (
+                  <div key={slug} className="rounded-lg border border-border bg-card p-4 space-y-3">
+                    <div className="space-y-1.5">
+                      <label className="block text-[length:var(--text-12)] text-muted-foreground font-mono uppercase tracking-wide">Название</label>
+                      <input
+                        ref={editNameRef}
+                        value={editName}
+                        onChange={e => setEditName(e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter') saveEdit(); if (e.key === 'Escape') cancelEdit(); }}
+                        className="w-full rounded-lg border border-border bg-transparent px-3 py-2 text-[length:var(--text-14)] text-foreground outline-none transition-colors focus:border-foreground"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="block text-[length:var(--text-12)] text-muted-foreground font-mono uppercase tracking-wide">Цвет</label>
+                      <ColorPicker value={editColor} onChange={setEditColor} />
+                    </div>
+                    <div className="flex gap-2 justify-end">
+                      <button onClick={cancelEdit} className="px-3 py-1.5 rounded-lg text-[length:var(--text-13)] text-muted-foreground hover:bg-muted transition-colors">
+                        Отмена
+                      </button>
+                      <button
+                        onClick={saveEdit}
+                        disabled={!editName.trim()}
+                        className="px-4 py-1.5 rounded-lg bg-foreground text-background text-[length:var(--text-13)] font-medium hover:opacity-90 transition-opacity disabled:opacity-40"
+                      >
+                        Сохранить
+                      </button>
+                    </div>
+                  </div>
+                );
+              }
+
               return (
-                <div
-                  key={slug}
-                  className="group flex rounded-lg border border-border bg-card overflow-hidden transition-colors hover:border-foreground/20"
-                >
-                  {/* Color accent bar */}
+                <div key={slug} className="group flex rounded-lg border border-border bg-card overflow-hidden transition-colors hover:border-foreground/20">
                   <div className="w-1 flex-shrink-0" style={{ backgroundColor: accent.css100 }} />
-                  <button
-                    onClick={() => navigateToTrack(slug)}
-                    className="flex-1 text-left p-4"
-                  >
+                  <button onClick={() => navigateToTrack(slug)} className="flex-1 text-left p-4">
                     <div className="flex items-center gap-2">
                       <span className="font-mono text-[length:var(--text-11)] uppercase tracking-[0.08em] text-muted-foreground/60">Rocketmind</span>
                       <span className="text-muted-foreground/20">·</span>
@@ -253,17 +385,28 @@ export default function GanttPage() {
                     </div>
                     <p className="mt-2 text-[length:var(--text-14)] text-muted-foreground">/gantt/{slug}</p>
                   </button>
-                  <button
-                    onClick={() => archiveTrack(slug)}
-                    className="px-3 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground/40 hover:text-muted-foreground text-[length:var(--text-12)] flex-shrink-0"
-                    title="Архивировать"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="2" y="3" width="12" height="3" rx="0.5" />
-                      <path d="M3 6v6.5a1 1 0 001 1h8a1 1 0 001-1V6" />
-                      <path d="M6.5 9h3" />
-                    </svg>
-                  </button>
+                  <div className="flex flex-col justify-center gap-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={() => startEdit(slug, info)}
+                      className="p-1 text-muted-foreground/40 hover:text-muted-foreground transition-colors"
+                      title="Редактировать"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M8.5 2.5l3 3M2 10l-.5 2.5 2.5-.5 8-8-3-3-7 7z" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => archiveTrack(slug)}
+                      className="p-1 text-muted-foreground/40 hover:text-muted-foreground transition-colors"
+                      title="Архивировать"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="1.5" y="2.5" width="11" height="2.5" rx="0.5" />
+                        <path d="M2.5 5v5.5a1 1 0 001 1h7a1 1 0 001-1V5" />
+                        <path d="M5.5 8h3" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               );
             })}
@@ -287,33 +430,10 @@ export default function GanttPage() {
                     </div>
                   )}
                 </div>
-
-                {/* Color picker */}
                 <div className="space-y-1.5">
                   <label className="block text-[length:var(--text-12)] text-muted-foreground font-mono uppercase tracking-wide">Цвет</label>
-                  <div className="flex gap-1.5 flex-wrap">
-                    {ACCENT_COLORS.map(c => (
-                      <button
-                        key={c.token}
-                        onClick={() => setNewColor(c.token)}
-                        className="w-7 h-7 rounded-full transition-all flex items-center justify-center"
-                        style={{
-                          backgroundColor: c.css100,
-                          boxShadow: newColor === c.token ? `0 0 0 2px var(--background), 0 0 0 4px ${c.css100}` : 'none',
-                        }}
-                        title={c.label}
-                      >
-                        {newColor === c.token && (
-                          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="var(--background)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M2.5 6l2.5 2.5 4.5-5" />
-                          </svg>
-                        )}
-                      </button>
-                    ))}
-                  </div>
+                  <ColorPicker value={newColor} onChange={setNewColor} />
                 </div>
-
-                {/* Slug */}
                 <div className="space-y-1.5">
                   <label className="block text-[length:var(--text-12)] text-muted-foreground font-mono uppercase tracking-wide">Slug (URL)</label>
                   <div className="flex items-center gap-0 rounded-lg border border-border overflow-hidden transition-colors focus-within:border-foreground">
@@ -327,7 +447,6 @@ export default function GanttPage() {
                   </div>
                   {slugError && <p className="text-[length:var(--text-12)] text-destructive">{slugError}</p>}
                 </div>
-
                 <div className="flex gap-2 justify-end">
                   <button onClick={resetForm} className="px-3 py-1.5 rounded-lg text-[length:var(--text-13)] text-muted-foreground hover:bg-muted transition-colors">
                     Отмена
@@ -370,10 +489,7 @@ export default function GanttPage() {
                     {archivedTracks.map(([slug, info]) => {
                       const accent = accentCSS(info.color);
                       return (
-                        <div
-                          key={slug}
-                          className="group flex rounded-lg border border-border/50 bg-card/50 overflow-hidden"
-                        >
+                        <div key={slug} className="group flex rounded-lg border border-border/50 bg-card/50 overflow-hidden">
                           <div className="w-1 flex-shrink-0 opacity-40" style={{ backgroundColor: accent.css100 }} />
                           <div className="flex-1 p-3">
                             <div className="flex items-center gap-2">
@@ -383,16 +499,29 @@ export default function GanttPage() {
                             </div>
                             <p className="mt-1 text-[length:var(--text-13)] text-muted-foreground/40">/gantt/{slug}</p>
                           </div>
-                          <button
-                            onClick={() => restoreTrack(slug)}
-                            className="px-3 text-muted-foreground/40 hover:text-foreground transition-colors text-[length:var(--text-12)] flex-shrink-0"
-                            title="Восстановить"
-                          >
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M2.5 6h4" /><path d="M2.5 6l2-2.5" /><path d="M2.5 6l2 2.5" />
-                              <path d="M4.5 6a5 5 0 1 1 .5 4" />
-                            </svg>
-                          </button>
+                          <div className="flex items-center gap-0.5 px-2">
+                            <button
+                              onClick={() => restoreTrack(slug)}
+                              className="p-1.5 text-muted-foreground/40 hover:text-foreground transition-colors"
+                              title="Восстановить"
+                            >
+                              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M2 5h3.5" /><path d="M2 5l1.5-2" /><path d="M2 5l1.5 2" />
+                                <path d="M4 5a4.5 4.5 0 1 1 .5 3.5" />
+                              </svg>
+                            </button>
+                            <button
+                              onClick={() => deleteTrack(slug)}
+                              className="p-1.5 text-muted-foreground/40 hover:text-destructive transition-colors"
+                              title="Удалить навсегда"
+                            >
+                              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M2.5 4h9" /><path d="M5 4V2.5h4V4" />
+                                <path d="M4 4l.5 7.5a1 1 0 001 1h3a1 1 0 001-1L10 4" />
+                                <path d="M5.5 6.5v3" /><path d="M8.5 6.5v3" />
+                              </svg>
+                            </button>
+                          </div>
                         </div>
                       );
                     })}
@@ -403,6 +532,9 @@ export default function GanttPage() {
           </div>
         )}
       </div>
+
+      <ToastContainer toasts={toasts} onDismiss={dismissToast} />
+      <style>{`@keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }`}</style>
     </div>
   );
 }
