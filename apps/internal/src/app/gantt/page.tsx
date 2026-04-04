@@ -49,6 +49,7 @@ function accentCSS(color?: string) {
 export default function GanttPage() {
   const [trackSlug, setTrackSlug] = useState<string | null>(null);
   const [trackName, setTrackName] = useState('');
+  const [trackColor, setTrackColor] = useState('yellow');
   const [mode, setMode] = useState<'loading' | 'index' | 'board' | 'notfound'>('loading');
 
   useEffect(() => {
@@ -59,6 +60,7 @@ export default function GanttPage() {
       const tracks: Record<string, TrackInfo> | null = snap.val();
       if (tracks && slug in tracks && !tracks[slug].archived) {
         setTrackName(tracks[slug].name);
+        setTrackColor(tracks[slug].color ?? 'yellow');
         setMode('board');
         const base = window.location.pathname.replace(/\/$/, '');
         const parts = base.split('/');
@@ -167,7 +169,7 @@ export default function GanttPage() {
 
   // ── Board mode ───────────────────────────────────────────────────────────
   if (mode === 'board' && trackSlug) {
-    return <GanttBoard dbPath={`gantt_tracks/${trackSlug}`} trackName={trackName} />;
+    return <GanttBoard dbPath={`gantt_tracks/${trackSlug}`} trackName={trackName} trackColor={trackColor} />;
   }
 
   // ── Not found ────────────────────────────────────────────────────────────

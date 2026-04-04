@@ -87,98 +87,25 @@ function getCurrentWeekIndex(): number {
   return Math.floor(diffMs / (1000 * 60 * 60 * 24 * 7));
 }
 
-// ─── Initial data ─────────────────────────────────────────────────────────────
-
-const INITIAL_WEEKS: Week[] = [
-  { id: 'w1', label: 'Неделя 1', dates: formatWeekDates(0), theme: 'Поиск направления + технический фундамент + DS v1', color: 'violet' },
-  { id: 'w2', label: 'Неделя 2', dates: formatWeekDates(1), theme: 'Стабилизация сборки + DS v2 + старт MVP сервиса', color: 'sky' },
-  { id: 'w3', label: 'Неделя 3', dates: formatWeekDates(2), theme: 'Интеграция MVP с n8n + агенты + DS v3', color: 'terracotta' },
-  { id: 'w4', label: 'Неделя 4', dates: formatWeekDates(3), theme: 'Полировка + DS v4 + QA MVP сервиса', color: 'yellow' },
-];
+// ─── Template for new tracks ─────────────────────────────────────────────────
 
 function card(label: string, done = false): Card {
   return { id: `c${Math.random().toString(36).slice(2)}`, label, done, days: [] };
 }
 
-const INITIAL_ROWS: Row[] = [
-  {
-    id: 'r1', label: 'Согласование',
-    cells: {
-      w1: [card('Технические решения (стек, хостинг, n8n, PRD)')],
-      w2: [], w3: [], w4: [],
-    },
-  },
-  {
-    id: 'r2', label: 'UI-направление',
-    cells: {
-      w1: [card('Референсы (3–7 шт.) + правила стиля')],
-      w2: [], w3: [], w4: [],
-    },
-  },
-  {
-    id: 'r3', label: 'Вайпкодинг',
-    cells: {
-      w1: [card('Экспериментальные тесты инструмента')],
-      w2: [], w3: [], w4: [],
-    },
-  },
-  {
-    id: 'r4', label: 'Design System',
-    cells: {
-      w1: [card('DS v1: токены + базовые компоненты + секции лендингов')],
-      w2: [card('DS v2: Sync Figma ↔ код + компоненты + состояния + формы')],
-      w3: [card('DS v3: компоненты сервиса — чат, состояния, списки, карточки')],
-      w4: [card('DS v4: финальная фиксация — компоненты, токены, секции, правила')],
-    },
-  },
-  {
-    id: 'r5', label: 'MVP сервиса',
-    cells: {
-      w1: [card('Черновой wireframe: навигация / кейсы / агенты / чат')],
-      w2: [card('Каркас: layout, навигация, черновой чат, карточки агентов')],
-      w3: [card('Базовый сценарий с агентами работает')],
-      w4: [card('End-to-end демо с агентами и оплатой')],
-    },
-  },
-  {
-    id: 'r6', label: 'Продуктовые страницы',
-    cells: {
-      w1: [card('1–2 демо-страницы (показательное направление)')],
-      w2: [card('3–5 страниц в production-качестве')],
-      w3: [card('+2–4 новые страницы (итого 5–9)')],
-      w4: [card('8–15 страниц сайта в production')],
-    },
-  },
-  {
-    id: 'r7', label: 'n8n интеграция',
-    cells: {
-      w1: [], w2: [],
-      w3: [
-        card('Auth / сессия / кейсы / агенты'),
-        card('Отправка / получение сообщений + сценарии оплаты'),
-      ],
-      w4: [],
-    },
-  },
-  {
-    id: 'r8', label: 'Продуктовые состояния',
-    cells: {
-      w1: [], w2: [],
-      w3: [card('Загрузки / ошибки / empty states / алерты')],
-      w4: [card('Полировка состояний, закрытие дырок по UX')],
-    },
-  },
-  {
-    id: 'r9', label: 'QA аналитики',
-    cells: {
-      w1: [], w2: [], w3: [],
-      w4: [card('Проверка событий / связности на ключевых шагах')],
-    },
-  },
-];
-
-const INITIAL_TITLE = 'План работ 9 марта — 3 апреля';
-const INITIAL_SUBTITLE = '4 недели · Дизайн-система + MVP сервиса + Продуктовые страницы';
+function createTemplate(color: ColorToken) {
+  const weeks: Week[] = [
+    { id: 'w1', label: 'Неделя 1', dates: formatWeekDates(0), theme: '', color },
+    { id: 'w2', label: 'Неделя 2', dates: formatWeekDates(1), theme: '', color },
+    { id: 'w3', label: 'Неделя 3', dates: formatWeekDates(2), theme: '', color },
+    { id: 'w4', label: 'Неделя 4', dates: formatWeekDates(3), theme: '', color },
+  ];
+  const rows: Row[] = [
+    { id: 'r1', label: 'Согласование', cells: { w1: [], w2: [], w3: [], w4: [] } },
+    { id: 'r2', label: 'Процессные задачи', cells: { w1: [card('Заполнить план работ')], w2: [], w3: [], w4: [] } },
+  ];
+  return { weeks, rows, title: 'План работ', subtitle: '' };
+}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -539,11 +466,12 @@ function ToastContainer({ toasts, onDismiss }: { toasts: Toast[]; onDismiss: (id
   );
 }
 
-export default function GanttBoard({ dbPath, trackName }: { dbPath: string; trackName: string }) {
-  const [weeks, setWeeks] = useState<Week[]>(INITIAL_WEEKS);
-  const [rows, setRows] = useState<Row[]>(INITIAL_ROWS);
-  const [title, setTitle] = useState(INITIAL_TITLE);
-  const [subtitle, setSubtitle] = useState(INITIAL_SUBTITLE);
+export default function GanttBoard({ dbPath, trackName, trackColor = 'yellow' }: { dbPath: string; trackName: string; trackColor?: string }) {
+  const tmpl = createTemplate(trackColor as ColorToken);
+  const [weeks, setWeeks] = useState<Week[]>(tmpl.weeks);
+  const [rows, setRows] = useState<Row[]>(tmpl.rows);
+  const [title, setTitle] = useState(tmpl.title);
+  const [subtitle, setSubtitle] = useState(tmpl.subtitle);
   const [locked, setLocked] = useState(false);
   const [showLockModal, setShowLockModal] = useState(false);
   const [syncStatus, setSyncStatus] = useState<'synced' | 'saving' | 'error' | 'loading'>('loading');
@@ -614,7 +542,7 @@ export default function GanttBoard({ dbPath, trackName }: { dbPath: string; trac
     const cwIdx = getCurrentWeekIndex();
     const mobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches;
     const count = mobile ? 1 : VISIBLE_COUNT;
-    const maxStart = Math.max(0, INITIAL_WEEKS.length - count);
+    const maxStart = Math.max(0, tmpl.weeks.length - count);
     const ideal = mobile ? cwIdx : Math.max(0, cwIdx - 1);
     return cwIdx > 0 ? Math.min(ideal, maxStart) : 0;
   });
@@ -681,8 +609,8 @@ export default function GanttBoard({ dbPath, trackName }: { dbPath: string; trac
 
   // Effective color: current week = yellow, others = neutral
   const getEffectiveColor = useCallback((globalIdx: number): ColorToken => {
-    return globalIdx === currentWeekIdx ? 'yellow' : 'neutral';
-  }, [currentWeekIdx]);
+    return globalIdx === currentWeekIdx ? (trackColor as ColorToken) : 'neutral';
+  }, [currentWeekIdx, trackColor]);
 
   // ── Auto-scroll to current week on first Firebase load ──────────────────────
   // (handled inside onValue callback to avoid racing with initial state)
@@ -715,6 +643,13 @@ export default function GanttBoard({ dbPath, trackName }: { dbPath: string; trac
               setVisibleStartIdx(wLen - count);
             }
           }
+        } else {
+          // Empty track — save template to Firebase
+          const t = createTemplate(trackColor as ColorToken);
+          set(ref(db, dbPath), {
+            weeks: t.weeks, rows: t.rows,
+            title: t.title, subtitle: t.subtitle, locked: false,
+          });
         }
         initialized.current = true;
         setLoaded(true);
@@ -953,7 +888,7 @@ export default function GanttBoard({ dbPath, trackName }: { dbPath: string; trac
       label: `Неделя ${idx + 1}`,
       dates: formatWeekDates(idx),
       theme: '',
-      color: WEEK_COLORS[idx % WEEK_COLORS.length],
+      color: trackColor as ColorToken,
     };
     const nextWeeks = [...weeks, newWeek];
     const nextRows = rows.map(r => ({
