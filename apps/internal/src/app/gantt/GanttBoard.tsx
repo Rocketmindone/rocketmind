@@ -50,6 +50,46 @@ type Card = {
   days: Day[];
 };
 
+// ─── Zoom-in helpers ─────────────────────────────────────────────────────────
+
+const DAY_COL_LABELS = ['Без дня', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт'] as const;
+
+type PlacedCard = {
+  card: Card;
+  colStart: number; // 0 = unsorted, 1–5 = пн–пт
+  colEnd: number;   // exclusive
+  gridRow: number;
+};
+
+function placeCardsOnGrid(cards: Card[]): { placed: PlacedCard[]; rowCount: number } {
+  const items = cards.map(c => {
+    const days = c.days ?? [];
+    if (days.length === 0) return { card: c, colStart: 0, colEnd: 1 };
+    const indices = days.map(d => DAYS.indexOf(d)).filter(i => i >= 0).sort((a, b) => a - b);
+    return { card: c, colStart: indices[0] + 1, colEnd: indices[indices.length - 1] + 2 };
+  });
+  const occupied: boolean[][] = [];
+  const placed: PlacedCard[] = [];
+  for (const item of items) {
+    let row = 0;
+    while (true) {
+      if (!occupied[row]) occupied[row] = Array(6).fill(false);
+      let fits = true;
+      for (let col = item.colStart; col < item.colEnd; col++) {
+        if (occupied[row][col]) { fits = false; break; }
+      }
+      if (fits) break;
+      row++;
+    }
+    if (!occupied[row]) occupied[row] = Array(6).fill(false);
+    for (let col = item.colStart; col < item.colEnd; col++) {
+      occupied[row][col] = true;
+    }
+    placed.push({ card: item.card, colStart: item.colStart, colEnd: item.colEnd, gridRow: row });
+  }
+  return { placed, rowCount: occupied.length || 1 };
+}
+
 type Row = {
   id: string;
   label: string;
@@ -195,6 +235,8 @@ function CardItem({
   draggable: isDraggable,
   onDragStart, onDragEnd, onDragOver, onDrop,
   onToggleDay,
+  zoomIn,
+  onResizeStart,
 }: {
   card: Card; weekColor: ColorToken; locked: boolean;
   onToggleDone: () => void;
@@ -206,6 +248,8 @@ function CardItem({
   onDragOver: (e: React.DragEvent) => void;
   onDrop: (e: React.DragEvent) => void;
   onToggleDay: (day: Day) => void;
+  zoomIn?: boolean;
+  onResizeStart?: (e: React.MouseEvent, side: 'left' | 'right') => void;
 }) {
   const [editing, setEditing] = useState(false);
   const taRef = useRef<HTMLTextAreaElement>(null);
@@ -266,37 +310,39 @@ function CardItem({
           )}
         </button>
 
-        <div className="flex-1 grid grid-cols-5 gap-1">
-          {DAYS.map(day => {
-            const active = (c.days ?? []).includes(day);
-            const isNeutral = weekColor === 'neutral';
-            return (
-              <button
-                key={day}
-                onClick={() => onToggleDay(day)}
-                className="font-mono transition-colors leading-none w-full"
-                style={{
-                  fontSize: 9,
-                  height: 16,
-                  borderRadius: 3,
-                  backgroundColor: active
-                    ? (isNeutral && !c.done ? 'var(--foreground)' : cssVar(weekColor, '100'))
-                    : cssVar(weekColor, '900'),
-                  color: active
-                    ? (isNeutral && !c.done ? 'var(--background)' : cssVar(weekColor, 'fg'))
-                    : cssVar(weekColor, 'fg-subtle'),
-                  opacity: active ? 1 : 0.6,
-                  border: `1px solid ${active
-                    ? (isNeutral && !c.done ? 'var(--foreground)' : cssVar(weekColor, '100'))
-                    : cssVar(weekColor, '300')}`,
-                }}
-                title={day}
-              >
-                {day}
-              </button>
-            );
-          })}
-        </div>
+        {!zoomIn && (
+          <div className="flex-1 grid grid-cols-5 gap-1">
+            {DAYS.map(day => {
+              const active = (c.days ?? []).includes(day);
+              const isNeutral = weekColor === 'neutral';
+              return (
+                <button
+                  key={day}
+                  onClick={() => onToggleDay(day)}
+                  className="font-mono transition-colors leading-none w-full"
+                  style={{
+                    fontSize: 9,
+                    height: 16,
+                    borderRadius: 3,
+                    backgroundColor: active
+                      ? (isNeutral && !c.done ? 'var(--foreground)' : cssVar(weekColor, '100'))
+                      : cssVar(weekColor, '900'),
+                    color: active
+                      ? (isNeutral && !c.done ? 'var(--background)' : cssVar(weekColor, 'fg'))
+                      : cssVar(weekColor, 'fg-subtle'),
+                    opacity: active ? 1 : 0.6,
+                    border: `1px solid ${active
+                      ? (isNeutral && !c.done ? 'var(--foreground)' : cssVar(weekColor, '100'))
+                      : cssVar(weekColor, '300')}`,
+                  }}
+                  title={day}
+                >
+                  {day}
+                </button>
+              );
+            })}
+          </div>
+        )}
         {!locked && (
           <button
             onClick={onRemove}
@@ -341,6 +387,20 @@ function CardItem({
             );
           })}
         </ul>
+      )}
+
+      {/* Resize handles — zoom-in mode */}
+      {zoomIn && !locked && onResizeStart && (
+        <>
+          <div
+            className="absolute left-0 top-0 bottom-0 w-2 cursor-col-resize z-10 hover:bg-white/10 transition-colors rounded-l-lg"
+            onMouseDown={e => { e.stopPropagation(); onResizeStart(e, 'left'); }}
+          />
+          <div
+            className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize z-10 hover:bg-white/10 transition-colors rounded-r-lg"
+            onMouseDown={e => { e.stopPropagation(); onResizeStart(e, 'right'); }}
+          />
+        </>
       )}
     </div>
   );
@@ -501,6 +561,18 @@ export default function GanttBoard({ dbPath, trackName, trackColor = 'yellow', s
   const [locked, setLocked] = useState(false);
   const [showLockModal, setShowLockModal] = useState(false);
   const [syncStatus, setSyncStatus] = useState<'synced' | 'saving' | 'error' | 'loading'>('loading');
+
+  // ── Zoom mode (desktop/tablet only) ──────────────────────────────────────
+  const [zoomMode, setZoomMode] = useState<'out' | 'in'>('out');
+
+  // ── Resize state (zoom-in card resizing) ─────────────────────────────────
+  const resizeRef = useRef<{
+    cardId: string; rowId: string; weekId: string;
+    side: 'left' | 'right'; anchorDayIdx: number;
+    gridRect: DOMRect; lastDays: Day[];
+  } | null>(null);
+  const gridRefsMap = useRef<Map<string, HTMLDivElement>>(new Map());
+  const [needsPersistAfterResize, setNeedsPersistAfterResize] = useState(false);
 
   // ── Undo / Redo ───────────────────────────────────────────────────────────
   const history = useRef<Snapshot[]>([]);
@@ -838,10 +910,12 @@ export default function GanttBoard({ dbPath, trackName, trackColor = 'yellow', s
     updateRows(next);
   };
 
-  const addCard = (rowId: string, weekId: string) => {
+  const addCard = (rowId: string, weekId: string, day?: Day) => {
+    const c = card('Новая задача');
+    if (day) c.days = [day];
     const next = rows.map(r =>
       r.id === rowId
-        ? { ...r, cells: { ...r.cells, [weekId]: [card('Новая задача'), ...(r.cells[weekId] ?? [])] } }
+        ? { ...r, cells: { ...r.cells, [weekId]: [c, ...(r.cells[weekId] ?? [])] } }
         : r
     );
     updateRows(next);
@@ -892,6 +966,77 @@ export default function GanttBoard({ dbPath, trackName, trackColor = 'yellow', s
     );
     updateRows(next);
   };
+
+  // ── Zoom-in: card resize ───────────────────────────────────────────────────
+
+  const startCardResize = useCallback((
+    e: React.MouseEvent, side: 'left' | 'right',
+    cardId: string, rowId: string, weekId: string,
+  ) => {
+    e.preventDefault(); e.stopPropagation();
+    const gridEl = gridRefsMap.current.get(rowId);
+    if (!gridEl) return;
+    const row = rows.find(r => r.id === rowId);
+    const c = row?.cells[weekId]?.find(x => x.id === cardId);
+    if (!c) return;
+    const dayIndices = (c.days ?? []).map(d => DAYS.indexOf(d)).filter(i => i >= 0).sort((a, b) => a - b);
+    let anchorDayIdx: number;
+    if (side === 'right') {
+      anchorDayIdx = dayIndices.length > 0 ? dayIndices[0] : 0;
+    } else {
+      if (dayIndices.length === 0) return;
+      anchorDayIdx = dayIndices[dayIndices.length - 1];
+    }
+    pushHistory(snap());
+    resizeRef.current = { cardId, rowId, weekId, side, anchorDayIdx, gridRect: gridEl.getBoundingClientRect(), lastDays: [...(c.days ?? [])] };
+  }, [rows, pushHistory, snap]);
+
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      const rs = resizeRef.current;
+      if (!rs) return;
+      const relX = e.clientX - rs.gridRect.left;
+      const colWidth = rs.gridRect.width / 6;
+      let col = Math.floor(relX / colWidth);
+      col = Math.max(0, Math.min(5, col));
+      let newDays: Day[];
+      if (col === 0) { newDays = []; }
+      else {
+        const dayIdx = col - 1;
+        if (rs.side === 'right') {
+          const start = rs.anchorDayIdx;
+          const end = Math.max(start, dayIdx);
+          newDays = ([...DAYS] as Day[]).slice(start, end + 1);
+        } else {
+          const end = rs.anchorDayIdx;
+          const start = Math.min(end, dayIdx);
+          newDays = ([...DAYS] as Day[]).slice(start, end + 1);
+        }
+      }
+      if (JSON.stringify(rs.lastDays) === JSON.stringify(newDays)) return;
+      rs.lastDays = newDays;
+      setRows(prev => prev.map(r =>
+        r.id === rs.rowId
+          ? { ...r, cells: { ...r.cells, [rs.weekId]: (r.cells[rs.weekId] ?? []).map(c => c.id === rs.cardId ? { ...c, days: newDays } : c) } }
+          : r
+      ));
+    };
+    const onUp = () => {
+      if (!resizeRef.current) return;
+      resizeRef.current = null;
+      setNeedsPersistAfterResize(true);
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+    return () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
+  }, []);
+
+  useEffect(() => {
+    if (!needsPersistAfterResize) return;
+    setNeedsPersistAfterResize(false);
+    skipHistory.current = true;
+    persist(weeks, rows, title, subtitle, locked);
+  }, [needsPersistAfterResize, weeks, rows, title, subtitle, locked, persist]);
 
   const updateWeekLabel = (weekId: string, val: string) =>
     updateWeeks(weeks.map(w => w.id === weekId ? { ...w, label: val } : w));
@@ -1175,6 +1320,25 @@ export default function GanttBoard({ dbPath, trackName, trackColor = 'yellow', s
           >
             ◐
           </button>
+          {/* Zoom In / Out switch — desktop & tablet only */}
+          {!isMobile && (
+            <div className="flex items-center h-8 rounded-lg border border-border overflow-hidden">
+              <button
+                onClick={() => setZoomMode('out')}
+                className={`h-full px-2.5 text-[length:var(--text-11)] font-mono uppercase tracking-wide transition-colors ${zoomMode === 'out' ? 'bg-foreground text-background' : 'text-muted-foreground hover:bg-muted'}`}
+                title="Недели"
+              >
+                Out
+              </button>
+              <button
+                onClick={() => setZoomMode('in')}
+                className={`h-full px-2.5 text-[length:var(--text-11)] font-mono uppercase tracking-wide transition-colors ${zoomMode === 'in' ? 'bg-foreground text-background' : 'text-muted-foreground hover:bg-muted'}`}
+                title="Дни недели"
+              >
+                In
+              </button>
+            </div>
+          )}
           <button
             onClick={() => navigateWeeks('left')}
             disabled={!canGoBack || animating}
@@ -1211,7 +1375,8 @@ export default function GanttBoard({ dbPath, trackName, trackColor = 'yellow', s
               transition: slideDir ? 'transform 0.25s ease-out, opacity 0.25s ease-out' : 'none',
             }}>
 
-              {/* Header */}
+              {/* ═══ ZOOM OUT — Header (weeks) ═══ */}
+              {(isMobile || zoomMode === 'out') && (
               <div className="flex border-b border-border bg-muted/40 sticky top-0 z-10">
                 <div
                   className="flex-shrink-0 px-2 py-3 md:px-4 border-r border-border text-[length:var(--text-12)] font-mono uppercase tracking-wide text-muted-foreground bg-muted/40"
@@ -1272,9 +1437,52 @@ export default function GanttBoard({ dbPath, trackName, trackColor = 'yellow', s
                   );
                 })}
               </div>
+              )}
 
-              {/* Rows */}
-              {rows.map((row, idx) => (
+              {/* ═══ ZOOM IN — Header (days of one week) ═══ */}
+              {!isMobile && zoomMode === 'in' && (() => {
+                const aw = weeks[visibleStartIdx];
+                if (!aw) return null;
+                const awIsCurrent = visibleStartIdx === currentWeekIdx;
+                const awColor = getEffectiveColor(visibleStartIdx);
+                return (
+                  <div className="flex border-b border-border bg-muted/40 sticky top-0 z-10">
+                    <div
+                      className="flex-shrink-0 px-4 py-3 border-r border-border text-[length:var(--text-12)] font-mono uppercase tracking-wide text-muted-foreground bg-muted/40"
+                      style={{ width: COL_W, minWidth: COL_W }}
+                    >
+                      Раздел
+                    </div>
+                    <div className="flex-1 flex flex-col overflow-hidden" style={{ borderTop: `2px solid ${cssVar(awColor, '100')}` }}>
+                      {/* Week info */}
+                      <div className="px-3 py-1.5 border-b border-border/40 flex items-center gap-2" style={{ backgroundColor: awIsCurrent ? cssVar(awColor, '900') : undefined }}>
+                        <span className="font-mono text-[length:var(--text-12)] font-bold uppercase tracking-wide" style={{ color: cssVar(awColor, '100') }}>
+                          {aw.label}
+                        </span>
+                        <span className="font-mono text-[length:var(--text-12)]" style={{ color: awIsCurrent ? cssVar(awColor, '500') : 'var(--muted-foreground)' }}>
+                          {aw.dates}
+                        </span>
+                        {awIsCurrent && (
+                          <span className="ml-auto px-1.5 py-0.5 rounded text-[length:9px] font-mono uppercase tracking-wider flex-shrink-0" style={{ backgroundColor: cssVar(awColor, '100'), color: cssVar(awColor, 'fg') }}>
+                            сейчас
+                          </span>
+                        )}
+                      </div>
+                      {/* Day column headers */}
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)' }}>
+                        {DAY_COL_LABELS.map((label, i) => (
+                          <div key={i} className="px-2 py-1.5 border-r border-border/40 last:border-r-0 text-[length:var(--text-11)] font-mono uppercase tracking-wide text-muted-foreground text-center">
+                            {label}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* ═══ ZOOM OUT — Rows (weeks) ═══ */}
+              {(isMobile || zoomMode === 'out') && rows.map((row, idx) => (
                 <div
                   key={row.id}
                   className="flex border-b border-border/40 last:border-b-0 transition-colors"
@@ -1398,6 +1606,120 @@ export default function GanttBoard({ dbPath, trackName, trackColor = 'yellow', s
                   })}
                 </div>
               ))}
+
+              {/* ═══ ZOOM IN — Rows (days of one week) ═══ */}
+              {!isMobile && zoomMode === 'in' && (() => {
+                const aw = weeks[visibleStartIdx];
+                if (!aw) return null;
+                const awColor = getEffectiveColor(visibleStartIdx);
+                const awIsCurrent = visibleStartIdx === currentWeekIdx;
+                return rows.map((row, idx) => {
+                  const cards = row.cells?.[aw.id] ?? [];
+                  const { placed } = placeCardsOnGrid(cards);
+                  return (
+                    <div
+                      key={row.id}
+                      className="flex border-b border-border/40 last:border-b-0 transition-colors"
+                      style={{
+                        opacity: draggingRowId === row.id ? 0.35 : 1,
+                        backgroundColor: dropTargetRowIdx === idx && draggingRowId && draggingRowId !== row.id ? 'var(--muted)' : undefined,
+                      }}
+                      draggable
+                      onDragStart={e => onRowDragStart(e, idx)}
+                      onDragOver={e => onRowDragOver(e, idx)}
+                      onDrop={e => onRowDrop(e, idx)}
+                      onDragEnd={onRowDragEnd}
+                    >
+                      {/* Left column */}
+                      <div
+                        className="flex-shrink-0 flex items-start gap-2 px-3 py-3 border-r border-border bg-background"
+                        style={{ width: COL_W, minWidth: COL_W }}
+                      >
+                        <span className="cursor-grab text-muted-foreground/30 hover:text-muted-foreground transition-colors select-none flex-shrink-0 mt-0.5 text-[length:var(--text-16)] leading-none" title="Перетащить строку">⠿</span>
+                        <span className="text-[length:var(--text-12)] font-medium text-foreground flex-1 min-w-0 mt-0.5">
+                          <EditableText value={row.label} onChange={v => updateRowLabel(row.id, v)} />
+                        </span>
+                        <button onClick={() => removeRow(row.id)} className="flex-shrink-0 text-muted-foreground/20 hover:text-destructive transition-colors text-[length:var(--text-14)] leading-none mt-0.5" title="Удалить строку">×</button>
+                      </div>
+
+                      {/* Day grid */}
+                      <div className="flex-1 relative" style={{ backgroundColor: awIsCurrent ? `color-mix(in srgb, ${cssVar(awColor, '900')}, transparent 60%)` : undefined }}>
+                        {/* Column borders (background layer) */}
+                        <div className="absolute inset-0 pointer-events-none" style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)' }}>
+                          {[0,1,2,3,4,5].map(i => (
+                            <div key={i} className={i < 5 ? 'border-r border-border/20' : ''} />
+                          ))}
+                        </div>
+
+                        {/* Add-card buttons */}
+                        {!locked && (
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)' }} className="px-0.5 pt-1.5">
+                            {([undefined, ...DAYS] as (Day | undefined)[]).map((day, i) => (
+                              <div key={i} className="px-0.5">
+                                <button
+                                  onClick={() => addCard(row.id, aw.id, day)}
+                                  className="w-full flex items-center justify-center rounded text-[length:var(--text-11)] font-mono uppercase tracking-wide transition-colors"
+                                  style={{
+                                    height: 18,
+                                    color: cssVar(awColor, 'fg-subtle'),
+                                    opacity: 0.35,
+                                    backgroundColor: cssVar(awColor, '900'),
+                                    border: `1px dashed ${cssVar(awColor, '300')}`,
+                                  }}
+                                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '0.8'; }}
+                                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '0.35'; }}
+                                  title="Добавить задачу"
+                                >
+                                  +
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Placed cards (CSS grid) */}
+                        <div
+                          ref={el => { if (el) gridRefsMap.current.set(row.id, el); else gridRefsMap.current.delete(row.id); }}
+                          style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gridAutoRows: 'auto' }}
+                          className="py-1"
+                          onDragOver={e => onCardDragOver(e, row.id, aw.id, null)}
+                          onDrop={e => onCardDrop(e, row.id, aw.id, null)}
+                        >
+                          {placed.map(({ card: c, colStart, colEnd, gridRow: gr }) => (
+                            <div
+                              key={c.id}
+                              style={{ gridColumn: `${colStart + 1} / ${colEnd + 1}`, gridRow: gr + 1 }}
+                              className="px-0.5 py-0.5"
+                            >
+                              <CardItem
+                                card={c}
+                                weekColor={awColor}
+                                locked={locked}
+                                onToggleDone={() => toggleCardDone(row.id, aw.id, c.id)}
+                                onUpdateLabel={v => updateCardLabel(row.id, aw.id, c.id, v)}
+                                onRemove={() => removeCard(row.id, aw.id, c.id)}
+                                draggable={!locked}
+                                onDragStart={e => onCardDragStart(e, row.id, aw.id, c.id)}
+                                onDragEnd={onCardDragEnd}
+                                onDragOver={e => e.preventDefault()}
+                                onDrop={e => onCardDrop(e, row.id, aw.id, null)}
+                                onToggleDay={day => toggleCardDay(row.id, aw.id, c.id, day)}
+                                zoomIn
+                                onResizeStart={(e, side) => startCardResize(e, side, c.id, row.id, aw.id)}
+                              />
+                            </div>
+                          ))}
+                          {placed.length === 0 && (
+                            <div style={{ gridColumn: '1 / 7', minHeight: 40 }} className="flex items-center justify-center text-[length:var(--text-12)] text-muted-foreground/30 font-mono">
+                              Нет задач
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                });
+              })()}
             </div>
           </div>
 
