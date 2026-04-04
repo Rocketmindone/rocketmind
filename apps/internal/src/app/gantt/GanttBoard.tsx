@@ -58,11 +58,11 @@ type Row = {
 
 // ─── Date helpers ─────────────────────────────────────────────────────────────
 
-const PROJECT_START = new Date(2026, 2, 9); // 9 марта 2026 (понедельник)
+export const PROJECT_START = new Date(2026, 2, 9); // 9 марта 2026 (понедельник)
 const VISIBLE_COUNT = 4;
-const MONTH_SHORT = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+export const MONTH_SHORT = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
 
-function getWeekRange(weekIndex: number): { start: Date; end: Date } {
+export function getWeekRange(weekIndex: number): { start: Date; end: Date } {
   const start = new Date(PROJECT_START);
   start.setDate(start.getDate() + weekIndex * 7);
   const end = new Date(start);
@@ -70,7 +70,7 @@ function getWeekRange(weekIndex: number): { start: Date; end: Date } {
   return { start, end };
 }
 
-function formatWeekDates(weekIndex: number): string {
+export function formatWeekDates(weekIndex: number): string {
   const { start, end } = getWeekRange(weekIndex);
   const sm = MONTH_SHORT[start.getMonth()];
   const em = MONTH_SHORT[end.getMonth()];
@@ -78,7 +78,7 @@ function formatWeekDates(weekIndex: number): string {
   return `${start.getDate()} ${sm} – ${end.getDate()} ${em}`;
 }
 
-function getCurrentWeekIndex(): number {
+export function getCurrentWeekIndex(): number {
   const now = new Date();
   now.setHours(0, 0, 0, 0);
   const diffMs = now.getTime() - PROJECT_START.getTime();
@@ -114,9 +114,8 @@ function card(label: string, done = false): Card {
   return { id: `c${Math.random().toString(36).slice(2)}`, label, done, days: [] };
 }
 
-function createTemplate(color: ColorToken) {
-  const cwIdx = getCurrentWeekIndex();
-  const startIdx = Math.max(0, cwIdx);
+function createTemplate(color: ColorToken, startWeekIdx?: number) {
+  const startIdx = startWeekIdx ?? Math.max(0, getCurrentWeekIndex());
   const weeks: Week[] = Array.from({ length: 4 }, (_, i) => ({
     id: `w${i + 1}`,
     label: `Неделя ${i + 1}`,
@@ -139,11 +138,11 @@ function createTemplate(color: ColorToken) {
 // ─── EditableText ─────────────────────────────────────────────────────────────
 
 function EditableText({
-  value, onChange, className, style, startEditing,
+  value, onChange, className, style, startEditing, placeholder,
 }: {
   value: string; onChange: (v: string) => void;
   className?: string; style?: React.CSSProperties;
-  startEditing?: boolean;
+  startEditing?: boolean; placeholder?: string;
 }) {
   const [editing, setEditing] = useState(false);
   const ref = useRef<HTMLTextAreaElement>(null);
@@ -183,7 +182,7 @@ function EditableText({
       onDoubleClick={start}
       title="Двойной клик — редактировать"
     >
-      {value}
+      {value || <span className="opacity-40">{placeholder}</span>}
     </span>
   );
 }
@@ -492,8 +491,9 @@ function ToastContainer({ toasts, onDismiss }: { toasts: Toast[]; onDismiss: (id
   );
 }
 
-export default function GanttBoard({ dbPath, trackName, trackColor = 'yellow' }: { dbPath: string; trackName: string; trackColor?: string }) {
-  const tmpl = createTemplate(trackColor as ColorToken);
+export default function GanttBoard({ dbPath, trackName, trackColor = 'yellow', startWeekIdx }: { dbPath: string; trackName: string; trackColor?: string; startWeekIdx?: number }) {
+  const COL_W = 154;
+  const tmpl = createTemplate(trackColor as ColorToken, startWeekIdx);
   const [weeks, setWeeks] = useState<Week[]>(tmpl.weeks);
   const [rows, setRows] = useState<Row[]>(tmpl.rows);
   const [title, setTitle] = useState(tmpl.title);
@@ -596,11 +596,28 @@ export default function GanttBoard({ dbPath, trackName, trackColor = 'yellow' }:
     return () => mq.removeEventListener('change', handler);
   }, []);
 
+  // ── Dynamic column count based on container width ──────────────────────────
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [fittingCount, setFittingCount] = useState(VISIBLE_COUNT);
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const MIN_COL = 240;
+    const measure = () => {
+      const available = el.clientWidth - COL_W;
+      setFittingCount(Math.max(1, Math.floor(available / MIN_COL)));
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   // ── Visible weeks ──────────────────────────────────────────────────────────
-  const effectiveCount = isMobile ? 1 : VISIBLE_COUNT;
+  const effectiveCount = isMobile ? 1 : fittingCount;
   const visibleWeeks = useMemo(() => {
-    return weeks.slice(visibleStartIdx, visibleStartIdx + VISIBLE_COUNT);
-  }, [weeks, visibleStartIdx]);
+    return weeks.slice(visibleStartIdx, visibleStartIdx + effectiveCount);
+  }, [weeks, visibleStartIdx, effectiveCount]);
   const shownWeeks = isMobile ? weeks.slice(visibleStartIdx, visibleStartIdx + 1) : visibleWeeks;
 
   const canGoBack = visibleStartIdx > 0;
@@ -665,7 +682,7 @@ export default function GanttBoard({ dbPath, trackName, trackColor = 'yellow' }:
           }
         } else {
           // Empty track — save template to Firebase
-          const t = createTemplate(trackColor as ColorToken);
+          const t = createTemplate(trackColor as ColorToken, startWeekIdx);
           set(ref(db, dbPath), {
             weeks: t.weeks, rows: t.rows,
             title: t.title, subtitle: t.subtitle, locked: false,
@@ -924,32 +941,50 @@ export default function GanttBoard({ dbPath, trackName, trackColor = 'yellow' }:
     setVisibleStartIdx(Math.max(0, idx + 1 - VISIBLE_COUNT));
   };
 
-  // ── Generate week summary (AI-powered via Groq) ─────────────────────────
+  // ── Generate week summary (AI-powered) ─────────────────────────────────
 
-  const callAI = async (weekId: string, apiKey: string) => {
+  type AiProvider = 'openrouter' | 'groq';
+
+  const AI_PROVIDERS: Record<AiProvider, { url: string; model: string; label: string; keyPrefix: string; keyHint: string; keyUrl: string }> = {
+    openrouter: {
+      url: 'https://openrouter.ai/api/v1/chat/completions',
+      model: 'qwen/qwen3.6-plus:free',
+      label: 'OpenRouter API Key',
+      keyPrefix: 'sk-or-',
+      keyHint: 'Бесплатно на',
+      keyUrl: 'https://openrouter.ai/settings/keys',
+    },
+    groq: {
+      url: 'https://api.groq.com/openai/v1/chat/completions',
+      model: 'llama-3.1-8b-instant',
+      label: 'Groq API Key',
+      keyPrefix: 'gsk_',
+      keyHint: 'Бесплатно на',
+      keyUrl: 'https://console.groq.com/keys',
+    },
+  };
+
+  const SUMMARY_MESSAGES = (dates: string, blockText: string) => [
+    { role: 'system' as const, content: 'Ты пишешь однострочные саммери проекта для заказчика. Формат: тезисы через « · ». Конкретные результаты и артефакты, которые получает клиент. Без глаголов, без вводных слов. Начинай сразу с первого тезиса. Русский.' },
+    { role: 'user' as const, content: `Задачи недели (${dates}):\n\n${blockText}\n\nСаммери одной строкой. 1–4 тезиса по объёму.\n- Похожие задачи объединяй с количеством\n- Задачи одной темы из разных треков — объединяй по теме\n- Процессы (встреча, согласование, ревью) — называй результат: «утверждённый план» вместо «согласование плана»\n\nПримеры:\nhero + сетка услуг · auth-флоу · тексты о компании\n5 экранов SaaS · вебхуки оплаты\nстратегия бренда · 3 воркшопа с командой · гайдлайн tone of voice\nкаталог: макет + API + тесты · 6 текстов лендинга\nутверждённая орг-структура · 4 домашних задания · отчёт по метрикам` },
+  ];
+
+  const callAI = async (weekId: string, apiKey: string, provider: AiProvider) => {
     const week = weeks.find(w => w.id === weekId);
     if (!week) return;
 
     setSummaryLoading(weekId);
     updateWeekTheme(weekId, 'Загрузка...');
 
-    // Group rows into 4 semantic blocks
-    const blockMap: Record<string, string> = {
-      'согласование': 'Согласование',
-      'контент': 'Контент',
-      'ui-направление': 'Сайт', 'вайп код дизайн сайта': 'Сайт', 'design system': 'Сайт', 'вайп код верстка сайта': 'Сайт',
-      'mvp сервиса': 'Сервис', 'n8n интеграция': 'Сервис', 'продуктовые состояния': 'Сервис', 'qa аналитики': 'Сервис',
-    };
+    // Collect tasks grouped by track name
     const blocks: Record<string, string[]> = {};
     let totalCount = 0;
     rows.forEach(row => {
       const cards = row.cells[weekId] ?? [];
       if (cards.length === 0) return;
-      const block = blockMap[row.label.toLowerCase().trim()] ?? row.label;
-      if (!blocks[block]) blocks[block] = [];
+      if (!blocks[row.label]) blocks[row.label] = [];
       cards.forEach(c => {
-        const status = c.done ? '✅' : '⬜';
-        blocks[block].push(`${status} ${c.label.split('\n')[0]}`);
+        blocks[row.label].push(c.label.split('\n')[0]);
         totalCount++;
       });
     });
@@ -960,37 +995,35 @@ export default function GanttBoard({ dbPath, trackName, trackColor = 'yellow' }:
       return;
     }
 
-    const blockText = Object.entries(blocks).map(([name, tasks]) => `[${name}]\n${tasks.join('\n')}`).join('\n\n');
+    const blockText = Object.entries(blocks).map(([name, tasks]) => `— ${name}: ${tasks.join(', ')}`).join('\n');
+    const cfg = AI_PROVIDERS[provider];
 
     try {
-      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      const res = await fetch(cfg.url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: 'llama-3.1-8b-instant',
-          max_tokens: 150,
-          messages: [
-            { role: 'system', content: 'Ты — помощник проджект-менеджера. Пиши кратко на русском.' },
-            { role: 'user', content: `Задачи недели "${week.label}" (${week.dates}) сгруппированы по блокам:\n\n${blockText}\n\nНапиши саммери из ТРЁХ коротких частей через « · » (точка по центру). Каждая часть — ключевой конкретный результат одного-двух блоков. Объедини смежные блоки по смыслу.\n\nПравила:\n- НЕ пиши названия блоков (Сайт, Сервис, Контент, Согласование)\n- НЕ начинай с цифр\n- НЕ используй общие слова: «работа над», «согласование», «подготовка», «разработка», «создание»\n- Называй конкретные сущности из задач: «hero + сетка услуг» вместо «дизайн сайта»\n- Каждая часть до 25 символов\n- Формат ответа: «часть1 · часть2 · часть3»\n- Пример: «hero + навигация · auth-флоу · тексты о компании»` },
-          ],
+          model: cfg.model,
+          max_tokens: 100,
+          messages: SUMMARY_MESSAGES(week.dates, blockText),
         }),
       });
 
       if (!res.ok) {
         const errBody = await res.text().catch(() => '');
         if (res.status === 401) {
-          set(ref(db, 'gantt_config/groq_api_key'), null);
-          setGroqKey(null);
+          set(ref(db, `gantt_config/${provider}_api_key`), null);
+          setAiKey(null);
           updateWeekTheme(weekId, 'Неверный ключ');
           setPendingWeekId(weekId);
           setKeyValue('');
           setShowKeyInput(true);
         } else {
           updateWeekTheme(weekId, `Ошибка API: ${res.status}`);
-          console.error('Groq error:', errBody);
+          console.error('AI summary error:', errBody);
         }
         setSummaryLoading(null);
         return;
@@ -1010,7 +1043,8 @@ export default function GanttBoard({ dbPath, trackName, trackColor = 'yellow' }:
   };
 
   const [keyValue, setKeyValue] = useState('');
-  const [groqKey, setGroqKey] = useState<string | null>(null);
+  const [aiProvider, setAiProvider] = useState<AiProvider>('openrouter');
+  const [aiKey, setAiKey] = useState<string | null>(null);
 
   // Default dark theme
   useEffect(() => {
@@ -1018,19 +1052,28 @@ export default function GanttBoard({ dbPath, trackName, trackColor = 'yellow' }:
     document.documentElement.classList.remove('light');
   }, []);
 
-  // Load Groq key from Firebase on mount
+  // Load AI provider + key from Firebase on mount
   useEffect(() => {
-    const keyRef = ref(db, 'gantt_config/groq_api_key');
-    const unsub = onValue(keyRef, (snap) => {
-      const val = snap.val();
-      if (val) setGroqKey(val);
+    const provRef = ref(db, 'gantt_config/ai_provider');
+    const unsub1 = onValue(provRef, (snap) => {
+      const val = snap.val() as AiProvider | null;
+      if (val && AI_PROVIDERS[val]) setAiProvider(val);
     });
-    return () => unsub();
+    return () => unsub1();
   }, []);
 
+  useEffect(() => {
+    const keyRef = ref(db, `gantt_config/${aiProvider}_api_key`);
+    const unsub = onValue(keyRef, (snap) => {
+      const val = snap.val();
+      setAiKey(val ?? null);
+    });
+    return () => unsub();
+  }, [aiProvider]);
+
   const generateWeekSummary = (weekId: string) => {
-    if (groqKey) {
-      callAI(weekId, groqKey);
+    if (aiKey) {
+      callAI(weekId, aiKey, aiProvider);
     } else {
       setPendingWeekId(weekId);
       setKeyValue('');
@@ -1041,18 +1084,15 @@ export default function GanttBoard({ dbPath, trackName, trackColor = 'yellow' }:
   const handleKeySubmit = () => {
     const val = keyValue.trim();
     if (!val || !pendingWeekId) return;
-    // Save to Firebase so all devices can use it
-    set(ref(db, 'gantt_config/groq_api_key'), val);
-    setGroqKey(val);
+    set(ref(db, `gantt_config/${aiProvider}_api_key`), val);
+    setAiKey(val);
     setShowKeyInput(false);
     const wid = pendingWeekId;
     setPendingWeekId(null);
-    callAI(wid, val);
+    callAI(wid, val, aiProvider);
   };
 
   // ──────────────────────────────────────────────────────────────────────────
-
-  const COL_W = 154;
 
   return (
     <div className="min-h-screen bg-background text-foreground font-body">
@@ -1061,12 +1101,17 @@ export default function GanttBoard({ dbPath, trackName, trackColor = 'yellow' }:
       {showKeyInput && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => { setShowKeyInput(false); setPendingWeekId(null); }}>
           <div className="bg-background border border-border rounded-lg p-6 shadow-xl max-w-sm w-full mx-4" onClick={e => e.stopPropagation()}>
-            <p className="font-heading text-[length:var(--text-16)] font-bold mb-1">Groq API Key</p>
-            <p className="text-muted-foreground text-[length:var(--text-12)] mb-4">Бесплатно на <a href="https://console.groq.com/keys" target="_blank" rel="noopener" style={{textDecoration:'underline'}}>console.groq.com/keys</a></p>
+            <p className="font-heading text-[length:var(--text-16)] font-bold mb-1">{AI_PROVIDERS[aiProvider].label}</p>
+            <p className="text-muted-foreground text-[length:var(--text-12)] mb-3">{AI_PROVIDERS[aiProvider].keyHint} <a href={AI_PROVIDERS[aiProvider].keyUrl} target="_blank" rel="noopener" style={{textDecoration:'underline'}}>{AI_PROVIDERS[aiProvider].keyUrl.replace('https://', '')}</a></p>
+            <div className="flex gap-1 mb-3">
+              {(Object.keys(AI_PROVIDERS) as AiProvider[]).map(p => (
+                <button key={p} onClick={() => { setAiProvider(p); set(ref(db, 'gantt_config/ai_provider'), p); setKeyValue(''); }} className={`px-2 py-1 rounded text-[length:var(--text-11)] font-mono ${aiProvider === p ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}>{p}</button>
+              ))}
+            </div>
             <input
               autoFocus
               type="password"
-              placeholder="gsk_..."
+              placeholder={`${AI_PROVIDERS[aiProvider].keyPrefix}...`}
               value={keyValue}
               onChange={e => setKeyValue(e.target.value)}
               className="w-full px-3 py-2 rounded border border-border bg-background text-foreground font-mono text-[length:var(--text-14)] mb-3 outline-none focus:border-muted-foreground"
@@ -1158,10 +1203,9 @@ export default function GanttBoard({ dbPath, trackName, trackColor = 'yellow' }:
         </div>
 
         {/* Gantt table */}
-        <div className="border border-border rounded-xl overflow-hidden relative">
+        <div ref={containerRef} className="border border-border rounded-xl overflow-hidden relative">
           <div style={{ overflow: 'hidden' }}>
             <div style={{
-              minWidth: isMobile ? '100%' : COL_W + shownWeeks.length * 240,
               transform: slideDir ? `translateX(${slideDir === 'left' ? '40px' : '-40px'})` : 'translateX(0)',
               opacity: slideDir ? 0.6 : 1,
               transition: slideDir ? 'transform 0.25s ease-out, opacity 0.25s ease-out' : 'none',
@@ -1184,7 +1228,7 @@ export default function GanttBoard({ dbPath, trackName, trackColor = 'yellow' }:
                       key={w.id}
                       className="flex-1 px-2 py-2 md:px-3 md:py-2.5 border-r border-border last:border-r-0 relative overflow-hidden"
                       style={{
-                        minWidth: isMobile ? 0 : 240,
+                        minWidth: 0,
                         backgroundColor: isCurrent ? cssVar(effColor, '900') : undefined,
                         borderTop: `2px solid ${cssVar(effColor, '100')}`,
                       }}
@@ -1209,7 +1253,7 @@ export default function GanttBoard({ dbPath, trackName, trackColor = 'yellow' }:
                       {/* Row 2: theme/summary + refresh */}
                       <div className="flex items-start gap-1 mt-1">
                         <p className="text-[length:var(--text-12)] leading-snug flex-1 min-w-0" style={{ color: cssVar(effColor, 'fg-subtle') }}>
-                          <EditableText value={w.theme} onChange={v => { updateWeekTheme(w.id, v); setSummaryReady(null); }} startEditing={summaryReady === w.id} />
+                          <EditableText value={w.theme} onChange={v => { updateWeekTheme(w.id, v); setSummaryReady(null); }} startEditing={summaryReady === w.id} placeholder="сгенерировать саммери →" />
                         </p>
                         <button
                           onClick={() => generateWeekSummary(w.id)}
@@ -1283,7 +1327,7 @@ export default function GanttBoard({ dbPath, trackName, trackColor = 'yellow' }:
                         key={w.id}
                         className="flex-1 px-1.5 py-1.5 md:px-2 md:py-2 border-r border-border/40 last:border-r-0"
                         style={{
-                          minWidth: isMobile ? 0 : 240,
+                          minWidth: 0,
                           backgroundColor: isCurrent ? `color-mix(in srgb, ${cssVar(effColor, '900')}, transparent 60%)` : undefined,
                         }}
                         onDragOver={e => onCardDragOver(e, row.id, w.id, null)}

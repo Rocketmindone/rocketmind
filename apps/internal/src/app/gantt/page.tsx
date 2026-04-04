@@ -3,9 +3,9 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { ref, onValue, get, set, update, remove } from 'firebase/database';
 import { db } from '@/lib/firebase';
-import GanttBoard from './GanttBoard';
+import GanttBoard, { getCurrentWeekIndex, formatWeekDates } from './GanttBoard';
 
-type TrackInfo = { name: string; color?: string; archived?: boolean };
+type TrackInfo = { name: string; color?: string; archived?: boolean; startWeek?: number };
 
 const LOCK_PASSWORD = '2345';
 
@@ -91,12 +91,37 @@ function ColorPicker({ value, onChange }: { value: string; onChange: (v: string)
   );
 }
 
+// ─── Week selector ───────────────────────────────────────────────────────────
+
+function WeekSelect({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  const cwIdx = getCurrentWeekIndex();
+  // Show from 4 weeks before current to 12 weeks after
+  const from = Math.max(0, cwIdx - 4);
+  const to = cwIdx + 12;
+  const options = Array.from({ length: to - from + 1 }, (_, i) => from + i);
+  return (
+    <select
+      value={value}
+      onChange={e => onChange(Number(e.target.value))}
+      className="w-full rounded-lg border border-border bg-transparent px-3 py-2 text-[length:var(--text-14)] text-foreground outline-none transition-colors focus:border-foreground appearance-none cursor-pointer"
+      style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%23888' stroke-width='1.5'%3E%3Cpath d='M3 4.5l3 3 3-3'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 10px center' }}
+    >
+      {options.map(idx => (
+        <option key={idx} value={idx}>
+          {formatWeekDates(idx)}{idx === cwIdx ? ' (текущая)' : ''}
+        </option>
+      ))}
+    </select>
+  );
+}
+
 // ─── Main ────────────────────────────────────────────────────────────────────
 
 export default function GanttPage() {
   const [trackSlug, setTrackSlug] = useState<string | null>(null);
   const [trackName, setTrackName] = useState('');
   const [trackColor, setTrackColor] = useState('yellow');
+  const [trackStartWeek, setTrackStartWeek] = useState<number | undefined>(undefined);
   const [mode, setMode] = useState<'loading' | 'index' | 'board' | 'notfound'>('loading');
 
   useEffect(() => {
@@ -108,6 +133,7 @@ export default function GanttPage() {
       if (tracks && slug in tracks && !tracks[slug].archived) {
         setTrackName(tracks[slug].name);
         setTrackColor(tracks[slug].color ?? 'yellow');
+        setTrackStartWeek(tracks[slug].startWeek);
         setMode('board');
         const base = window.location.pathname.replace(/\/$/, '');
         const parts = base.split('/');
@@ -131,6 +157,7 @@ export default function GanttPage() {
   const [newName, setNewName] = useState('');
   const [newSlug, setNewSlug] = useState('');
   const [newColor, setNewColor] = useState('yellow');
+  const [newStartWeek, setNewStartWeek] = useState(() => getCurrentWeekIndex());
   const [slugTouched, setSlugTouched] = useState(false);
   const [slugError, setSlugError] = useState('');
   const [creating, setCreating] = useState(false);
@@ -141,6 +168,7 @@ export default function GanttPage() {
   const [editingSlug, setEditingSlug] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
   const [editColor, setEditColor] = useState('yellow');
+  const [editStartWeek, setEditStartWeek] = useState(() => getCurrentWeekIndex());
   const editNameRef = useRef<HTMLInputElement>(null);
 
   // ── Toast state ──────────────────────────────────────────────────────────
@@ -202,9 +230,9 @@ export default function GanttPage() {
     setCreating(true);
     const existing = await get(ref(db, `gantt_config/tracks/${newSlug}`));
     if (existing.exists()) { setSlugError('Такой slug уже занят'); setCreating(false); return; }
-    await set(ref(db, `gantt_config/tracks/${newSlug}`), { name: newName.trim(), color: newColor });
-    setNewName(''); setNewSlug(''); setNewColor('yellow'); setSlugTouched(false); setShowForm(false); setCreating(false);
-  }, [newName, newSlug, newColor, slugError]);
+    await set(ref(db, `gantt_config/tracks/${newSlug}`), { name: newName.trim(), color: newColor, startWeek: newStartWeek });
+    setNewName(''); setNewSlug(''); setNewColor('yellow'); setNewStartWeek(getCurrentWeekIndex()); setSlugTouched(false); setShowForm(false); setCreating(false);
+  }, [newName, newSlug, newColor, newStartWeek, slugError]);
 
   const archiveTrack = useCallback(async (slug: string) => {
     await update(ref(db, `gantt_config/tracks/${slug}`), { archived: true });
@@ -218,13 +246,14 @@ export default function GanttPage() {
     setEditingSlug(slug);
     setEditName(info.name);
     setEditColor(info.color ?? 'yellow');
+    setEditStartWeek(info.startWeek ?? getCurrentWeekIndex());
   }, []);
 
   const saveEdit = useCallback(async () => {
     if (!editingSlug || !editName.trim()) return;
-    await update(ref(db, `gantt_config/tracks/${editingSlug}`), { name: editName.trim(), color: editColor });
+    await update(ref(db, `gantt_config/tracks/${editingSlug}`), { name: editName.trim(), color: editColor, startWeek: editStartWeek });
     setEditingSlug(null);
-  }, [editingSlug, editName, editColor]);
+  }, [editingSlug, editName, editColor, editStartWeek]);
 
   const cancelEdit = useCallback(() => setEditingSlug(null), []);
 
@@ -255,7 +284,7 @@ export default function GanttPage() {
   }, []);
 
   const resetForm = useCallback(() => {
-    setShowForm(false); setNewName(''); setNewSlug(''); setNewColor('yellow'); setSlugTouched(false);
+    setShowForm(false); setNewName(''); setNewSlug(''); setNewColor('yellow'); setNewStartWeek(getCurrentWeekIndex()); setSlugTouched(false);
   }, []);
 
   // ── Derived ──────────────────────────────────────────────────────────────
@@ -273,7 +302,7 @@ export default function GanttPage() {
 
   // ── Board mode ───────────────────────────────────────────────────────────
   if (mode === 'board' && trackSlug) {
-    return <GanttBoard dbPath={`gantt_tracks/${trackSlug}`} trackName={trackName} trackColor={trackColor} />;
+    return <GanttBoard dbPath={`gantt_tracks/${trackSlug}`} trackName={trackName} trackColor={trackColor} startWeekIdx={trackStartWeek} />;
   }
 
   // ── Not found ────────────────────────────────────────────────────────────
@@ -358,6 +387,10 @@ export default function GanttPage() {
                       <label className="block text-[length:var(--text-12)] text-muted-foreground font-mono uppercase tracking-wide">Цвет</label>
                       <ColorPicker value={editColor} onChange={setEditColor} />
                     </div>
+                    <div className="space-y-1.5">
+                      <label className="block text-[length:var(--text-12)] text-muted-foreground font-mono uppercase tracking-wide">Стартовая неделя</label>
+                      <WeekSelect value={editStartWeek} onChange={setEditStartWeek} />
+                    </div>
                     <div className="flex gap-2 justify-end">
                       <button onClick={cancelEdit} className="px-3 py-1.5 rounded-lg text-[length:var(--text-13)] text-muted-foreground hover:bg-muted transition-colors">
                         Отмена
@@ -433,6 +466,10 @@ export default function GanttPage() {
                 <div className="space-y-1.5">
                   <label className="block text-[length:var(--text-12)] text-muted-foreground font-mono uppercase tracking-wide">Цвет</label>
                   <ColorPicker value={newColor} onChange={setNewColor} />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="block text-[length:var(--text-12)] text-muted-foreground font-mono uppercase tracking-wide">Стартовая неделя</label>
+                  <WeekSelect value={newStartWeek} onChange={setNewStartWeek} />
                 </div>
                 <div className="space-y-1.5">
                   <label className="block text-[length:var(--text-12)] text-muted-foreground font-mono uppercase tracking-wide">Slug (URL)</label>
