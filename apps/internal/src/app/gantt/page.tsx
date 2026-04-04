@@ -167,6 +167,8 @@ export default function GanttPage() {
   // ── Edit state ───────────────────────────────────────────────────────────
   const [editingSlug, setEditingSlug] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
+  const [editSlug, setEditSlug] = useState('');
+  const [editSlugError, setEditSlugError] = useState('');
   const [editColor, setEditColor] = useState('yellow');
   const [editStartWeek, setEditStartWeek] = useState(() => getCurrentWeekIndex());
   const editNameRef = useRef<HTMLInputElement>(null);
@@ -217,6 +219,13 @@ export default function GanttPage() {
   }, [newSlug, tracks]);
 
   useEffect(() => {
+    if (!editSlug || editSlug === editingSlug) { setEditSlugError(''); return; }
+    if (!/^[a-z0-9-]+$/.test(editSlug)) { setEditSlugError('Только строчные латинские буквы, цифры и дефис'); return; }
+    if (tracks && editSlug in tracks) { setEditSlugError('Такой slug уже занят'); return; }
+    setEditSlugError('');
+  }, [editSlug, editingSlug, tracks]);
+
+  useEffect(() => {
     if (editingSlug) editNameRef.current?.focus();
   }, [editingSlug]);
 
@@ -245,15 +254,29 @@ export default function GanttPage() {
   const startEdit = useCallback((slug: string, info: TrackInfo) => {
     setEditingSlug(slug);
     setEditName(info.name);
+    setEditSlug(slug);
     setEditColor(info.color ?? 'yellow');
     setEditStartWeek(info.startWeek ?? getCurrentWeekIndex());
   }, []);
 
   const saveEdit = useCallback(async () => {
-    if (!editingSlug || !editName.trim()) return;
-    await update(ref(db, `gantt_config/tracks/${editingSlug}`), { name: editName.trim(), color: editColor, startWeek: editStartWeek });
+    if (!editingSlug || !editName.trim() || !editSlug || editSlugError) return;
+    const newData = { name: editName.trim(), color: editColor, startWeek: editStartWeek };
+    if (editSlug !== editingSlug) {
+      // Rename: copy track config + data to new slug, delete old
+      const oldTrack = await get(ref(db, `gantt_config/tracks/${editingSlug}`));
+      await set(ref(db, `gantt_config/tracks/${editSlug}`), { ...oldTrack.val(), ...newData });
+      await remove(ref(db, `gantt_config/tracks/${editingSlug}`));
+      const dataSnap = await get(ref(db, `gantt_tracks/${editingSlug}`));
+      if (dataSnap.exists()) {
+        await set(ref(db, `gantt_tracks/${editSlug}`), dataSnap.val());
+        await remove(ref(db, `gantt_tracks/${editingSlug}`));
+      }
+    } else {
+      await update(ref(db, `gantt_config/tracks/${editingSlug}`), newData);
+    }
     setEditingSlug(null);
-  }, [editingSlug, editName, editColor, editStartWeek]);
+  }, [editingSlug, editName, editSlug, editSlugError, editColor, editStartWeek]);
 
   const cancelEdit = useCallback(() => setEditingSlug(null), []);
 
@@ -391,13 +414,26 @@ export default function GanttPage() {
                       <label className="block text-[length:var(--text-12)] text-muted-foreground font-mono uppercase tracking-wide">Стартовая неделя</label>
                       <WeekSelect value={editStartWeek} onChange={setEditStartWeek} />
                     </div>
+                    <div className="space-y-1.5">
+                      <label className="block text-[length:var(--text-12)] text-muted-foreground font-mono uppercase tracking-wide">Slug (URL)</label>
+                      <div className="flex items-center gap-0 rounded-lg border border-border overflow-hidden transition-colors focus-within:border-foreground">
+                        <span className="text-[length:var(--text-14)] text-muted-foreground/50 pl-3 flex-shrink-0">/gantt/</span>
+                        <input
+                          value={editSlug}
+                          onChange={e => setEditSlug(e.target.value.toLowerCase())}
+                          onKeyDown={e => { if (e.key === 'Enter') saveEdit(); if (e.key === 'Escape') cancelEdit(); }}
+                          className="flex-1 bg-transparent py-2 pr-3 text-[length:var(--text-14)] text-foreground outline-none"
+                        />
+                      </div>
+                      {editSlugError && <p className="text-[length:var(--text-12)] text-destructive">{editSlugError}</p>}
+                    </div>
                     <div className="flex gap-2 justify-end">
                       <button onClick={cancelEdit} className="px-3 py-1.5 rounded-lg text-[length:var(--text-13)] text-muted-foreground hover:bg-muted transition-colors">
                         Отмена
                       </button>
                       <button
                         onClick={saveEdit}
-                        disabled={!editName.trim()}
+                        disabled={!editName.trim() || !editSlug || !!editSlugError}
                         className="px-4 py-1.5 rounded-lg bg-foreground text-background text-[length:var(--text-13)] font-medium hover:opacity-90 transition-opacity disabled:opacity-40"
                       >
                         Сохранить
