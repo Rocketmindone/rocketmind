@@ -54,7 +54,7 @@ function HeroCTA({ text }: { text: string }) {
           />
         </svg>
       </div>
-      <span className="h4 md:h3 text-[#0A0A0A]">{text}</span>
+      <span className="h4 md:h3 text-[#0A0A0A] text-left">{text}</span>
     </button>
   );
 }
