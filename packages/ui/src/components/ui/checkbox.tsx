@@ -10,7 +10,7 @@ type CheckboxProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> &
 }
 
 const checkboxBaseClassName =
-  "peer size-4 shrink-0 appearance-none rounded-sm border border-border bg-rm-gray-1 transition-[background-color,border-color,opacity] duration-150 outline-none checked:border-[var(--checkbox-accent,var(--rm-yellow-100))] checked:bg-[var(--checkbox-accent,var(--rm-yellow-100))] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-40"
+  "peer size-5 shrink-0 appearance-none rounded-sm border border-border bg-rm-gray-1 transition-[background-color,border-color,opacity] duration-150 outline-none checked:border-[var(--checkbox-accent,var(--rm-yellow-100))] checked:bg-[var(--checkbox-accent,var(--rm-yellow-100))] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-40"
 
 const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
   ({ className, indeterminate = false, ...props }, forwardedRef) => {
@@ -24,7 +24,7 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
     }, [indeterminate])
 
     return (
-      <span className="relative inline-flex size-4 shrink-0 items-center justify-center">
+      <span className="relative inline-flex size-5 shrink-0 items-center justify-center">
         <input
           {...props}
           ref={internalRef}
@@ -38,10 +38,10 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
           )}
         />
         {indeterminate ? (
-          <Minus className="pointer-events-none absolute size-3 text-[var(--checkbox-accent-fg,var(--rm-yellow-fg))]" strokeWidth={2.4} />
+          <Minus className="pointer-events-none absolute size-3.5 text-[var(--checkbox-accent-fg,var(--rm-yellow-fg))]" strokeWidth={2.4} />
         ) : (
           <Check
-            className="pointer-events-none absolute size-3 text-[var(--checkbox-accent-fg,var(--rm-yellow-fg))] opacity-0 transition-opacity duration-150 peer-checked:opacity-100"
+            className="pointer-events-none absolute size-3.5 text-[var(--checkbox-accent-fg,var(--rm-yellow-fg))] opacity-0 transition-opacity duration-150 peer-checked:opacity-100"
             strokeWidth={2.4}
           />
         )}

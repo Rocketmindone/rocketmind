@@ -189,43 +189,42 @@ export default function ComponentsPage() {
           </div>
 
           {/* Icon buttons */}
-          <div className="border border-border rounded-lg overflow-hidden mt-6">
-            <div className="px-4 py-2 bg-[var(--rm-gray-1)] border-b border-border">
-              <p className={`text-[10px] ${mono} uppercase tracking-wider text-muted-foreground`}>Icon buttons — размеры</p>
-            </div>
-            <div className="p-6 flex flex-wrap items-end gap-6">
-              {([
-                { size: "icon-micro" as const, label: "Micro / 16px", desc: "Inline-контролы: удалить карточку, обновить саммери, close-tag. Выровнен с checkbox 16×16." },
-                { size: "icon-xs" as const, label: "XS / 24px", desc: "Компактные действия в плотных списках и карточках." },
-                { size: "icon-sm" as const, label: "SM / 28px", desc: "Toolbar-кнопки рядом с SM-текстовыми кнопками." },
-                { size: "icon" as const, label: "Default / 32px", desc: "Основные icon-кнопки: undo, redo, навигация." },
-                { size: "icon-lg" as const, label: "LG / 36px", desc: "Крупные icon-кнопки для hero-секций и standalone-действий." },
-              ]).map(({ size, label, desc }) => (
-                <div key={size} className="flex flex-col items-center gap-2">
-                  <button className={`inline-flex items-center justify-center rounded-sm border border-border bg-[var(--rm-gray-1)] text-foreground transition-all duration-150 hover:bg-[var(--rm-gray-2)] cursor-pointer ${
-                    size === 'icon-micro' ? 'size-4 text-[10px]' :
-                    size === 'icon-xs' ? 'size-6 text-[length:var(--text-12)]' :
-                    size === 'icon-sm' ? 'size-7 text-[length:var(--text-12)]' :
-                    size === 'icon-lg' ? 'size-9 text-[length:var(--text-14)]' :
-                    'size-8 text-[length:var(--text-14)]'
-                  }`}>×</button>
-                  <div className="text-center">
-                    <p className={`text-[10px] ${mono} uppercase tracking-wider text-muted-foreground`}>{label}</p>
-                    <p className="text-[10px] text-muted-foreground/60 max-w-[140px] mt-0.5">{desc}</p>
-                  </div>
-                  <CopyButton value={`<Button variant="ghost" size="${size}" />`} label={size} />
+          {(() => {
+            const iconSizes = [
+              { size: "icon-lg", label: "MD / 40px", px: 40, desc: "Крупные icon-кнопки для hero-секций и standalone-действий." },
+              { size: "icon", label: "SM / 32px", px: 32, desc: "Основные icon-кнопки: undo, redo, тема, навигация." },
+              { size: "icon-sm", label: "XS / 28px", px: 28, desc: "Toolbar-кнопки рядом с компактными текстовыми кнопками." },
+              { size: "icon-micro", label: "Micro / 20px", px: 20, desc: "Inline-контролы: удалить карточку, обновить саммери. Выровнен с Checkbox/Radio 20×20." },
+            ]
+            return (
+              <div className="border border-border rounded-lg overflow-hidden bg-border mt-6">
+                <div className="grid gap-[1px]" style={{ gridTemplateColumns: `repeat(${iconSizes.length}, 1fr)` }}>
+                  {iconSizes.map(({ size, label }) => (
+                    <div key={`h-${size}`} className="bg-muted/60 px-4 py-3 flex items-center justify-between gap-2">
+                      <span className={`text-[10px] text-muted-foreground ${mono} uppercase tracking-wider`}>{label}</span>
+                      <CopyButton value={`<Button variant="ghost" size="${size}" />`} label={size} />
+                    </div>
+                  ))}
+                  {iconSizes.map(({ size, px }) => (
+                    <div key={`b-${size}`} className="bg-background px-4 py-5 flex items-center gap-3">
+                      <button
+                        className="inline-flex items-center justify-center rounded-sm border border-border bg-[var(--rm-gray-1)] text-foreground transition-all duration-150 hover:bg-[var(--rm-gray-2)] cursor-pointer flex-shrink-0"
+                        style={{ width: px, height: px, fontSize: px <= 20 ? 11 : 14 }}
+                      >×</button>
+                      <p className={`text-[10px] text-muted-foreground ${mono} leading-relaxed`}>
+                        {iconSizes.find(s => s.size === size)!.desc}
+                      </p>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </div>
+              </div>
+            )
+          })()}
         </div>
 
         {/* ── Бейджи ── */}
         <div className="mb-12">
-          <div className="flex items-center justify-between gap-4 mb-2">
-            <SubSection id="components-badges" title="Бейджи" />
-            <CopyButton value={`import { Badge } from "@rocketmind/ui"`} label="Badge import" />
-          </div>
+          <SubSection id="components-badges" title="Бейджи" />
           <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">
             Лейблы для статусов, категорий и тегов. Шрифт — Loos Latin Condensed Medium, uppercase. Три размера: SM (20px) / MD (24px) / LG (28px).
           </p>
@@ -300,10 +299,7 @@ export default function ComponentsPage() {
 
         {/* ── Табы ── */}
         <div className="mb-12">
-          <div className="flex items-center justify-between gap-4 mb-2">
-            <SubSection id="components-tabs" title="Табы" />
-            <CopyButton value={`import { Tabs, TabsList, TabsTrigger, TabsContent } from "@rocketmind/ui"`} label="Tabs import" />
-          </div>
+          <SubSection id="components-tabs" title="Табы" />
           <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">
             Tabs переключают соседние панели без смены экрана. <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded">default</code> для равноправных наборов данных, <code className="text-[length:var(--text-12)] bg-rm-gray-2 px-1 py-0.5 rounded">secondary</code> для локальной навигации.
           </p>

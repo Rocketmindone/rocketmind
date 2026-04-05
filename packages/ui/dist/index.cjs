@@ -293,10 +293,9 @@ var buttonVariants = (0, import_class_variance_authority3.cva)(
         sm: "h-7 gap-1 rounded-sm px-2.5 text-[0.8rem] in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3.5",
         lg: "h-9 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3",
         icon: "size-8",
-        "icon-micro": "size-4 rounded-sm text-[10px] in-data-[slot=button-group]:rounded-lg [&_svg:not([class*='size-'])]:size-2.5",
-        "icon-xs": "size-6 rounded-sm in-data-[slot=button-group]:rounded-lg [&_svg:not([class*='size-'])]:size-3",
+        "icon-micro": "size-5 rounded-sm text-[11px] in-data-[slot=button-group]:rounded-lg [&_svg:not([class*='size-'])]:size-3",
         "icon-sm": "size-7 rounded-sm in-data-[slot=button-group]:rounded-lg",
-        "icon-lg": "size-9"
+        "icon-lg": "size-10"
       }
     },
     defaultVariants: {
@@ -418,7 +417,7 @@ function CardFooter({ className, ...props }) {
 var React2 = __toESM(require("react"), 1);
 var import_lucide_react = require("lucide-react");
 var import_jsx_runtime6 = require("react/jsx-runtime");
-var checkboxBaseClassName = "peer size-4 shrink-0 appearance-none rounded-sm border border-border bg-rm-gray-1 transition-[background-color,border-color,opacity] duration-150 outline-none checked:border-[var(--checkbox-accent,var(--rm-yellow-100))] checked:bg-[var(--checkbox-accent,var(--rm-yellow-100))] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-40";
+var checkboxBaseClassName = "peer size-5 shrink-0 appearance-none rounded-sm border border-border bg-rm-gray-1 transition-[background-color,border-color,opacity] duration-150 outline-none checked:border-[var(--checkbox-accent,var(--rm-yellow-100))] checked:bg-[var(--checkbox-accent,var(--rm-yellow-100))] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-40";
 var Checkbox = React2.forwardRef(
   ({ className, indeterminate = false, ...props }, forwardedRef) => {
     const internalRef = React2.useRef(null);
@@ -427,7 +426,7 @@ var Checkbox = React2.forwardRef(
       if (!internalRef.current) return;
       internalRef.current.indeterminate = indeterminate;
     }, [indeterminate]);
-    return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("span", { className: "relative inline-flex size-4 shrink-0 items-center justify-center", children: [
+    return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("span", { className: "relative inline-flex size-5 shrink-0 items-center justify-center", children: [
       /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
         "input",
         {
@@ -443,10 +442,10 @@ var Checkbox = React2.forwardRef(
           )
         }
       ),
-      indeterminate ? /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(import_lucide_react.Minus, { className: "pointer-events-none absolute size-3 text-[var(--checkbox-accent-fg,var(--rm-yellow-fg))]", strokeWidth: 2.4 }) : /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+      indeterminate ? /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(import_lucide_react.Minus, { className: "pointer-events-none absolute size-3.5 text-[var(--checkbox-accent-fg,var(--rm-yellow-fg))]", strokeWidth: 2.4 }) : /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
         import_lucide_react.Check,
         {
-          className: "pointer-events-none absolute size-3 text-[var(--checkbox-accent-fg,var(--rm-yellow-fg))] opacity-0 transition-opacity duration-150 peer-checked:opacity-100",
+          className: "pointer-events-none absolute size-3.5 text-[var(--checkbox-accent-fg,var(--rm-yellow-fg))] opacity-0 transition-opacity duration-150 peer-checked:opacity-100",
           strokeWidth: 2.4
         }
       )
@@ -1123,9 +1122,9 @@ function NoteDescription({ className, ...props }) {
 // src/components/ui/radio.tsx
 var React8 = __toESM(require("react"), 1);
 var import_jsx_runtime14 = require("react/jsx-runtime");
-var radioBaseClassName = "peer size-4 shrink-0 appearance-none rounded-full border border-border bg-rm-gray-1 transition-[background-color,border-color,opacity] duration-150 outline-none checked:border-[var(--rm-yellow-100)] checked:bg-background focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-40";
+var radioBaseClassName = "peer size-5 shrink-0 appearance-none rounded-full border border-border bg-rm-gray-1 transition-[background-color,border-color,opacity] duration-150 outline-none checked:border-[var(--rm-yellow-100)] checked:bg-background focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-40";
 var Radio = React8.forwardRef(({ className, ...props }, ref) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "relative inline-flex size-4 shrink-0 items-center justify-center", children: [
+  return /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "relative inline-flex size-5 shrink-0 items-center justify-center", children: [
     /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(
       "input",
       {
@@ -1136,7 +1135,7 @@ var Radio = React8.forwardRef(({ className, ...props }, ref) => {
         className: cn(radioBaseClassName, className)
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "pointer-events-none absolute size-2 rounded-full bg-[var(--rm-yellow-100)] opacity-0 transition-opacity duration-150 peer-checked:opacity-100" })
+    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "pointer-events-none absolute size-2.5 rounded-full bg-[var(--rm-yellow-100)] opacity-0 transition-opacity duration-150 peer-checked:opacity-100" })
   ] });
 });
 Radio.displayName = "Radio";
@@ -1607,7 +1606,7 @@ function Switch({
       "data-slot": "switch",
       "data-size": size,
       className: cn(
-        "peer group/switch relative inline-flex shrink-0 items-center rounded-sm border border-border bg-rm-gray-1 p-[1px] transition-[background-color,border-color,box-shadow,opacity] duration-150 outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 data-[size=default]:h-5 data-[size=default]:w-9 data-[size=sm]:h-4 data-[size=sm]:w-7 data-checked:border-[var(--rm-yellow-100)] data-checked:bg-[var(--rm-yellow-100)] data-disabled:cursor-not-allowed data-disabled:opacity-40",
+        "peer group/switch relative inline-flex shrink-0 items-center rounded-sm border border-border bg-rm-gray-1 p-[1px] transition-[background-color,border-color,box-shadow,opacity] duration-150 outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 data-[size=default]:h-5 data-[size=default]:w-9 data-[size=sm]:h-5 data-[size=sm]:w-8 data-checked:border-[var(--rm-yellow-100)] data-checked:bg-[var(--rm-yellow-100)] data-disabled:cursor-not-allowed data-disabled:opacity-40",
         className
       ),
       ...props,
@@ -1615,7 +1614,7 @@ function Switch({
         import_switch.Switch.Thumb,
         {
           "data-slot": "switch-thumb",
-          className: "pointer-events-none block rounded-sm bg-foreground transition-[transform,background-color] duration-150 group-data-[size=default]/switch:size-4 group-data-[size=sm]/switch:size-3 group-data-[size=default]/switch:data-checked:translate-x-4 group-data-[size=sm]/switch:data-checked:translate-x-3 group-data-[size=default]/switch:data-unchecked:translate-x-0 group-data-[size=sm]/switch:data-unchecked:translate-x-0 group-data-checked/switch:bg-[var(--rm-yellow-fg)]"
+          className: "pointer-events-none block rounded-sm bg-foreground transition-[transform,background-color] duration-150 group-data-[size=default]/switch:size-4 group-data-[size=sm]/switch:size-3.5 group-data-[size=default]/switch:data-checked:translate-x-4 group-data-[size=sm]/switch:data-checked:translate-x-3 group-data-[size=default]/switch:data-unchecked:translate-x-0 group-data-[size=sm]/switch:data-unchecked:translate-x-0 group-data-checked/switch:bg-[var(--rm-yellow-fg)]"
         }
       )
     }
