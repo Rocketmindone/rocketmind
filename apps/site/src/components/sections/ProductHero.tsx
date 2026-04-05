@@ -17,9 +17,9 @@ type ProductHeroProps = {
 
 // ── Factoid Card ───────────────────────────────────────────────────────────────
 
-function FactoidCard({ number, label, text }: Factoid) {
+function FactoidCard({ number, label, text, stretch }: Factoid & { stretch?: boolean }) {
   return (
-    <div className="flex flex-col p-5 md:p-7 h-[126px] md:h-[189px] border-b border-l border-r border-[#404040]">
+    <div className={`flex flex-col p-5 md:p-7 border-b border-l border-r border-[#404040] ${stretch ? "flex-1" : "h-[126px] md:h-[189px]"}`}>
       <div className="flex flex-col justify-between gap-7 h-full">
         <div className="flex items-center gap-5">
           <span className="h2 text-[#F0F0F0]">{number}</span>
@@ -37,11 +37,11 @@ function FactoidCard({ number, label, text }: Factoid) {
 
 // ── CTA Button ─────────────────────────────────────────────────────────────────
 
-function HeroCTA({ text }: { text: string }) {
+function HeroCTA({ text, stretch }: { text: string; stretch?: boolean }) {
   return (
     <button
       type="button"
-      className="flex flex-col justify-between w-full bg-[#FFCC00] p-5 md:p-7 h-[126px] md:h-[189px] cursor-pointer"
+      className={`flex flex-col justify-between w-full bg-[#FFCC00] p-5 md:p-7 cursor-pointer ${stretch ? "flex-1" : "h-[126px] md:h-[189px]"}`}
     >
       <div className="flex justify-end w-full">
         <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
@@ -72,18 +72,17 @@ export function ProductHero({
   return (
     <section className="relative w-full bg-[#0A0A0A] pt-16">
       {/* ── Desktop layout ── */}
-      <div className="hidden lg:flex mx-auto max-w-[1400px]">
+      <div className="hidden lg:flex mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14">
         {/* Left: content area with dot grid background */}
         <div className="relative flex-1 min-h-[756px]">
-          {/* Dot Grid Lens background */}
+          {/* Dot Grid Lens background — extends beyond padding */}
           <DotGridLens
             accentColor
-            className="absolute inset-0 z-0"
-            style={{ width: "100%", height: "100%" }}
+            className="absolute -left-14 top-0 bottom-0 right-0 z-0"
           />
 
           {/* Left fade gradient */}
-          <div className="absolute left-0 top-0 bottom-0 w-[180px] z-[1] pointer-events-none" style={{ background: "linear-gradient(90deg, #0A0A0A 0%, transparent 100%)" }} />
+          <div className="absolute -left-14 top-0 bottom-0 w-[180px] z-[1] pointer-events-none" style={{ background: "linear-gradient(90deg, #0A0A0A 0%, transparent 100%)" }} />
 
           {/* Content overlay */}
           <div className="relative z-10 flex flex-col justify-end h-full">
@@ -113,12 +112,12 @@ export function ProductHero({
           </div>
         </div>
 
-        {/* Right: sidebar with factoids + CTA */}
+        {/* Right: sidebar with factoids + CTA — stretch to fill hero height */}
         <div className="w-[344px] shrink-0 flex flex-col">
           {factoids.map((f) => (
-            <FactoidCard key={f.number} {...f} />
+            <FactoidCard key={f.number} {...f} stretch />
           ))}
-          <HeroCTA text={ctaText} />
+          <HeroCTA text={ctaText} stretch />
         </div>
       </div>
 
