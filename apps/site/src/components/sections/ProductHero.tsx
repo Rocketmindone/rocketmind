@@ -41,9 +41,8 @@ function HeroCTA({ text }: { text: string }) {
   return (
     <button
       type="button"
-      className="flex items-center justify-between w-full bg-[#FFCC00] p-5 md:p-7 md:h-[189px] group cursor-pointer"
+      className="flex flex-col justify-between w-full bg-[#FFCC00] p-5 md:p-7 h-auto md:h-[189px] cursor-pointer"
     >
-      <span className="h4 md:h3 text-[#0A0A0A]">{text}</span>
       <svg
         width="32"
         height="32"
@@ -59,6 +58,7 @@ function HeroCTA({ text }: { text: string }) {
           strokeLinejoin="round"
         />
       </svg>
+      <span className="h4 md:h3 text-[#0A0A0A] mt-4 md:mt-0">{text}</span>
     </button>
   );
 }
@@ -86,8 +86,11 @@ export function ProductHero({
             style={{ width: "100%", height: "100%" }}
           />
 
+          {/* Left fade gradient */}
+          <div className="absolute left-0 top-0 bottom-0 w-11 z-[1] pointer-events-none" style={{ background: "linear-gradient(90deg, #0A0A0A 0%, transparent 100%)" }} />
+
           {/* Content overlay */}
-          <div className="relative z-10 flex flex-col justify-end h-full pb-0">
+          <div className="relative z-10 flex flex-col justify-end h-full">
             {/* Product illustration */}
             <div className="absolute top-9 left-0">
               <Image
@@ -100,7 +103,7 @@ export function ProductHero({
             </div>
 
             {/* Text content */}
-            <div className="flex flex-col gap-11 pr-10 pb-0 mt-auto" style={{ paddingTop: "298px" }}>
+            <div className="flex flex-col gap-11 pr-10 pb-14 mt-auto" style={{ paddingTop: "298px" }}>
               <div className="flex flex-col gap-6">
                 <span className="h4 text-[#FFCC00]">{caption}</span>
                 <h1 className="h1 text-[#F0F0F0] whitespace-pre-line">{title}</h1>
