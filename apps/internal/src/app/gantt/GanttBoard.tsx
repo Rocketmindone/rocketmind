@@ -1373,7 +1373,7 @@ export default function GanttBoard({ dbPath, trackName, trackColor = 'yellow', s
                 }
               }}
             >
-              <TabsList>
+              <TabsList size="sm">
                 <TabsTrigger value="out">Out</TabsTrigger>
                 <TabsTrigger value="in">In</TabsTrigger>
               </TabsList>

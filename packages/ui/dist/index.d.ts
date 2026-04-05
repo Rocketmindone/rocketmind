@@ -215,8 +215,9 @@ declare function TableCaption({ className, ...props }: React$1.HTMLAttributes<HT
 declare function Tabs({ className, orientation, ...props }: Tabs$1.Root.Props): react_jsx_runtime.JSX.Element;
 declare const tabsListVariants: (props?: ({
     variant?: "default" | "secondary" | null | undefined;
+    size?: "sm" | "default" | null | undefined;
 } & class_variance_authority_types.ClassProp) | undefined) => string;
-declare function TabsList({ className, variant, ...props }: Tabs$1.List.Props & VariantProps<typeof tabsListVariants>): react_jsx_runtime.JSX.Element;
+declare function TabsList({ className, variant, size, ...props }: Tabs$1.List.Props & VariantProps<typeof tabsListVariants>): react_jsx_runtime.JSX.Element;
 declare function TabsTrigger({ className, ...props }: Tabs$1.Tab.Props): react_jsx_runtime.JSX.Element;
 declare function TabsContent({ className, ...props }: Tabs$1.Panel.Props): react_jsx_runtime.JSX.Element;
 
