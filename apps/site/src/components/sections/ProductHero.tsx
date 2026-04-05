@@ -41,24 +41,20 @@ function HeroCTA({ text }: { text: string }) {
   return (
     <button
       type="button"
-      className="flex flex-col justify-between w-full bg-[#FFCC00] p-5 md:p-7 h-auto md:h-[189px] cursor-pointer"
+      className="flex flex-col justify-between w-full bg-[#FFCC00] p-5 md:p-7 h-[126px] md:h-[189px] cursor-pointer"
     >
-      <svg
-        width="32"
-        height="32"
-        viewBox="0 0 32 32"
-        fill="none"
-        className="shrink-0 self-end"
-      >
-        <path
-          d="M8 8H24M24 8V24M24 8L8 24"
-          stroke="#0A0A0A"
-          strokeWidth="4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-      <span className="h4 md:h3 text-[#0A0A0A] mt-4 md:mt-0">{text}</span>
+      <div className="flex justify-end w-full">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <path
+            d="M8 8H24M24 8V24M24 8L8 24"
+            stroke="#0A0A0A"
+            strokeWidth="4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
+      <span className="h4 md:h3 text-[#0A0A0A]">{text}</span>
     </button>
   );
 }
