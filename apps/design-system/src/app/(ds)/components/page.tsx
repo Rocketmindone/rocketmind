@@ -212,7 +212,7 @@ export default function ComponentsPage() {
               { size: "icon-lg", label: "MD / 40px", px: 40, desc: "Крупные icon-кнопки для hero-секций и standalone-действий." },
               { size: "icon", label: "SM / 32px", px: 32, desc: "Основные icon-кнопки: undo, redo, тема, навигация." },
               { size: "icon-sm", label: "XS / 28px", px: 28, desc: "Toolbar-кнопки рядом с компактными текстовыми кнопками." },
-              { size: "icon-micro", label: "Micro / 20px", px: 20, desc: "Inline-контролы: удалить карточку, обновить саммери. Выровнен с Checkbox/Radio 20×20." },
+              { size: "icon-micro", label: "Micro / 20px", px: 20, desc: "Inline-контролы: удалить карточку, обновить саммари. Выровнен с Checkbox/Radio 20×20." },
             ]
             return (
               <div className="border border-border rounded-lg overflow-hidden bg-border mt-6">

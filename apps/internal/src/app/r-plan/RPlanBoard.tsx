@@ -1143,7 +1143,7 @@ export default function RPlanBoard({ dbPath, trackName, trackColor = 'yellow', s
   };
 
   const SUMMARY_MESSAGES = (dates: string, blockText: string) => [
-    { role: 'system' as const, content: 'Ты пишешь однострочные саммери проекта для заказчика. Формат: тезисы через « · ». Конкретные результаты и артефакты, которые получает клиент. Без глаголов, без вводных слов. Начинай сразу с первого тезиса. Русский.' },
+    { role: 'system' as const, content: 'Ты пишешь однострочные саммари проекта для заказчика. Формат: тезисы через « · ». Конкретные результаты и артефакты, которые получает клиент. Без глаголов, без вводных слов. Начинай сразу с первого тезиса. Русский.' },
     { role: 'user' as const, content: `Задачи недели (${dates}):\n\n${blockText}\n\nСаммери одной строкой. 1–4 тезиса по объёму.\n- Похожие задачи объединяй с количеством\n- Задачи одной темы из разных треков — объединяй по теме\n- Процессы (встреча, согласование, ревью) — называй результат: «утверждённый план» вместо «согласование плана»\n\nПримеры:\nhero + сетка услуг · auth-флоу · тексты о компании\n5 экранов SaaS · вебхуки оплаты\nстратегия бренда · 3 воркшопа с командой · гайдлайн tone of voice\nкаталог: макет + API + тесты · 6 текстов лендинга\nутверждённая орг-структура · 4 домашних задания · отчёт по метрикам` },
   ];
 
@@ -1479,7 +1479,7 @@ export default function RPlanBoard({ dbPath, trackName, trackColor = 'yellow', s
                       {/* Row 2: theme/summary */}
                       <div className="mt-1">
                         <p className="text-[length:var(--text-12)] leading-snug min-w-0" style={{ color: cssVar(effColor, 'fg-subtle') }}>
-                          <EditableText value={w.theme} onChange={v => { updateWeekTheme(w.id, v); setSummaryReady(null); }} startEditing={summaryReady === w.id} placeholder="саммери" />
+                          <EditableText value={w.theme} onChange={v => { updateWeekTheme(w.id, v); setSummaryReady(null); }} startEditing={summaryReady === w.id} placeholder="саммари" />
                         </p>
                       </div>
                     </div>
@@ -1664,6 +1664,29 @@ export default function RPlanBoard({ dbPath, trackName, trackColor = 'yellow', s
                             <div className="min-h-[40px] rounded-sm border border-dashed border-border/0 hover:border-border/40 transition-colors" />
                           )}
                         </div>
+
+                        {!locked && cards.length > 0 && (
+                          <Tooltip>
+                            <TooltipTrigger render={
+                              <button
+                                onClick={() => addCard(row.id, w.id)}
+                                className="w-full mt-0.5 flex items-center justify-center gap-1 rounded text-[length:var(--text-12)] font-mono uppercase tracking-wide transition-colors"
+                                style={{
+                                  height: 18,
+                                  color: cssVar(effColor, 'fg-subtle'),
+                                  opacity: 0.35,
+                                  backgroundColor: cssVar(effColor, '900'),
+                                  border: `1px dashed ${cssVar(effColor, '300')}`,
+                                }}
+                                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '0.8'; }}
+                                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '0.35'; }}
+                              />
+                            }>
+                              +
+                            </TooltipTrigger>
+                            <TooltipContent>Добавить задачу</TooltipContent>
+                          </Tooltip>
+                        )}
                       </div>
                     );
                   })}
@@ -1803,6 +1826,36 @@ export default function RPlanBoard({ dbPath, trackName, trackColor = 'yellow', s
                             </div>
                           )}
                         </div>
+
+                        {/* Bottom add-card buttons */}
+                        {!locked && placed.length > 0 && (
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)' }} className="px-0.5 pb-1.5">
+                            {([undefined, ...DAYS] as (Day | undefined)[]).map((day, i) => (
+                              <div key={i} className="px-0.5">
+                                <Tooltip>
+                                  <TooltipTrigger render={
+                                    <button
+                                      onClick={() => addCard(row.id, aw.id, day)}
+                                      className="w-full flex items-center justify-center rounded text-[length:var(--text-11)] font-mono uppercase tracking-wide transition-colors"
+                                      style={{
+                                        height: 18,
+                                        color: cssVar(awColor, 'fg-subtle'),
+                                        opacity: 0.35,
+                                        backgroundColor: cssVar(awColor, '900'),
+                                        border: `1px dashed ${cssVar(awColor, '300')}`,
+                                      }}
+                                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '0.8'; }}
+                                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '0.35'; }}
+                                    />
+                                  }>
+                                    +
+                                  </TooltipTrigger>
+                                  <TooltipContent>Добавить задачу</TooltipContent>
+                                </Tooltip>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   );
