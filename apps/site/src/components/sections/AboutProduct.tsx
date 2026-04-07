@@ -130,9 +130,9 @@ export function AboutProduct({
 
       {/* ── Desktop without image ── */}
       {!hasImage && (
-        <div className="hidden lg:flex mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14">
-          {/* Left: text — max 560px, остальное пространство = отступ до аккордеона */}
-          <div className="flex-1 flex flex-col gap-6 max-w-[560px]">
+        <div className="hidden lg:flex justify-between mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14">
+          {/* Left: text — max 560px */}
+          <div className="flex flex-col gap-6 max-w-[560px]">
             <div className="flex flex-col gap-2">
               <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">
                 {caption}
