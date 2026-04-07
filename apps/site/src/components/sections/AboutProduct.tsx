@@ -130,9 +130,9 @@ export function AboutProduct({
 
       {/* ── Desktop without image ── */}
       {!hasImage && (
-        <div className="hidden lg:flex mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14 gap-[140px] py-0">
+        <div className="hidden lg:flex mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14 gap-[140px]">
           {/* Left: text */}
-          <div className="w-[560px] shrink-0 flex flex-col gap-6">
+          <div className="w-1/2 shrink-0 flex flex-col gap-6">
             <div className="flex flex-col gap-2">
               <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">
                 {caption}
@@ -145,7 +145,7 @@ export function AboutProduct({
           </div>
 
           {/* Right: accordion */}
-          <div className="flex-1 pt-7">
+          <div className="w-1/2 pt-7">
             <ProductAccordion items={accordion} />
           </div>
         </div>
