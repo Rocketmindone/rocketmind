@@ -115,6 +115,7 @@ export function ProductHero({
             maxScale={4.2}
             className="absolute inset-0 z-0 opacity-50"
           />
+          <div className="absolute left-0 right-0 bottom-0 h-[180px] z-[1] pointer-events-none" style={{ background: "linear-gradient(180deg, transparent 0%, #0A0A0A 100%)" }} />
 
           <div className="relative z-10 flex flex-col justify-end min-h-[840px]">
             {/* Product icon — absolute top-left */}
@@ -165,6 +166,7 @@ export function ProductHero({
               maxScale={4.2}
               className="absolute inset-0 opacity-50"
             />
+            <div className="absolute left-0 right-0 bottom-0 h-[180px] pointer-events-none" style={{ background: "linear-gradient(180deg, transparent 0%, #0A0A0A 100%)" }} />
           </div>
 
           <div className="relative z-10 px-5">
