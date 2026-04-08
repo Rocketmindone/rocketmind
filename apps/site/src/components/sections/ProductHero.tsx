@@ -159,7 +159,7 @@ export function ProductHero({
       <div className="flex md:hidden flex-col">
         {/* Hero area — dot grid covers icon + content + CTA */}
         <div className="relative">
-          <div className="absolute top-0 left-0 right-0 h-[540px] z-0">
+          <div className="absolute top-0 left-0 right-0 h-[420px] z-0">
             <DotGridLens
               accentColor
               gridGap={10}
