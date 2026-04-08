@@ -79,7 +79,7 @@ export function ProductHero({
           <DotGridLens
             accentColor
             baseRadius={0.75}
-            maxScale={3.25}
+            maxScale={4.2}
             className="absolute -left-14 top-0 bottom-0 right-0 z-0 opacity-50"
           />
 
