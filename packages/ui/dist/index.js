@@ -2207,17 +2207,19 @@ function ProcessSection({
       className: cn("w-full bg-[#0A0A0A] border-t border-border", className),
       children: [
         /* @__PURE__ */ jsxs13("div", { className: "hidden lg:flex mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14", children: [
-          /* @__PURE__ */ jsx30("div", { className: "w-1/2 shrink-0 pr-8", children: /* @__PURE__ */ jsx30("div", { className: "sticky top-24 py-14", children: /* @__PURE__ */ jsxs13("div", { className: "flex flex-col gap-8 max-w-[560px]", children: [
-            /* @__PURE__ */ jsxs13("div", { className: "flex flex-col gap-2", children: [
-              /* @__PURE__ */ jsx30("span", { className: "font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]", children: tag }),
-              /* @__PURE__ */ jsx30("h2", { className: "h2 text-[#F0F0F0]", children: title })
-            ] }),
-            /* @__PURE__ */ jsxs13("div", { className: "flex flex-col gap-1", children: [
-              /* @__PURE__ */ jsx30("p", { className: "font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#F0F0F0]", children: subtitle }),
-              description && /* @__PURE__ */ jsx30("p", { className: "font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#939393]", children: description })
-            ] }),
-            hasParticipants && /* @__PURE__ */ jsx30(ParticipantsBlock, { tag: participantsTag, participants })
-          ] }) }) }),
+          /* @__PURE__ */ jsxs13("div", { className: "w-1/2 shrink-0 pr-8 flex flex-col", children: [
+            /* @__PURE__ */ jsx30("div", { className: "sticky top-24 py-14", children: /* @__PURE__ */ jsxs13("div", { className: "flex flex-col gap-8 max-w-[560px]", children: [
+              /* @__PURE__ */ jsxs13("div", { className: "flex flex-col gap-2", children: [
+                /* @__PURE__ */ jsx30("span", { className: "font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]", children: tag }),
+                /* @__PURE__ */ jsx30("h2", { className: "h2 text-[#F0F0F0]", children: title })
+              ] }),
+              /* @__PURE__ */ jsxs13("div", { className: "flex flex-col gap-1", children: [
+                /* @__PURE__ */ jsx30("p", { className: "font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#F0F0F0]", children: subtitle }),
+                description && /* @__PURE__ */ jsx30("p", { className: "font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#939393]", children: description })
+              ] })
+            ] }) }),
+            hasParticipants && /* @__PURE__ */ jsx30("div", { className: "mt-auto pb-14 max-w-[648px]", children: /* @__PURE__ */ jsx30(ParticipantsBlock, { tag: participantsTag, participants }) })
+          ] }),
           /* @__PURE__ */ jsx30("div", { className: "w-1/2 pt-[80px] pb-14", children: /* @__PURE__ */ jsx30("div", { className: "flex flex-col", children: steps.map((step, i) => /* @__PURE__ */ jsx30(
             StepCard,
             {

@@ -236,8 +236,8 @@ export function ProcessSection({
     >
       {/* ── Desktop ── */}
       <div className="hidden lg:flex mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14">
-        {/* Left: sticky header + participants */}
-        <div className="w-1/2 shrink-0 pr-8">
+        {/* Left: sticky header at top, participants at bottom */}
+        <div className="w-1/2 shrink-0 pr-8 flex flex-col">
           <div className="sticky top-24 py-14">
             <div className="flex flex-col gap-8 max-w-[560px]">
               <div className="flex flex-col gap-2">
@@ -256,11 +256,14 @@ export function ProcessSection({
                   </p>
                 )}
               </div>
-              {hasParticipants && (
-                <ParticipantsBlock tag={participantsTag} participants={participants} />
-              )}
             </div>
           </div>
+          {/* Participants — pinned to bottom of left column */}
+          {hasParticipants && (
+            <div className="mt-auto pb-14 max-w-[648px]">
+              <ParticipantsBlock tag={participantsTag} participants={participants} />
+            </div>
+          )}
         </div>
 
         {/* Right: steps — pt-[80px] for 40px offset from section top */}
