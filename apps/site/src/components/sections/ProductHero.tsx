@@ -22,7 +22,7 @@ function FactoidCard({ number, label, text, stretch, className }: Factoid & { st
     <div className={`flex flex-col p-5 md:p-7 ${stretch ? "flex-1" : "md:h-[189px]"} ${className ?? ""}`}>
       <div className="flex flex-col justify-between gap-7 h-full">
         <div className="flex items-center gap-5">
-          <span className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-40)] md:text-[length:var(--text-52)] font-bold uppercase leading-[1.08] tracking-[-0.02em] text-[#F0F0F0]">{number}</span>
+          <span className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-52)] font-bold uppercase leading-[1.08] tracking-[-0.02em] text-[#F0F0F0]">{number}</span>
           <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#F0F0F0] w-[127px]">
             {label}
           </span>
