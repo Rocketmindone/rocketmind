@@ -153,29 +153,8 @@ export function AboutProduct({
         </div>
       )}
 
-      {/* ── Tablet ── */}
-      <div className="hidden md:flex lg:hidden flex-col mx-auto max-w-[768px] px-8">
-        <div className="flex flex-col gap-4 mb-6">
-          <div className="flex flex-col gap-2">
-            <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">
-              {caption}
-            </span>
-            <h2 className="h2 text-[#F0F0F0]">{title}</h2>
-          </div>
-          <p className="text-[length:var(--text-16)] leading-[1.28] text-[#939393]">
-            {description}
-          </p>
-        </div>
-        <ProductAccordion items={accordion} />
-        {hasImage && (
-          <div className="relative w-full h-[340px] bg-[#121212] mt-8">
-            <Image src={aboutImage} alt={title} fill className="object-cover" />
-          </div>
-        )}
-      </div>
-
-      {/* ── Mobile ── */}
-      <div className="flex md:hidden flex-col px-5">
+      {/* ── Mobile / Tablet ── */}
+      <div className="flex lg:hidden flex-col px-5 md:px-8">
         <div className="flex flex-col gap-4 mb-4">
           <div className="flex flex-col gap-2">
             <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">

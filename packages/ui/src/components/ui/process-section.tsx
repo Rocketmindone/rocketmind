@@ -76,14 +76,18 @@ function StepCard({
   isActive,
   isLast,
   fillProgress,
+  className,
+  titleClass,
 }: {
   step: ProcessStep;
   isActive: boolean;
   isLast: boolean;
   fillProgress: number;
+  className?: string;
+  titleClass?: string;
 }) {
   return (
-    <div className="flex gap-10 max-w-[364px]">
+    <div className={cn("flex gap-10 max-w-[364px]", className)}>
       <TimelineColumn isActive={isActive} isLast={isLast} fillProgress={fillProgress} />
       <div className="flex flex-col gap-3 pb-16">
         <div className="flex flex-col gap-2">
@@ -94,7 +98,7 @@ function StepCard({
             {step.number}
           </span>
           <h3
-            className="h3 transition-colors duration-300"
+            className={cn(titleClass || "h3", "transition-colors duration-300")}
             style={{ color: isActive ? "#F0F0F0" : "#939393" }}
           >
             {step.title}
