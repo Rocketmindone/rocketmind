@@ -2047,7 +2047,7 @@ function ForWhomSection({
 
 // src/components/ui/process-section.tsx
 import { useEffect as useEffect5, useRef as useRef6, useState as useState2, useCallback as useCallback2 } from "react";
-import { jsx as jsx30, jsxs as jsxs13 } from "react/jsx-runtime";
+import { Fragment as Fragment2, jsx as jsx30, jsxs as jsxs13 } from "react/jsx-runtime";
 function TimelineColumn({
   isActive,
   isLast,
@@ -2084,9 +2084,11 @@ function StepCard({
   step,
   isActive,
   isLast,
-  fillProgress
+  fillProgress,
+  className,
+  titleClass
 }) {
-  return /* @__PURE__ */ jsxs13("div", { className: "flex gap-10 max-w-[364px]", children: [
+  return /* @__PURE__ */ jsxs13("div", { className: cn("flex gap-10 max-w-[364px]", className), children: [
     /* @__PURE__ */ jsx30(TimelineColumn, { isActive, isLast, fillProgress }),
     /* @__PURE__ */ jsxs13("div", { className: "flex flex-col gap-3 pb-16", children: [
       /* @__PURE__ */ jsxs13("div", { className: "flex flex-col gap-2", children: [
@@ -2101,7 +2103,7 @@ function StepCard({
         /* @__PURE__ */ jsx30(
           "h3",
           {
-            className: "h3 transition-colors duration-300",
+            className: cn(titleClass || "h3", "transition-colors duration-300"),
             style: { color: isActive ? "#F0F0F0" : "#939393" },
             children: step.title
           }
@@ -2128,9 +2130,10 @@ function StepCard({
 }
 function ParticipantsBlock({
   tag,
-  participants
+  participants,
+  className
 }) {
-  return /* @__PURE__ */ jsxs13("div", { className: "bg-[#121212] rounded p-8 flex flex-col gap-8 max-w-[648px]", children: [
+  return /* @__PURE__ */ jsxs13("div", { className: cn("bg-[#121212] rounded p-8 flex flex-col gap-8 max-w-[648px]", className), children: [
     /* @__PURE__ */ jsx30("span", { className: "font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]", children: tag }),
     /* @__PURE__ */ jsx30("div", { className: "flex flex-col gap-5", children: participants.map((p, i) => /* @__PURE__ */ jsxs13("div", { className: "flex flex-col gap-2", children: [
       /* @__PURE__ */ jsx30("span", { className: "font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#F0F0F0]", children: p.role }),
@@ -2227,7 +2230,43 @@ function ProcessSection({
             }
           ) }, i)) }) })
         ] }),
-        /* @__PURE__ */ jsxs13("div", { className: "flex lg:hidden flex-col px-5 md:px-8", children: [
+        /* @__PURE__ */ jsxs13("div", { className: "hidden md:flex lg:hidden gap-10 px-10", children: [
+          /* @__PURE__ */ jsxs13("div", { className: "w-[45%] shrink-0 flex flex-col", children: [
+            /* @__PURE__ */ jsxs13("div", { className: "flex flex-col gap-4", children: [
+              /* @__PURE__ */ jsxs13("div", { className: "flex flex-col gap-2", children: [
+                /* @__PURE__ */ jsx30("span", { className: "font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]", children: tag }),
+                /* @__PURE__ */ jsx30("h2", { className: "font-[family-name:var(--font-heading-family)] text-[length:var(--text-28)] font-bold uppercase leading-[1.16] tracking-[-0.01em] text-[#F0F0F0]", children: title })
+              ] }),
+              /* @__PURE__ */ jsxs13("div", { className: "flex flex-col gap-1", children: [
+                /* @__PURE__ */ jsx30("p", { className: "font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#F0F0F0]", children: subtitle }),
+                description && /* @__PURE__ */ jsx30("p", { className: "font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#939393]", children: description })
+              ] })
+            ] }),
+            hasParticipants && /* @__PURE__ */ jsxs13(Fragment2, { children: [
+              /* @__PURE__ */ jsx30("div", { className: "flex-1" }),
+              /* @__PURE__ */ jsx30(
+                ParticipantsBlock,
+                {
+                  tag: participantsTag,
+                  participants,
+                  className: "p-5 max-w-none"
+                }
+              )
+            ] })
+          ] }),
+          /* @__PURE__ */ jsx30("div", { className: "flex-1 pt-10", children: /* @__PURE__ */ jsx30("div", { className: "flex flex-col", children: steps.map((step, i) => /* @__PURE__ */ jsx30("div", { "data-step": true, children: /* @__PURE__ */ jsx30(
+            StepCard,
+            {
+              step,
+              isActive: i <= activeIndex,
+              isLast: i === steps.length - 1,
+              fillProgress: fills[i],
+              className: "max-w-none",
+              titleClass: "font-[family-name:var(--font-heading-family)] text-[length:var(--text-28)] font-bold uppercase leading-[1.16] tracking-[-0.01em]"
+            }
+          ) }, i)) }) })
+        ] }),
+        /* @__PURE__ */ jsxs13("div", { className: "flex md:hidden flex-col px-5", children: [
           /* @__PURE__ */ jsxs13("div", { className: "flex flex-col gap-4 mb-10", children: [
             /* @__PURE__ */ jsxs13("div", { className: "flex flex-col gap-2", children: [
               /* @__PURE__ */ jsx30("span", { className: "font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]", children: tag }),
@@ -2764,7 +2803,7 @@ var LEGAL_LINKS = [
 ];
 
 // src/components/ui/mobile-nav.tsx
-import { Fragment as Fragment2, jsx as jsx36, jsxs as jsxs19 } from "react/jsx-runtime";
+import { Fragment as Fragment3, jsx as jsx36, jsxs as jsxs19 } from "react/jsx-runtime";
 function BurgerIcon({
   open,
   barClass = "bg-foreground"
@@ -2869,7 +2908,7 @@ function MobileNav({ className }) {
                         ease: [0.23, 1, 0.32, 1]
                       },
                       className: "border-b border-black/10",
-                      children: hasDropdown ? /* @__PURE__ */ jsxs19(Fragment2, { children: [
+                      children: hasDropdown ? /* @__PURE__ */ jsxs19(Fragment3, { children: [
                         /* @__PURE__ */ jsxs19(
                           "button",
                           {

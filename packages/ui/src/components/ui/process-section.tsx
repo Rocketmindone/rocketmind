@@ -126,12 +126,14 @@ function StepCard({
 function ParticipantsBlock({
   tag,
   participants,
+  className,
 }: {
   tag: string;
   participants: ProcessParticipant[];
+  className?: string;
 }) {
   return (
-    <div className="bg-[#121212] rounded p-8 flex flex-col gap-8 max-w-[648px]">
+    <div className={cn("bg-[#121212] rounded p-8 flex flex-col gap-8 max-w-[648px]", className)}>
       <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">
         {tag}
       </span>
@@ -287,8 +289,64 @@ export function ProcessSection({
         </div>
       </div>
 
-      {/* ── Mobile / Tablet ── */}
-      <div className="flex lg:hidden flex-col px-5 md:px-8">
+      {/* ── Tablet (md → lg) — two-column layout ── */}
+      <div className="hidden md:flex lg:hidden gap-10 px-10">
+        {/* Left: header + participants at bottom */}
+        <div className="w-[45%] shrink-0 flex flex-col">
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">
+                {tag}
+              </span>
+              <h2 className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-28)] font-bold uppercase leading-[1.16] tracking-[-0.01em] text-[#F0F0F0]">
+                {title}
+              </h2>
+            </div>
+            <div className="flex flex-col gap-1">
+              <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#F0F0F0]">
+                {subtitle}
+              </p>
+              {description && (
+                <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#939393]">
+                  {description}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {hasParticipants && (
+            <>
+              <div className="flex-1" />
+              <ParticipantsBlock
+                tag={participantsTag}
+                participants={participants}
+                className="p-5 max-w-none"
+              />
+            </>
+          )}
+        </div>
+
+        {/* Right: steps */}
+        <div className="flex-1 pt-10">
+          <div className="flex flex-col">
+            {steps.map((step, i) => (
+              <div key={i} data-step>
+                <StepCard
+                  step={step}
+                  isActive={i <= activeIndex}
+                  isLast={i === steps.length - 1}
+                  fillProgress={fills[i]}
+                  className="max-w-none"
+                  titleClass="font-[family-name:var(--font-heading-family)] text-[length:var(--text-28)] font-bold uppercase leading-[1.16] tracking-[-0.01em]"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Mobile ── */}
+      <div className="flex md:hidden flex-col px-5">
         <div className="flex flex-col gap-4 mb-10">
           <div className="flex flex-col gap-2">
             <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">
@@ -308,7 +366,6 @@ export function ProcessSection({
           </div>
         </div>
 
-        {/* Mobile steps also animate on scroll */}
         <div className="flex flex-col">
           {steps.map((step, i) => (
             <div key={i} data-step>
