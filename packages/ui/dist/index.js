@@ -2145,7 +2145,8 @@ function useStepProgress(stepCount) {
   const update = useCallback2(() => {
     const container = containerRef.current;
     if (!container) return;
-    const stepEls = container.querySelectorAll("[data-step]");
+    const allStepEls = container.querySelectorAll("[data-step]");
+    const stepEls = Array.from(allStepEls).filter((el) => el.offsetHeight > 0);
     if (stepEls.length === 0) return;
     const trigger = window.innerHeight * 0.45;
     let newActive = -1;

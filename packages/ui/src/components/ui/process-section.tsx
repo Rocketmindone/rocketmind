@@ -162,7 +162,9 @@ function useStepProgress(stepCount: number) {
     const container = containerRef.current;
     if (!container) return;
 
-    const stepEls = container.querySelectorAll<HTMLElement>("[data-step]");
+    // Filter only visible step elements (display:none or 0-height = hidden)
+    const allStepEls = container.querySelectorAll<HTMLElement>("[data-step]");
+    const stepEls = Array.from(allStepEls).filter((el) => el.offsetHeight > 0);
     if (stepEls.length === 0) return;
 
     const trigger = window.innerHeight * 0.45;
