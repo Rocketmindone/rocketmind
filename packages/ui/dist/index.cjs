@@ -2153,7 +2153,7 @@ function ForWhomSection({
     col1 = facts.slice(0, mid);
     col2 = facts.slice(mid);
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)("section", { className: cn("w-full bg-[#F0F0F0] py-10 lg:py-20", className), children: [
+  return /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)("section", { className: cn("w-full bg-[#F0F0F0] py-10 md:py-16 lg:py-20", className), children: [
     /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)("div", { className: "hidden lg:flex flex-col gap-[104px] mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14", children: [
       /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)("div", { className: "flex flex-col gap-2", children: [
         /* @__PURE__ */ (0, import_jsx_runtime29.jsx)("span", { className: "font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#0A0A0A]", children: tag }),
@@ -2337,7 +2337,7 @@ function ProcessSection({
     "section",
     {
       ref: containerRef,
-      className: cn("w-full bg-[#0A0A0A] border-t border-border py-10 lg:py-20", className),
+      className: cn("w-full bg-[#0A0A0A] border-t border-border py-10 md:py-16 lg:py-20", className),
       children: [
         /* @__PURE__ */ (0, import_jsx_runtime30.jsxs)("div", { className: "hidden lg:flex mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14", children: [
           /* @__PURE__ */ (0, import_jsx_runtime30.jsxs)("div", { className: "w-1/2 shrink-0 pr-8 flex flex-col", children: [
@@ -2494,7 +2494,7 @@ function ResultsSection({
     "section",
     {
       ref: sectionRef,
-      className: cn("w-full bg-[#0A0A0A] border-t border-border py-10 lg:py-20", className),
+      className: cn("w-full bg-[#0A0A0A] border-t border-border py-10 md:py-16 lg:py-20", className),
       children: [
         /* @__PURE__ */ (0, import_jsx_runtime31.jsx)("div", { className: "hidden lg:block mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14", children: /* @__PURE__ */ (0, import_jsx_runtime31.jsxs)("div", { className: "relative", style: { minHeight: `${contentHeight}px` }, children: [
           /* @__PURE__ */ (0, import_jsx_runtime31.jsxs)("div", { className: "flex flex-col gap-2 max-w-[560px]", children: [

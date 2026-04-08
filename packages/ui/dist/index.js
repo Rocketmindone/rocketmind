@@ -2020,7 +2020,7 @@ function ForWhomSection({
     col1 = facts.slice(0, mid);
     col2 = facts.slice(mid);
   }
-  return /* @__PURE__ */ jsxs12("section", { className: cn("w-full bg-[#F0F0F0] py-10 lg:py-20", className), children: [
+  return /* @__PURE__ */ jsxs12("section", { className: cn("w-full bg-[#F0F0F0] py-10 md:py-16 lg:py-20", className), children: [
     /* @__PURE__ */ jsxs12("div", { className: "hidden lg:flex flex-col gap-[104px] mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14", children: [
       /* @__PURE__ */ jsxs12("div", { className: "flex flex-col gap-2", children: [
         /* @__PURE__ */ jsx29("span", { className: "font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#0A0A0A]", children: tag }),
@@ -2204,7 +2204,7 @@ function ProcessSection({
     "section",
     {
       ref: containerRef,
-      className: cn("w-full bg-[#0A0A0A] border-t border-border py-10 lg:py-20", className),
+      className: cn("w-full bg-[#0A0A0A] border-t border-border py-10 md:py-16 lg:py-20", className),
       children: [
         /* @__PURE__ */ jsxs13("div", { className: "hidden lg:flex mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14", children: [
           /* @__PURE__ */ jsxs13("div", { className: "w-1/2 shrink-0 pr-8 flex flex-col", children: [
@@ -2361,7 +2361,7 @@ function ResultsSection({
     "section",
     {
       ref: sectionRef,
-      className: cn("w-full bg-[#0A0A0A] border-t border-border py-10 lg:py-20", className),
+      className: cn("w-full bg-[#0A0A0A] border-t border-border py-10 md:py-16 lg:py-20", className),
       children: [
         /* @__PURE__ */ jsx31("div", { className: "hidden lg:block mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14", children: /* @__PURE__ */ jsxs14("div", { className: "relative", style: { minHeight: `${contentHeight}px` }, children: [
           /* @__PURE__ */ jsxs14("div", { className: "flex flex-col gap-2 max-w-[560px]", children: [

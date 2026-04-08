@@ -76,7 +76,7 @@ export function ForWhomSection({
   }
 
   return (
-    <section className={cn("w-full bg-[#F0F0F0] py-10 lg:py-20", className)}>
+    <section className={cn("w-full bg-[#F0F0F0] py-10 md:py-16 lg:py-20", className)}>
       {/* ── Desktop ── */}
       <div className="hidden lg:flex flex-col gap-[104px] mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14">
         {/* Header — 2 halves */}

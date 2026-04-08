@@ -635,7 +635,7 @@ export function CasesSectionClient({ logos }: { logos: PartnerLogo[] }) {
          *  xl+: testimonials LEFT 320 px  |  cases RIGHT flex-1
          *  <xl:  cases on top, testimonials below
          * ══════════════════════════════════════════════════════════════ */}
-        <div className="flex flex-col lg:flex-row lg:gap-8 pt-10 lg:pt-12 pb-10 lg:pb-12 lg:items-start">
+        <div className="flex flex-col lg:flex-row lg:gap-8 pt-10 md:pt-16 lg:pt-12 pb-10 md:pb-16 lg:pb-12 lg:items-start">
 
           {/* ── LEFT / BOTTOM: Testimonials ─────────────────────────── */}
           <div className="order-2 lg:order-1 lg:w-[320px] lg:flex-none lg:overflow-hidden lg:self-stretch">

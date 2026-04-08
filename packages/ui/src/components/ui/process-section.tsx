@@ -237,7 +237,7 @@ export function ProcessSection({
   return (
     <section
       ref={containerRef}
-      className={cn("w-full bg-[#0A0A0A] border-t border-border py-10 lg:py-20", className)}
+      className={cn("w-full bg-[#0A0A0A] border-t border-border py-10 md:py-16 lg:py-20", className)}
     >
       {/* ── Desktop ── */}
       <div className="hidden lg:flex mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14">
