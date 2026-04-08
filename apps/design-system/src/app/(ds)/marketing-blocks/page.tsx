@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { Separator, CTASectionDark, CTASectionYellow, AccordionFAQ, ForWhomSection, ProcessSection } from "@rocketmind/ui"
+import { Separator, CTASectionDark, CTASectionYellow, AccordionFAQ, ForWhomSection, ProcessSection, ResultsSection } from "@rocketmind/ui"
 import { Section, SubSection, SpecBlock } from "@/components/ds/shared"
 import { TokenChip } from "@/components/ds/color-helpers"
 import { CasesSectionShowcase } from "@/components/ds/cases-section-showcase"
@@ -197,6 +197,57 @@ export default function MarketingBlocksPage() {
             ]}
           />
         </div>
+
+        {/* ── Results — Твёрдые результаты ── */}
+        <SubSection id="marketing-blocks-results" title="Твёрдые результаты (лесенка)" />
+        <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">
+          Блок с результатами работы. Десктоп: карточки расположены лесенкой — первая карточка жёлтая (активная), остальные с бордером. При скролле карточки последовательно опускаются до уровня первой и становятся жёлтыми. Мобайл: горизонтальная карусель 2×N, все карточки жёлтые.
+        </p>
+        <div className="-mx-5 md:-mx-10 border-y border-border mb-8">
+          <ResultsSection
+            tag="результат"
+            title="Твёрдые результаты"
+            description="По итогам дизайн-спринта вы получаете набор конкретных артефактов и навыков, готовых к внедрению."
+            cards={[
+              { title: "Ясная стратегия", text: "Четкое понимание векторов роста, структуры взаимодействия всех участников и новые идеи монетизации на основе данных" },
+              { title: "Карта развития", text: "Пошаговый план внедрения изменений с приоритетами, последовательностью действий и опорой на реальные бизнес-задачи" },
+              { title: "Обученная команда", text: "Члены команды освоят логику создания экосистемной ценности, принципы работы с партнерами и подход к развитию новых связей" },
+              { title: "База знаний", text: "Доступ к базе знаний Rocketmind с методиками, канвасами и рабочими материалами для дальнейшей самостоятельной работы" },
+            ]}
+          />
+        </div>
+        <SpecBlock title="Токены">
+          <div className="overflow-auto rounded-lg border border-border">
+            <table className="w-full text-[length:var(--text-14)]">
+              <thead>
+                <tr className="border-b border-border bg-rm-gray-2/30">
+                  <th className="text-left px-4 py-2 font-medium">Свойство</th>
+                  <th className="text-left px-4 py-2 font-medium">Значение</th>
+                  <th className="text-left px-4 py-2 font-medium">Описание</th>
+                </tr>
+              </thead>
+              <tbody className="text-muted-foreground">
+                {[
+                  ["Фон секции",          "#0A0A0A",                           "Тёмный фон"],
+                  ["Карточка active",     "#FFCC00 (--rm-yellow-100)",         "Жёлтый фон, текст #0A0A0A"],
+                  ["Карточка default",    "border 1px #404040",                "Прозрачный фон, бордер"],
+                  ["Заголовок карточки",  "Roboto Condensed 700, 20px, UPPER", "--font-heading-family, -1% LS"],
+                  ["Текст карточки",      "Roboto 400, 16px, 1.28 LH",        "#939393 default, #0A0A0A active"],
+                  ["Лесенка offset",      "88px на шаг",                       "translateY, 500ms ease-out"],
+                  ["Размер карточки",     "flex-1 × 240px (desktop)",          "350px × 240px (mobile)"],
+                  ["Лейбл",              "Loos Condensed 500, 18px, UPPER",   "--font-mono-family, #FFCC00"],
+                  ["Mobile carousel",     "grid-rows-2, gap-2, overflow-x",   "Горизонтальный скролл 2×N"],
+                ].map(([prop, val, desc]) => (
+                  <tr key={prop} className="border-b border-border last:border-0">
+                    <td className="px-4 py-2 font-medium text-foreground">{prop}</td>
+                    <td className="px-4 py-2"><TokenChip>{val}</TokenChip></td>
+                    <td className="px-4 py-2 text-muted-foreground">{desc}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </SpecBlock>
 
         {/* ── Process — Прозрачный процесс ── */}
         <SubSection id="marketing-blocks-process" title="Прозрачный процесс (этапы)" />

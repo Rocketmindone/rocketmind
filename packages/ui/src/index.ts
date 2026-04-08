@@ -36,6 +36,7 @@ export * from './components/ui/product-card';
 
 export * from './components/ui/for-whom-section';
 export * from './components/ui/process-section';
+export * from './components/ui/results-section';
 
 // Blocks
 export * from './components/ui/accordion-faq';

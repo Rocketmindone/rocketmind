@@ -1,0 +1,195 @@
+"use client";
+
+import { useEffect, useRef, useState, useCallback } from "react";
+import { cn } from "../../lib/utils";
+
+// ── Types ──────────────────────────────────────────────────────────────────────
+
+export type ResultCard = {
+  title: string;
+  text: string;
+};
+
+export type ResultsSectionProps = {
+  tag: string;
+  title: string;
+  description?: string;
+  cards: ResultCard[];
+  className?: string;
+};
+
+// ── Scroll hook — staircase activation ─────────────────────────────────────────
+
+const STEP_OFFSET = 88; // px per staircase step
+
+function useResultsScroll(cardCount: number) {
+  const [activeCount, setActiveCount] = useState(1);
+  const sectionRef = useRef<HTMLDivElement>(null);
+
+  const update = useCallback(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+
+    const rect = el.getBoundingClientRect();
+    const trigger = window.innerHeight * 0.45;
+    const progress = Math.max(
+      0,
+      Math.min(1, (trigger - rect.top) / rect.height),
+    );
+
+    const count = Math.max(
+      1,
+      Math.min(cardCount, 1 + Math.floor(progress * cardCount)),
+    );
+    setActiveCount(count);
+  }, [cardCount]);
+
+  useEffect(() => {
+    let raf = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(update);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    requestAnimationFrame(update);
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, [update]);
+
+  return { activeCount, sectionRef };
+}
+
+// ── Main Component ─────────────────────────────────────────────────────────────
+
+export function ResultsSection({
+  tag,
+  title,
+  description,
+  cards,
+  className,
+}: ResultsSectionProps) {
+  const { activeCount, sectionRef } = useResultsScroll(cards.length);
+
+  return (
+    <section
+      ref={sectionRef}
+      className={cn("w-full bg-[#0A0A0A] border-t border-border", className)}
+    >
+      {/* ── Desktop ── */}
+      <div className="hidden lg:block mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14 py-14">
+        {/* Header */}
+        <div className="flex flex-col gap-2 max-w-[560px]">
+          <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">
+            {tag}
+          </span>
+          <div className="flex flex-col gap-6">
+            <h2 className="h2 text-[#F0F0F0]">{title}</h2>
+            {description && (
+              <p className="text-[length:var(--text-18)] leading-[1.2] text-[#939393]">
+                {description}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Cards — staircase layout */}
+        <div
+          className="flex items-end mt-8"
+          style={{
+            minHeight: `${STEP_OFFSET * (cards.length - 1) + 240}px`,
+          }}
+        >
+          {cards.map((card, i) => {
+            const isActive = i < activeCount;
+            const offset = isActive ? 0 : -i * STEP_OFFSET;
+
+            return (
+              <div
+                key={i}
+                className="flex-1 transition-transform duration-500 ease-out"
+                style={{ transform: `translateY(${offset}px)` }}
+              >
+                <div
+                  className={cn(
+                    "flex flex-col justify-between p-8 h-[240px] border transition-colors duration-500",
+                    isActive
+                      ? "bg-[#FFCC00] border-[#FFCC00]"
+                      : "border-[#404040]",
+                  )}
+                >
+                  <h3
+                    className={cn(
+                      "font-[family-name:var(--font-heading-family)] text-[length:var(--text-20)] font-bold uppercase leading-[1.2] tracking-[-0.01em] transition-colors duration-500",
+                      isActive ? "text-[#0A0A0A]" : "text-[#F0F0F0]",
+                    )}
+                  >
+                    {card.title}
+                  </h3>
+                  <p
+                    className={cn(
+                      "text-[length:var(--text-16)] leading-[1.28] transition-colors duration-500",
+                      isActive ? "text-[#0A0A0A]" : "text-[#939393]",
+                    )}
+                  >
+                    {card.text}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── Mobile / Tablet ── */}
+      <div className="flex lg:hidden flex-col px-5 md:px-8 py-10">
+        {/* Header */}
+        <div className="flex flex-col gap-2 mb-6">
+          <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">
+            {tag}
+          </span>
+          <div className="flex flex-col gap-4">
+            <h2 className="h3 text-[#F0F0F0]">{title}</h2>
+            {description && (
+              <p className="text-[length:var(--text-16)] leading-[1.28] text-[#939393]">
+                {description}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Cards — horizontal carousel 2×N */}
+        <div
+          className="overflow-x-auto -mx-5 px-5"
+          style={{ scrollbarWidth: "none" }}
+        >
+          <div
+            className="grid grid-rows-2 gap-2"
+            style={{
+              gridTemplateColumns: `repeat(${Math.ceil(cards.length / 2)}, 350px)`,
+            }}
+          >
+            {cards.map((card, i) => (
+              <div
+                key={i}
+                className="bg-[#FFCC00] flex flex-col justify-between p-5 h-[240px]"
+              >
+                <h3 className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-20)] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#0A0A0A]">
+                  {card.title}
+                </h3>
+                <p className="text-[length:var(--text-16)] leading-[1.28] text-[#0A0A0A]">
+                  {card.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

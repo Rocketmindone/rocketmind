@@ -67,6 +67,18 @@ export type ProcessData = {
   participants?: ProcessParticipant[];
 };
 
+export type ResultCardData = {
+  title: string;
+  text: string;
+};
+
+export type ResultsData = {
+  tag: string;
+  title: string;
+  description?: string;
+  cards: ResultCardData[];
+};
+
 export type ProductData = {
   slug: string;
   category: string;
@@ -85,6 +97,8 @@ export type ProductData = {
   about: AboutProductData | null;
   // For whom
   audience: ForWhomData | null;
+  // Results
+  results: ResultsData | null;
   // Process
   process: ProcessData | null;
   // Image paths (auto-resolved)
@@ -161,6 +175,7 @@ export function getProductBySlug(slug: string): ProductData | null {
     },
     about,
     audience: data.audience ?? null,
+    results: data.results ?? null,
     process: data.process ?? null,
     coverImage,
     aboutImage,

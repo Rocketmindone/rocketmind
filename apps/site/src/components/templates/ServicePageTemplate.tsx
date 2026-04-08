@@ -2,7 +2,7 @@ import { PageBottom } from "@/components/sections/PageBottom";
 import { ProductHero } from "@/components/sections/ProductHero";
 import { AboutProduct } from "@/components/sections/AboutProduct";
 import { LogoMarqueeSection } from "@/components/sections/LogoMarqueeSection";
-import { ForWhomSection, ProcessSection } from "@rocketmind/ui";
+import { ForWhomSection, ProcessSection, ResultsSection } from "@rocketmind/ui";
 import type { ProductData } from "@/lib/products";
 
 /**
@@ -110,13 +110,22 @@ export async function ServicePageTemplate(props: ServicePageTemplateProps) {
       </section>
 
       {/* 6. Твёрдые результаты */}
-      <section className="border-t border-border px-5 py-16 md:px-8 xl:px-14">
-        <div className="mx-auto max-w-[1512px]">
-          <p className="text-center font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            Твёрдые результаты — заполнить
-          </p>
-        </div>
-      </section>
+      {hasProduct && props.product.results ? (
+        <ResultsSection
+          tag={props.product.results.tag}
+          title={props.product.results.title}
+          description={props.product.results.description}
+          cards={props.product.results.cards}
+        />
+      ) : (
+        <section className="border-t border-border px-5 py-16 md:px-8 xl:px-14">
+          <div className="mx-auto max-w-[1512px]">
+            <p className="text-center font-mono text-xs uppercase tracking-widest text-muted-foreground">
+              Твёрдые результаты — заполнить
+            </p>
+          </div>
+        </section>
+      )}
 
       {/* 7. Прозрачный процесс (этапы) */}
       {hasProduct && props.product.process ? (
