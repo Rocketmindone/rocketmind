@@ -2258,8 +2258,8 @@ function ProcessSection({
 import { useEffect as useEffect6, useRef as useRef7, useState as useState3, useCallback as useCallback3 } from "react";
 import { jsx as jsx31, jsxs as jsxs14 } from "react/jsx-runtime";
 var STEP_OFFSET = 88;
-var STAGGER = 0.06;
-var CARD_DURATION = 0.45;
+var STAGGER = 0.18;
+var CARD_DURATION = 0.25;
 function useResultsScroll(cardCount) {
   const [progresses, setProgresses] = useState3(() => {
     const arr = Array(cardCount).fill(0);

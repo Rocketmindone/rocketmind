@@ -2391,8 +2391,8 @@ function ProcessSection({
 var import_react6 = require("react");
 var import_jsx_runtime31 = require("react/jsx-runtime");
 var STEP_OFFSET = 88;
-var STAGGER = 0.06;
-var CARD_DURATION = 0.45;
+var STAGGER = 0.18;
+var CARD_DURATION = 0.25;
 function useResultsScroll(cardCount) {
   const [progresses, setProgresses] = (0, import_react6.useState)(() => {
     const arr = Array(cardCount).fill(0);

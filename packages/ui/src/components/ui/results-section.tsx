@@ -21,8 +21,8 @@ export type ResultsSectionProps = {
 // ── Scroll hook — staircase with staggered continuous progress ─────────────────
 
 const STEP_OFFSET = 88; // px per staircase step
-const STAGGER = 0.06;   // tiny delay between each card starting (6% of scroll range)
-const CARD_DURATION = 0.45; // each card takes 45% of scroll range to fully descend
+const STAGGER = 0.18;   // delay between each card starting (18% of scroll range)
+const CARD_DURATION = 0.25; // each card takes 25% of scroll range to fully descend
 
 function useResultsScroll(cardCount: number) {
   const [progresses, setProgresses] = useState<number[]>(() => {
