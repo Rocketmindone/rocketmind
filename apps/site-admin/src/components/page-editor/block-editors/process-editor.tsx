@@ -1,7 +1,7 @@
 "use client";
 
 import { Plus, Trash2 } from "lucide-react";
-import { Input, Textarea, Button, Separator } from "@rocketmind/ui";
+import { InlineEdit } from "@/components/inline-edit";
 
 interface ProcessEditorProps {
   data: Record<string, unknown>;
@@ -13,9 +13,16 @@ export function ProcessEditor({ data, onUpdate }: ProcessEditorProps) {
   const title = (data.title as string) || "";
   const subtitle = (data.subtitle as string) || "";
   const description = (data.description as string) || "";
-  const steps = (data.steps as Array<{ number: string; title: string; text: string; duration: string }>) || [];
+  const steps =
+    (data.steps as Array<{
+      number: string;
+      title: string;
+      text: string;
+      duration: string;
+    }>) || [];
   const participantsTag = (data.participantsTag as string) || "";
-  const participants = (data.participants as Array<{ role: string; text: string }>) || [];
+  const participants =
+    (data.participants as Array<{ role: string; text: string }>) || [];
 
   function updateStep(index: number, field: string, value: string) {
     const updated = steps.map((s, i) =>
@@ -28,7 +35,12 @@ export function ProcessEditor({ data, onUpdate }: ProcessEditorProps) {
     onUpdate({
       steps: [
         ...steps,
-        { number: String(steps.length + 1), title: "", text: "", duration: "" },
+        {
+          number: String(steps.length + 1).padStart(2, "0"),
+          title: "",
+          text: "",
+          duration: "",
+        },
       ],
     });
   }
@@ -53,159 +65,184 @@ export function ProcessEditor({ data, onUpdate }: ProcessEditorProps) {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-1.5">
-          <label className="text-[length:var(--text-12)] text-muted-foreground">
-            Тег
-          </label>
-          <Input
-            size="sm"
+    <div className="overflow-hidden rounded-sm border-t border-[#404040] bg-[#0A0A0A]">
+      <div className="flex flex-col gap-8 px-8 py-10 lg:flex-row lg:gap-16">
+        {/* Left: header + participants */}
+        <div className="flex flex-col gap-6 lg:w-1/2">
+          <InlineEdit
             value={tag}
-            onChange={(e) => onUpdate({ tag: e.target.value })}
-            placeholder="Процесс"
-          />
-        </div>
-        <div className="space-y-1.5">
-          <label className="text-[length:var(--text-12)] text-muted-foreground">
-            Заголовок
-          </label>
-          <Input
-            size="sm"
+            onSave={(v) => onUpdate({ tag: v })}
+            placeholder="этапы"
+          >
+            <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] uppercase text-[#FFCC00]">
+              {tag || "тег"}
+            </span>
+          </InlineEdit>
+
+          <InlineEdit
             value={title}
-            onChange={(e) => onUpdate({ title: e.target.value })}
-          />
-        </div>
-      </div>
+            onSave={(v) => onUpdate({ title: v })}
+            placeholder="Заголовок"
+          >
+            <h2 className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-24)] font-bold uppercase tracking-tight text-[#F0F0F0] lg:text-[length:var(--text-32)]">
+              {title || "Заголовок"}
+            </h2>
+          </InlineEdit>
 
-      <div className="space-y-1.5">
-        <label className="text-[length:var(--text-12)] text-muted-foreground">
-          Подзаголовок
-        </label>
-        <Input
-          size="sm"
-          value={subtitle}
-          onChange={(e) => onUpdate({ subtitle: e.target.value })}
-        />
-      </div>
+          <InlineEdit
+            value={subtitle}
+            onSave={(v) => onUpdate({ subtitle: v })}
+            placeholder="Общий срок проекта: ~10 недель"
+          >
+            <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] uppercase text-[#F0F0F0] lg:text-[length:var(--text-18)]">
+              {subtitle || "подзаголовок"}
+            </span>
+          </InlineEdit>
 
-      <div className="space-y-1.5">
-        <label className="text-[length:var(--text-12)] text-muted-foreground">
-          Описание
-        </label>
-        <Textarea
-          value={description}
-          onChange={(e) => onUpdate({ description: e.target.value })}
-          className="min-h-[60px] text-[length:var(--text-14)]"
-        />
-      </div>
+          <InlineEdit
+            value={description}
+            onSave={(v) => onUpdate({ description: v })}
+            multiline
+            placeholder="Описание процесса"
+          >
+            <p className="text-[length:var(--text-16)] text-[#939393]">
+              {description || "Описание"}
+            </p>
+          </InlineEdit>
 
-      <Separator />
+          {/* Participants block */}
+          {(participants.length > 0 || participantsTag) && (
+            <div className="mt-4 rounded-sm bg-[#121212] p-6">
+              <InlineEdit
+                value={participantsTag}
+                onSave={(v) => onUpdate({ participantsTag: v })}
+                placeholder="кого важно включить"
+              >
+                <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase text-[#FFCC00]">
+                  {participantsTag || "участники"}
+                </span>
+              </InlineEdit>
 
-      {/* Steps */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <label className="text-[length:var(--text-12)] font-medium text-muted-foreground">
-            Этапы
-          </label>
-          <Button variant="ghost" size="xs" onClick={addStep}>
-            <Plus className="mr-1 h-3 w-3" />
-            Добавить
-          </Button>
-        </div>
+              <div className="mt-4 flex flex-col gap-4">
+                {participants.map((p, index) => (
+                  <div
+                    key={index}
+                    className="group/part relative flex flex-col gap-1"
+                  >
+                    <button
+                      onClick={() => removeParticipant(index)}
+                      className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-sm text-[#939393] opacity-0 transition-opacity hover:text-[#ED4843] group-hover/part:opacity-100"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </button>
 
-        {steps.map((step, index) => (
-          <div key={index} className="flex items-start gap-2 rounded-sm border border-border p-3">
-            <div className="grid flex-1 gap-2 sm:grid-cols-4">
-              <Input
-                size="sm"
-                value={step.number}
-                onChange={(e) => updateStep(index, "number", e.target.value)}
-                placeholder="01"
-              />
-              <Input
-                size="sm"
-                value={step.title}
-                onChange={(e) => updateStep(index, "title", e.target.value)}
-                placeholder="Название этапа"
-              />
-              <Input
-                size="sm"
-                value={step.text}
-                onChange={(e) => updateStep(index, "text", e.target.value)}
-                placeholder="Описание"
-              />
-              <Input
-                size="sm"
-                value={step.duration}
-                onChange={(e) => updateStep(index, "duration", e.target.value)}
-                placeholder="2 недели"
-              />
+                    <InlineEdit
+                      value={p.role}
+                      onSave={(v) => updateParticipant(index, "role", v)}
+                      placeholder="Роль"
+                    >
+                      <span className="text-[length:var(--text-16)] font-semibold text-[#F0F0F0]">
+                        {p.role || "Роль"}
+                      </span>
+                    </InlineEdit>
+
+                    <InlineEdit
+                      value={p.text}
+                      onSave={(v) => updateParticipant(index, "text", v)}
+                      placeholder="Описание"
+                    >
+                      <span className="text-[length:var(--text-14)] text-[#939393]">
+                        {p.text || "Описание"}
+                      </span>
+                    </InlineEdit>
+                  </div>
+                ))}
+
+                <button
+                  onClick={addParticipant}
+                  className="flex items-center justify-center gap-1 border border-dashed border-[#404040] py-3 text-[length:var(--text-12)] text-[#939393] transition-colors hover:border-[#FFCC00] hover:text-[#FFCC00]"
+                >
+                  <Plus className="h-3 w-3" />
+                  Добавить участника
+                </button>
+              </div>
             </div>
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              onClick={() => removeStep(index)}
-              className="shrink-0 text-muted-foreground hover:text-[var(--rm-red-500)]"
+          )}
+        </div>
+
+        {/* Right: timeline steps */}
+        <div className="flex flex-1 flex-col">
+          {steps.map((step, index) => (
+            <div
+              key={index}
+              className="group/step relative flex gap-4 border-l-2 border-[#404040] py-6 pl-6"
             >
-              <Trash2 className="h-3.5 w-3.5" />
-            </Button>
-          </div>
-        ))}
-      </div>
+              {/* Timeline dot */}
+              <div className="absolute -left-[5px] top-7 h-2 w-2 bg-[#FFCC00]" />
 
-      <Separator />
+              <button
+                onClick={() => removeStep(index)}
+                className="absolute right-0 top-4 flex h-5 w-5 items-center justify-center rounded-sm text-[#939393] opacity-0 transition-opacity hover:text-[#ED4843] group-hover/step:opacity-100"
+              >
+                <Trash2 className="h-3 w-3" />
+              </button>
 
-      {/* Participants */}
-      <div className="space-y-3">
-        <div className="space-y-1.5">
-          <label className="text-[length:var(--text-12)] text-muted-foreground">
-            Тег участников
-          </label>
-          <Input
-            size="sm"
-            value={participantsTag}
-            onChange={(e) => onUpdate({ participantsTag: e.target.value })}
-            placeholder="Участники"
-          />
-        </div>
+              <div className="flex flex-1 flex-col gap-2">
+                <div className="flex items-baseline gap-3">
+                  <InlineEdit
+                    value={step.number}
+                    onSave={(v) => updateStep(index, "number", v)}
+                    placeholder="01"
+                  >
+                    <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] uppercase text-[#F0F0F0]">
+                      {step.number || "—"}
+                    </span>
+                  </InlineEdit>
 
-        <div className="flex items-center justify-between">
-          <label className="text-[length:var(--text-12)] font-medium text-muted-foreground">
-            Участники
-          </label>
-          <Button variant="ghost" size="xs" onClick={addParticipant}>
-            <Plus className="mr-1 h-3 w-3" />
-            Добавить
-          </Button>
-        </div>
+                  <InlineEdit
+                    value={step.duration}
+                    onSave={(v) => updateStep(index, "duration", v)}
+                    placeholder="2 недели"
+                  >
+                    <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase text-[#FFCC00]">
+                      {step.duration || "срок"}
+                    </span>
+                  </InlineEdit>
+                </div>
 
-        {participants.map((p, index) => (
-          <div key={index} className="flex items-start gap-2 rounded-sm border border-border p-3">
-            <div className="grid flex-1 gap-2 sm:grid-cols-2">
-              <Input
-                size="sm"
-                value={p.role}
-                onChange={(e) => updateParticipant(index, "role", e.target.value)}
-                placeholder="Роль"
-              />
-              <Input
-                size="sm"
-                value={p.text}
-                onChange={(e) => updateParticipant(index, "text", e.target.value)}
-                placeholder="Описание"
-              />
+                <InlineEdit
+                  value={step.title}
+                  onSave={(v) => updateStep(index, "title", v)}
+                  placeholder="Название этапа"
+                >
+                  <span className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-18)] font-bold uppercase tracking-tight text-[#F0F0F0] lg:text-[length:var(--text-24)]">
+                    {step.title || "Этап"}
+                  </span>
+                </InlineEdit>
+
+                <InlineEdit
+                  value={step.text}
+                  onSave={(v) => updateStep(index, "text", v)}
+                  multiline
+                  placeholder="Описание этапа"
+                >
+                  <p className="text-[length:var(--text-14)] text-[#939393] lg:text-[length:var(--text-16)]">
+                    {step.text || "Описание"}
+                  </p>
+                </InlineEdit>
+              </div>
             </div>
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              onClick={() => removeParticipant(index)}
-              className="shrink-0 text-muted-foreground hover:text-[var(--rm-red-500)]"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </Button>
-          </div>
-        ))}
+          ))}
+
+          {/* Add step */}
+          <button
+            onClick={addStep}
+            className="flex items-center justify-center gap-1 border border-dashed border-[#404040] py-6 text-[length:var(--text-14)] text-[#939393] transition-colors hover:border-[#FFCC00] hover:text-[#FFCC00]"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            Добавить этап
+          </button>
+        </div>
       </div>
     </div>
   );

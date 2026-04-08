@@ -2,7 +2,7 @@ import { PageBottom } from "@/components/sections/PageBottom";
 import { ProductHero } from "@/components/sections/ProductHero";
 import { AboutProduct } from "@/components/sections/AboutProduct";
 import { LogoMarqueeSection } from "@/components/sections/LogoMarqueeSection";
-import { ForWhomSection, ProcessSection, ResultsSection } from "@rocketmind/ui";
+import { ForWhomSection, ProcessSection, ResultsSection, ExpertsSection } from "@rocketmind/ui";
 import type { ProductData } from "@/lib/products";
 
 /**
@@ -167,13 +167,9 @@ export async function ServicePageTemplate(props: ServicePageTemplateProps) {
       </section>
 
       {/* 10. Эксперт (опционально) */}
-      <section className="border-t border-border px-5 py-16 md:px-8 xl:px-14">
-        <div className="mx-auto max-w-[1512px]">
-          <p className="text-center font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            Эксперт продукта — заполнить (опционально)
-          </p>
-        </div>
-      </section>
+      {hasProduct && props.product.experts && props.product.experts.length > 0 ? (
+        <ExpertsSection experts={props.product.experts} />
+      ) : null}
 
       {/* 11–13. Кейсы + отзывы + логотипы + CTA */}
       <PageBottom />

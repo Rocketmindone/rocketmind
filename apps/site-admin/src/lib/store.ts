@@ -9,181 +9,147 @@ import {
   type ReactNode,
 } from "react";
 import React from "react";
-import type { AdminStore, SitePage, PageStatus, PageBlock, BlockType } from "./types";
-import { createSeedStore } from "./seed-data";
-import { DEFAULT_BLOCK_TYPES } from "./constants";
-
-const STORE_KEY = "rm_site_admin";
-
-function loadStore(): AdminStore {
-  try {
-    const raw = localStorage.getItem(STORE_KEY);
-    if (raw) {
-      return JSON.parse(raw) as AdminStore;
-    }
-  } catch {
-    // ignore
-  }
-  const seed = createSeedStore();
-  localStorage.setItem(STORE_KEY, JSON.stringify(seed));
-  return seed;
-}
-
-function saveStore(store: AdminStore) {
-  const updated = { ...store, lastSaved: new Date().toISOString() };
-  localStorage.setItem(STORE_KEY, JSON.stringify(updated));
-  return updated;
-}
+import type { SitePage, PageStatus } from "./types";
 
 // ── Context ─────────────────────────────────────────────────────────────────
 
 interface StoreContext {
-  store: AdminStore;
+  pages: SitePage[];
+  loading: boolean;
   getPagesBySection(sectionId: string): SitePage[];
   getPage(pageId: string): SitePage | undefined;
-  createPage(sectionId: string, title: string): SitePage;
-  updatePage(pageId: string, updates: Partial<SitePage>): void;
+  createPage(sectionId: string, title: string): Promise<SitePage | null>;
   setPageStatus(pageId: string, status: PageStatus): void;
-  deletePage(pageId: string): void;
-  savePage(page: SitePage): void;
+  deletePage(pageId: string): Promise<void>;
+  savePage(page: SitePage): Promise<void>;
+  reload(): Promise<void>;
 }
 
 const AdminStoreContext = createContext<StoreContext | null>(null);
 
 export function AdminStoreProvider({ children }: { children: ReactNode }) {
-  const [store, setStore] = useState<AdminStore>(() => ({
-    version: 1,
-    pages: [],
-    lastSaved: new Date().toISOString(),
-  }));
-  const [loaded, setLoaded] = useState(false);
+  const [pages, setPages] = useState<SitePage[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchPages = useCallback(async () => {
+    try {
+      const res = await fetch("/api/pages");
+      const data = await res.json();
+      setPages(data as SitePage[]);
+    } catch (e) {
+      console.error("Failed to load pages:", e);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    setStore(loadStore());
-    setLoaded(true);
-  }, []);
-
-  const persist = useCallback((updater: (prev: AdminStore) => AdminStore) => {
-    setStore((prev) => {
-      const next = updater(prev);
-      return saveStore(next);
-    });
-  }, []);
+    fetchPages();
+  }, [fetchPages]);
 
   const getPagesBySection = useCallback(
     (sectionId: string) =>
-      store.pages
+      pages
         .filter((p) => p.sectionId === sectionId)
         .sort((a, b) => a.order - b.order),
-    [store.pages]
+    [pages]
   );
 
   const getPage = useCallback(
-    (pageId: string) => store.pages.find((p) => p.id === pageId),
-    [store.pages]
+    (pageId: string) => pages.find((p) => p.id === pageId),
+    [pages]
   );
 
   const createPage = useCallback(
-    (sectionId: string, title: string): SitePage => {
-      const now = new Date().toISOString();
-      const sectionPages = store.pages.filter((p) => p.sectionId === sectionId);
-      const slug = `new-page-${Date.now()}`;
+    async (sectionId: string, title: string): Promise<SitePage | null> => {
+      const slug = title
+        .toLowerCase()
+        .replace(/[^a-zа-яё0-9\s-]/gi, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-")
+        .substring(0, 50);
 
-      let blockIdCounter = 0;
-      const blocks: PageBlock[] = DEFAULT_BLOCK_TYPES.map((type: BlockType, index: number) => ({
-        id: `b_${Date.now()}_${++blockIdCounter}`,
-        type,
-        enabled: true,
-        order: index,
-        data: {},
-      }));
-
-      const page: SitePage = {
-        id: `p_${Date.now()}`,
-        sectionId,
-        slug,
-        status: "hidden",
-        order: sectionPages.length,
-        menuTitle: title,
-        menuDescription: "",
-        cardTitle: title,
-        cardDescription: "",
-        metaTitle: `${title} — Rocketmind`,
-        metaDescription: "",
-        blocks,
-        createdAt: now,
-        updatedAt: now,
-      };
-
-      persist((prev) => ({
-        ...prev,
-        pages: [...prev.pages, page],
-      }));
-
-      return page;
+      try {
+        const res = await fetch("/api/pages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sectionId, slug, menuTitle: title }),
+        });
+        if (!res.ok) return null;
+        const page = (await res.json()) as SitePage;
+        setPages((prev) => [...prev, page]);
+        return page;
+      } catch {
+        return null;
+      }
     },
-    [store.pages, persist]
-  );
-
-  const updatePage = useCallback(
-    (pageId: string, updates: Partial<SitePage>) => {
-      persist((prev) => ({
-        ...prev,
-        pages: prev.pages.map((p) =>
-          p.id === pageId
-            ? { ...p, ...updates, updatedAt: new Date().toISOString() }
-            : p
-        ),
-      }));
-    },
-    [persist]
+    []
   );
 
   const setPageStatus = useCallback(
     (pageId: string, status: PageStatus) => {
-      updatePage(pageId, { status });
+      // Status is local-only for now (not persisted to MD)
+      setPages((prev) =>
+        prev.map((p) => (p.id === pageId ? { ...p, status } : p))
+      );
     },
-    [updatePage]
+    []
   );
 
-  const deletePage = useCallback(
-    (pageId: string) => {
-      persist((prev) => ({
-        ...prev,
-        pages: prev.pages.filter((p) => p.id !== pageId),
-      }));
-    },
-    [persist]
-  );
+  const deletePage = useCallback(async (pageId: string) => {
+    try {
+      const res = await fetch(`/api/pages/${encodeURIComponent(pageId)}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        setPages((prev) => prev.filter((p) => p.id !== pageId));
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
 
-  const savePage = useCallback(
-    (page: SitePage) => {
-      persist((prev) => ({
-        ...prev,
-        pages: prev.pages.map((p) =>
-          p.id === page.id
-            ? { ...page, updatedAt: new Date().toISOString() }
-            : p
-        ),
-      }));
-    },
-    [persist]
-  );
+  const savePage = useCallback(async (page: SitePage) => {
+    try {
+      await fetch(`/api/pages/${encodeURIComponent(page.id)}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(page),
+      });
+      setPages((prev) =>
+        prev.map((p) =>
+          p.id === page.id ? { ...page, updatedAt: new Date().toISOString() } : p
+        )
+      );
+    } catch {
+      // ignore
+    }
+  }, []);
 
-  if (!loaded) return null;
+  if (loading) {
+    return React.createElement(
+      "div",
+      { className: "flex min-h-dvh items-center justify-center" },
+      React.createElement("div", {
+        className:
+          "h-6 w-6 animate-spin rounded-full border-2 border-rm-gray-3 border-t-foreground",
+      })
+    );
+  }
 
   return React.createElement(
     AdminStoreContext.Provider,
     {
       value: {
-        store,
+        pages,
+        loading,
         getPagesBySection,
         getPage,
         createPage,
-        updatePage,
         setPageStatus,
         deletePage,
         savePage,
+        reload: fetchPages,
       },
     },
     children

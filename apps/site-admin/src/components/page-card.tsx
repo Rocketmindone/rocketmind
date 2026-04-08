@@ -72,7 +72,7 @@ export function PageCard({ page, onArchive, onRestore, onDelete }: PageCardProps
           <Button
             variant="ghost"
             size="icon-sm"
-            onClick={() => router.push(`/pages/${page.id}`)}
+            onClick={() => router.push(`/pages/${encodeURIComponent(page.id)}`)}
           >
             <Pencil className="h-3.5 w-3.5" />
           </Button>
@@ -84,7 +84,7 @@ export function PageCard({ page, onArchive, onRestore, onDelete }: PageCardProps
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => router.push(`/pages/${page.id}`)}>
+              <DropdownMenuItem onClick={() => router.push(`/pages/${encodeURIComponent(page.id)}`)}>
                 <Pencil className="mr-2 h-3.5 w-3.5" />
                 Редактировать
               </DropdownMenuItem>

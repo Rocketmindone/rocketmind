@@ -4,7 +4,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { AdminStoreProvider } from "@/lib/store";
-import { AdminSidebar } from "@/components/admin-sidebar";
+import { AdminHeader } from "@/components/admin-header";
 
 export default function AdminLayout({
   children,
@@ -32,8 +32,8 @@ export default function AdminLayout({
 
   return (
     <AdminStoreProvider>
-      <div className="fixed inset-0 flex overflow-hidden bg-background">
-        <AdminSidebar />
+      <div className="fixed inset-0 flex flex-col overflow-hidden bg-background">
+        <AdminHeader />
         <main className="flex flex-1 flex-col overflow-y-auto">
           {children}
         </main>

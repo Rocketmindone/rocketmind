@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { Separator, CTASectionDark, CTASectionYellow, AccordionFAQ, ForWhomSection, ProcessSection, ResultsSection } from "@rocketmind/ui"
+import { Separator, CTASectionDark, CTASectionYellow, AccordionFAQ, ForWhomSection, ProcessSection, ResultsSection, ExpertsSection } from "@rocketmind/ui"
 import { Section, SubSection, SpecBlock } from "@/components/ds/shared"
 import { TokenChip } from "@/components/ds/color-helpers"
 import { CasesSectionShowcase } from "@/components/ds/cases-section-showcase"
@@ -271,6 +271,19 @@ export default function MarketingBlocksPage() {
               { role: "Руководство", text: "Принимает стратегические решения и задаёт вектор развития" },
               { role: "Топ-менеджеры", text: "Согласовывают и внедряют экосистемные инициативы" },
               { role: "Лидеры направлений", text: "Отвечают за интеграцию новых решений" },
+            ]}
+          />
+        </div>
+
+        {/* ── Experts — Эксперты ── */}
+        <SubSection id="marketing-blocks-experts" title="Эксперты продукта" />
+        <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">
+          Опциональный блок с карточками экспертов. Десктоп: 2 карточки в ряд (горизонтальная раскладка: фото + текст). Если нечётное количество — пустой слот заполняется декоративным SVG-паттерном. Планшет: карточки в столбик на полную ширину. Мобайл: вертикальная раскладка (фото сверху).
+        </p>
+        <div className="-mx-5 md:-mx-10 border-y border-border mb-8">
+          <ExpertsSection
+            experts={[
+              { name: "Ирина Гуренкова", bio: "Экосистемная стратегия — это переход к новой архитектуре устойчивости и роста бизнеса. Вместо того чтобы развивать один продукт изолированно, мы помогаем выстроить вокруг него единую партнерскую сеть.", image: "" },
             ]}
           />
         </div>

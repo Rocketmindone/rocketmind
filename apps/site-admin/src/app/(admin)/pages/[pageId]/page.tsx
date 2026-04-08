@@ -10,7 +10,8 @@ export default function PageEditorPage({
 }: {
   params: Promise<{ pageId: string }>;
 }) {
-  const { pageId } = use(params);
+  const { pageId: rawId } = use(params);
+  const pageId = decodeURIComponent(rawId);
   const { getPage } = useAdminStore();
   const router = useRouter();
 

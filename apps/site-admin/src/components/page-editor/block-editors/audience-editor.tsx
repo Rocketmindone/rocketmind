@@ -1,7 +1,7 @@
 "use client";
 
 import { Plus, Trash2 } from "lucide-react";
-import { Input, Textarea, Button, Separator } from "@rocketmind/ui";
+import { InlineEdit } from "@/components/inline-edit";
 
 interface AudienceEditorProps {
   data: Record<string, unknown>;
@@ -12,7 +12,6 @@ export function AudienceEditor({ data, onUpdate }: AudienceEditorProps) {
   const tag = (data.tag as string) || "";
   const title = (data.title as string) || "";
   const subtitle = (data.subtitle as string) || "";
-  const wideColumn = (data.wideColumn as string) || "left";
   const facts = (data.facts as Array<{ title: string; text: string }>) || [];
 
   function updateFact(index: number, field: string, value: string) {
@@ -31,103 +30,94 @@ export function AudienceEditor({ data, onUpdate }: AudienceEditorProps) {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-1.5">
-          <label className="text-[length:var(--text-12)] text-muted-foreground">
-            Тег
-          </label>
-          <Input
-            size="sm"
-            value={tag}
-            onChange={(e) => onUpdate({ tag: e.target.value })}
-            placeholder="Для кого"
-          />
-        </div>
-        <div className="space-y-1.5">
-          <label className="text-[length:var(--text-12)] text-muted-foreground">
-            Широкая колонка
-          </label>
-          <div className="flex gap-2">
-            <Button
-              variant={wideColumn === "left" ? "default" : "outline"}
-              size="xs"
-              onClick={() => onUpdate({ wideColumn: "left" })}
+    <div className="overflow-hidden rounded-sm border-t border-[#404040] bg-[#F0F0F0]">
+      <div className="px-8 py-10">
+        {/* Header row */}
+        <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:gap-16">
+          <div className="lg:w-1/2">
+            <InlineEdit
+              value={tag}
+              onSave={(v) => onUpdate({ tag: v })}
+              placeholder="для кого"
             >
-              Слева
-            </Button>
-            <Button
-              variant={wideColumn === "right" ? "default" : "outline"}
-              size="xs"
-              onClick={() => onUpdate({ wideColumn: "right" })}
-            >
-              Справа
-            </Button>
-          </div>
-        </div>
-      </div>
+              <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] uppercase text-[#0A0A0A]">
+                {tag || "тег"}
+              </span>
+            </InlineEdit>
 
-      <div className="space-y-1.5">
-        <label className="text-[length:var(--text-12)] text-muted-foreground">
-          Заголовок
-        </label>
-        <Input
-          size="sm"
-          value={title}
-          onChange={(e) => onUpdate({ title: e.target.value })}
-        />
-      </div>
-
-      <div className="space-y-1.5">
-        <label className="text-[length:var(--text-12)] text-muted-foreground">
-          Подзаголовок
-        </label>
-        <Textarea
-          value={subtitle}
-          onChange={(e) => onUpdate({ subtitle: e.target.value })}
-          className="min-h-[60px] text-[length:var(--text-14)]"
-        />
-      </div>
-
-      <Separator />
-
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <label className="text-[length:var(--text-12)] font-medium text-muted-foreground">
-            Факты
-          </label>
-          <Button variant="ghost" size="xs" onClick={addFact}>
-            <Plus className="mr-1 h-3 w-3" />
-            Добавить
-          </Button>
-        </div>
-
-        {facts.map((fact, index) => (
-          <div key={index} className="flex items-start gap-2 rounded-sm border border-border p-3">
-            <div className="flex flex-1 flex-col gap-2">
-              <Input
-                size="sm"
-                value={fact.title}
-                onChange={(e) => updateFact(index, "title", e.target.value)}
-                placeholder="Заголовок факта"
-              />
-              <Textarea
-                value={fact.text}
-                onChange={(e) => updateFact(index, "text", e.target.value)}
-                placeholder="Описание"
-                className="min-h-[60px] text-[length:var(--text-14)]"
-              />
+            <div className="mt-3">
+              <InlineEdit
+                value={title}
+                onSave={(v) => onUpdate({ title: v })}
+                placeholder="Заголовок"
+              >
+                <h2 className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-24)] font-bold uppercase tracking-tight text-[#0A0A0A] lg:text-[length:var(--text-32)]">
+                  {title || "Заголовок"}
+                </h2>
+              </InlineEdit>
             </div>
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              onClick={() => removeFact(index)}
-              className="shrink-0 text-muted-foreground hover:text-[var(--rm-red-500)]"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </Button>
           </div>
-        ))}
+
+          <div className="lg:w-1/2">
+            <InlineEdit
+              value={subtitle}
+              onSave={(v) => onUpdate({ subtitle: v })}
+              multiline
+              placeholder="Подзаголовок"
+            >
+              <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] uppercase text-[#0A0A0A] lg:text-[length:var(--text-18)]">
+                {subtitle || "Подзаголовок"}
+              </p>
+            </InlineEdit>
+          </div>
+        </div>
+
+        {/* Fact cards */}
+        <div className="flex flex-col gap-2 lg:flex-row">
+          {facts.map((fact, index) => (
+            <div
+              key={index}
+              className="group/fact relative flex flex-1 flex-col gap-2 border-t border-[#404040] pt-4"
+            >
+              <button
+                onClick={() => removeFact(index)}
+                className="absolute right-0 top-2 flex h-5 w-5 items-center justify-center rounded-sm text-[#939393] opacity-0 transition-opacity hover:text-[#ED4843] group-hover/fact:opacity-100"
+              >
+                <Trash2 className="h-3 w-3" />
+              </button>
+
+              <InlineEdit
+                value={fact.title}
+                onSave={(v) => updateFact(index, "title", v)}
+                placeholder="Заголовок факта"
+              >
+                <span className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-18)] font-bold uppercase tracking-tight text-[#0A0A0A] lg:text-[length:var(--text-24)]">
+                  {fact.title || "Факт"}
+                </span>
+              </InlineEdit>
+
+              <InlineEdit
+                value={fact.text}
+                onSave={(v) => updateFact(index, "text", v)}
+                multiline
+                placeholder="Описание факта"
+              >
+                <p className="text-[length:var(--text-14)] text-[#0A0A0A] lg:text-[length:var(--text-16)]">
+                  {fact.text || "Описание"}
+                </p>
+              </InlineEdit>
+            </div>
+          ))}
+
+          {/* Add fact */}
+          <button
+            onClick={addFact}
+            className="flex flex-1 items-center justify-center gap-1 border border-dashed border-[#404040] py-8 text-[length:var(--text-14)] text-[#939393] transition-colors hover:border-[#0A0A0A] hover:text-[#0A0A0A]"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            Добавить факт
+          </button>
+        </div>
       </div>
     </div>
   );

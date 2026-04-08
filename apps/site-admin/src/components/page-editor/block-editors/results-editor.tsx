@@ -1,7 +1,7 @@
 "use client";
 
 import { Plus, Trash2 } from "lucide-react";
-import { Input, Textarea, Button, Separator } from "@rocketmind/ui";
+import { InlineEdit } from "@/components/inline-edit";
 
 interface ResultsEditorProps {
   data: Record<string, unknown>;
@@ -30,80 +30,94 @@ export function ResultsEditor({ data, onUpdate }: ResultsEditorProps) {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="space-y-1.5">
-        <label className="text-[length:var(--text-12)] text-muted-foreground">
-          Тег
-        </label>
-        <Input
-          size="sm"
-          value={tag}
-          onChange={(e) => onUpdate({ tag: e.target.value })}
-          placeholder="Результаты"
-        />
-      </div>
+    <div className="overflow-hidden rounded-sm border-t border-[#404040] bg-[#0A0A0A]">
+      <div className="px-8 py-10">
+        {/* Header */}
+        <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:gap-16">
+          <div className="max-w-[560px] lg:w-1/2">
+            <InlineEdit
+              value={tag}
+              onSave={(v) => onUpdate({ tag: v })}
+              placeholder="результат"
+            >
+              <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] uppercase text-[#FFCC00]">
+                {tag || "тег"}
+              </span>
+            </InlineEdit>
 
-      <div className="space-y-1.5">
-        <label className="text-[length:var(--text-12)] text-muted-foreground">
-          Заголовок
-        </label>
-        <Input
-          size="sm"
-          value={title}
-          onChange={(e) => onUpdate({ title: e.target.value })}
-        />
-      </div>
+            <div className="mt-3">
+              <InlineEdit
+                value={title}
+                onSave={(v) => onUpdate({ title: v })}
+                placeholder="Заголовок"
+              >
+                <h2 className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-24)] font-bold uppercase tracking-tight text-[#F0F0F0] lg:text-[length:var(--text-32)]">
+                  {title || "Заголовок"}
+                </h2>
+              </InlineEdit>
+            </div>
 
-      <div className="space-y-1.5">
-        <label className="text-[length:var(--text-12)] text-muted-foreground">
-          Описание
-        </label>
-        <Textarea
-          value={description}
-          onChange={(e) => onUpdate({ description: e.target.value })}
-          className="min-h-[60px] text-[length:var(--text-14)]"
-        />
-      </div>
-
-      <Separator />
-
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <label className="text-[length:var(--text-12)] font-medium text-muted-foreground">
-            Карточки результатов
-          </label>
-          <Button variant="ghost" size="xs" onClick={addCard}>
-            <Plus className="mr-1 h-3 w-3" />
-            Добавить
-          </Button>
+            <div className="mt-3">
+              <InlineEdit
+                value={description}
+                onSave={(v) => onUpdate({ description: v })}
+                multiline
+                placeholder="Описание"
+              >
+                <p className="text-[length:var(--text-16)] text-[#939393] lg:text-[length:var(--text-18)]">
+                  {description || "Описание"}
+                </p>
+              </InlineEdit>
+            </div>
+          </div>
         </div>
 
-        {cards.map((card, index) => (
-          <div key={index} className="flex items-start gap-2 rounded-sm border border-border p-3">
-            <div className="flex flex-1 flex-col gap-2">
-              <Input
-                size="sm"
-                value={card.title}
-                onChange={(e) => updateCard(index, "title", e.target.value)}
-                placeholder="Заголовок"
-              />
-              <Textarea
-                value={card.text}
-                onChange={(e) => updateCard(index, "text", e.target.value)}
-                placeholder="Описание результата"
-                className="min-h-[60px] text-[length:var(--text-14)]"
-              />
-            </div>
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              onClick={() => removeCard(index)}
-              className="shrink-0 text-muted-foreground hover:text-[var(--rm-red-500)]"
+        {/* Cards grid */}
+        <div className="grid gap-2 sm:grid-cols-2">
+          {cards.map((card, index) => (
+            <div
+              key={index}
+              className="group/card relative flex h-[200px] flex-col justify-between border border-[#404040] bg-[#FFCC00] p-6"
             >
-              <Trash2 className="h-3.5 w-3.5" />
-            </Button>
-          </div>
-        ))}
+              <button
+                onClick={() => removeCard(index)}
+                className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-sm text-[#0A0A0A]/50 opacity-0 transition-opacity hover:text-[#ED4843] group-hover/card:opacity-100"
+              >
+                <Trash2 className="h-3 w-3" />
+              </button>
+
+              <InlineEdit
+                value={card.title}
+                onSave={(v) => updateCard(index, "title", v)}
+                placeholder="Заголовок"
+              >
+                <span className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-18)] font-bold uppercase text-[#0A0A0A] lg:text-[length:var(--text-24)]">
+                  {card.title || "Результат"}
+                </span>
+              </InlineEdit>
+
+              <InlineEdit
+                value={card.text}
+                onSave={(v) => updateCard(index, "text", v)}
+                multiline
+                placeholder="Описание"
+              >
+                <p className="text-[length:var(--text-14)] text-[#0A0A0A] lg:text-[length:var(--text-16)]">
+                  {card.text || "Описание результата"}
+                </p>
+              </InlineEdit>
+            </div>
+          ))}
+
+          {/* Add card */}
+          <button
+            onClick={addCard}
+            className="flex h-[200px] items-center justify-center gap-1 border border-dashed border-[#404040] text-[length:var(--text-14)] text-[#939393] transition-colors hover:border-[#FFCC00] hover:text-[#FFCC00]"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            Добавить карточку
+          </button>
+        </div>
       </div>
     </div>
   );

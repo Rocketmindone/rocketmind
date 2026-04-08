@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { GripVertical, ChevronDown, ChevronRight } from "lucide-react";
-import { Switch, Badge } from "@rocketmind/ui";
+import { useState, useCallback, useRef } from "react";
+import { GripVertical, ChevronDown, ChevronRight, EyeOff } from "lucide-react";
+import { Switch } from "@rocketmind/ui";
 import type { PageBlock } from "@/lib/types";
 import { BLOCK_TYPES } from "@/lib/constants";
 import { BlockEditor } from "./block-editors/block-editor";
@@ -20,11 +20,22 @@ export function BlockList({
   onUpdateBlock,
   onReorderBlocks,
 }: BlockListProps) {
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set());
   const [dragId, setDragId] = useState<string | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
+  const [draggableId, setDraggableId] = useState<string | null>(null);
+  const rowRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
   const sorted = [...blocks].sort((a, b) => a.order - b.order);
+
+  const toggleCollapse = useCallback((blockId: string) => {
+    setCollapsedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(blockId)) next.delete(blockId);
+      else next.add(blockId);
+      return next;
+    });
+  }, []);
 
   const handleDragStart = useCallback(
     (e: React.DragEvent, blockId: string) => {
@@ -75,59 +86,71 @@ export function BlockList({
   const handleDragEnd = useCallback(() => {
     setDragId(null);
     setDragOverId(null);
+    setDraggableId(null);
+  }, []);
+
+  const handleGripMouseDown = useCallback((blockId: string) => {
+    setDraggableId(blockId);
+  }, []);
+
+  const handleGripMouseUp = useCallback(() => {
+    setDraggableId(null);
   }, []);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-0">
       {sorted.map((block) => {
         const info = BLOCK_TYPES[block.type];
-        const isExpanded = expandedId === block.id;
+        const isCollapsed = collapsedIds.has(block.id);
         const isDragging = dragId === block.id;
         const isDragOver = dragOverId === block.id && dragId !== block.id;
 
         return (
           <div
             key={block.id}
-            draggable
+            ref={(el) => {
+              if (el) rowRefs.current.set(block.id, el);
+              else rowRefs.current.delete(block.id);
+            }}
+            draggable={draggableId === block.id}
             onDragStart={(e) => handleDragStart(e, block.id)}
             onDragOver={(e) => handleDragOver(e, block.id)}
             onDrop={(e) => handleDrop(e, block.id)}
             onDragEnd={handleDragEnd}
-            className={`rounded-sm border transition-all ${
+            className={`relative transition-all ${
               isDragging
-                ? "border-dashed border-muted-foreground opacity-50"
+                ? "opacity-50"
                 : isDragOver
-                  ? "border-[var(--rm-yellow-300)] bg-[var(--rm-yellow-900)]"
-                  : "border-border bg-background"
+                  ? "ring-2 ring-[var(--rm-yellow-300)]"
+                  : ""
             }`}
           >
-            {/* Block header */}
-            <div className="flex items-center gap-2 px-3 py-2">
-              <div className="cursor-grab text-muted-foreground active:cursor-grabbing">
+            {/* Block toolbar — floating bar */}
+            <div className="sticky top-0 z-10 flex items-center gap-2 border-b border-border bg-background/95 px-3 py-1.5 backdrop-blur-sm">
+              <div
+                className="cursor-grab text-muted-foreground active:cursor-grabbing select-none"
+                onMouseDown={() => handleGripMouseDown(block.id)}
+                onMouseUp={handleGripMouseUp}
+              >
                 <GripVertical className="h-4 w-4" />
               </div>
 
               <button
                 className="flex flex-1 items-center gap-2 text-left"
-                onClick={() => setExpandedId(isExpanded ? null : block.id)}
+                onClick={() => toggleCollapse(block.id)}
               >
-                {isExpanded ? (
-                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                {isCollapsed ? (
+                  <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
                 ) : (
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                  <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
                 )}
-                <span className="text-[length:var(--text-14)] font-medium text-foreground">
+                <span className="text-[length:var(--text-12)] font-medium uppercase tracking-wider text-muted-foreground">
                   {info?.label || block.type}
-                </span>
-                <span className="text-[length:var(--text-12)] text-muted-foreground">
-                  {info?.description}
                 </span>
               </button>
 
               {!block.enabled && (
-                <Badge variant="neutral-subtle" size="sm">
-                  Скрыт
-                </Badge>
+                <EyeOff className="h-3.5 w-3.5 text-muted-foreground" />
               )}
 
               <Switch
@@ -137,9 +160,9 @@ export function BlockList({
               />
             </div>
 
-            {/* Block editor (expanded) */}
-            {isExpanded && (
-              <div className="border-t border-border px-4 py-4">
+            {/* Block preview */}
+            {!isCollapsed && (
+              <div className={!block.enabled ? "pointer-events-none opacity-30" : ""}>
                 <BlockEditor
                   block={block}
                   onUpdate={(data) => onUpdateBlock(block.id, data)}

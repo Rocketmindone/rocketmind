@@ -37,11 +37,11 @@ export function EditorShell({ initialPage }: EditorShellProps) {
 
   const [showCancelDialog, setShowCancelDialog] = useState(false);
 
-  function handleSave() {
+  async function handleSave() {
     const savedPage = { ...page, updatedAt: new Date().toISOString() };
-    savePage(savedPage);
+    await savePage(savedPage);
     markSaved(savedPage);
-    toast.success("Изменения сохранены");
+    toast.success("Изменения сохранены и записаны в файл");
   }
 
   function handleCancel() {

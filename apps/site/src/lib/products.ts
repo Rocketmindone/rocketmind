@@ -79,6 +79,13 @@ export type ResultsData = {
   cards: ResultCardData[];
 };
 
+export type ExpertData = {
+  tag?: string;
+  name: string;
+  bio: string;
+  image: string;
+};
+
 export type ProductData = {
   slug: string;
   category: string;
@@ -101,6 +108,8 @@ export type ProductData = {
   results: ResultsData | null;
   // Process
   process: ProcessData | null;
+  // Experts
+  experts: ExpertData[] | null;
   // Image paths (auto-resolved)
   coverImage: string;
   aboutImage: string | null;
@@ -177,6 +186,7 @@ export function getProductBySlug(slug: string): ProductData | null {
     audience: data.audience ?? null,
     results: data.results ?? null,
     process: data.process ?? null,
+    experts: data.experts ?? null,
     coverImage,
     aboutImage,
   };

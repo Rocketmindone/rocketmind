@@ -1,7 +1,7 @@
 "use client";
 
 import { Plus, Trash2 } from "lucide-react";
-import { Input, Textarea, Button, Separator } from "@rocketmind/ui";
+import { InlineEdit } from "@/components/inline-edit";
 
 interface HeroEditorProps {
   data: Record<string, unknown>;
@@ -13,7 +13,8 @@ export function HeroEditor({ data, onUpdate }: HeroEditorProps) {
   const title = (data.title as string) || "";
   const description = (data.description as string) || "";
   const ctaText = (data.ctaText as string) || "";
-  const factoids = (data.factoids as Array<{ number: string; label: string; text: string }>) || [];
+  const factoids =
+    (data.factoids as Array<{ number: string; label: string; text: string }>) || [];
 
   function updateFactoid(index: number, field: string, value: string) {
     const updated = factoids.map((f, i) =>
@@ -31,99 +32,112 @@ export function HeroEditor({ data, onUpdate }: HeroEditorProps) {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="space-y-1.5">
-        <label className="text-[length:var(--text-12)] text-muted-foreground">
-          Надпись (caption)
-        </label>
-        <Input
-          size="sm"
-          value={caption}
-          onChange={(e) => onUpdate({ caption: e.target.value })}
-          placeholder="напр. консалтинг и стратегии"
-        />
-      </div>
+    <div className="overflow-hidden rounded-sm bg-[#0A0A0A]">
+      {/* Hero area */}
+      <div className="flex flex-col gap-6 px-8 py-10 lg:flex-row lg:gap-10">
+        {/* Left: text */}
+        <div className="flex flex-1 flex-col gap-4">
+          <InlineEdit
+            value={caption}
+            onSave={(v) => onUpdate({ caption: v })}
+            placeholder="напр. консалтинг и стратегии"
+          >
+            <span className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-18)] font-bold uppercase tracking-tight text-[#FFCC00]">
+              {caption || "caption"}
+            </span>
+          </InlineEdit>
 
-      <div className="space-y-1.5">
-        <label className="text-[length:var(--text-12)] text-muted-foreground">
-          Заголовок
-        </label>
-        <Textarea
-          value={title}
-          onChange={(e) => onUpdate({ title: e.target.value })}
-          placeholder="ЭКОСИСТЕМНАЯ СТРАТЕГИЯ\nОТ ПРОДУКТА К СЕТИ ПАРТНЁРОВ"
-          className="min-h-[80px] text-[length:var(--text-14)]"
-        />
-      </div>
+          <InlineEdit
+            value={title}
+            onSave={(v) => onUpdate({ title: v })}
+            multiline
+            placeholder="ЗАГОЛОВОК БЛОКА"
+          >
+            <h1 className="whitespace-pre-line font-[family-name:var(--font-heading-family)] text-[length:var(--text-32)] font-bold uppercase leading-[0.9] tracking-tight text-[#F0F0F0] lg:text-[length:var(--text-52)]">
+              {title || "ЗАГОЛОВОК"}
+            </h1>
+          </InlineEdit>
 
-      <div className="space-y-1.5">
-        <label className="text-[length:var(--text-12)] text-muted-foreground">
-          Описание
-        </label>
-        <Textarea
-          value={description}
-          onChange={(e) => onUpdate({ description: e.target.value })}
-          className="min-h-[60px] text-[length:var(--text-14)]"
-        />
-      </div>
-
-      <div className="space-y-1.5">
-        <label className="text-[length:var(--text-12)] text-muted-foreground">
-          Текст кнопки CTA
-        </label>
-        <Input
-          size="sm"
-          value={ctaText}
-          onChange={(e) => onUpdate({ ctaText: e.target.value })}
-          placeholder="Оставить заявку"
-        />
-      </div>
-
-      <Separator />
-
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <label className="text-[length:var(--text-12)] font-medium text-muted-foreground">
-            Фактоиды
-          </label>
-          <Button variant="ghost" size="xs" onClick={addFactoid}>
-            <Plus className="mr-1 h-3 w-3" />
-            Добавить
-          </Button>
+          <InlineEdit
+            value={description}
+            onSave={(v) => onUpdate({ description: v })}
+            multiline
+            placeholder="Описание продукта..."
+          >
+            <p className="max-w-[560px] text-[length:var(--text-16)] leading-[1.2] text-[#F0F0F0] lg:text-[length:var(--text-18)]">
+              {description || "Описание продукта"}
+            </p>
+          </InlineEdit>
         </div>
 
-        {factoids.map((factoid, index) => (
-          <div key={index} className="flex items-start gap-2 rounded-sm border border-border p-3">
-            <div className="grid flex-1 gap-2 sm:grid-cols-3">
-              <Input
-                size="sm"
-                value={factoid.number}
-                onChange={(e) => updateFactoid(index, "number", e.target.value)}
-                placeholder="150+"
-              />
-              <Input
-                size="sm"
-                value={factoid.label}
-                onChange={(e) => updateFactoid(index, "label", e.target.value)}
-                placeholder="проектов"
-              />
-              <Input
-                size="sm"
-                value={factoid.text}
-                onChange={(e) => updateFactoid(index, "text", e.target.value)}
-                placeholder="описание"
-              />
-            </div>
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              onClick={() => removeFactoid(index)}
-              className="shrink-0 text-muted-foreground hover:text-[var(--rm-red-500)]"
+        {/* Right: factoids + CTA */}
+        <div className="flex w-full flex-col gap-2 lg:w-[344px]">
+          {factoids.map((factoid, index) => (
+            <div
+              key={index}
+              className="group/fact relative border border-[#404040] px-5 py-4"
             >
-              <Trash2 className="h-3.5 w-3.5" />
-            </Button>
+              <button
+                onClick={() => removeFactoid(index)}
+                className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-sm text-[#939393] opacity-0 transition-opacity hover:text-[#ED4843] group-hover/fact:opacity-100"
+              >
+                <Trash2 className="h-3 w-3" />
+              </button>
+
+              <InlineEdit
+                value={factoid.number}
+                onSave={(v) => updateFactoid(index, "number", v)}
+                placeholder="600+"
+              >
+                <span className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-32)] font-bold uppercase text-[#F0F0F0] lg:text-[length:var(--text-52)]">
+                  {factoid.number || "—"}
+                </span>
+              </InlineEdit>
+
+              <InlineEdit
+                value={factoid.label}
+                onSave={(v) => updateFactoid(index, "label", v)}
+                placeholder="кейсов платформ"
+              >
+                <span className="block font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase text-[#F0F0F0] lg:text-[length:var(--text-18)]">
+                  {factoid.label || "подпись"}
+                </span>
+              </InlineEdit>
+
+              <InlineEdit
+                value={factoid.text}
+                onSave={(v) => updateFactoid(index, "text", v)}
+                placeholder="Описание фактоида"
+              >
+                <span className="block text-[length:var(--text-14)] text-[#939393] lg:text-[length:var(--text-16)]">
+                  {factoid.text || "описание"}
+                </span>
+              </InlineEdit>
+            </div>
+          ))}
+
+          {/* Add factoid */}
+          <button
+            onClick={addFactoid}
+            className="flex items-center justify-center gap-1 border border-dashed border-[#404040] px-5 py-4 text-[length:var(--text-14)] text-[#939393] transition-colors hover:border-[#FFCC00] hover:text-[#FFCC00]"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            Добавить фактоид
+          </button>
+
+          {/* CTA button preview */}
+          <div className="mt-1 flex items-center justify-center bg-[#FFCC00] px-5 py-4">
+            <InlineEdit
+              value={ctaText}
+              onSave={(v) => onUpdate({ ctaText: v })}
+              placeholder="оставить заявку"
+            >
+              <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase text-[#0A0A0A]">
+                {ctaText || "кнопка"}
+              </span>
+            </InlineEdit>
           </div>
-        ))}
+        </div>
       </div>
     </div>
   );

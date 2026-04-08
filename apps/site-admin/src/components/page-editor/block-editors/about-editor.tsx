@@ -1,7 +1,8 @@
 "use client";
 
-import { Plus, Trash2 } from "lucide-react";
-import { Input, Textarea, Button, Separator } from "@rocketmind/ui";
+import { useState } from "react";
+import { Plus, Trash2, ChevronDown } from "lucide-react";
+import { InlineEdit } from "@/components/inline-edit";
 
 interface AboutEditorProps {
   data: Record<string, unknown>;
@@ -12,7 +13,10 @@ export function AboutEditor({ data, onUpdate }: AboutEditorProps) {
   const caption = (data.caption as string) || "";
   const title = (data.title as string) || "";
   const description = (data.description as string) || "";
-  const accordion = (data.accordion as Array<{ title: string; description: string }>) || [];
+  const accordion =
+    (data.accordion as Array<{ title: string; description: string }>) || [];
+
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   function updateAccordion(index: number, field: string, value: string) {
     const updated = accordion.map((item, i) =>
@@ -27,85 +31,108 @@ export function AboutEditor({ data, onUpdate }: AboutEditorProps) {
 
   function removeAccordion(index: number) {
     onUpdate({ accordion: accordion.filter((_, i) => i !== index) });
+    if (openIndex === index) setOpenIndex(null);
   }
 
   return (
-    <div className="space-y-4">
-      <div className="space-y-1.5">
-        <label className="text-[length:var(--text-12)] text-muted-foreground">
-          Надпись (caption)
-        </label>
-        <Input
-          size="sm"
-          value={caption}
-          onChange={(e) => onUpdate({ caption: e.target.value })}
-          placeholder="О продукте"
-        />
-      </div>
+    <div className="overflow-hidden rounded-sm border-t border-[#404040] bg-[#0A0A0A]">
+      <div className="flex flex-col gap-8 px-8 py-10 lg:flex-row lg:gap-16">
+        {/* Left: text */}
+        <div className="flex max-w-[560px] flex-col gap-4 lg:w-1/2">
+          <InlineEdit
+            value={caption}
+            onSave={(v) => onUpdate({ caption: v })}
+            placeholder="О продукте"
+          >
+            <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] uppercase text-[#FFCC00]">
+              {caption || "caption"}
+            </span>
+          </InlineEdit>
 
-      <div className="space-y-1.5">
-        <label className="text-[length:var(--text-12)] text-muted-foreground">
-          Заголовок
-        </label>
-        <Input
-          size="sm"
-          value={title}
-          onChange={(e) => onUpdate({ title: e.target.value })}
-        />
-      </div>
+          <InlineEdit
+            value={title}
+            onSave={(v) => onUpdate({ title: v })}
+            placeholder="Заголовок"
+          >
+            <h2 className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-24)] font-bold uppercase tracking-tight text-[#F0F0F0] lg:text-[length:var(--text-32)]">
+              {title || "Заголовок блока"}
+            </h2>
+          </InlineEdit>
 
-      <div className="space-y-1.5">
-        <label className="text-[length:var(--text-12)] text-muted-foreground">
-          Описание
-        </label>
-        <Textarea
-          value={description}
-          onChange={(e) => onUpdate({ description: e.target.value })}
-          className="min-h-[80px] text-[length:var(--text-14)]"
-        />
-      </div>
-
-      <Separator />
-
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <label className="text-[length:var(--text-12)] font-medium text-muted-foreground">
-            Аккордеон
-          </label>
-          <Button variant="ghost" size="xs" onClick={addAccordion}>
-            <Plus className="mr-1 h-3 w-3" />
-            Добавить
-          </Button>
+          <InlineEdit
+            value={description}
+            onSave={(v) => onUpdate({ description: v })}
+            multiline
+            placeholder="Описание продукта..."
+          >
+            <p className="text-[length:var(--text-16)] leading-[1.2] text-[#939393] lg:text-[length:var(--text-18)]">
+              {description || "Описание"}
+            </p>
+          </InlineEdit>
         </div>
 
-        {accordion.map((item, index) => (
-          <div key={index} className="flex items-start gap-2 rounded-sm border border-border p-3">
-            <div className="flex flex-1 flex-col gap-2">
-              <Input
-                size="sm"
-                value={item.title}
-                onChange={(e) => updateAccordion(index, "title", e.target.value)}
-                placeholder="Заголовок пункта"
-              />
-              <Textarea
-                value={item.description}
-                onChange={(e) =>
-                  updateAccordion(index, "description", e.target.value)
-                }
-                placeholder="Описание"
-                className="min-h-[60px] text-[length:var(--text-14)]"
-              />
-            </div>
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              onClick={() => removeAccordion(index)}
-              className="shrink-0 text-muted-foreground hover:text-[var(--rm-red-500)]"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </Button>
-          </div>
-        ))}
+        {/* Right: accordion */}
+        <div className="flex flex-1 flex-col">
+          {accordion.map((item, index) => {
+            const isOpen = openIndex === index;
+            return (
+              <div
+                key={index}
+                className="group/acc relative border-t border-[#404040] last:border-b"
+              >
+                <button
+                  onClick={() => removeAccordion(index)}
+                  className="absolute right-0 top-3 z-10 flex h-5 w-5 items-center justify-center rounded-sm text-[#939393] opacity-0 transition-opacity hover:text-[#ED4843] group-hover/acc:opacity-100"
+                >
+                  <Trash2 className="h-3 w-3" />
+                </button>
+
+                <button
+                  className="flex w-full items-center gap-3 py-4 pr-8 text-left"
+                  onClick={() => setOpenIndex(isOpen ? null : index)}
+                >
+                  <ChevronDown
+                    className={`h-4 w-4 shrink-0 text-[#F0F0F0] transition-transform ${isOpen ? "" : "-rotate-90"}`}
+                  />
+                  <InlineEdit
+                    value={item.title}
+                    onSave={(v) => updateAccordion(index, "title", v)}
+                    placeholder="Заголовок пункта"
+                  >
+                    <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase text-[#F0F0F0] lg:text-[length:var(--text-16)]">
+                      {item.title || "Пункт аккордеона"}
+                    </span>
+                  </InlineEdit>
+                </button>
+
+                {isOpen && (
+                  <div className="pb-4 pl-7">
+                    <InlineEdit
+                      value={item.description}
+                      onSave={(v) =>
+                        updateAccordion(index, "description", v)
+                      }
+                      multiline
+                      placeholder="Описание пункта"
+                    >
+                      <p className="text-[length:var(--text-14)] text-[#939393]">
+                        {item.description || "Описание"}
+                      </p>
+                    </InlineEdit>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          <button
+            onClick={addAccordion}
+            className="flex items-center justify-center gap-1 border border-dashed border-[#404040] py-4 text-[length:var(--text-14)] text-[#939393] transition-colors hover:border-[#FFCC00] hover:text-[#FFCC00]"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            Добавить пункт
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -33,12 +33,16 @@ function PagesContent() {
   const activePages = pages.filter((p) => p.status !== "archived");
   const archivedPages = pages.filter((p) => p.status === "archived");
 
-  function handleCreate() {
+  async function handleCreate() {
     if (!newTitle.trim()) return;
-    const page = createPage(activeSection, newTitle.trim());
+    const page = await createPage(activeSection, newTitle.trim());
     setNewTitle("");
     setIsCreating(false);
-    toast.success(`Страница «${page.menuTitle}» создана`);
+    if (page) {
+      toast.success(`Страница «${page.menuTitle}» создана`);
+    } else {
+      toast.error("Не удалось создать страницу");
+    }
   }
 
   function handleArchive(id: string) {
@@ -56,9 +60,9 @@ function PagesContent() {
     toast.success("Страница восстановлена");
   }
 
-  function handleDelete() {
+  async function handleDelete() {
     if (!deleteTarget) return;
-    deletePage(deleteTarget);
+    await deletePage(deleteTarget);
     setDeleteTarget(null);
     toast.success("Страница удалена");
   }
