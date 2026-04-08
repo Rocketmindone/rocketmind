@@ -162,9 +162,10 @@ export function ProductHero({
           <div className="absolute top-0 left-0 right-0 h-[540px] z-0">
             <DotGridLens
               accentColor
+              gridGap={10}
               baseRadius={0.75}
               maxScale={4.2}
-              className="absolute inset-0 opacity-50"
+              className="absolute inset-0 opacity-30"
             />
             <div className="absolute left-0 right-0 bottom-0 h-[180px] pointer-events-none" style={{ background: "linear-gradient(180deg, transparent 0%, #0A0A0A 100%)" }} />
           </div>
