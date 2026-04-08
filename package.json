@@ -16,6 +16,7 @@
     "dev:site": "npm run dev --workspace=apps/site",
     "dev:saas": "npm run dev --workspace=apps/saas",
     "dev:internal": "npm run dev --workspace=apps/internal",
+    "dev:site-admin": "npm run dev --workspace=apps/site-admin",
     "release": "bash scripts/release.sh",
     "postinstall": "patch-package"
   },

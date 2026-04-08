@@ -1,0 +1,10 @@
+@import "@rocketmind/ui/styles";
+
+@layer base {
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+}
