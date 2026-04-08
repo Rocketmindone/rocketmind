@@ -54,12 +54,10 @@ function TimelineColumn({
         }}
       />
 
-      {/* Line below dot — fills the rest of the step height */}
-      {!isLast && (
-        <div className="w-px flex-1 relative">
-          {/* Gray base */}
-          <div className="absolute inset-0 bg-[#404040]" />
-          {/* White fill — grows from top via scaleY */}
+      {/* Line below dot — always present, fill only on non-last */}
+      <div className="w-px flex-1 relative">
+        <div className="absolute inset-0 bg-[#404040]" />
+        {!isLast && (
           <div
             className="absolute top-0 left-0 right-0 h-full origin-top bg-[#F0F0F0]"
             style={{
@@ -67,8 +65,8 @@ function TimelineColumn({
               transition: "transform 0.2s ease-out",
             }}
           />
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

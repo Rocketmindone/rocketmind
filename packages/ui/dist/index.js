@@ -2065,9 +2065,9 @@ function TimelineColumn({
         }
       }
     ),
-    !isLast && /* @__PURE__ */ jsxs13("div", { className: "w-px flex-1 relative", children: [
+    /* @__PURE__ */ jsxs13("div", { className: "w-px flex-1 relative", children: [
       /* @__PURE__ */ jsx30("div", { className: "absolute inset-0 bg-[#404040]" }),
-      /* @__PURE__ */ jsx30(
+      !isLast && /* @__PURE__ */ jsx30(
         "div",
         {
           className: "absolute top-0 left-0 right-0 h-full origin-top bg-[#F0F0F0]",
