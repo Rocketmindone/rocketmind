@@ -75,6 +75,7 @@ export function ResultsSection({
   className,
 }: ResultsSectionProps) {
   const { activeCount, sectionRef } = useResultsScroll(cards.length);
+  const contentHeight = STEP_OFFSET * (cards.length - 1) + 240;
 
   return (
     <section
@@ -82,67 +83,66 @@ export function ResultsSection({
       className={cn("w-full bg-[#0A0A0A] border-t border-border", className)}
     >
       {/* ── Desktop ── */}
-      <div className="hidden lg:block mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14 py-14">
-        {/* Header */}
-        <div className="flex flex-col gap-2 max-w-[560px]">
-          <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">
-            {tag}
-          </span>
-          <div className="flex flex-col gap-6">
-            <h2 className="h2 text-[#F0F0F0]">{title}</h2>
-            {description && (
-              <p className="text-[length:var(--text-18)] leading-[1.2] text-[#939393]">
-                {description}
-              </p>
-            )}
+      <div className="hidden lg:block mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14 pt-[88px] pb-14">
+        {/* Header + cards share the same vertical space */}
+        <div className="relative" style={{ minHeight: `${contentHeight}px` }}>
+          {/* Header — top left */}
+          <div className="flex flex-col gap-2 max-w-[560px]">
+            <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">
+              {tag}
+            </span>
+            <div className="flex flex-col gap-6">
+              <h2 className="h2 text-[#F0F0F0]">{title}</h2>
+              {description && (
+                <p className="text-[length:var(--text-18)] leading-[1.2] text-[#939393]">
+                  {description}
+                </p>
+              )}
+            </div>
           </div>
-        </div>
 
-        {/* Cards — staircase layout */}
-        <div
-          className="flex items-end mt-8"
-          style={{
-            minHeight: `${STEP_OFFSET * (cards.length - 1) + 240}px`,
-          }}
-        >
-          {cards.map((card, i) => {
-            const isActive = i < activeCount;
-            const offset = isActive ? 0 : -i * STEP_OFFSET;
+          {/* Cards — staircase, pinned to bottom */}
+          <div className="absolute bottom-0 left-0 right-0 flex">
+            {cards.map((card, i) => {
+              const isDescended = i < activeCount;
+              const isCurrent = i === activeCount - 1;
+              const offset = isDescended ? 0 : -i * STEP_OFFSET;
 
-            return (
-              <div
-                key={i}
-                className="flex-1 transition-transform duration-500 ease-out"
-                style={{ transform: `translateY(${offset}px)` }}
-              >
+              return (
                 <div
-                  className={cn(
-                    "flex flex-col justify-between p-8 h-[240px] border transition-colors duration-500",
-                    isActive
-                      ? "bg-[#FFCC00] border-[#FFCC00]"
-                      : "border-[#404040]",
-                  )}
+                  key={i}
+                  className="flex-1 transition-transform duration-500 ease-out"
+                  style={{ transform: `translateY(${offset}px)` }}
                 >
-                  <h3
+                  <div
                     className={cn(
-                      "font-[family-name:var(--font-heading-family)] text-[length:var(--text-20)] font-bold uppercase leading-[1.2] tracking-[-0.01em] transition-colors duration-500",
-                      isActive ? "text-[#0A0A0A]" : "text-[#F0F0F0]",
+                      "flex flex-col justify-between p-8 h-[240px] border transition-colors duration-500",
+                      isCurrent
+                        ? "bg-[#FFCC00] border-[#FFCC00]"
+                        : "border-[#404040]",
                     )}
                   >
-                    {card.title}
-                  </h3>
-                  <p
-                    className={cn(
-                      "text-[length:var(--text-16)] leading-[1.28] transition-colors duration-500",
-                      isActive ? "text-[#0A0A0A]" : "text-[#939393]",
-                    )}
-                  >
-                    {card.text}
-                  </p>
+                    <h3
+                      className={cn(
+                        "font-[family-name:var(--font-heading-family)] text-[length:var(--text-20)] font-bold uppercase leading-[1.2] tracking-[-0.01em] transition-colors duration-500",
+                        isCurrent ? "text-[#0A0A0A]" : "text-[#F0F0F0]",
+                      )}
+                    >
+                      {card.title}
+                    </h3>
+                    <p
+                      className={cn(
+                        "text-[length:var(--text-16)] leading-[1.28] transition-colors duration-500",
+                        isCurrent ? "text-[#0A0A0A]" : "text-[#939393]",
+                      )}
+                    >
+                      {card.text}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
 
@@ -165,28 +165,30 @@ export function ResultsSection({
 
         {/* Cards — horizontal carousel 2×N */}
         <div
-          className="overflow-x-auto -mx-5 px-5"
+          className="overflow-x-auto -mx-5 md:-mx-8"
           style={{ scrollbarWidth: "none" }}
         >
-          <div
-            className="grid grid-rows-2 gap-2"
-            style={{
-              gridTemplateColumns: `repeat(${Math.ceil(cards.length / 2)}, 350px)`,
-            }}
-          >
-            {cards.map((card, i) => (
-              <div
-                key={i}
-                className="bg-[#FFCC00] flex flex-col justify-between p-5 h-[240px]"
-              >
-                <h3 className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-20)] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#0A0A0A]">
-                  {card.title}
-                </h3>
-                <p className="text-[length:var(--text-16)] leading-[1.28] text-[#0A0A0A]">
-                  {card.text}
-                </p>
-              </div>
-            ))}
+          <div className="px-5 md:px-8 w-fit">
+            <div
+              className="grid grid-rows-2 gap-2"
+              style={{
+                gridTemplateColumns: `repeat(${Math.ceil(cards.length / 2)}, 350px)`,
+              }}
+            >
+              {cards.map((card, i) => (
+                <div
+                  key={i}
+                  className="bg-[#FFCC00] flex flex-col justify-between p-5 h-[240px]"
+                >
+                  <h3 className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-20)] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#0A0A0A]">
+                    {card.title}
+                  </h3>
+                  <p className="text-[length:var(--text-16)] leading-[1.28] text-[#0A0A0A]">
+                    {card.text}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

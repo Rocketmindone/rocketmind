@@ -2301,13 +2301,14 @@ function ResultsSection({
   className
 }) {
   const { activeCount, sectionRef } = useResultsScroll(cards.length);
+  const contentHeight = STEP_OFFSET * (cards.length - 1) + 240;
   return /* @__PURE__ */ jsxs14(
     "section",
     {
       ref: sectionRef,
       className: cn("w-full bg-[#0A0A0A] border-t border-border", className),
       children: [
-        /* @__PURE__ */ jsxs14("div", { className: "hidden lg:block mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14 py-14", children: [
+        /* @__PURE__ */ jsx31("div", { className: "hidden lg:block mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14 pt-[88px] pb-14", children: /* @__PURE__ */ jsxs14("div", { className: "relative", style: { minHeight: `${contentHeight}px` }, children: [
           /* @__PURE__ */ jsxs14("div", { className: "flex flex-col gap-2 max-w-[560px]", children: [
             /* @__PURE__ */ jsx31("span", { className: "font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]", children: tag }),
             /* @__PURE__ */ jsxs14("div", { className: "flex flex-col gap-6", children: [
@@ -2315,59 +2316,51 @@ function ResultsSection({
               description && /* @__PURE__ */ jsx31("p", { className: "text-[length:var(--text-18)] leading-[1.2] text-[#939393]", children: description })
             ] })
           ] }),
-          /* @__PURE__ */ jsx31(
-            "div",
-            {
-              className: "flex items-end mt-8",
-              style: {
-                minHeight: `${STEP_OFFSET * (cards.length - 1) + 240}px`
-              },
-              children: cards.map((card, i) => {
-                const isActive = i < activeCount;
-                const offset = isActive ? 0 : -i * STEP_OFFSET;
-                return /* @__PURE__ */ jsx31(
+          /* @__PURE__ */ jsx31("div", { className: "absolute bottom-0 left-0 right-0 flex", children: cards.map((card, i) => {
+            const isDescended = i < activeCount;
+            const isCurrent = i === activeCount - 1;
+            const offset = isDescended ? 0 : -i * STEP_OFFSET;
+            return /* @__PURE__ */ jsx31(
+              "div",
+              {
+                className: "flex-1 transition-transform duration-500 ease-out",
+                style: { transform: `translateY(${offset}px)` },
+                children: /* @__PURE__ */ jsxs14(
                   "div",
                   {
-                    className: "flex-1 transition-transform duration-500 ease-out",
-                    style: { transform: `translateY(${offset}px)` },
-                    children: /* @__PURE__ */ jsxs14(
-                      "div",
-                      {
-                        className: cn(
-                          "flex flex-col justify-between p-8 h-[240px] border transition-colors duration-500",
-                          isActive ? "bg-[#FFCC00] border-[#FFCC00]" : "border-[#404040]"
-                        ),
-                        children: [
-                          /* @__PURE__ */ jsx31(
-                            "h3",
-                            {
-                              className: cn(
-                                "font-[family-name:var(--font-heading-family)] text-[length:var(--text-20)] font-bold uppercase leading-[1.2] tracking-[-0.01em] transition-colors duration-500",
-                                isActive ? "text-[#0A0A0A]" : "text-[#F0F0F0]"
-                              ),
-                              children: card.title
-                            }
+                    className: cn(
+                      "flex flex-col justify-between p-8 h-[240px] border transition-colors duration-500",
+                      isCurrent ? "bg-[#FFCC00] border-[#FFCC00]" : "border-[#404040]"
+                    ),
+                    children: [
+                      /* @__PURE__ */ jsx31(
+                        "h3",
+                        {
+                          className: cn(
+                            "font-[family-name:var(--font-heading-family)] text-[length:var(--text-20)] font-bold uppercase leading-[1.2] tracking-[-0.01em] transition-colors duration-500",
+                            isCurrent ? "text-[#0A0A0A]" : "text-[#F0F0F0]"
                           ),
-                          /* @__PURE__ */ jsx31(
-                            "p",
-                            {
-                              className: cn(
-                                "text-[length:var(--text-16)] leading-[1.28] transition-colors duration-500",
-                                isActive ? "text-[#0A0A0A]" : "text-[#939393]"
-                              ),
-                              children: card.text
-                            }
-                          )
-                        ]
-                      }
-                    )
-                  },
-                  i
-                );
-              })
-            }
-          )
-        ] }),
+                          children: card.title
+                        }
+                      ),
+                      /* @__PURE__ */ jsx31(
+                        "p",
+                        {
+                          className: cn(
+                            "text-[length:var(--text-16)] leading-[1.28] transition-colors duration-500",
+                            isCurrent ? "text-[#0A0A0A]" : "text-[#939393]"
+                          ),
+                          children: card.text
+                        }
+                      )
+                    ]
+                  }
+                )
+              },
+              i
+            );
+          }) })
+        ] }) }),
         /* @__PURE__ */ jsxs14("div", { className: "flex lg:hidden flex-col px-5 md:px-8 py-10", children: [
           /* @__PURE__ */ jsxs14("div", { className: "flex flex-col gap-2 mb-6", children: [
             /* @__PURE__ */ jsx31("span", { className: "font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]", children: tag }),
@@ -2379,9 +2372,9 @@ function ResultsSection({
           /* @__PURE__ */ jsx31(
             "div",
             {
-              className: "overflow-x-auto -mx-5 px-5",
+              className: "overflow-x-auto -mx-5 md:-mx-8",
               style: { scrollbarWidth: "none" },
-              children: /* @__PURE__ */ jsx31(
+              children: /* @__PURE__ */ jsx31("div", { className: "px-5 md:px-8 w-fit", children: /* @__PURE__ */ jsx31(
                 "div",
                 {
                   className: "grid grid-rows-2 gap-2",
@@ -2400,7 +2393,7 @@ function ResultsSection({
                     i
                   ))
                 }
-              )
+              ) })
             }
           )
         ] })
