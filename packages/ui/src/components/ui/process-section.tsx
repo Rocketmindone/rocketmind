@@ -54,18 +54,16 @@ function TimelineColumn({
         }}
       />
 
-      {/* Line below dot — always present, fill only on non-last */}
+      {/* Line below dot — always present, all animate */}
       <div className="w-px flex-1 relative">
         <div className="absolute inset-0 bg-[#404040]" />
-        {!isLast && (
-          <div
-            className="absolute top-0 left-0 right-0 h-full origin-top bg-[#F0F0F0]"
-            style={{
-              transform: `scaleY(${fillProgress})`,
-              transition: "transform 0.2s ease-out",
-            }}
-          />
-        )}
+        <div
+          className="absolute top-0 left-0 right-0 h-full origin-top bg-[#F0F0F0]"
+          style={{
+            transform: `scaleY(${isLast ? (isActive ? 1 : 0) : fillProgress})`,
+            transition: "transform 0.2s ease-out",
+          }}
+        />
       </div>
     </div>
   );

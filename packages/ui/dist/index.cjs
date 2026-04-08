@@ -2200,12 +2200,12 @@ function TimelineColumn({
     ),
     /* @__PURE__ */ (0, import_jsx_runtime30.jsxs)("div", { className: "w-px flex-1 relative", children: [
       /* @__PURE__ */ (0, import_jsx_runtime30.jsx)("div", { className: "absolute inset-0 bg-[#404040]" }),
-      !isLast && /* @__PURE__ */ (0, import_jsx_runtime30.jsx)(
+      /* @__PURE__ */ (0, import_jsx_runtime30.jsx)(
         "div",
         {
           className: "absolute top-0 left-0 right-0 h-full origin-top bg-[#F0F0F0]",
           style: {
-            transform: `scaleY(${fillProgress})`,
+            transform: `scaleY(${isLast ? isActive ? 1 : 0 : fillProgress})`,
             transition: "transform 0.2s ease-out"
           }
         }
