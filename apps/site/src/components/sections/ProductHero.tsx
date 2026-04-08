@@ -77,9 +77,10 @@ export function ProductHero({
         <div className="relative flex-1 min-h-[756px]">
           <DotGridLens
             accentColor
+            gridGap={13}
             baseRadius={0.75}
             maxScale={4.2}
-            className="absolute -left-14 top-0 bottom-0 right-0 z-0 opacity-50"
+            className="absolute -left-14 top-0 bottom-0 right-0 z-0 opacity-30"
           />
           <div className="absolute -left-14 top-0 bottom-0 w-[180px] z-[1] pointer-events-none" style={{ background: "linear-gradient(90deg, #0A0A0A 0%, transparent 100%)" }} />
           <div className="relative z-10 flex flex-col justify-end h-full">
@@ -111,9 +112,10 @@ export function ProductHero({
         <div className="relative min-h-[840px]">
           <DotGridLens
             accentColor
+            gridGap={13}
             baseRadius={0.75}
             maxScale={4.2}
-            className="absolute inset-0 z-0 opacity-50"
+            className="absolute inset-0 z-0 opacity-30"
           />
           <div className="absolute left-0 right-0 bottom-0 h-[180px] z-[1] pointer-events-none" style={{ background: "linear-gradient(180deg, transparent 0%, #0A0A0A 100%)" }} />
 
