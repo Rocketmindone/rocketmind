@@ -238,29 +238,32 @@ export function ProcessSection({
       <div className="hidden lg:flex mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14">
         {/* Left: sticky header at top, participants at bottom */}
         <div className="w-1/2 shrink-0 pr-8 flex flex-col">
-          <div className="sticky top-24 py-14">
-            <div className="flex flex-col gap-8 max-w-[560px]">
-              <div className="flex flex-col gap-2">
-                <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">
-                  {tag}
-                </span>
-                <h2 className="h2 text-[#F0F0F0]">{title}</h2>
-              </div>
-              <div className="flex flex-col gap-1">
-                <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#F0F0F0]">
-                  {subtitle}
-                </p>
-                {description && (
-                  <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#939393]">
-                    {description}
+          {/* Sticky zone — flex-1 limits how far sticky can travel */}
+          <div className="flex-1">
+            <div className="sticky top-24 py-14">
+              <div className="flex flex-col gap-8 max-w-[560px]">
+                <div className="flex flex-col gap-2">
+                  <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">
+                    {tag}
+                  </span>
+                  <h2 className="h2 text-[#F0F0F0]">{title}</h2>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#F0F0F0]">
+                    {subtitle}
                   </p>
-                )}
+                  {description && (
+                    <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#939393]">
+                      {description}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
           {/* Participants — pinned to bottom of left column */}
           {hasParticipants && (
-            <div className="mt-auto pb-14 max-w-[648px]">
+            <div className="pb-14 max-w-[648px]">
               <ParticipantsBlock tag={participantsTag} participants={participants} />
             </div>
           )}
