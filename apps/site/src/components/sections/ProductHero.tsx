@@ -17,9 +17,9 @@ type ProductHeroProps = {
 
 // ── Factoid Card ───────────────────────────────────────────────────────────────
 
-function FactoidCard({ number, label, text, stretch }: Factoid & { stretch?: boolean }) {
+function FactoidCard({ number, label, text, stretch, className }: Factoid & { stretch?: boolean; className?: string }) {
   return (
-    <div className={`flex flex-col p-5 md:p-7 border-b border-l border-r border-[#404040] ${stretch ? "flex-1" : "h-[126px] md:h-[189px]"}`}>
+    <div className={`flex flex-col p-5 md:p-7 ${stretch ? "flex-1" : "h-[126px] md:h-[189px]"} ${className ?? ""}`}>
       <div className="flex flex-col justify-between gap-7 h-full">
         <div className="flex items-center gap-5">
           <span className="h2 text-[#F0F0F0]">{number}</span>
@@ -75,32 +75,61 @@ export function ProductHero({
       <div className="hidden lg:flex mx-auto max-w-[1512px] pl-5 md:pl-8 xl:pl-14">
         {/* Left: content area with dot grid background */}
         <div className="relative flex-1 min-h-[756px]">
-          {/* Dot Grid Lens background — extends beyond padding */}
           <DotGridLens
             accentColor
             baseRadius={0.75}
             maxScale={4.2}
             className="absolute -left-14 top-0 bottom-0 right-0 z-0 opacity-50"
           />
-
-          {/* Left fade gradient */}
           <div className="absolute -left-14 top-0 bottom-0 w-[180px] z-[1] pointer-events-none" style={{ background: "linear-gradient(90deg, #0A0A0A 0%, transparent 100%)" }} />
-
-          {/* Content overlay */}
           <div className="relative z-10 flex flex-col justify-end h-full">
-            {/* Product illustration */}
             <div className="absolute top-9 left-0">
+              <Image src={coverImage} alt="" width={156} height={156} className="w-[156px] h-[156px]" />
+            </div>
+            <div className="flex flex-col gap-11 pr-10 pb-14 mt-auto" style={{ paddingTop: "298px" }}>
+              <div className="flex flex-col gap-6">
+                <span className="h4 text-[#FFCC00]">{caption}</span>
+                <h1 className="h1 text-[#F0F0F0] whitespace-pre-line">{title}</h1>
+              </div>
+              <div className="max-w-[696px]">
+                <p className="text-[length:var(--text-18)] leading-[1.2] text-[#F0F0F0]">{description}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="w-[344px] shrink-0 flex flex-col">
+          {factoids.map((f) => (
+            <FactoidCard key={f.number} {...f} stretch className="border-b border-l border-r border-[#404040]" />
+          ))}
+          <HeroCTA text={ctaText} stretch />
+        </div>
+      </div>
+
+      {/* ── Tablet layout (md → lg) ── */}
+      <div className="hidden md:flex lg:hidden flex-col mx-auto">
+        {/* Upper hero area — icon at top, text pushed to bottom */}
+        <div className="relative min-h-[840px]">
+          <DotGridLens
+            accentColor
+            baseRadius={0.75}
+            maxScale={4.2}
+            className="absolute inset-0 z-0 opacity-50"
+          />
+
+          <div className="relative z-10 flex flex-col justify-end min-h-[840px]">
+            {/* Product icon — absolute top-left */}
+            <div className="absolute top-10 left-10">
               <Image
                 src={coverImage}
                 alt=""
-                width={156}
-                height={156}
-                className="w-[156px] h-[156px]"
+                width={120}
+                height={120}
+                className="w-[120px] h-[120px]"
               />
             </div>
 
-            {/* Text content */}
-            <div className="flex flex-col gap-11 pr-10 pb-14 mt-auto" style={{ paddingTop: "298px" }}>
+            {/* Text content at bottom */}
+            <div className="flex flex-col gap-11 px-10 pb-14">
               <div className="flex flex-col gap-6">
                 <span className="h4 text-[#FFCC00]">{caption}</span>
                 <h1 className="h1 text-[#F0F0F0] whitespace-pre-line">{title}</h1>
@@ -114,101 +143,82 @@ export function ProductHero({
           </div>
         </div>
 
-        {/* Right: sidebar with factoids + CTA — stretch to fill hero height */}
-        <div className="w-[344px] shrink-0 flex flex-col">
-          {factoids.map((f) => (
-            <FactoidCard key={f.number} {...f} stretch />
-          ))}
-          <HeroCTA text={ctaText} stretch />
-        </div>
-      </div>
-
-      {/* ── Tablet layout (md) ── */}
-      <div className="hidden md:flex lg:hidden flex-col mx-auto max-w-[768px]">
-        {/* Top area with dot grid + illustration */}
-        <div className="relative min-h-[400px]">
-          <DotGridLens
-            accentColor
-            baseRadius={0.75}
-            maxScale={4.2}
-            className="absolute inset-0 z-0 opacity-50"
-          />
-          <div className="relative z-10 p-8 pt-16">
-            <Image
-              src={coverImage}
-              alt=""
-              width={120}
-              height={120}
-              className="w-[120px] h-[120px] mb-10"
-            />
-            <div className="flex flex-col gap-6 mb-6">
-              <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">
-                {caption}
-              </span>
-              <h1 className="h1 text-[#F0F0F0] whitespace-pre-line">{title}</h1>
-            </div>
-            <p className="text-[length:var(--text-16)] leading-[1.28] text-[#F0F0F0] max-w-[520px]">
-              {description}
-            </p>
+        {/* Cards: 2-col grid — [CTA, F1] / [F2, F3] */}
+        <div className="grid grid-cols-2 px-10 border-l border-t border-[#404040]">
+          <div className="border-r border-b border-[#404040]">
+            <HeroCTA text={ctaText} />
           </div>
-        </div>
-
-        {/* CTA */}
-        <div className="px-8">
-          <HeroCTA text={ctaText} />
-        </div>
-
-        {/* Factoids: 2-column grid */}
-        <div className="grid grid-cols-2 px-8">
           {factoids.map((f) => (
-            <FactoidCard key={f.number} {...f} />
+            <div key={f.number} className="border-r border-b border-[#404040]">
+              <FactoidCard {...f} />
+            </div>
           ))}
         </div>
       </div>
 
       {/* ── Mobile layout ── */}
       <div className="flex md:hidden flex-col">
-        {/* Top area with dot grid + illustration */}
-        <div className="relative min-h-[200px]">
-          <DotGridLens
-            accentColor
-            baseRadius={0.75}
-            maxScale={4.2}
-            className="absolute inset-0 z-0 opacity-50"
-          />
-          <div className="relative z-10 px-5 pt-[70px]">
-            <Image
-              src={coverImage}
-              alt=""
-              width={90}
-              height={90}
-              className="w-[90px] h-[90px]"
+        {/* Hero area — dot grid covers icon + content + CTA */}
+        <div className="relative">
+          <div className="absolute top-0 left-0 right-0 h-[540px] z-0">
+            <DotGridLens
+              accentColor
+              baseRadius={0.75}
+              maxScale={4.2}
+              className="absolute inset-0 opacity-50"
             />
           </div>
-        </div>
 
-        {/* Content */}
-        <div className="flex flex-col gap-6 px-5 pt-5">
-          <div className="flex flex-col gap-2">
-            <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">
-              {caption}
-            </span>
-            <h1 className="h3 text-[#F0F0F0] whitespace-pre-line">{title}</h1>
+          <div className="relative z-10 px-5">
+            {/* Product icon */}
+            <div className="pt-5">
+              <Image
+                src={coverImage}
+                alt=""
+                width={92}
+                height={92}
+                className="w-[92px] h-[92px]"
+              />
+            </div>
+
+            {/* Text content */}
+            <div className="flex flex-col gap-6 pt-[68px]">
+              <div className="flex flex-col gap-2">
+                <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">
+                  {caption}
+                </span>
+                <h1 className="h1 text-[#F0F0F0] whitespace-pre-line">{title}</h1>
+              </div>
+              <p className="text-[length:var(--text-16)] leading-[1.28] text-[#F0F0F0]">
+                {description}
+              </p>
+            </div>
+
+            {/* CTA — horizontal row layout */}
+            <div className="pt-8">
+              <button
+                type="button"
+                className="flex items-center justify-between w-full bg-[#FFCC00] p-5 cursor-pointer"
+              >
+                <span className="h4 text-[#0A0A0A]">{ctaText}</span>
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                  <path
+                    d="M8 8H24M24 8V24M24 8L8 24"
+                    stroke="#0A0A0A"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
-          <p className="text-[length:var(--text-16)] leading-[1.28] text-[#F0F0F0]">
-            {description}
-          </p>
-        </div>
-
-        {/* CTA */}
-        <div className="px-5 pt-8">
-          <HeroCTA text={ctaText} />
         </div>
 
         {/* Factoids stacked */}
-        <div className="flex flex-col px-5">
+        <div className="flex flex-col px-5 border-t border-[#404040]">
           {factoids.map((f) => (
-            <FactoidCard key={f.number} {...f} />
+            <FactoidCard key={f.number} {...f} className="border-b border-l border-r border-[#404040]" />
           ))}
         </div>
       </div>
