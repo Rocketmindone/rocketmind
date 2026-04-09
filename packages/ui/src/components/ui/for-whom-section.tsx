@@ -106,31 +106,54 @@ export function ForWhomSection({
             });
           }
 
+          // Place each card's 3 elements (title, divider, text) directly into grid rows
+          const cols =
+            facts.length === 3
+              ? wideColumn === "left"
+                ? [2, 1, 1] // col spans
+                : [1, 1, 2]
+              : facts.length === 2
+                ? [2, 2]
+                : Array(facts.length).fill(1) as number[];
+          const totalCols = cols.reduce((a, b) => a + b, 0);
+
           return (
             <div
-              className="grid gap-x-8"
+              className="grid"
               style={{
-                gridTemplateColumns: "1fr 1fr 1fr 1fr",
+                gridTemplateColumns: `repeat(${totalCols}, 1fr)`,
                 gridTemplateRows: "1fr auto auto",
+                columnGap: "32px",
               }}
             >
+              {/* Row 1: titles — items-end so they stick to the divider */}
               {slots.map((s, i) => (
                 <div
-                  key={i}
-                  className="grid grid-rows-[subgrid] row-span-3"
-                  style={{
-                    gridColumn: `${s.colStart} / span ${s.colSpan}`,
-                  }}
+                  key={`t${i}`}
+                  className="flex items-end pb-4"
+                  style={{ gridColumn: `${s.colStart} / span ${s.colSpan}`, gridRow: 1 }}
                 >
-                  <div className="flex items-end pb-4">
-                    <h4 className="h4 text-[#0A0A0A]">{s.fact.title}</h4>
-                  </div>
-                  <div className="h-0 w-full border-t border-[#404040]" />
-                  <div className="pt-4">
-                    <p className="text-[length:var(--text-16)] leading-[1.28] text-[#0A0A0A] max-w-[480px]">
-                      {s.fact.text}
-                    </p>
-                  </div>
+                  <h4 className="h4 text-[#0A0A0A]">{s.fact.title}</h4>
+                </div>
+              ))}
+              {/* Row 2: dividers */}
+              {slots.map((s, i) => (
+                <div
+                  key={`d${i}`}
+                  className="border-t border-[#404040]"
+                  style={{ gridColumn: `${s.colStart} / span ${s.colSpan}`, gridRow: 2 }}
+                />
+              ))}
+              {/* Row 3: descriptions */}
+              {slots.map((s, i) => (
+                <div
+                  key={`p${i}`}
+                  className="pt-4"
+                  style={{ gridColumn: `${s.colStart} / span ${s.colSpan}`, gridRow: 3 }}
+                >
+                  <p className="text-[length:var(--text-16)] leading-[1.28] text-[#0A0A0A] max-w-[480px]">
+                    {s.fact.text}
+                  </p>
                 </div>
               ))}
             </div>

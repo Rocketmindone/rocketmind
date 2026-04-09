@@ -2031,29 +2031,45 @@ function ForWhomSection({
             slots.push({ fact: f, colStart: i + 1, colSpan: 1 });
           });
         }
-        return /* @__PURE__ */ jsx29(
+        const cols = facts.length === 3 ? wideColumn === "left" ? [2, 1, 1] : [1, 1, 2] : facts.length === 2 ? [2, 2] : Array(facts.length).fill(1);
+        const totalCols = cols.reduce((a, b) => a + b, 0);
+        return /* @__PURE__ */ jsxs12(
           "div",
           {
-            className: "grid gap-x-8",
+            className: "grid",
             style: {
-              gridTemplateColumns: "1fr 1fr 1fr 1fr",
-              gridTemplateRows: "1fr auto auto"
+              gridTemplateColumns: `repeat(${totalCols}, 1fr)`,
+              gridTemplateRows: "1fr auto auto",
+              columnGap: "32px"
             },
-            children: slots.map((s, i) => /* @__PURE__ */ jsxs12(
-              "div",
-              {
-                className: "grid grid-rows-[subgrid] row-span-3",
-                style: {
-                  gridColumn: `${s.colStart} / span ${s.colSpan}`
+            children: [
+              slots.map((s, i) => /* @__PURE__ */ jsx29(
+                "div",
+                {
+                  className: "flex items-end pb-4",
+                  style: { gridColumn: `${s.colStart} / span ${s.colSpan}`, gridRow: 1 },
+                  children: /* @__PURE__ */ jsx29("h4", { className: "h4 text-[#0A0A0A]", children: s.fact.title })
                 },
-                children: [
-                  /* @__PURE__ */ jsx29("div", { className: "flex items-end pb-4", children: /* @__PURE__ */ jsx29("h4", { className: "h4 text-[#0A0A0A]", children: s.fact.title }) }),
-                  /* @__PURE__ */ jsx29("div", { className: "h-0 w-full border-t border-[#404040]" }),
-                  /* @__PURE__ */ jsx29("div", { className: "pt-4", children: /* @__PURE__ */ jsx29("p", { className: "text-[length:var(--text-16)] leading-[1.28] text-[#0A0A0A] max-w-[480px]", children: s.fact.text }) })
-                ]
-              },
-              i
-            ))
+                `t${i}`
+              )),
+              slots.map((s, i) => /* @__PURE__ */ jsx29(
+                "div",
+                {
+                  className: "border-t border-[#404040]",
+                  style: { gridColumn: `${s.colStart} / span ${s.colSpan}`, gridRow: 2 }
+                },
+                `d${i}`
+              )),
+              slots.map((s, i) => /* @__PURE__ */ jsx29(
+                "div",
+                {
+                  className: "pt-4",
+                  style: { gridColumn: `${s.colStart} / span ${s.colSpan}`, gridRow: 3 },
+                  children: /* @__PURE__ */ jsx29("p", { className: "text-[length:var(--text-16)] leading-[1.28] text-[#0A0A0A] max-w-[480px]", children: s.fact.text })
+                },
+                `p${i}`
+              ))
+            ]
           }
         );
       })()
