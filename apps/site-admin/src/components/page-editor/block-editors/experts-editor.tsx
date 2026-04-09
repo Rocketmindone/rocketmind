@@ -38,6 +38,19 @@ export function ExpertsEditor({ data, onUpdate }: ExpertsEditorProps) {
   return (
     <div className="rounded-sm border-t border-[#404040] bg-[#0A0A0A] pb-20">
       <div className="mx-auto max-w-[1512px] px-5 py-10 md:px-8 xl:px-14">
+        {/* Empty state */}
+        {experts.length === 0 && (
+          <button
+            type="button"
+            onClick={() => insertExpert(0)}
+            className="flex w-full items-center justify-center gap-2 rounded border border-dashed border-[#404040] bg-[#121212] px-6 py-12 text-[#939393] transition-colors hover:border-[#FFCC00] hover:text-[#FFCC00] cursor-pointer"
+          >
+            <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] font-medium uppercase tracking-[0.02em]">
+              + Добавить эксперта
+            </span>
+          </button>
+        )}
+
         {/* Cards — vertical stack with insert buttons */}
         <div className="flex flex-col gap-1">
           {experts.map((expert, index) => {
