@@ -60,9 +60,9 @@ export function AboutRocketmindSection({
   return (
     <section className="w-full bg-[#0A0A0A] border-t border-border">
       {/* ── Desktop (lg+) ── */}
-      <div className="hidden lg:flex mx-auto max-w-[1512px]">
+      <div className="hidden lg:flex mx-auto max-w-[1512px] border border-[#404040]">
         {/* Left: Photo + Text */}
-        <div className="w-1/2 shrink-0 flex border border-[#404040] p-8 gap-8 min-h-[460px]">
+        <div className="w-1/2 shrink-0 flex border-r border-[#404040] p-8 gap-8 min-h-[460px]">
           {/* Founder photo — 50% of content (302/636 Figma) */}
           <div className="relative w-1/2 shrink-0">
             <Image
@@ -105,7 +105,7 @@ export function AboutRocketmindSection({
         {/* Right: Feature cards */}
         <div className="w-1/2 flex flex-col">
           {/* AI Agents card (top) */}
-          <div className="flex-1 flex flex-col gap-4 border border-[#404040] p-8">
+          <div className="flex-1 flex flex-col gap-4 border-b border-[#404040] p-8">
             <div className="flex gap-12">
               <h3 className="h4 text-[#F0F0F0] shrink-0">{features[0].title}</h3>
               <p className="text-[length:var(--text-14)] leading-[1.28] text-[#939393]">
@@ -117,13 +117,13 @@ export function AboutRocketmindSection({
 
           {/* Bottom row: 2 cards side by side */}
           <div className="flex">
-            <div className="w-1/2 flex flex-col gap-2 border border-[#404040] p-8">
+            <div className="w-1/2 flex flex-col gap-2 border-r border-[#404040] p-8">
               <h3 className="h4 text-[#F0F0F0]">{features[1].title}</h3>
               <p className="text-[length:var(--text-14)] leading-[1.28] text-[#939393]">
                 {features[1].text}
               </p>
             </div>
-            <div className="w-1/2 flex flex-col gap-2 border border-[#404040] p-8">
+            <div className="w-1/2 flex flex-col gap-2 p-8">
               <h3 className="h4 text-[#F0F0F0]">{features[2].title}</h3>
               <p className="text-[length:var(--text-14)] leading-[1.28] text-[#939393]">
                 {features[2].text}
@@ -134,10 +134,10 @@ export function AboutRocketmindSection({
       </div>
 
       {/* ── Tablet (md → lg) ── */}
-      <div className="hidden md:flex lg:hidden flex-col mx-auto">
+      <div className="hidden md:flex lg:hidden flex-col mx-auto border border-[#404040]">
         <div className="flex">
           {/* Left: Photo + heading */}
-          <div className="w-1/2 shrink-0 flex flex-col border border-[#404040]">
+          <div className="w-1/2 shrink-0 flex flex-col border-r border-[#404040]">
             {/* Logo + heading */}
             <div className="flex flex-col gap-4 p-8">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -177,7 +177,7 @@ export function AboutRocketmindSection({
           {/* Right: Feature cards stacked */}
           <div className="w-1/2 flex flex-col">
             {/* AI Agents */}
-            <div className="flex flex-col gap-4 border border-[#404040] p-8">
+            <div className="flex flex-col gap-4 border-b border-[#404040] p-8">
               <h3 className="h4 text-[#F0F0F0]">{features[0].title}</h3>
               <p className="text-[length:var(--text-14)] leading-[1.28] text-[#939393]">
                 {features[0].text}
@@ -186,7 +186,7 @@ export function AboutRocketmindSection({
             </div>
 
             {/* 20 лет */}
-            <div className="flex flex-col gap-2 border border-[#404040] p-8">
+            <div className="flex flex-col gap-2 border-b border-[#404040] p-8">
               <h3 className="h4 text-[#F0F0F0]">{features[1].title}</h3>
               <p className="text-[length:var(--text-14)] leading-[1.28] text-[#939393]">
                 {features[1].text}
@@ -194,7 +194,7 @@ export function AboutRocketmindSection({
             </div>
 
             {/* Экспертная команда */}
-            <div className="flex flex-col gap-2 border border-[#404040] p-8">
+            <div className="flex flex-col gap-2 p-8">
               <h3 className="h4 text-[#F0F0F0]">{features[2].title}</h3>
               <p className="text-[length:var(--text-14)] leading-[1.28] text-[#939393]">
                 {features[2].text}
