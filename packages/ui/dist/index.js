@@ -2016,7 +2016,7 @@ function ForWhomSection({
         {
           className: "grid gap-x-8",
           style: {
-            gridTemplateColumns: `repeat(${facts.length}, 1fr)`,
+            gridTemplateColumns: facts.length === 3 ? wideColumn === "left" ? "2fr 1fr 1fr" : "1fr 1fr 2fr" : `repeat(${facts.length}, 1fr)`,
             gridTemplateRows: "auto auto 1fr"
           },
           children: facts.map((f, i) => /* @__PURE__ */ jsx29(FactCard, { ...f }, i))
