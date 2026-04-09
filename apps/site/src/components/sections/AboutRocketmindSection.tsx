@@ -55,7 +55,7 @@ function DotPattern() {
       className="absolute inset-0 pointer-events-none opacity-60"
       style={{
         backgroundImage: `url(${BASE_PATH}/images/about/dot-pattern.png)`,
-        backgroundSize: "16%",
+        backgroundSize: "52px 52px",
         backgroundPosition: "left center",
         backgroundRepeat: "repeat",
       }}
