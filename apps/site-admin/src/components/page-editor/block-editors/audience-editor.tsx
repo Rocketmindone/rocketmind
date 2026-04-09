@@ -1,28 +1,41 @@
 "use client";
 
-import { Plus, Trash2 } from "lucide-react";
+import { GripVertical, Columns2, Square } from "lucide-react";
 import { InlineEdit } from "@/components/inline-edit";
+import { InlineConfirmDelete } from "@/components/inline-confirm";
+import { InsertButton } from "@/components/insert-button";
+import { useItemDnd } from "@/lib/use-item-dnd";
 
 interface AudienceEditorProps {
   data: Record<string, unknown>;
   onUpdate: (data: Record<string, unknown>) => void;
 }
 
+type Fact = { title: string; text: string; wide?: boolean };
+
 export function AudienceEditor({ data, onUpdate }: AudienceEditorProps) {
   const tag = (data.tag as string) || "";
   const title = (data.title as string) || "";
   const subtitle = (data.subtitle as string) || "";
-  const facts = (data.facts as Array<{ title: string; text: string }>) || [];
+  const facts = (data.facts as Fact[]) || [];
 
-  function updateFact(index: number, field: string, value: string) {
+  const dnd = useItemDnd(facts, (reordered) => onUpdate({ facts: reordered }));
+
+  function updateFact(index: number, field: string, value: string | boolean) {
     const updated = facts.map((f, i) =>
       i === index ? { ...f, [field]: value } : f
     );
     onUpdate({ facts: updated });
   }
 
-  function addFact() {
-    onUpdate({ facts: [...facts, { title: "", text: "" }] });
+  function toggleWide(index: number) {
+    updateFact(index, "wide", !facts[index].wide);
+  }
+
+  function insertFact(atIndex: number) {
+    const next = [...facts];
+    next.splice(atIndex, 0, { title: "", text: "" });
+    onUpdate({ facts: next });
   }
 
   function removeFact(index: number) {
@@ -30,17 +43,17 @@ export function AudienceEditor({ data, onUpdate }: AudienceEditorProps) {
   }
 
   return (
-    <div className="overflow-hidden rounded-sm border-t border-[#404040] bg-[#F0F0F0]">
-      <div className="px-8 py-10">
+    <div className="rounded-sm border-t border-[#404040] bg-[#F0F0F0] pb-20">
+      <div className="mx-auto max-w-[1512px] px-5 py-10 md:px-8 xl:px-14">
         {/* Header row */}
-        <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:gap-16">
-          <div className="lg:w-1/2">
+        <div className="mb-8 flex flex-col gap-4 lg:flex-row">
+          <div className="lg:w-1/2 lg:shrink-0 lg:pr-8">
             <InlineEdit
               value={tag}
               onSave={(v) => onUpdate({ tag: v })}
               placeholder="для кого"
             >
-              <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] uppercase text-[#0A0A0A]">
+              <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#0A0A0A]">
                 {tag || "тег"}
               </span>
             </InlineEdit>
@@ -51,7 +64,7 @@ export function AudienceEditor({ data, onUpdate }: AudienceEditorProps) {
                 onSave={(v) => onUpdate({ title: v })}
                 placeholder="Заголовок"
               >
-                <h2 className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-24)] font-bold uppercase tracking-tight text-[#0A0A0A] lg:text-[length:var(--text-32)]">
+                <h2 className="h2 text-[#0A0A0A]">
                   {title || "Заголовок"}
                 </h2>
               </InlineEdit>
@@ -65,58 +78,100 @@ export function AudienceEditor({ data, onUpdate }: AudienceEditorProps) {
               multiline
               placeholder="Подзаголовок"
             >
-              <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] uppercase text-[#0A0A0A] lg:text-[length:var(--text-18)]">
+              <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#0A0A0A]">
                 {subtitle || "Подзаголовок"}
               </p>
             </InlineEdit>
           </div>
         </div>
 
-        {/* Fact cards */}
-        <div className="flex flex-col gap-2 lg:flex-row">
-          {facts.map((fact, index) => (
-            <div
-              key={index}
-              className="group/fact relative flex flex-1 flex-col gap-2 border-t border-[#404040] pt-4"
-            >
-              <button
-                onClick={() => removeFact(index)}
-                className="absolute right-0 top-2 flex h-5 w-5 items-center justify-center rounded-sm text-[#939393] opacity-0 transition-opacity hover:text-[#ED4843] group-hover/fact:opacity-100"
-              >
-                <Trash2 className="h-3 w-3" />
-              </button>
+        {/* Fact cards — flex row with insert buttons between */}
+        <div className="flex items-stretch">
+          {facts.map((fact, index) => {
+            const { draggable, onDragStart, onDragOver, onDrop, onDragEnd, isDragging } =
+              dnd.itemProps(index);
 
-              <InlineEdit
-                value={fact.title}
-                onSave={(v) => updateFact(index, "title", v)}
-                placeholder="Заголовок факта"
-              >
-                <span className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-18)] font-bold uppercase tracking-tight text-[#0A0A0A] lg:text-[length:var(--text-24)]">
-                  {fact.title || "Факт"}
-                </span>
-              </InlineEdit>
+            return (
+              <div key={index} className="flex items-stretch" style={{ flex: fact.wide ? 2 : 1 }}>
+                {/* Insert before first / between cards */}
+                {facts.length < 4 && (
+                  <InsertButton onClick={() => insertFact(index)} />
+                )}
 
-              <InlineEdit
-                value={fact.text}
-                onSave={(v) => updateFact(index, "text", v)}
-                multiline
-                placeholder="Описание факта"
-              >
-                <p className="text-[length:var(--text-14)] text-[#0A0A0A] lg:text-[length:var(--text-16)]">
-                  {fact.text || "Описание"}
-                </p>
-              </InlineEdit>
-            </div>
-          ))}
+                <div
+                  draggable={draggable}
+                  onDragStart={onDragStart}
+                  onDragOver={onDragOver}
+                  onDrop={onDrop}
+                  onDragEnd={onDragEnd}
+                  className={`group/fact relative flex min-w-0 flex-1 flex-col gap-4 transition-all ${
+                    isDragging ? "opacity-60" : ""
+                  }`}
+                >
+                  {/* Controls */}
+                  <div className="absolute -right-1 -top-1 z-10 flex items-center gap-0.5 opacity-0 transition-opacity group-hover/fact:opacity-100">
+                    <button
+                      onClick={() => toggleWide(index)}
+                      title={fact.wide ? "Обычная ширина" : "Двойная ширина"}
+                      className="flex h-5 w-5 items-center justify-center rounded-sm bg-[#0A0A0A] text-[#F0F0F0] hover:bg-[#FFCC00] hover:text-[#0A0A0A]"
+                    >
+                      {fact.wide ? (
+                        <Square className="h-2.5 w-2.5" />
+                      ) : (
+                        <Columns2 className="h-2.5 w-2.5" />
+                      )}
+                    </button>
+                    <div
+                      className="flex h-5 w-5 cursor-grab items-center justify-center rounded-sm bg-[#0A0A0A] text-[#F0F0F0] select-none active:cursor-grabbing"
+                      onMouseDown={() => dnd.onGripDown(index)}
+                      onMouseUp={dnd.onGripUp}
+                    >
+                      <GripVertical className="h-2.5 w-2.5" />
+                    </div>
+                    <InlineConfirmDelete
+                      onConfirm={() => removeFact(index)}
+                      className="bg-[#0A0A0A] text-[#F0F0F0] hover:bg-[#ED4843]"
+                    />
+                  </div>
 
-          {/* Add fact */}
-          <button
-            onClick={addFact}
-            className="flex flex-1 items-center justify-center gap-1 border border-dashed border-[#404040] py-8 text-[length:var(--text-14)] text-[#939393] transition-colors hover:border-[#0A0A0A] hover:text-[#0A0A0A]"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            Добавить факт
-          </button>
+                  {/* Title — top */}
+                  <div className="flex flex-1 items-end">
+                    <InlineEdit
+                      value={fact.title}
+                      onSave={(v) => updateFact(index, "title", v)}
+                      placeholder="Заголовок факта"
+                    >
+                      <span className="h4 text-[#0A0A0A]">
+                        {fact.title || "Факт"}
+                      </span>
+                    </InlineEdit>
+                  </div>
+
+                  <div className="h-0 w-full border-t border-[#404040]" />
+
+                  {/* Text — bottom */}
+                  <div className="flex-1">
+                    <InlineEdit
+                      value={fact.text}
+                      onSave={(v) => updateFact(index, "text", v)}
+                      multiline
+                      copy
+                      placeholder="Описание факта"
+                    >
+                      <p className="max-w-[480px] text-[length:var(--text-16)] leading-[1.28] text-[#0A0A0A]">
+                        {fact.text || "Описание"}
+                      </p>
+                    </InlineEdit>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Insert after last */}
+          {facts.length < 4 && (
+            <InsertButton onClick={() => insertFact(facts.length)} />
+          )}
         </div>
       </div>
     </div>

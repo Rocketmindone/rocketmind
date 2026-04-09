@@ -1,7 +1,10 @@
 "use client";
 
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, GripVertical } from "lucide-react";
+import { Switch } from "@rocketmind/ui";
 import { InlineEdit } from "@/components/inline-edit";
+import { InlineConfirmDelete } from "@/components/inline-confirm";
+import { useItemDnd } from "@/lib/use-item-dnd";
 
 interface ProcessEditorProps {
   data: Record<string, unknown>;
@@ -23,6 +26,14 @@ export function ProcessEditor({ data, onUpdate }: ProcessEditorProps) {
   const participantsTag = (data.participantsTag as string) || "";
   const participants =
     (data.participants as Array<{ role: string; text: string }>) || [];
+  const showParticipants = data.showParticipants !== false;
+
+  const stepsDnd = useItemDnd(steps, (reordered) =>
+    onUpdate({ steps: reordered })
+  );
+  const partDnd = useItemDnd(participants, (reordered) =>
+    onUpdate({ participants: reordered })
+  );
 
   function updateStep(index: number, field: string, value: string) {
     const updated = steps.map((s, i) =>
@@ -65,98 +76,134 @@ export function ProcessEditor({ data, onUpdate }: ProcessEditorProps) {
   }
 
   return (
-    <div className="overflow-hidden rounded-sm border-t border-[#404040] bg-[#0A0A0A]">
-      <div className="flex flex-col gap-8 px-8 py-10 lg:flex-row lg:gap-16">
-        {/* Left: header + participants */}
-        <div className="flex flex-col gap-6 lg:w-1/2">
-          <InlineEdit
-            value={tag}
-            onSave={(v) => onUpdate({ tag: v })}
-            placeholder="этапы"
-          >
-            <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] uppercase text-[#FFCC00]">
-              {tag || "тег"}
-            </span>
-          </InlineEdit>
+    <div className="rounded-sm border-t border-[#404040] bg-[#0A0A0A] pb-20">
+      <div className="mx-auto flex max-w-[1512px] flex-col gap-8 px-5 py-10 md:px-8 lg:flex-row xl:px-14">
+        {/* Left: header + participants — 50% */}
+        <div className="flex flex-col gap-6 lg:w-1/2 lg:shrink-0 lg:pr-8">
+          <div className="flex flex-col gap-2">
+            <InlineEdit
+              value={tag}
+              onSave={(v) => onUpdate({ tag: v })}
+              placeholder="этапы"
+            >
+              <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">
+                {tag || "тег"}
+              </span>
+            </InlineEdit>
 
-          <InlineEdit
-            value={title}
-            onSave={(v) => onUpdate({ title: v })}
-            placeholder="Заголовок"
-          >
-            <h2 className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-24)] font-bold uppercase tracking-tight text-[#F0F0F0] lg:text-[length:var(--text-32)]">
-              {title || "Заголовок"}
-            </h2>
-          </InlineEdit>
+            <InlineEdit
+              value={title}
+              onSave={(v) => onUpdate({ title: v })}
+              placeholder="Заголовок"
+            >
+              <h2 className="h2 text-[#F0F0F0]">
+                {title || "Заголовок"}
+              </h2>
+            </InlineEdit>
+          </div>
 
-          <InlineEdit
-            value={subtitle}
-            onSave={(v) => onUpdate({ subtitle: v })}
-            placeholder="Общий срок проекта: ~10 недель"
-          >
-            <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] uppercase text-[#F0F0F0] lg:text-[length:var(--text-18)]">
-              {subtitle || "подзаголовок"}
-            </span>
-          </InlineEdit>
+          <div className="flex flex-col gap-1">
+            <InlineEdit
+              value={subtitle}
+              onSave={(v) => onUpdate({ subtitle: v })}
+              placeholder="Общий срок проекта: ~10 недель"
+            >
+              <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#F0F0F0]">
+                {subtitle || "подзаголовок"}
+              </span>
+            </InlineEdit>
 
-          <InlineEdit
-            value={description}
-            onSave={(v) => onUpdate({ description: v })}
-            multiline
-            placeholder="Описание процесса"
-          >
-            <p className="text-[length:var(--text-16)] text-[#939393]">
-              {description || "Описание"}
-            </p>
-          </InlineEdit>
+            {(description || true) && (
+              <InlineEdit
+                value={description}
+                onSave={(v) => onUpdate({ description: v })}
+                multiline
+                copy
+                placeholder="Описание процесса"
+              >
+                <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#939393]">
+                  {description || "Описание"}
+                </p>
+              </InlineEdit>
+            )}
+          </div>
 
-          {/* Participants block */}
-          {(participants.length > 0 || participantsTag) && (
-            <div className="mt-4 rounded-sm bg-[#121212] p-6">
+          {/* Participants block — optional, toggle with eye icon */}
+          <div className="relative mt-4 rounded bg-[#121212] p-8">
+            {/* Toggle visibility */}
+            <div className="absolute right-3 top-3">
+              <Switch
+                checked={showParticipants}
+                onCheckedChange={(v) => onUpdate({ showParticipants: v })}
+                size="sm"
+              />
+            </div>
+
+            <div className={showParticipants ? "" : "opacity-30 pointer-events-none"}>
               <InlineEdit
                 value={participantsTag}
                 onSave={(v) => onUpdate({ participantsTag: v })}
                 placeholder="кого важно включить"
               >
-                <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase text-[#FFCC00]">
+                <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">
                   {participantsTag || "участники"}
                 </span>
               </InlineEdit>
 
-              <div className="mt-4 flex flex-col gap-4">
-                {participants.map((p, index) => (
-                  <div
-                    key={index}
-                    className="group/part relative flex flex-col gap-1"
-                  >
-                    <button
-                      onClick={() => removeParticipant(index)}
-                      className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-sm text-[#939393] opacity-0 transition-opacity hover:text-[#ED4843] group-hover/part:opacity-100"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </button>
+              <div className="mt-8 flex flex-col gap-5">
+                {participants.map((p, index) => {
+                  const { draggable, onDragStart, onDragOver, onDrop, onDragEnd, isDragging } =
+                    partDnd.itemProps(index);
 
-                    <InlineEdit
-                      value={p.role}
-                      onSave={(v) => updateParticipant(index, "role", v)}
-                      placeholder="Роль"
+                  return (
+                    <div
+                      key={index}
+                      draggable={draggable}
+                      onDragStart={onDragStart}
+                      onDragOver={onDragOver}
+                      onDrop={onDrop}
+                      onDragEnd={onDragEnd}
+                      className={`group/part relative flex flex-col gap-2 transition-all ${
+                        isDragging ? "opacity-60" : ""
+                      }`}
                     >
-                      <span className="text-[length:var(--text-16)] font-semibold text-[#F0F0F0]">
-                        {p.role || "Роль"}
-                      </span>
-                    </InlineEdit>
+                      {/* Controls — top right */}
+                      <div className="absolute -right-1 -top-1 z-10 flex items-center gap-0.5 opacity-0 transition-opacity group-hover/part:opacity-100">
+                        <div
+                          className="flex h-5 w-5 cursor-grab items-center justify-center rounded-sm bg-[#F0F0F0] text-[#0A0A0A] select-none active:cursor-grabbing"
+                          onMouseDown={() => partDnd.onGripDown(index)}
+                          onMouseUp={partDnd.onGripUp}
+                        >
+                          <GripVertical className="h-2.5 w-2.5" />
+                        </div>
+                        <InlineConfirmDelete
+                          onConfirm={() => removeParticipant(index)}
+                          className="bg-[#F0F0F0] text-[#0A0A0A] hover:bg-[#ED4843] hover:text-[#F0F0F0]"
+                        />
+                      </div>
 
-                    <InlineEdit
-                      value={p.text}
-                      onSave={(v) => updateParticipant(index, "text", v)}
-                      placeholder="Описание"
-                    >
-                      <span className="text-[length:var(--text-14)] text-[#939393]">
-                        {p.text || "Описание"}
-                      </span>
-                    </InlineEdit>
-                  </div>
-                ))}
+                      <InlineEdit
+                        value={p.role}
+                        onSave={(v) => updateParticipant(index, "role", v)}
+                        placeholder="Роль"
+                      >
+                        <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#F0F0F0]">
+                          {p.role || "Роль"}
+                        </span>
+                      </InlineEdit>
+
+                      <InlineEdit
+                        value={p.text}
+                        onSave={(v) => updateParticipant(index, "text", v)}
+                        placeholder="Описание"
+                      >
+                        <span className="text-[length:var(--text-16)] leading-[1.28] text-[#939393]">
+                          {p.text || "Описание"}
+                        </span>
+                      </InlineEdit>
+                    </div>
+                  );
+                })}
 
                 <button
                   onClick={addParticipant}
@@ -167,72 +214,104 @@ export function ProcessEditor({ data, onUpdate }: ProcessEditorProps) {
                 </button>
               </div>
             </div>
-          )}
+          </div>
         </div>
 
-        {/* Right: timeline steps */}
-        <div className="flex flex-1 flex-col">
-          {steps.map((step, index) => (
-            <div
-              key={index}
-              className="group/step relative flex gap-4 border-l-2 border-[#404040] py-6 pl-6"
-            >
-              {/* Timeline dot */}
-              <div className="absolute -left-[5px] top-7 h-2 w-2 bg-[#FFCC00]" />
+        {/* Right: timeline steps — 50% */}
+        <div className="flex flex-col lg:w-1/2 lg:pt-10">
+          {steps.map((step, index) => {
+            const { draggable, onDragStart, onDragOver, onDrop, onDragEnd, isDragging } =
+              stepsDnd.itemProps(index);
+            const isLast = index === steps.length - 1;
 
-              <button
-                onClick={() => removeStep(index)}
-                className="absolute right-0 top-4 flex h-5 w-5 items-center justify-center rounded-sm text-[#939393] opacity-0 transition-opacity hover:text-[#ED4843] group-hover/step:opacity-100"
+            return (
+              <div
+                key={index}
+                draggable={draggable}
+                onDragStart={onDragStart}
+                onDragOver={onDragOver}
+                onDrop={onDrop}
+                onDragEnd={onDragEnd}
+                className={`group/step relative transition-all ${isDragging ? "opacity-60" : ""}`}
               >
-                <Trash2 className="h-3 w-3" />
-              </button>
-
-              <div className="flex flex-1 flex-col gap-2">
-                <div className="flex items-baseline gap-3">
-                  <InlineEdit
-                    value={step.number}
-                    onSave={(v) => updateStep(index, "number", v)}
-                    placeholder="01"
+                {/* Controls — top right */}
+                <div className="absolute -right-1 -top-1 z-10 flex items-center gap-0.5 opacity-0 transition-opacity group-hover/step:opacity-100">
+                  <div
+                    className="flex h-5 w-5 cursor-grab items-center justify-center rounded-sm bg-[#F0F0F0] text-[#0A0A0A] select-none active:cursor-grabbing"
+                    onMouseDown={() => stepsDnd.onGripDown(index)}
+                    onMouseUp={stepsDnd.onGripUp}
                   >
-                    <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] uppercase text-[#F0F0F0]">
-                      {step.number || "—"}
-                    </span>
-                  </InlineEdit>
-
-                  <InlineEdit
-                    value={step.duration}
-                    onSave={(v) => updateStep(index, "duration", v)}
-                    placeholder="2 недели"
-                  >
-                    <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] uppercase text-[#FFCC00]">
-                      {step.duration || "срок"}
-                    </span>
-                  </InlineEdit>
+                    <GripVertical className="h-2.5 w-2.5" />
+                  </div>
+                  <InlineConfirmDelete
+                    onConfirm={() => removeStep(index)}
+                    className="bg-[#F0F0F0] text-[#0A0A0A] hover:bg-[#ED4843] hover:text-[#F0F0F0]"
+                  />
                 </div>
 
-                <InlineEdit
-                  value={step.title}
-                  onSave={(v) => updateStep(index, "title", v)}
-                  placeholder="Название этапа"
-                >
-                  <span className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-18)] font-bold uppercase tracking-tight text-[#F0F0F0] lg:text-[length:var(--text-24)]">
-                    {step.title || "Этап"}
-                  </span>
-                </InlineEdit>
+                <div className="flex max-w-[364px] gap-10">
+                  {/* Timeline column */}
+                  <div className="relative flex w-4 shrink-0 flex-col items-center self-stretch">
+                    {/* Top line */}
+                    <div className="h-[2px] w-px bg-[#404040]" />
+                    {/* Square dot 16×16 */}
+                    <div className="h-4 w-4 shrink-0 border-2 border-[#F0F0F0] bg-[#F0F0F0]" />
+                    {/* Line below dot */}
+                    {!isLast && (
+                      <div className="w-px flex-1 bg-[#404040]" />
+                    )}
+                  </div>
 
-                <InlineEdit
-                  value={step.text}
-                  onSave={(v) => updateStep(index, "text", v)}
-                  multiline
-                  placeholder="Описание этапа"
-                >
-                  <p className="text-[length:var(--text-14)] text-[#939393] lg:text-[length:var(--text-16)]">
-                    {step.text || "Описание"}
-                  </p>
-                </InlineEdit>
+                  {/* Step content */}
+                  <div className="flex flex-col gap-3 pb-16">
+                    <div className="flex flex-col gap-2">
+                      <InlineEdit
+                        value={step.number}
+                        onSave={(v) => updateStep(index, "number", v)}
+                        placeholder="01"
+                      >
+                        <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#F0F0F0]">
+                          {step.number || "—"}
+                        </span>
+                      </InlineEdit>
+
+                      <InlineEdit
+                        value={step.title}
+                        onSave={(v) => updateStep(index, "title", v)}
+                        placeholder="Название этапа"
+                      >
+                        <h3 className="h3 text-[#F0F0F0]">
+                          {step.title || "Этап"}
+                        </h3>
+                      </InlineEdit>
+                    </div>
+
+                    <InlineEdit
+                      value={step.text}
+                      onSave={(v) => updateStep(index, "text", v)}
+                      multiline
+                      copy
+                      placeholder="Описание этапа"
+                    >
+                      <p className="text-[length:var(--text-16)] leading-[1.28] text-[#939393]">
+                        {step.text || "Описание"}
+                      </p>
+                    </InlineEdit>
+
+                    <InlineEdit
+                      value={step.duration}
+                      onSave={(v) => updateStep(index, "duration", v)}
+                      placeholder="2 недели"
+                    >
+                      <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] font-medium uppercase leading-[1.16] tracking-[0.02em] text-[#FFCC00]">
+                        {step.duration || "срок"}
+                      </span>
+                    </InlineEdit>
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
 
           {/* Add step */}
           <button

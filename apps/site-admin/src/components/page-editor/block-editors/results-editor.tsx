@@ -1,7 +1,10 @@
 "use client";
 
-import { Plus, Trash2 } from "lucide-react";
+import { GripVertical } from "lucide-react";
 import { InlineEdit } from "@/components/inline-edit";
+import { InlineConfirmDelete } from "@/components/inline-confirm";
+import { InsertButton } from "@/components/insert-button";
+import { useItemDnd } from "@/lib/use-item-dnd";
 
 interface ResultsEditorProps {
   data: Record<string, unknown>;
@@ -14,6 +17,8 @@ export function ResultsEditor({ data, onUpdate }: ResultsEditorProps) {
   const description = (data.description as string) || "";
   const cards = (data.cards as Array<{ title: string; text: string }>) || [];
 
+  const dnd = useItemDnd(cards, (reordered) => onUpdate({ cards: reordered }));
+
   function updateCard(index: number, field: string, value: string) {
     const updated = cards.map((c, i) =>
       i === index ? { ...c, [field]: value } : c
@@ -21,8 +26,10 @@ export function ResultsEditor({ data, onUpdate }: ResultsEditorProps) {
     onUpdate({ cards: updated });
   }
 
-  function addCard() {
-    onUpdate({ cards: [...cards, { title: "", text: "" }] });
+  function insertCard(atIndex: number) {
+    const next = [...cards];
+    next.splice(atIndex, 0, { title: "", text: "" });
+    onUpdate({ cards: next });
   }
 
   function removeCard(index: number) {
@@ -30,93 +37,112 @@ export function ResultsEditor({ data, onUpdate }: ResultsEditorProps) {
   }
 
   return (
-    <div className="overflow-hidden rounded-sm border-t border-[#404040] bg-[#0A0A0A]">
-      <div className="px-8 py-10">
-        {/* Header */}
-        <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:gap-16">
-          <div className="max-w-[560px] lg:w-1/2">
+    <div className="rounded-sm border-t border-[#404040] bg-[#0A0A0A] pb-20">
+      <div className="mx-auto max-w-[1512px] px-5 py-10 md:px-8 xl:px-14">
+        {/* Header — top left, max 560px */}
+        <div className="mb-8 flex max-w-[560px] flex-col gap-2">
+          <InlineEdit
+            value={tag}
+            onSave={(v) => onUpdate({ tag: v })}
+            placeholder="результат"
+          >
+            <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">
+              {tag || "тег"}
+            </span>
+          </InlineEdit>
+
+          <div className="flex flex-col gap-6">
             <InlineEdit
-              value={tag}
-              onSave={(v) => onUpdate({ tag: v })}
-              placeholder="результат"
+              value={title}
+              onSave={(v) => onUpdate({ title: v })}
+              placeholder="Заголовок"
             >
-              <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] uppercase text-[#FFCC00]">
-                {tag || "тег"}
-              </span>
+              <h2 className="h2 text-[#F0F0F0]">
+                {title || "Заголовок"}
+              </h2>
             </InlineEdit>
 
-            <div className="mt-3">
-              <InlineEdit
-                value={title}
-                onSave={(v) => onUpdate({ title: v })}
-                placeholder="Заголовок"
-              >
-                <h2 className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-24)] font-bold uppercase tracking-tight text-[#F0F0F0] lg:text-[length:var(--text-32)]">
-                  {title || "Заголовок"}
-                </h2>
-              </InlineEdit>
-            </div>
-
-            <div className="mt-3">
-              <InlineEdit
-                value={description}
-                onSave={(v) => onUpdate({ description: v })}
-                multiline
-                placeholder="Описание"
-              >
-                <p className="text-[length:var(--text-16)] text-[#939393] lg:text-[length:var(--text-18)]">
-                  {description || "Описание"}
-                </p>
-              </InlineEdit>
-            </div>
+            <InlineEdit
+              value={description}
+              onSave={(v) => onUpdate({ description: v })}
+              multiline
+              copy
+              placeholder="Описание"
+            >
+              <p className="text-[length:var(--text-18)] leading-[1.2] text-[#939393]">
+                {description || "Описание"}
+              </p>
+            </InlineEdit>
           </div>
         </div>
 
-        {/* Cards grid */}
-        <div className="grid gap-2 sm:grid-cols-2">
-          {cards.map((card, index) => (
-            <div
-              key={index}
-              className="group/card relative flex h-[200px] flex-col justify-between border border-[#404040] bg-[#FFCC00] p-6"
-            >
-              <button
-                onClick={() => removeCard(index)}
-                className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-sm text-[#0A0A0A]/50 opacity-0 transition-opacity hover:text-[#ED4843] group-hover/card:opacity-100"
-              >
-                <Trash2 className="h-3 w-3" />
-              </button>
+        {/* Cards — horizontal row with insert buttons between */}
+        <div className="flex items-stretch">
+          {cards.map((card, index) => {
+            const { draggable, onDragStart, onDragOver, onDrop, onDragEnd, isDragging } =
+              dnd.itemProps(index);
 
-              <InlineEdit
-                value={card.title}
-                onSave={(v) => updateCard(index, "title", v)}
-                placeholder="Заголовок"
-              >
-                <span className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-18)] font-bold uppercase text-[#0A0A0A] lg:text-[length:var(--text-24)]">
-                  {card.title || "Результат"}
-                </span>
-              </InlineEdit>
+            return (
+              <div key={index} className="flex flex-1 items-stretch">
+                {/* Insert before first / between cards */}
+                {cards.length < 4 && (
+                  <InsertButton onClick={() => insertCard(index)} />
+                )}
 
-              <InlineEdit
-                value={card.text}
-                onSave={(v) => updateCard(index, "text", v)}
-                multiline
-                placeholder="Описание"
-              >
-                <p className="text-[length:var(--text-14)] text-[#0A0A0A] lg:text-[length:var(--text-16)]">
-                  {card.text || "Описание результата"}
-                </p>
-              </InlineEdit>
-            </div>
-          ))}
+                <div
+                  draggable={draggable}
+                  onDragStart={onDragStart}
+                  onDragOver={onDragOver}
+                  onDrop={onDrop}
+                  onDragEnd={onDragEnd}
+                  className={`group/card relative flex h-[240px] min-w-0 flex-1 flex-col justify-between border border-[#FFCC00] bg-[#FFCC00] p-8 transition-all ${
+                    isDragging ? "opacity-60" : ""
+                  }`}
+                >
+                  <div className="absolute -right-1 -top-1 z-10 flex items-center gap-0.5 opacity-0 transition-opacity group-hover/card:opacity-100">
+                    <div
+                      className="flex h-5 w-5 cursor-grab items-center justify-center rounded-sm bg-[#0A0A0A] text-[#F0F0F0] select-none active:cursor-grabbing"
+                      onMouseDown={() => dnd.onGripDown(index)}
+                      onMouseUp={dnd.onGripUp}
+                    >
+                      <GripVertical className="h-2.5 w-2.5" />
+                    </div>
+                    <InlineConfirmDelete
+                      onConfirm={() => removeCard(index)}
+                      className="bg-[#0A0A0A] text-[#F0F0F0] hover:bg-[#ED4843]"
+                    />
+                  </div>
 
-          {/* Add card */}
-          <button
-            onClick={addCard}
-            className="flex h-[200px] items-center justify-center gap-1 border border-dashed border-[#404040] text-[length:var(--text-14)] text-[#939393] transition-colors hover:border-[#FFCC00] hover:text-[#FFCC00]"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            Добавить карточку
-          </button>
+                  <InlineEdit
+                    value={card.title}
+                    onSave={(v) => updateCard(index, "title", v)}
+                    placeholder="Заголовок"
+                  >
+                    <h3 className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-20)] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#0A0A0A]">
+                      {card.title || "Результат"}
+                    </h3>
+                  </InlineEdit>
+
+                  <InlineEdit
+                    value={card.text}
+                    onSave={(v) => updateCard(index, "text", v)}
+                    multiline
+                    copy
+                    placeholder="Описание"
+                  >
+                    <p className="text-[length:var(--text-16)] leading-[1.28] text-[#0A0A0A]">
+                      {card.text || "Описание результата"}
+                    </p>
+                  </InlineEdit>
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Insert after last */}
+          {cards.length < 4 && (
+            <InsertButton onClick={() => insertCard(cards.length)} />
+          )}
         </div>
       </div>
     </div>

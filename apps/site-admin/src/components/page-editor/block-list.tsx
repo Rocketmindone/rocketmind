@@ -126,7 +126,7 @@ export function BlockList({
             }`}
           >
             {/* Block toolbar — floating bar */}
-            <div className="sticky top-0 z-10 flex items-center gap-2 border-b border-border bg-background/95 px-3 py-1.5 backdrop-blur-sm">
+            <div className={`sticky top-0 z-10 flex items-center gap-2 border border-border bg-card px-3 py-1.5 shadow-sm ${isCollapsed ? "mb-10" : ""}`}>
               <div
                 className="cursor-grab text-muted-foreground active:cursor-grabbing select-none"
                 onMouseDown={() => handleGripMouseDown(block.id)}
@@ -162,7 +162,7 @@ export function BlockList({
 
             {/* Block preview */}
             {!isCollapsed && (
-              <div className={!block.enabled ? "pointer-events-none opacity-30" : ""}>
+              <div className={`mb-10 ${!block.enabled ? "pointer-events-none opacity-30" : ""}`}>
                 <BlockEditor
                   block={block}
                   onUpdate={(data) => onUpdateBlock(block.id, data)}
