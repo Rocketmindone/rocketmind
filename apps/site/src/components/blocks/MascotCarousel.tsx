@@ -255,7 +255,7 @@ export function MascotCarousel({
         className="flex flex-1 items-center"
         style={{
           gap: isCompact ? 16 : 24,
-          padding: isCompact ? '20px 20px 20px 0' : '0 40px 0 0',
+          padding: isCompact ? '20px 20px 20px 0' : '0 30px 0 16px',
         }}
       >
         <p
