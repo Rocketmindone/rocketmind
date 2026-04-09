@@ -55,12 +55,12 @@ export function AboutRocketmindEditor({ data, onUpdate }: AboutRocketmindEditorP
         </div>
       </div>
 
-      {/* ── Preview matching site desktop layout ── */}
+      {/* ── Preview — same sizes as site desktop layout ── */}
       <div className="rounded-lg overflow-hidden bg-[#0A0A0A]">
         <div className="flex border border-[#404040]">
-          {/* ─── Left half: photo + text side by side ─── */}
-          <div className="w-1/2 shrink-0 border-r border-[#404040] p-5">
-            <div className="flex gap-5 h-full">
+          {/* ─── Left half: photo + text ─── */}
+          <div className="w-1/2 shrink-0 border-r border-[#404040] p-8">
+            <div className="flex gap-8 h-full">
               {/* Photo */}
               <div className="w-1/2 shrink-0 self-stretch rounded overflow-hidden bg-[#1a1a1a]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -71,35 +71,37 @@ export function AboutRocketmindEditor({ data, onUpdate }: AboutRocketmindEditorP
                 />
               </div>
 
-              {/* Text column: logo+heading top, founder bottom */}
-              <div className="flex flex-col justify-between flex-1 min-h-[240px]">
+              {/* Text column */}
+              <div className="flex flex-col justify-between flex-1">
                 {/* Top: logo + heading */}
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-4">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src="/images/about/rocketmind-logo-dark.svg"
                     alt="Rocketmind"
-                    className="h-[28px] w-auto self-start"
+                    className="h-[52px] w-auto self-start"
                   />
                   <InlineEdit value={heading} onSave={(v) => onUpdate({ heading: v })} placeholder="Заголовок" multiline>
-                    <h2 className="font-[family-name:var(--font-heading-family)] text-[18px] font-bold uppercase leading-[1.12] tracking-[-0.01em] text-[#5C5C5C] whitespace-pre-line">
+                    <h2 className="font-[family-name:var(--font-heading-family)] text-[32px] font-bold uppercase leading-[1.12] tracking-[-0.01em] text-[#5C5C5C] whitespace-pre-line">
                       {heading}
                     </h2>
                   </InlineEdit>
                 </div>
 
                 {/* Bottom: founder info */}
-                <div className="flex flex-col gap-1">
-                  <InlineEdit value={founderName} onSave={(v) => onUpdate({ founderName: v })} placeholder="Имя">
-                    <span className="font-[family-name:var(--font-heading-family)] text-[14px] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#F0F0F0]">
-                      {founderName}
-                    </span>
-                  </InlineEdit>
-                  <InlineEdit value={founderBio} onSave={(v) => onUpdate({ founderBio: v })} placeholder="Подпись" multiline>
-                    <p className="text-[11px] leading-[1.3] text-[#F0F0F0]">{founderBio}</p>
-                  </InlineEdit>
+                <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2">
+                    <InlineEdit value={founderName} onSave={(v) => onUpdate({ founderName: v })} placeholder="Имя">
+                      <span className="font-[family-name:var(--font-heading-family)] text-[24px] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#F0F0F0]">
+                        {founderName}
+                      </span>
+                    </InlineEdit>
+                    <InlineEdit value={founderBio} onSave={(v) => onUpdate({ founderBio: v })} placeholder="Подпись" multiline>
+                      <p className="text-[14px] leading-[1.28] text-[#F0F0F0]">{founderBio}</p>
+                    </InlineEdit>
+                  </div>
                   <InlineEdit value={founderRole} onSave={(v) => onUpdate({ founderRole: v })} placeholder="Роль" multiline>
-                    <p className="text-[11px] leading-[1.3] text-[#939393]">{founderRole}</p>
+                    <p className="text-[14px] leading-[1.28] text-[#939393]">{founderRole}</p>
                   </InlineEdit>
                 </div>
               </div>
@@ -108,46 +110,46 @@ export function AboutRocketmindEditor({ data, onUpdate }: AboutRocketmindEditorP
 
           {/* ─── Right half: feature cards ─── */}
           <div className="w-1/2 flex flex-col">
-            {/* AI Agents card — top */}
-            <div className="flex-1 flex flex-col gap-3 border-b border-[#404040] p-5">
-              <div className="flex gap-4">
+            {/* AI Agents card */}
+            <div className="flex-1 flex flex-col gap-4 border-b border-[#404040] p-8">
+              <div className="flex gap-12">
                 <InlineEdit value={features[0].title} onSave={(v) => updateFeature(0, "title", v)} placeholder="Заголовок">
-                  <h3 className="font-[family-name:var(--font-heading-family)] text-[14px] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#F0F0F0] shrink-0">
+                  <h3 className="font-[family-name:var(--font-heading-family)] text-[24px] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#F0F0F0] shrink-0">
                     {features[0].title}
                   </h3>
                 </InlineEdit>
                 <InlineEdit value={features[0].text} onSave={(v) => updateFeature(0, "text", v)} placeholder="Описание" multiline>
-                  <p className="text-[11px] leading-[1.3] text-[#939393]">{features[0].text}</p>
+                  <p className="text-[14px] leading-[1.28] text-[#939393]">{features[0].text}</p>
                 </InlineEdit>
               </div>
               {/* MascotCarousel placeholder */}
-              <div className="flex items-center gap-2 rounded-md border border-[#404040] bg-[#121212] px-3 py-2">
-                <div className="w-8 h-8 rounded bg-[#1a1a1a] flex items-center justify-center text-[10px]">🤖</div>
-                <span className="text-[10px] text-[#939393] italic">Карусель AI-агентов</span>
-                <div className="ml-auto w-6 h-6 rounded bg-[#FFCC00] flex items-center justify-center text-[10px]">↑</div>
+              <div className="flex items-center gap-2 rounded-lg border border-[#404040] bg-[#121212] px-4 py-3">
+                <div className="w-10 h-10 rounded bg-[#1a1a1a] flex items-center justify-center text-[14px]">🤖</div>
+                <span className="text-[14px] text-[#939393] italic">Карусель AI-агентов</span>
+                <div className="ml-auto w-8 h-8 rounded bg-[#FFCC00] flex items-center justify-center text-[14px]">↑</div>
               </div>
             </div>
 
             {/* Bottom row — 2 cards */}
             <div className="flex">
-              <div className="w-1/2 flex flex-col gap-1 border-r border-[#404040] p-5">
+              <div className="w-1/2 flex flex-col gap-2 border-r border-[#404040] p-8">
                 <InlineEdit value={features[1].title} onSave={(v) => updateFeature(1, "title", v)} placeholder="Заголовок">
-                  <h3 className="font-[family-name:var(--font-heading-family)] text-[14px] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#F0F0F0]">
+                  <h3 className="font-[family-name:var(--font-heading-family)] text-[24px] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#F0F0F0]">
                     {features[1].title}
                   </h3>
                 </InlineEdit>
                 <InlineEdit value={features[1].text} onSave={(v) => updateFeature(1, "text", v)} placeholder="Описание" multiline>
-                  <p className="text-[11px] leading-[1.3] text-[#939393]">{features[1].text}</p>
+                  <p className="text-[14px] leading-[1.28] text-[#939393]">{features[1].text}</p>
                 </InlineEdit>
               </div>
-              <div className="w-1/2 flex flex-col gap-1 p-5">
+              <div className="w-1/2 flex flex-col gap-2 p-8">
                 <InlineEdit value={features[2].title} onSave={(v) => updateFeature(2, "title", v)} placeholder="Заголовок">
-                  <h3 className="font-[family-name:var(--font-heading-family)] text-[14px] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#F0F0F0]">
+                  <h3 className="font-[family-name:var(--font-heading-family)] text-[24px] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#F0F0F0]">
                     {features[2].title}
                   </h3>
                 </InlineEdit>
                 <InlineEdit value={features[2].text} onSave={(v) => updateFeature(2, "text", v)} placeholder="Описание" multiline>
-                  <p className="text-[11px] leading-[1.3] text-[#939393]">{features[2].text}</p>
+                  <p className="text-[14px] leading-[1.28] text-[#939393]">{features[2].text}</p>
                 </InlineEdit>
               </div>
             </div>
