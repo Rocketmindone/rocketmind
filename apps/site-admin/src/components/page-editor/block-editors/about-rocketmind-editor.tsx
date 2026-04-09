@@ -111,7 +111,7 @@ export function AboutRocketmindEditor({ data, onUpdate }: AboutRocketmindEditorP
           {/* ─── Right half: feature cards ─── */}
           <div className="w-1/2 flex flex-col">
             {/* AI Agents card */}
-            <div className="flex-1 flex flex-col gap-4 border-b border-[#404040] p-8">
+            <div className="flex-1 flex flex-col justify-between gap-4 border-b border-[#404040] p-8">
               <div className="flex gap-12">
                 <InlineEdit value={features[0].title} onSave={(v) => updateFeature(0, "title", v)} placeholder="Заголовок">
                   <h3 className="font-[family-name:var(--font-heading-family)] text-[24px] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#F0F0F0] shrink-0">
