@@ -174,7 +174,10 @@ export async function ServicePageTemplate(props: ServicePageTemplateProps) {
       ) : null}
 
       {/* 11. О Rocketmind — AI-агенты */}
-      <AboutRocketmindSection {...ABOUT_RM_DEFAULTS} />
+      <AboutRocketmindSection
+        {...ABOUT_RM_DEFAULTS}
+        {...(hasProduct && props.product.aboutRocketmind ? props.product.aboutRocketmind : {})}
+      />
 
       {/* 12–14. Кейсы + отзывы + логотипы + CTA */}
       <PageBottom />

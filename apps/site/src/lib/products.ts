@@ -83,6 +83,15 @@ export type ResultsData = {
 
 export type { ExpertData };
 
+export type AboutRocketmindData = {
+  heading: string;
+  founderName: string;
+  founderBio: string;
+  founderRole: string;
+  features: Array<{ title: string; text: string }>;
+  variant?: "dark" | "light";
+};
+
 export type ProductData = {
   slug: string;
   category: string;
@@ -107,6 +116,8 @@ export type ProductData = {
   process: ProcessData | null;
   // Experts
   experts: ExpertData[] | null;
+  // About Rocketmind (CMS-editable)
+  aboutRocketmind: AboutRocketmindData | null;
   // Image paths (auto-resolved)
   coverImage: string;
   aboutImage: string | null;
@@ -198,6 +209,7 @@ export function getProductBySlug(slug: string, category?: string): ProductData |
     experts: Array.isArray(data.experts) && data.experts.length > 0
       ? resolveExperts(data.experts as string[])
       : null,
+    aboutRocketmind: data.aboutRocketmind ?? null,
     coverImage,
     aboutImage,
   };

@@ -92,8 +92,8 @@ export function AboutRocketmindSection({
                   sizes="(min-width: 1512px) 302px, 25vw"
                 />
               </div>
-              {/* Text — Figma: 302×463, vertical, gap=40 */}
-              <div className="flex flex-col gap-10" style={{ width: "calc(50% - 16px)" }}>
+              {/* Text — Figma: 302×463, vertical, justify-between */}
+              <div className="flex flex-col justify-between" style={{ width: "calc(50% - 16px)" }}>
                 {/* Logo + heading block — Figma: 302×140, gap=16 */}
                 <div className="flex flex-col gap-4">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -102,8 +102,8 @@ export function AboutRocketmindSection({
                     alt="Rocketmind"
                     className="h-[52px] w-auto self-start"
                   />
-                  {/* Heading: Figma 32px, NOT 52px */}
-                  <h2 className="font-[family-name:var(--font-heading-family)] text-[32px] font-bold uppercase leading-[1.12] tracking-[-0.01em] text-[#F0F0F0] whitespace-pre-line">
+                  {/* Heading: Figma 32px, color #5C5C5C */}
+                  <h2 className="font-[family-name:var(--font-heading-family)] text-[32px] font-bold uppercase leading-[1.12] tracking-[-0.01em] text-[#5C5C5C] whitespace-pre-line">
                     {heading}
                   </h2>
                 </div>

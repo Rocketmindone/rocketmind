@@ -32,6 +32,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ slug
   const audienceBlock = page.blocks?.find((b: { type: string }) => b.type === "audience");
   const resultsBlock = page.blocks?.find((b: { type: string }) => b.type === "results");
   const processBlock = page.blocks?.find((b: { type: string }) => b.type === "process");
+  const aboutRmBlock = page.blocks?.find((b: { type: string }) => b.type === "aboutRocketmind");
 
   const hasContent = (d: Record<string, unknown>) => d && !!(d.title as string)?.trim();
 
@@ -45,6 +46,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ slug
     audience: audienceBlock?.enabled && hasContent(audienceBlock.data) ? audienceBlock.data : null,
     results: resultsBlock?.enabled && hasContent(resultsBlock.data) ? resultsBlock.data : null,
     process: processBlock?.enabled && hasContent(processBlock.data) ? processBlock.data : null,
+    aboutRocketmind: aboutRmBlock?.enabled ? aboutRmBlock.data : null,
     socialProof: null, tools: null, duration: null, whyRocketmind: null, expert: null, cases: null, reviews: null,
   };
 
