@@ -53,9 +53,11 @@ export interface ExpertsBlockData {
 }
 
 export interface AboutRocketmindBlockData {
-  tag: string;
-  title: string;
-  description: string;
+  heading: string;
+  founderName: string;
+  founderBio: string;
+  founderRole: string;
+  features: Array<{ title: string; text: string }>;
   variant: "dark" | "light";
 }
 
