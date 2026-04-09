@@ -108,25 +108,25 @@ export function ForWhomSection({
 
           return (
             <div
-              className="grid gap-x-8 gap-y-4"
+              className="grid gap-x-8"
               style={{
                 gridTemplateColumns: "1fr 1fr 1fr 1fr",
-                gridTemplateRows: "auto auto 1fr",
+                gridTemplateRows: "1fr auto auto",
               }}
             >
               {slots.map((s, i) => (
                 <div
                   key={i}
-                  className="grid grid-rows-[subgrid] row-span-3 gap-4"
+                  className="grid grid-rows-[subgrid] row-span-3"
                   style={{
                     gridColumn: `${s.colStart} / span ${s.colSpan}`,
                   }}
                 >
-                  <div className="flex items-end">
+                  <div className="flex items-end pb-4">
                     <h4 className="h4 text-[#0A0A0A]">{s.fact.title}</h4>
                   </div>
                   <div className="h-0 w-full border-t border-[#404040]" />
-                  <div>
+                  <div className="pt-4">
                     <p className="text-[length:var(--text-16)] leading-[1.28] text-[#0A0A0A] max-w-[480px]">
                       {s.fact.text}
                     </p>

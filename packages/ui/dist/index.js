@@ -2037,19 +2037,19 @@ function ForWhomSection({
             className: "grid gap-x-8",
             style: {
               gridTemplateColumns: "1fr 1fr 1fr 1fr",
-              gridTemplateRows: "auto auto 1fr"
+              gridTemplateRows: "1fr auto auto"
             },
             children: slots.map((s, i) => /* @__PURE__ */ jsxs12(
               "div",
               {
-                className: "grid grid-rows-[subgrid] row-span-3 gap-4",
+                className: "grid grid-rows-[subgrid] row-span-3",
                 style: {
                   gridColumn: `${s.colStart} / span ${s.colSpan}`
                 },
                 children: [
-                  /* @__PURE__ */ jsx29("div", { className: "flex items-end", children: /* @__PURE__ */ jsx29("h4", { className: "h4 text-[#0A0A0A]", children: s.fact.title }) }),
+                  /* @__PURE__ */ jsx29("div", { className: "flex items-end pb-4", children: /* @__PURE__ */ jsx29("h4", { className: "h4 text-[#0A0A0A]", children: s.fact.title }) }),
                   /* @__PURE__ */ jsx29("div", { className: "h-0 w-full border-t border-[#404040]" }),
-                  /* @__PURE__ */ jsx29("div", { children: /* @__PURE__ */ jsx29("p", { className: "text-[length:var(--text-16)] leading-[1.28] text-[#0A0A0A] max-w-[480px]", children: s.fact.text }) })
+                  /* @__PURE__ */ jsx29("div", { className: "pt-4", children: /* @__PURE__ */ jsx29("p", { className: "text-[length:var(--text-16)] leading-[1.28] text-[#0A0A0A] max-w-[480px]", children: s.fact.text }) })
                 ]
               },
               i
