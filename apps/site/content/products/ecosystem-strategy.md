@@ -127,8 +127,6 @@ process:
       text: Согласовывают и внедряют экосистемные инициативы в компании
     - role: Лидеры направлений
       text: Отвечают за интеграцию новых решений и рост ценности для клиентов
-experts:
-  - "irina-gurenkova"
 socialProof: null
 tools: null
 duration: null
