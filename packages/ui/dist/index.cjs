@@ -2138,7 +2138,7 @@ function ForWhomSection({
   className
 }) {
   return /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)("section", { className: cn("w-full bg-[#F0F0F0] py-10 md:py-16 lg:py-20", className), children: [
-    /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)("div", { className: "hidden lg:flex flex-col gap-[104px] mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)("div", { className: "hidden lg:flex flex-col gap-10 mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14", children: [
       /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)("div", { className: "flex flex-col gap-2", children: [
         /* @__PURE__ */ (0, import_jsx_runtime29.jsx)("span", { className: "font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#0A0A0A]", children: tag }),
         /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)("div", { className: "flex", children: [

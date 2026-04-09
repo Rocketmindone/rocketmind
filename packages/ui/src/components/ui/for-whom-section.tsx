@@ -60,7 +60,7 @@ export function ForWhomSection({
   return (
     <section className={cn("w-full bg-[#F0F0F0] py-10 md:py-16 lg:py-20", className)}>
       {/* ── Desktop ── */}
-      <div className="hidden lg:flex flex-col gap-[104px] mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14">
+      <div className="hidden lg:flex flex-col gap-10 mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14">
         {/* Header — 50/50 */}
         <div className="flex flex-col gap-2">
           <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#0A0A0A]">
