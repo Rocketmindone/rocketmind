@@ -8,7 +8,7 @@ export type Expert = {
   tag?: string;
   name: string;
   bio: string;
-  image: string;
+  image: string | null;
 };
 
 export type ExpertsSectionProps = {

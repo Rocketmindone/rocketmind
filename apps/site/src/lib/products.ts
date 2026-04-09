@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
+import { resolveExperts, type ExpertData } from "./experts";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -80,12 +81,7 @@ export type ResultsData = {
   cards: ResultCardData[];
 };
 
-export type ExpertData = {
-  tag?: string;
-  name: string;
-  bio: string;
-  image: string;
-};
+export type { ExpertData };
 
 export type ProductData = {
   slug: string;
@@ -199,7 +195,9 @@ export function getProductBySlug(slug: string, category?: string): ProductData |
     audience: data.audience ?? null,
     results: data.results ?? null,
     process: data.process ?? null,
-    experts: data.experts ?? null,
+    experts: Array.isArray(data.experts) && data.experts.length > 0
+      ? resolveExperts(data.experts as string[])
+      : null,
     coverImage,
     aboutImage,
   };

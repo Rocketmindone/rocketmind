@@ -48,7 +48,8 @@ export interface ResultsBlockData {
 }
 
 export interface ExpertsBlockData {
-  experts: Array<{ tag?: string; name: string; bio: string; image: string }>;
+  /** Array of expert slugs referencing content/experts/{slug}.md */
+  experts: string[];
 }
 
 export interface AboutRocketmindBlockData {

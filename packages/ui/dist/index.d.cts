@@ -374,7 +374,7 @@ type Expert = {
     tag?: string;
     name: string;
     bio: string;
-    image: string;
+    image: string | null;
 };
 type ExpertsSectionProps = {
     experts: Expert[];
