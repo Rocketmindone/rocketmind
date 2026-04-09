@@ -4,6 +4,7 @@ import type { PageBlock } from "@/lib/types";
 import { HeroEditor } from "./hero-editor";
 import { AboutEditor } from "./about-editor";
 import { AudienceEditor } from "./audience-editor";
+import { ToolsEditor } from "./tools-editor";
 import { ResultsEditor } from "./results-editor";
 import { ProcessEditor } from "./process-editor";
 import { ExpertsEditor } from "./experts-editor";
@@ -23,6 +24,8 @@ export function BlockEditor({ block, onUpdate }: BlockEditorProps) {
       return <AboutEditor data={block.data} onUpdate={onUpdate} />;
     case "audience":
       return <AudienceEditor data={block.data} onUpdate={onUpdate} />;
+    case "tools":
+      return <ToolsEditor data={block.data} onUpdate={onUpdate} />;
     case "results":
       return <ResultsEditor data={block.data} onUpdate={onUpdate} />;
     case "process":

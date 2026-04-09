@@ -17,7 +17,7 @@ export type AboutRocketmindSectionProps = {
   founderName: string;
   founderBio: string;
   founderRole: string;
-  features: [AboutRmFeature, AboutRmFeature, AboutRmFeature];
+  features: AboutRmFeature[];
   variant?: AboutRocketmindVariant;
 };
 

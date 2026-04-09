@@ -3,7 +3,7 @@ import { ProductHero } from "@/components/sections/ProductHero";
 import { AboutProduct } from "@/components/sections/AboutProduct";
 import { LogoMarqueeSection } from "@/components/sections/LogoMarqueeSection";
 import { AboutRocketmindSection, ABOUT_RM_DEFAULTS } from "@/components/sections/AboutRocketmindSection";
-import { ForWhomSection, ProcessSection, ResultsSection, ExpertsSection } from "@rocketmind/ui";
+import { ForWhomSection, ProcessSection, ResultsSection, ExpertsSection, ToolsSection } from "@rocketmind/ui";
 import type { ProductData } from "@/lib/products";
 
 /**
@@ -102,13 +102,15 @@ export async function ServicePageTemplate(props: ServicePageTemplateProps) {
       )}
 
       {/* 5. Инструменты (опционально) */}
-      <section className="border-t border-border px-5 py-16 md:px-8 xl:px-14">
-        <div className="mx-auto max-w-[1512px]">
-          <p className="text-center font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            Инструменты — заполнить (опционально)
-          </p>
-        </div>
-      </section>
+      {hasProduct && props.product.tools ? (
+        <ToolsSection
+          tag={props.product.tools.tag}
+          title={props.product.tools.title}
+          description={props.product.tools.description}
+          tools={props.product.tools.tools}
+          useIcons={props.product.tools.useIcons}
+        />
+      ) : null}
 
       {/* 6. Твёрдые результаты */}
       {hasProduct && props.product.results ? (

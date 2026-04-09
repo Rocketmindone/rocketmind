@@ -83,6 +83,21 @@ export type ResultsData = {
 
 export type { ExpertData };
 
+export type ToolCardData = {
+  number: string;
+  title: string;
+  text: string;
+  icon?: string | null;
+};
+
+export type ToolsData = {
+  tag: string;
+  title: string;
+  description?: string;
+  useIcons?: boolean;
+  tools: ToolCardData[];
+};
+
 export type AboutRocketmindData = {
   heading: string;
   founderName: string;
@@ -110,6 +125,8 @@ export type ProductData = {
   about: AboutProductData | null;
   // For whom
   audience: ForWhomData | null;
+  // Tools
+  tools: ToolsData | null;
   // Results
   results: ResultsData | null;
   // Process
@@ -204,6 +221,7 @@ export function getProductBySlug(slug: string, category?: string): ProductData |
     },
     about,
     audience: data.audience ?? null,
+    tools: data.tools ?? null,
     results: data.results ?? null,
     process: data.process ?? null,
     experts: Array.isArray(data.experts) && data.experts.length > 0

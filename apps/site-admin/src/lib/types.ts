@@ -9,6 +9,7 @@ export type BlockType =
   | "logoMarquee"
   | "about"
   | "audience"
+  | "tools"
   | "results"
   | "process"
   | "experts"
@@ -38,6 +39,14 @@ export interface AudienceBlockData {
   subtitle?: string;
   wideColumn?: "left" | "right";
   facts: Array<{ title: string; text: string }>;
+}
+
+export interface ToolsBlockData {
+  tag: string;
+  title: string;
+  description?: string;
+  useIcons?: boolean;
+  tools: Array<{ number: string; title: string; text: string; icon?: string | null }>;
 }
 
 export interface ResultsBlockData {

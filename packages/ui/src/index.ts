@@ -38,6 +38,7 @@ export * from './components/ui/for-whom-section';
 export * from './components/ui/process-section';
 export * from './components/ui/results-section';
 export * from './components/ui/experts-section';
+export * from './components/ui/tools-section';
 
 // Blocks
 export * from './components/ui/accordion-faq';

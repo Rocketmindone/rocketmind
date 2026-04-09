@@ -28,6 +28,7 @@ export async function GET() {
             case "hero": blockData = data.hero || {}; enabled = !!data.hero; break;
             case "about": if (data.about) blockData = data.about; else enabled = false; break;
             case "audience": if (data.audience) blockData = data.audience; else enabled = false; break;
+            case "tools": if (data.tools) blockData = data.tools; else enabled = false; break;
             case "results": if (data.results) blockData = data.results; else enabled = false; break;
             case "process": if (data.process) blockData = data.process; else enabled = false; break;
             case "experts": {
