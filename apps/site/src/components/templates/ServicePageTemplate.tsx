@@ -153,15 +153,6 @@ export async function ServicePageTemplate(props: ServicePageTemplateProps) {
         </section>
       )}
 
-      {/* 8. Продолжительность (опционально) */}
-      <section className="border-t border-border px-5 py-16 md:px-8 xl:px-14">
-        <div className="mx-auto max-w-[1512px]">
-          <p className="text-center font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            Продолжительность — заполнить (опционально)
-          </p>
-        </div>
-      </section>
-
       {/* 9. Эксперт (опционально) */}
       {hasProduct && props.product.experts && props.product.experts.length > 0 ? (
         <ExpertsSection experts={props.product.experts} />
