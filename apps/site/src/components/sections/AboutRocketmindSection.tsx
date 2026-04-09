@@ -63,19 +63,19 @@ export function AboutRocketmindSection({
       <div className="hidden lg:flex mx-auto max-w-[1512px]">
         {/* Left: Photo + Text */}
         <div className="w-1/2 shrink-0 flex border border-[#404040] p-8 gap-8">
-          {/* Founder photo */}
-          <div className="relative w-[302px] shrink-0 self-stretch">
+          {/* Founder photo — 47.5% of content area (302/636 from Figma) */}
+          <div className="relative w-[47.5%] shrink-0 self-stretch">
             <Image
               src={`${BASE_PATH}/images/about/alexey-eremin.png`}
               alt={founderName}
               fill
               className="object-cover object-top"
-              sizes="302px"
+              sizes="(min-width: 1512px) 302px, 25vw"
             />
           </div>
 
           {/* Text content */}
-          <div className="flex flex-col justify-between flex-1 gap-10">
+          <div className="flex flex-col justify-between flex-1 gap-10 min-w-0">
             {/* Logo + heading */}
             <div className="flex flex-col gap-4">
               {/* eslint-disable-next-line @next/next/no-img-element */}
