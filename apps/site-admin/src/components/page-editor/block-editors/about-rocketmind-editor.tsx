@@ -37,68 +37,118 @@ export function AboutRocketmindEditor({ data, onUpdate }: AboutRocketmindEditorP
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* Note about global text */}
-      <div className="rounded border border-[#FFCC00]/30 bg-[#FFCC00]/5 px-4 py-3 text-[13px] leading-relaxed text-foreground/80">
-        <strong className="text-[#FFCC00]">⚠ Общий текст:</strong> изменения текстовых полей в этом блоке
-        применяются <strong>ко всем страницам</strong>. Переключатель вида влияет только на текущую страницу.
+    <div className="flex flex-col gap-4">
+      {/* Controls bar */}
+      <div className="flex items-center gap-6">
+        <div className="rounded border border-[#FFCC00]/30 bg-[#FFCC00]/5 px-3 py-2 text-[12px] leading-snug text-foreground/80 flex-1">
+          <strong className="text-[#FFCC00]">⚠</strong> Текст применяется <strong>ко всем страницам</strong>. Переключатель — только к текущей.
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <Switch
+            checked={isDark}
+            onCheckedChange={(v) => onUpdate({ variant: v ? "dark" : "light" })}
+            size="sm"
+          />
+          <span className="text-xs text-muted-foreground whitespace-nowrap">
+            {isDark ? "Тёмный" : "Светлый"}
+          </span>
+        </div>
       </div>
 
-      {/* Variant switch */}
-      <div className="flex items-center gap-3">
-        <Switch
-          checked={isDark}
-          onCheckedChange={(v) => onUpdate({ variant: v ? "dark" : "light" })}
-          size="sm"
-        />
-        <span className="text-sm text-muted-foreground">
-          {isDark ? "Тёмный фон" : "Светлый фон"}
-        </span>
-      </div>
+      {/* ── Visual preview matching Figma layout ── */}
+      <div className="rounded-lg overflow-hidden bg-[#0A0A0A]">
+        <div className="flex">
+          {/* Left: Photo + Text */}
+          <div className="w-1/2 shrink-0 flex border border-[#404040] p-6 gap-6">
+            {/* Photo placeholder */}
+            <div className="w-[140px] shrink-0 self-stretch rounded bg-[#1a1a1a] overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/images/about/alexey-eremin.png"
+                alt=""
+                className="w-full h-full object-cover object-top"
+              />
+            </div>
 
-      {/* Heading */}
-      <div className="flex flex-col gap-1">
-        <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Заголовок</span>
-        <InlineEdit value={heading} onSave={(v) => onUpdate({ heading: v })} placeholder="Заголовок" multiline>
-          <h2 className="h3 text-[#F0F0F0] whitespace-pre-line">{heading}</h2>
-        </InlineEdit>
-      </div>
-
-      {/* Founder */}
-      <div className="flex flex-col gap-3 rounded border border-[#404040] p-4">
-        <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Основатель</span>
-
-        <InlineEdit value={founderName} onSave={(v) => onUpdate({ founderName: v })} placeholder="Имя">
-          <span className="h4 text-[#F0F0F0]">{founderName}</span>
-        </InlineEdit>
-
-        <InlineEdit value={founderBio} onSave={(v) => onUpdate({ founderBio: v })} placeholder="Подпись" multiline>
-          <p className="text-sm text-[#F0F0F0]">{founderBio}</p>
-        </InlineEdit>
-
-        <InlineEdit value={founderRole} onSave={(v) => onUpdate({ founderRole: v })} placeholder="Роль" multiline>
-          <p className="text-sm text-[#939393]">{founderRole}</p>
-        </InlineEdit>
-      </div>
-
-      {/* Features */}
-      <div className="flex flex-col gap-3">
-        <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Преимущества</span>
-        {features.map((f, i) => (
-          <div key={i} className="flex flex-col gap-2 rounded border border-[#404040] p-4">
-            <InlineEdit value={f.title} onSave={(v) => updateFeature(i, "title", v)} placeholder="Заголовок">
-              <h4 className="h4 text-[#F0F0F0]">{f.title}</h4>
-            </InlineEdit>
-            <InlineEdit value={f.text} onSave={(v) => updateFeature(i, "text", v)} placeholder="Описание" multiline>
-              <p className="text-sm text-[#939393]">{f.text}</p>
-            </InlineEdit>
-            {i === 0 && (
-              <div className="mt-2 rounded bg-[#121212] px-3 py-2 text-xs text-[#939393]">
-                ↑ Этот блок содержит карусель AI-агентов
+            {/* Text */}
+            <div className="flex flex-col justify-between flex-1 gap-6 min-h-[220px]">
+              {/* Logo + heading */}
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 rounded-sm bg-[#F0F0F0] flex items-center justify-center text-[8px] font-bold text-[#0A0A0A]">R</div>
+                  <span className="text-[14px] font-bold text-[#F0F0F0] tracking-wide">Rocketmind</span>
+                </div>
+                <InlineEdit value={heading} onSave={(v) => onUpdate({ heading: v })} placeholder="Заголовок" multiline>
+                  <h2 className="font-[family-name:var(--font-heading-family)] text-[20px] font-bold uppercase leading-[1.08] tracking-[-0.02em] text-[#F0F0F0] whitespace-pre-line">
+                    {heading}
+                  </h2>
+                </InlineEdit>
               </div>
-            )}
+
+              {/* Founder info */}
+              <div className="flex flex-col gap-1">
+                <InlineEdit value={founderName} onSave={(v) => onUpdate({ founderName: v })} placeholder="Имя">
+                  <span className="font-[family-name:var(--font-heading-family)] text-[12px] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#F0F0F0]">
+                    {founderName}
+                  </span>
+                </InlineEdit>
+                <InlineEdit value={founderBio} onSave={(v) => onUpdate({ founderBio: v })} placeholder="Подпись" multiline>
+                  <p className="text-[11px] leading-[1.3] text-[#F0F0F0]">{founderBio}</p>
+                </InlineEdit>
+                <InlineEdit value={founderRole} onSave={(v) => onUpdate({ founderRole: v })} placeholder="Роль" multiline>
+                  <p className="text-[11px] leading-[1.3] text-[#939393]">{founderRole}</p>
+                </InlineEdit>
+              </div>
+            </div>
           </div>
-        ))}
+
+          {/* Right: Feature cards */}
+          <div className="w-1/2 flex flex-col">
+            {/* AI Agents card */}
+            <div className="flex-1 flex flex-col gap-3 border border-[#404040] p-6">
+              <div className="flex gap-6">
+                <InlineEdit value={features[0].title} onSave={(v) => updateFeature(0, "title", v)} placeholder="Заголовок">
+                  <h3 className="font-[family-name:var(--font-heading-family)] text-[12px] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#F0F0F0] shrink-0">
+                    {features[0].title}
+                  </h3>
+                </InlineEdit>
+                <InlineEdit value={features[0].text} onSave={(v) => updateFeature(0, "text", v)} placeholder="Описание" multiline>
+                  <p className="text-[10px] leading-[1.3] text-[#939393]">{features[0].text}</p>
+                </InlineEdit>
+              </div>
+              {/* MascotCarousel placeholder */}
+              <div className="flex items-center gap-2 rounded-md border border-[#404040] bg-[#121212] px-3 py-2">
+                <div className="w-8 h-8 rounded bg-[#1a1a1a] flex items-center justify-center text-[10px]">🤖</div>
+                <span className="text-[10px] text-[#939393] italic">Карусель AI-агентов</span>
+                <div className="ml-auto w-6 h-6 rounded bg-[#FFCC00] flex items-center justify-center text-[10px]">↑</div>
+              </div>
+            </div>
+
+            {/* Bottom row */}
+            <div className="flex">
+              <div className="w-1/2 flex flex-col gap-1 border border-[#404040] p-6">
+                <InlineEdit value={features[1].title} onSave={(v) => updateFeature(1, "title", v)} placeholder="Заголовок">
+                  <h3 className="font-[family-name:var(--font-heading-family)] text-[12px] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#F0F0F0]">
+                    {features[1].title}
+                  </h3>
+                </InlineEdit>
+                <InlineEdit value={features[1].text} onSave={(v) => updateFeature(1, "text", v)} placeholder="Описание" multiline>
+                  <p className="text-[10px] leading-[1.3] text-[#939393]">{features[1].text}</p>
+                </InlineEdit>
+              </div>
+              <div className="w-1/2 flex flex-col gap-1 border border-[#404040] p-6">
+                <InlineEdit value={features[2].title} onSave={(v) => updateFeature(2, "title", v)} placeholder="Заголовок">
+                  <h3 className="font-[family-name:var(--font-heading-family)] text-[12px] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#F0F0F0]">
+                    {features[2].title}
+                  </h3>
+                </InlineEdit>
+                <InlineEdit value={features[2].text} onSave={(v) => updateFeature(2, "text", v)} placeholder="Описание" multiline>
+                  <p className="text-[10px] leading-[1.3] text-[#939393]">{features[2].text}</p>
+                </InlineEdit>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
