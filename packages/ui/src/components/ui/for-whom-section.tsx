@@ -61,12 +61,12 @@ export function ForWhomSection({
     <section className={cn("w-full bg-[#F0F0F0] py-10 md:py-16 lg:py-20", className)}>
       {/* ── Desktop ── */}
       <div className="hidden lg:flex flex-col gap-[104px] mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14">
-        {/* Header — 2 halves */}
+        {/* Header — 50/50 */}
         <div className="flex flex-col gap-2">
           <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#0A0A0A]">
             {tag}
           </span>
-          <div className="flex items-end">
+          <div className="flex">
             <div className="w-1/2 shrink-0 pr-8">
               <h2 className="h2 text-[#0A0A0A]">{title}</h2>
             </div>
@@ -80,23 +80,53 @@ export function ForWhomSection({
           </div>
         </div>
 
-        {/* Cards — flat grid, subgrid aligns separators */}
-        <div
-          className="grid gap-x-8"
-          style={{
-            gridTemplateColumns:
-              facts.length === 3
-                ? wideColumn === "left"
-                  ? "2fr 1fr 1fr"
-                  : "1fr 1fr 2fr"
-                : `repeat(${facts.length}, 1fr)`,
-            gridTemplateRows: "auto auto 1fr",
-          }}
-        >
-          {facts.map((f, i) => (
-            <FactCard key={i} {...f} />
-          ))}
-        </div>
+        {/* Cards — 50/50 split matching header, subgrid inside each half */}
+        {(() => {
+          let col1: ForWhomFact[];
+          let col2: ForWhomFact[];
+          if (facts.length === 2) {
+            col1 = [facts[0]];
+            col2 = [facts[1]];
+          } else if (facts.length === 3) {
+            if (wideColumn === "left") {
+              col1 = [facts[0]];
+              col2 = [facts[1], facts[2]];
+            } else {
+              col1 = [facts[0], facts[1]];
+              col2 = [facts[2]];
+            }
+          } else {
+            const mid = Math.ceil(facts.length / 2);
+            col1 = facts.slice(0, mid);
+            col2 = facts.slice(mid);
+          }
+          return (
+            <div className="flex">
+              <div
+                className="w-1/2 shrink-0 pr-8 grid gap-x-8"
+                style={{
+                  gridTemplateColumns: `repeat(${col1.length}, 1fr)`,
+                  gridTemplateRows: "auto auto 1fr",
+                }}
+              >
+                {col1.map((f, i) => (
+                  <FactCard key={i} {...f} />
+                ))}
+              </div>
+              <div
+                className="w-1/2 grid gap-x-8"
+                style={{
+                  gridTemplateColumns: `repeat(${col2.length}, 1fr)`,
+                  gridTemplateRows: "auto auto 1fr",
+                }}
+              >
+                {col2.map((f, i) => (
+                  <FactCard key={i} {...f} />
+                ))}
+              </div>
+            </div>
+          );
+        })()}
       </div>
 
       {/* ── Mobile / Tablet ── */}

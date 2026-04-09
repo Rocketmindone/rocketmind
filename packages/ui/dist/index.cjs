@@ -2141,22 +2141,55 @@ function ForWhomSection({
     /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)("div", { className: "hidden lg:flex flex-col gap-[104px] mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14", children: [
       /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)("div", { className: "flex flex-col gap-2", children: [
         /* @__PURE__ */ (0, import_jsx_runtime29.jsx)("span", { className: "font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#0A0A0A]", children: tag }),
-        /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)("div", { className: "flex items-end", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)("div", { className: "flex", children: [
           /* @__PURE__ */ (0, import_jsx_runtime29.jsx)("div", { className: "w-1/2 shrink-0 pr-8", children: /* @__PURE__ */ (0, import_jsx_runtime29.jsx)("h2", { className: "h2 text-[#0A0A0A]", children: title }) }),
           subtitle && /* @__PURE__ */ (0, import_jsx_runtime29.jsx)("div", { className: "w-1/2", children: /* @__PURE__ */ (0, import_jsx_runtime29.jsx)("p", { className: "font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#0A0A0A] max-w-[480px]", children: subtitle }) })
         ] })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime29.jsx)(
-        "div",
-        {
-          className: "grid gap-x-8",
-          style: {
-            gridTemplateColumns: facts.length === 3 ? wideColumn === "left" ? "2fr 1fr 1fr" : "1fr 1fr 2fr" : `repeat(${facts.length}, 1fr)`,
-            gridTemplateRows: "auto auto 1fr"
-          },
-          children: facts.map((f, i) => /* @__PURE__ */ (0, import_jsx_runtime29.jsx)(FactCard, { ...f }, i))
+      (() => {
+        let col1;
+        let col2;
+        if (facts.length === 2) {
+          col1 = [facts[0]];
+          col2 = [facts[1]];
+        } else if (facts.length === 3) {
+          if (wideColumn === "left") {
+            col1 = [facts[0]];
+            col2 = [facts[1], facts[2]];
+          } else {
+            col1 = [facts[0], facts[1]];
+            col2 = [facts[2]];
+          }
+        } else {
+          const mid = Math.ceil(facts.length / 2);
+          col1 = facts.slice(0, mid);
+          col2 = facts.slice(mid);
         }
-      )
+        return /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)("div", { className: "flex", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime29.jsx)(
+            "div",
+            {
+              className: "w-1/2 shrink-0 pr-8 grid gap-x-8",
+              style: {
+                gridTemplateColumns: `repeat(${col1.length}, 1fr)`,
+                gridTemplateRows: "auto auto 1fr"
+              },
+              children: col1.map((f, i) => /* @__PURE__ */ (0, import_jsx_runtime29.jsx)(FactCard, { ...f }, i))
+            }
+          ),
+          /* @__PURE__ */ (0, import_jsx_runtime29.jsx)(
+            "div",
+            {
+              className: "w-1/2 grid gap-x-8",
+              style: {
+                gridTemplateColumns: `repeat(${col2.length}, 1fr)`,
+                gridTemplateRows: "auto auto 1fr"
+              },
+              children: col2.map((f, i) => /* @__PURE__ */ (0, import_jsx_runtime29.jsx)(FactCard, { ...f }, i))
+            }
+          )
+        ] });
+      })()
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)("div", { className: "flex lg:hidden flex-col gap-16 px-5 md:px-8", children: [
       /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)("div", { className: "flex flex-col gap-2", children: [
