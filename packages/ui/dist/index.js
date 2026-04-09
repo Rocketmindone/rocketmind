@@ -2582,7 +2582,7 @@ function ExpertsSection({
       children: [
         /* @__PURE__ */ jsx32("div", { className: "hidden lg:block mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14", children: /* @__PURE__ */ jsxs15("div", { className: "grid grid-cols-2 gap-1", children: [
           experts.map((expert, i) => /* @__PURE__ */ jsx32(ExpertCardHorizontal, { expert }, i)),
-          isOdd && /* @__PURE__ */ jsx32("div", { className: "bg-[#121212] flex items-center justify-center h-[349px] p-4", children: /* @__PURE__ */ jsx32(CirclePattern, { className: "w-full h-full" }) })
+          isOdd && /* @__PURE__ */ jsx32("div", { className: "flex items-center justify-center h-[349px] p-4", children: /* @__PURE__ */ jsx32(CirclePattern, { className: "w-full h-full" }) })
         ] }) }),
         /* @__PURE__ */ jsx32("div", { className: "hidden md:block lg:hidden px-8", children: /* @__PURE__ */ jsx32("div", { className: "flex flex-col gap-1", children: experts.map((expert, i) => /* @__PURE__ */ jsx32(ExpertCardHorizontal, { expert }, i)) }) }),
         /* @__PURE__ */ jsx32("div", { className: "block md:hidden px-5", children: /* @__PURE__ */ jsx32("div", { className: "flex flex-col gap-1", children: experts.map((expert, i) => /* @__PURE__ */ jsx32(ExpertCardVertical, { expert }, i)) }) })

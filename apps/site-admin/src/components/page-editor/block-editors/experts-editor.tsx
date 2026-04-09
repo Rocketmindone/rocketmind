@@ -330,7 +330,7 @@ export function ExpertsEditor({ data, onUpdate }: ExpertsEditorProps) {
             />
           ))}
           {isOdd && (
-            <div className="flex items-center justify-center bg-[#121212] h-[349px] p-4">
+            <div className="flex items-center justify-center h-[349px] p-4">
               <CirclePattern className="w-full h-full" />
             </div>
           )}

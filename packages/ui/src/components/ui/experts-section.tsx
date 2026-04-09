@@ -122,7 +122,7 @@ export function ExpertsSection({
             <ExpertCardHorizontal key={i} expert={expert} />
           ))}
           {isOdd && (
-            <div className="bg-[#121212] flex items-center justify-center h-[349px] p-4">
+            <div className="flex items-center justify-center h-[349px] p-4">
               <CirclePattern className="w-full h-full" />
             </div>
           )}

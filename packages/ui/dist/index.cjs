@@ -2716,7 +2716,7 @@ function ExpertsSection({
       children: [
         /* @__PURE__ */ (0, import_jsx_runtime32.jsx)("div", { className: "hidden lg:block mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14", children: /* @__PURE__ */ (0, import_jsx_runtime32.jsxs)("div", { className: "grid grid-cols-2 gap-1", children: [
           experts.map((expert, i) => /* @__PURE__ */ (0, import_jsx_runtime32.jsx)(ExpertCardHorizontal, { expert }, i)),
-          isOdd && /* @__PURE__ */ (0, import_jsx_runtime32.jsx)("div", { className: "bg-[#121212] flex items-center justify-center h-[349px] p-4", children: /* @__PURE__ */ (0, import_jsx_runtime32.jsx)(CirclePattern, { className: "w-full h-full" }) })
+          isOdd && /* @__PURE__ */ (0, import_jsx_runtime32.jsx)("div", { className: "flex items-center justify-center h-[349px] p-4", children: /* @__PURE__ */ (0, import_jsx_runtime32.jsx)(CirclePattern, { className: "w-full h-full" }) })
         ] }) }),
         /* @__PURE__ */ (0, import_jsx_runtime32.jsx)("div", { className: "hidden md:block lg:hidden px-8", children: /* @__PURE__ */ (0, import_jsx_runtime32.jsx)("div", { className: "flex flex-col gap-1", children: experts.map((expert, i) => /* @__PURE__ */ (0, import_jsx_runtime32.jsx)(ExpertCardHorizontal, { expert }, i)) }) }),
         /* @__PURE__ */ (0, import_jsx_runtime32.jsx)("div", { className: "block md:hidden px-5", children: /* @__PURE__ */ (0, import_jsx_runtime32.jsx)("div", { className: "flex flex-col gap-1", children: experts.map((expert, i) => /* @__PURE__ */ (0, import_jsx_runtime32.jsx)(ExpertCardVertical, { expert }, i)) }) })
