@@ -43,30 +43,25 @@ function TimelineColumn({
   fillProgress: number;
 }) {
   return (
-    <div className="relative w-4 shrink-0 flex flex-col items-center self-stretch">
-      {/* Short top line (2px) */}
-      <div className="w-px h-[2px] bg-[#404040]" />
-
-      {/* Square dot 16×16 */}
+    <div className="relative w-px shrink-0 self-stretch">
+      {/* Vertical line — full height */}
+      <div className="absolute inset-0 bg-[#404040]" />
       <div
-        className="w-4 h-4 shrink-0 transition-all duration-300"
+        className="absolute top-0 left-0 right-0 h-full origin-top bg-[#F0F0F0]"
+        style={{
+          transform: `scaleY(${isLast ? (isActive ? 1 : 0) : fillProgress})`,
+          transition: "transform 0.2s ease-out",
+        }}
+      />
+
+      {/* Square dot 16×16 — centered on the line */}
+      <div
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-4 h-4 shrink-0 transition-all duration-300"
         style={{
           backgroundColor: isActive ? "#F0F0F0" : "#0A0A0A",
           border: `2px solid ${isActive ? "#F0F0F0" : "#404040"}`,
         }}
       />
-
-      {/* Line below dot — always present, all animate */}
-      <div className="w-px flex-1 relative">
-        <div className="absolute inset-0 bg-[#404040]" />
-        <div
-          className="absolute top-0 left-0 right-0 h-full origin-top bg-[#F0F0F0]"
-          style={{
-            transform: `scaleY(${isLast ? (isActive ? 1 : 0) : fillProgress})`,
-            transition: "transform 0.2s ease-out",
-          }}
-        />
-      </div>
     </div>
   );
 }
