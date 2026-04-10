@@ -387,6 +387,7 @@ type ToolCard = {
     title: string;
     text: string;
     icon?: string | null;
+    wide?: boolean;
 };
 type ToolsSectionProps = {
     tag: string;

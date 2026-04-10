@@ -2138,7 +2138,7 @@ function ForWhomSection({
   className
 }) {
   return /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)("section", { className: cn("w-full bg-[#F0F0F0] py-10 md:py-16 lg:py-20", className), children: [
-    /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)("div", { className: "hidden lg:flex flex-col gap-10 mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)("div", { className: "hidden lg:flex flex-col gap-[104px] mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14", children: [
       /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)("div", { className: "flex flex-col gap-2", children: [
         /* @__PURE__ */ (0, import_jsx_runtime29.jsx)("span", { className: "font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#0A0A0A]", children: tag }),
         /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)("div", { className: "flex", children: [
@@ -2146,45 +2146,34 @@ function ForWhomSection({
           subtitle && /* @__PURE__ */ (0, import_jsx_runtime29.jsx)("div", { className: "w-1/2", children: /* @__PURE__ */ (0, import_jsx_runtime29.jsx)("p", { className: "font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#0A0A0A] max-w-[480px]", children: subtitle }) })
         ] })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)(
-        "div",
-        {
-          className: "grid",
-          style: {
-            gridTemplateColumns: facts.length === 3 ? wideColumn === "left" ? "calc(50% - 16px) 1fr 1fr" : "1fr 1fr calc(50% - 16px)" : facts.length === 2 ? "1fr 1fr" : `repeat(${facts.length}, 1fr)`,
-            gridTemplateRows: "1fr auto auto",
-            columnGap: "32px"
-          },
-          children: [
-            facts.map((f, i) => /* @__PURE__ */ (0, import_jsx_runtime29.jsx)(
-              "div",
-              {
-                className: "flex items-end pb-4",
-                style: { gridColumn: i + 1, gridRow: 1 },
-                children: /* @__PURE__ */ (0, import_jsx_runtime29.jsx)("h4", { className: "h4 text-[#0A0A0A]", children: f.title })
-              },
-              `t${i}`
-            )),
-            facts.map((_, i) => /* @__PURE__ */ (0, import_jsx_runtime29.jsx)(
-              "div",
-              {
-                className: "border-t border-[#404040]",
-                style: { gridColumn: i + 1, gridRow: 2 }
-              },
-              `d${i}`
-            )),
-            facts.map((f, i) => /* @__PURE__ */ (0, import_jsx_runtime29.jsx)(
-              "div",
-              {
-                className: "pt-4",
-                style: { gridColumn: i + 1, gridRow: 3 },
-                children: /* @__PURE__ */ (0, import_jsx_runtime29.jsx)("p", { className: "text-[length:var(--text-16)] leading-[1.28] text-[#0A0A0A] max-w-[480px]", children: f.text })
-              },
-              `p${i}`
-            ))
-          ]
+      (() => {
+        let leftFacts;
+        let rightFacts;
+        if (facts.length === 2) {
+          leftFacts = [facts[0]];
+          rightFacts = [facts[1]];
+        } else if (facts.length === 3) {
+          if (wideColumn === "left") {
+            leftFacts = [facts[0]];
+            rightFacts = [facts[1], facts[2]];
+          } else {
+            leftFacts = [facts[0], facts[1]];
+            rightFacts = [facts[2]];
+          }
+        } else {
+          leftFacts = [facts[0], facts[1]];
+          rightFacts = [facts[2], facts[3]];
         }
-      )
+        const renderCard = (f, i) => /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)("div", { className: "flex flex-col gap-4", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime29.jsx)("div", { className: "flex items-end", children: /* @__PURE__ */ (0, import_jsx_runtime29.jsx)("h4", { className: "h4 text-[#0A0A0A]", children: f.title }) }),
+          /* @__PURE__ */ (0, import_jsx_runtime29.jsx)("div", { className: "h-0 w-full border-t border-[#404040]" }),
+          /* @__PURE__ */ (0, import_jsx_runtime29.jsx)("p", { className: "text-[length:var(--text-16)] leading-[1.28] text-[#0A0A0A]", children: f.text })
+        ] }, i);
+        return /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)("div", { className: "flex", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime29.jsx)("div", { className: "w-1/2 flex gap-4 pr-4", children: leftFacts.map((f, i) => /* @__PURE__ */ (0, import_jsx_runtime29.jsx)("div", { className: "flex-1", children: renderCard(f, i) }, i)) }),
+          /* @__PURE__ */ (0, import_jsx_runtime29.jsx)("div", { className: "w-1/2 flex gap-4", children: rightFacts.map((f, i) => /* @__PURE__ */ (0, import_jsx_runtime29.jsx)("div", { className: "flex-1", children: renderCard(f, i) }, i)) })
+        ] });
+      })()
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)("div", { className: "flex lg:hidden flex-col gap-16 px-5 md:px-8", children: [
       /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)("div", { className: "flex flex-col gap-2", children: [
@@ -2205,31 +2194,28 @@ function TimelineColumn({
   isLast,
   fillProgress
 }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime30.jsxs)("div", { className: "relative w-4 shrink-0 flex flex-col items-center self-stretch", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime30.jsx)("div", { className: "w-px h-[2px] bg-[#404040]" }),
+  return /* @__PURE__ */ (0, import_jsx_runtime30.jsxs)("div", { className: "relative w-px shrink-0 self-stretch", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime30.jsx)("div", { className: "absolute inset-0 bg-[#404040]" }),
     /* @__PURE__ */ (0, import_jsx_runtime30.jsx)(
       "div",
       {
-        className: "w-4 h-4 shrink-0 transition-all duration-300",
+        className: "absolute top-0 left-0 right-0 h-full origin-top bg-[#F0F0F0]",
+        style: {
+          transform: `scaleY(${isLast ? isActive ? 1 : 0 : fillProgress})`,
+          transition: "transform 0.2s ease-out"
+        }
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime30.jsx)(
+      "div",
+      {
+        className: "absolute top-0 left-1/2 -translate-x-1/2 w-4 h-4 shrink-0 transition-all duration-300",
         style: {
           backgroundColor: isActive ? "#F0F0F0" : "#0A0A0A",
           border: `2px solid ${isActive ? "#F0F0F0" : "#404040"}`
         }
       }
-    ),
-    /* @__PURE__ */ (0, import_jsx_runtime30.jsxs)("div", { className: "w-px flex-1 relative", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime30.jsx)("div", { className: "absolute inset-0 bg-[#404040]" }),
-      /* @__PURE__ */ (0, import_jsx_runtime30.jsx)(
-        "div",
-        {
-          className: "absolute top-0 left-0 right-0 h-full origin-top bg-[#F0F0F0]",
-          style: {
-            transform: `scaleY(${isLast ? isActive ? 1 : 0 : fillProgress})`,
-            transition: "transform 0.2s ease-out"
-          }
-        }
-      )
-    ] })
+    )
   ] });
 }
 function StepCard({
@@ -2307,9 +2293,9 @@ function AcademyStepCard({
         className
       ),
       children: [
-        /* @__PURE__ */ (0, import_jsx_runtime30.jsxs)("div", { className: "flex items-center gap-6 lg:w-1/2", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime30.jsx)("span", { className: "w-[100px] shrink-0 font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]", children: step.number }),
-          /* @__PURE__ */ (0, import_jsx_runtime30.jsx)("span", { className: "h4 text-[#F0F0F0]", children: step.title })
+        /* @__PURE__ */ (0, import_jsx_runtime30.jsxs)("div", { className: "flex items-end gap-6 lg:w-1/2 lg:items-center", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime30.jsx)("span", { className: "flex-1 h4 text-[#F0F0F0]", children: step.title }),
+          /* @__PURE__ */ (0, import_jsx_runtime30.jsx)("span", { className: "w-[100px] shrink-0 text-right lg:text-left lg:order-first font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]", children: step.number })
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime30.jsx)("div", { className: "pl-0 lg:w-1/2 lg:pl-4", children: /* @__PURE__ */ (0, import_jsx_runtime30.jsx)("p", { className: "text-[length:var(--text-16)] leading-[1.28] text-[#939393]", children: step.text }) })
       ]
@@ -2785,16 +2771,31 @@ function ToolsSection({
             ] }),
             description && /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("div", { className: "w-1/2 flex items-end", children: /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("p", { className: "font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#939393] max-w-[668px]", children: description }) })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(
-            "div",
-            {
-              className: "grid gap-x-0",
-              style: {
-                gridTemplateColumns: `repeat(${tools.length}, 1fr)`
-              },
-              children: tools.map((tool, i) => /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("div", { className: "border border-[#404040] p-8 h-[300px]", children: /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(ToolCardItem, { tool, useIcons }) }, i))
-            }
-          )
+          (() => {
+            const totalUnits = tools.reduce((sum, t) => sum + (t.wide ? 2 : 1), 0);
+            let col = 1;
+            return /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(
+              "div",
+              {
+                className: "grid",
+                style: { gridTemplateColumns: `repeat(${totalUnits}, 1fr)` },
+                children: tools.map((tool, i) => {
+                  const span = tool.wide ? 2 : 1;
+                  const start = col;
+                  col += span;
+                  return /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(
+                    "div",
+                    {
+                      className: "border border-[#404040] p-8 h-[300px]",
+                      style: { gridColumn: `${start} / span ${span}` },
+                      children: /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(ToolCardItem, { tool, useIcons })
+                    },
+                    i
+                  );
+                })
+              }
+            );
+          })()
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "hidden md:flex lg:hidden flex-col gap-10 px-8", children: [
           /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "flex flex-col gap-2", children: [

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { GripVertical, Upload } from "lucide-react";
+import { GripVertical, Upload, Columns2, Square } from "lucide-react";
 import { Switch } from "@rocketmind/ui";
 import { InlineEdit } from "@/components/inline-edit";
 import { InlineConfirmDelete } from "@/components/inline-confirm";
@@ -13,7 +13,7 @@ interface ToolsEditorProps {
   onUpdate: (data: Record<string, unknown>) => void;
 }
 
-type Tool = { number: string; title: string; text: string; icon?: string | null };
+type Tool = { number: string; title: string; text: string; icon?: string | null; wide?: boolean };
 
 export function ToolsEditor({ data, onUpdate }: ToolsEditorProps) {
   const tag = (data.tag as string) || "";
@@ -41,6 +41,13 @@ export function ToolsEditor({ data, onUpdate }: ToolsEditorProps) {
       number: String(i + 1).padStart(2, "0"),
     }));
     onUpdate({ tools: renumbered });
+  }
+
+  function toggleWide(index: number) {
+    const updated = tools.map((t, i) =>
+      i === index ? { ...t, wide: !t.wide } : t,
+    );
+    onUpdate({ tools: updated });
   }
 
   function removeTool(index: number) {
@@ -119,7 +126,7 @@ export function ToolsEditor({ data, onUpdate }: ToolsEditorProps) {
               dnd.itemProps(index);
 
             return (
-              <div key={index} className="flex flex-1 items-stretch">
+              <div key={index} className="flex items-stretch" style={{ flex: tool.wide ? 2 : 1 }}>
                 {tools.length < 6 && (
                   <InsertButton onClick={() => insertTool(index)} />
                 )}
@@ -136,6 +143,13 @@ export function ToolsEditor({ data, onUpdate }: ToolsEditorProps) {
                 >
                   {/* Controls */}
                   <div className="absolute -right-1 -top-1 z-10 flex items-center gap-0.5 opacity-0 transition-opacity group-hover/card:opacity-100">
+                    <button
+                      onClick={() => toggleWide(index)}
+                      title={tool.wide ? "Обычная ширина" : "Двойная ширина"}
+                      className="flex h-5 w-5 items-center justify-center rounded-sm bg-[#0A0A0A] text-[#F0F0F0] hover:bg-[#FFCC00] hover:text-[#0A0A0A] cursor-pointer"
+                    >
+                      {tool.wide ? <Square className="h-2.5 w-2.5" /> : <Columns2 className="h-2.5 w-2.5" />}
+                    </button>
                     <div
                       className="flex h-5 w-5 cursor-grab items-center justify-center rounded-sm bg-[#0A0A0A] text-[#F0F0F0] select-none active:cursor-grabbing"
                       onMouseDown={() => dnd.onGripDown(index)}

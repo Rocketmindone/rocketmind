@@ -9,6 +9,7 @@ export type ToolCard = {
   title: string;
   text: string;
   icon?: string | null;
+  wide?: boolean;
 };
 
 export type ToolsSectionProps = {
@@ -95,19 +96,32 @@ export function ToolsSection({
           )}
         </div>
 
-        {/* Cards — flat grid */}
-        <div
-          className="grid gap-x-0"
-          style={{
-            gridTemplateColumns: `repeat(${tools.length}, 1fr)`,
-          }}
-        >
-          {tools.map((tool, i) => (
-            <div key={i} className="border border-[#404040] p-8 h-[300px]">
-              <ToolCardItem tool={tool} useIcons={useIcons} />
+        {/* Cards — grid with wide support */}
+        {(() => {
+          const totalUnits = tools.reduce((sum, t) => sum + (t.wide ? 2 : 1), 0);
+          let col = 1;
+          return (
+            <div
+              className="grid"
+              style={{ gridTemplateColumns: `repeat(${totalUnits}, 1fr)` }}
+            >
+              {tools.map((tool, i) => {
+                const span = tool.wide ? 2 : 1;
+                const start = col;
+                col += span;
+                return (
+                  <div
+                    key={i}
+                    className="border border-[#404040] p-8 h-[300px]"
+                    style={{ gridColumn: `${start} / span ${span}` }}
+                  >
+                    <ToolCardItem tool={tool} useIcons={useIcons} />
+                  </div>
+                );
+              })}
             </div>
-          ))}
-        </div>
+          );
+        })()}
       </div>
 
       {/* ── Tablet ── */}
