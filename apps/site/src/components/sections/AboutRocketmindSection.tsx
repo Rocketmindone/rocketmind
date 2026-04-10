@@ -6,11 +6,12 @@ import {
   ABOUT_RM_DEFAULTS,
   type AboutRocketmindSectionProps,
   type AboutRocketmindVariant,
+  type AboutRocketmindLeftVariant,
   type AboutRmFeature,
 } from "./about-rocketmind-defaults";
 
 export { ABOUT_RM_DEFAULTS };
-export type { AboutRocketmindSectionProps, AboutRocketmindVariant, AboutRmFeature };
+export type { AboutRocketmindSectionProps, AboutRocketmindVariant, AboutRocketmindLeftVariant, AboutRmFeature };
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
@@ -30,6 +31,74 @@ function DotPattern() {
   );
 }
 
+// ── Left image helper ─────────────────────────────────────────────────────────
+
+function LeftImage({ leftVariant, alt }: { leftVariant: AboutRocketmindLeftVariant; alt: string }) {
+  const src = leftVariant === "canvas"
+    ? `${BASE_PATH}/images/about/canvas-image.png`
+    : `${BASE_PATH}/images/about/alexey-eremin.png`;
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      fill
+      className="object-cover object-top"
+      sizes="(min-width: 1512px) 302px, 25vw"
+    />
+  );
+}
+
+// ── Bottom text for left column ───────────────────────────────────────────────
+
+function LeftBottomText({
+  leftVariant,
+  founderName,
+  founderBio,
+  founderRole,
+  canvasTitle,
+  canvasText,
+  compact,
+}: {
+  leftVariant: AboutRocketmindLeftVariant;
+  founderName: string;
+  founderBio: string;
+  founderRole: string;
+  canvasTitle: string;
+  canvasText: string;
+  compact?: boolean;
+}) {
+  if (leftVariant === "canvas") {
+    return (
+      <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-2">
+          <span className={`font-[family-name:var(--font-heading-family)] ${compact ? "h4" : "text-[24px]"} font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#F0F0F0] whitespace-pre-line`}>
+            {canvasTitle}
+          </span>
+          <p className={`${compact ? "text-[length:var(--text-14)]" : "text-[14px]"} leading-[1.28] text-[#F0F0F0]`}>
+            {canvasText}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2">
+        <span className={`font-[family-name:var(--font-heading-family)] ${compact ? "h4" : "text-[24px]"} font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#F0F0F0]`}>
+          {founderName}
+        </span>
+        <p className={`${compact ? "text-[length:var(--text-14)]" : "text-[14px]"} leading-[1.28] text-[#F0F0F0]`}>
+          {founderBio}
+        </p>
+      </div>
+      <p className={`${compact ? "text-[length:var(--text-14)]" : "text-[14px]"} leading-[1.28] text-[#939393]`}>
+        {founderRole}
+      </p>
+    </div>
+  );
+}
+
 // ── Component ──────────────────────────────────────────────────────────────────
 
 export function AboutRocketmindSection({
@@ -37,9 +106,14 @@ export function AboutRocketmindSection({
   founderName = ABOUT_RM_DEFAULTS.founderName,
   founderBio = ABOUT_RM_DEFAULTS.founderBio,
   founderRole = ABOUT_RM_DEFAULTS.founderRole,
+  canvasTitle = ABOUT_RM_DEFAULTS.canvasTitle,
+  canvasText = ABOUT_RM_DEFAULTS.canvasText,
   features = ABOUT_RM_DEFAULTS.features,
   variant = "dark",
+  leftVariant = "alex",
 }: AboutRocketmindSectionProps) {
+  const imageAlt = leftVariant === "canvas" ? canvasTitle : founderName;
+
   return (
     <section className="w-full bg-[#0A0A0A] border-t border-border py-10 lg:py-20">
 
@@ -51,13 +125,7 @@ export function AboutRocketmindSection({
             <div className="flex gap-8 h-full">
               {/* Photo — fixed width calc(50% - 16px) */}
               <div className="relative shrink-0" style={{ width: "calc(50% - 16px)" }}>
-                <Image
-                  src={`${BASE_PATH}/images/about/alexey-eremin.png`}
-                  alt={founderName}
-                  fill
-                  className="object-cover object-top"
-                  sizes="(min-width: 1512px) 302px, 25vw"
-                />
+                <LeftImage leftVariant={leftVariant} alt={imageAlt} />
               </div>
               {/* Text — Figma: 302×463, vertical, justify-between */}
               <div className="flex flex-col justify-between" style={{ width: "calc(50% - 16px)" }}>
@@ -74,20 +142,14 @@ export function AboutRocketmindSection({
                     {heading}
                   </h2>
                 </div>
-                {/* Founder info — Figma: 302×135, gap=8 */}
-                <div className="flex flex-col gap-2">
-                  <div className="flex flex-col gap-2">
-                    <span className="font-[family-name:var(--font-heading-family)] text-[24px] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#F0F0F0]">
-                      {founderName}
-                    </span>
-                    <p className="text-[14px] leading-[1.28] text-[#F0F0F0]">
-                      {founderBio}
-                    </p>
-                  </div>
-                  <p className="text-[14px] leading-[1.28] text-[#939393]">
-                    {founderRole}
-                  </p>
-                </div>
+                <LeftBottomText
+                  leftVariant={leftVariant}
+                  founderName={founderName}
+                  founderBio={founderBio}
+                  founderRole={founderRole}
+                  canvasTitle={canvasTitle}
+                  canvasText={canvasText}
+                />
               </div>
             </div>
           </div>
@@ -143,18 +205,18 @@ export function AboutRocketmindSection({
               </h2>
             </div>
             <div className="relative flex-1 min-h-[300px] mx-8">
-              <Image
-                src={`${BASE_PATH}/images/about/alexey-eremin.png`}
-                alt={founderName}
-                fill
-                className="object-cover object-top"
-                sizes="50vw"
-              />
+              <LeftImage leftVariant={leftVariant} alt={imageAlt} />
             </div>
-            <div className="flex flex-col gap-2 p-8">
-              <span className="h4 text-[#F0F0F0]">{founderName}</span>
-              <p className="text-[length:var(--text-14)] leading-[1.28] text-[#F0F0F0]">{founderBio}</p>
-              <p className="text-[length:var(--text-14)] leading-[1.28] text-[#939393]">{founderRole}</p>
+            <div className="p-8">
+              <LeftBottomText
+                leftVariant={leftVariant}
+                founderName={founderName}
+                founderBio={founderBio}
+                founderRole={founderRole}
+                canvasTitle={canvasTitle}
+                canvasText={canvasText}
+                compact
+              />
             </div>
           </div>
           {/* Right: features stacked — AI по контенту, остальные flex-1 */}
@@ -193,19 +255,25 @@ export function AboutRocketmindSection({
           {/* Photo */}
           <div className="mx-5 overflow-hidden bg-[#0A0A0A]">
             <Image
-              src={`${BASE_PATH}/images/about/alexey-eremin.png`}
-              alt={founderName}
-              width={604}
-              height={914}
+              src={leftVariant === "canvas" ? `${BASE_PATH}/images/about/canvas-image.png` : `${BASE_PATH}/images/about/alexey-eremin.png`}
+              alt={imageAlt}
+              width={leftVariant === "canvas" ? 850 : 604}
+              height={leftVariant === "canvas" ? 1138 : 914}
               className="w-full h-auto block"
               sizes="(max-width: 768px) calc(100vw - 80px)"
             />
           </div>
-          {/* Founder info */}
-          <div className="flex flex-col gap-2 px-5 py-6">
-            <span className="h4 text-[#F0F0F0]">{founderName}</span>
-            <p className="text-[length:var(--text-14)] leading-[1.28] text-[#F0F0F0]">{founderBio}</p>
-            <p className="text-[length:var(--text-14)] leading-[1.28] text-[#939393]">{founderRole}</p>
+          {/* Bottom text */}
+          <div className="px-5 py-6">
+            <LeftBottomText
+              leftVariant={leftVariant}
+              founderName={founderName}
+              founderBio={founderBio}
+              founderRole={founderRole}
+              canvasTitle={canvasTitle}
+              canvasText={canvasText}
+              compact
+            />
           </div>
           {/* Features */}
           <div className="flex flex-col gap-2 border-t border-[#404040] px-5 py-6">

@@ -46,7 +46,7 @@ export interface ToolsBlockData {
   title: string;
   description?: string;
   useIcons?: boolean;
-  tools: Array<{ number: string; title: string; text: string; icon?: string | null }>;
+  tools: Array<{ number: string; title: string; text: string; icon?: string | null; wide?: boolean }>;
 }
 
 export interface ResultsBlockData {
@@ -66,8 +66,11 @@ export interface AboutRocketmindBlockData {
   founderName: string;
   founderBio: string;
   founderRole: string;
+  canvasTitle: string;
+  canvasText: string;
   features: Array<{ title: string; text: string }>;
   variant: "dark" | "light";
+  leftVariant: "alex" | "canvas";
 }
 
 export interface ProcessBlockData {

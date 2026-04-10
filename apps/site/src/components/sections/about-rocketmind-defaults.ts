@@ -2,6 +2,7 @@
 // Separate file (no "use client") so Server Components can import safely
 
 export type AboutRocketmindVariant = "dark" | "light";
+export type AboutRocketmindLeftVariant = "alex" | "canvas";
 
 export interface AboutRmFeature {
   title: string;
@@ -13,8 +14,13 @@ export type AboutRocketmindSectionProps = {
   founderName: string;
   founderBio: string;
   founderRole: string;
+  /** Canvas variant — title + description instead of founder info */
+  canvasTitle: string;
+  canvasText: string;
   features: AboutRmFeature[];
   variant?: AboutRocketmindVariant;
+  /** Left part variant: "alex" = founder photo, "canvas" = methodology image */
+  leftVariant?: AboutRocketmindLeftVariant;
 };
 
 export const ABOUT_RM_DEFAULTS: AboutRocketmindSectionProps = {
@@ -22,6 +28,8 @@ export const ABOUT_RM_DEFAULTS: AboutRocketmindSectionProps = {
   founderName: "Алексей Еремин",
   founderBio: "Мы не просто консультируем, мы строим работающие сетевые структуры",
   founderRole: "Основатель Rocketmind, эксперт по экосистемной архитектуре и стратег цифровой трансформации.",
+  canvasTitle: "Цифровые платформы\nи экосистемы",
+  canvasText: "Развиваем и используем международную методологию Platform Innovation Kit, представляем её в России и странах Азии, помогая компаниям проектировать платформенные модели, находить новые точки роста и выстраивать более сильную архитектуру бизнеса.",
   features: [
     {
       title: "Доступ к ИИ-агентам",
@@ -37,4 +45,5 @@ export const ABOUT_RM_DEFAULTS: AboutRocketmindSectionProps = {
     },
   ],
   variant: "dark",
+  leftVariant: "alex",
 };

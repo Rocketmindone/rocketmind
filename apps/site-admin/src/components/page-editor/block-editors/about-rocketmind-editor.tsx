@@ -13,6 +13,8 @@ const DEFAULTS = {
   founderName: "Алексей Еремин",
   founderBio: "Мы не просто консультируем, мы строим работающие сетевые структуры",
   founderRole: "Основатель Rocketmind, эксперт по экосистемной архитектуре и стратег цифровой трансформации.",
+  canvasTitle: "Цифровые платформы\nи экосистемы",
+  canvasText: "Развиваем и используем международную методологию Platform Innovation Kit, представляем её в России и странах Азии, помогая компаниям проектировать платформенные модели, находить новые точки роста и выстраивать более сильную архитектуру бизнеса.",
   features: [
     { title: "Доступ к ИИ-агентам", text: "Встроенные интеллектуальные ассистенты, которые усиливают командную работу. Работают внутри каждого продукта Rocketmind." },
     { title: "Более 20 лет в IT", text: "Мы создавали онлайн-продукты, сервисы и платформы, выступали с лекциями для научного и бизнес-сообщества в России и за рубежом." },
@@ -25,9 +27,15 @@ export function AboutRocketmindEditor({ data, onUpdate }: AboutRocketmindEditorP
   const founderName = (data.founderName as string) || DEFAULTS.founderName;
   const founderBio = (data.founderBio as string) || DEFAULTS.founderBio;
   const founderRole = (data.founderRole as string) || DEFAULTS.founderRole;
+  const canvasTitle = (data.canvasTitle as string) || DEFAULTS.canvasTitle;
+  const canvasText = (data.canvasText as string) || DEFAULTS.canvasText;
   const features = (data.features as Array<{ title: string; text: string }>) || DEFAULTS.features;
   const variant = (data.variant as string) || "dark";
   const isDark = variant === "dark";
+  const leftVariant = (data.leftVariant as string) || "alex";
+  const isCanvas = leftVariant === "canvas";
+
+  const photoSrc = isCanvas ? "/images/about/canvas-image.png" : "/images/about/alexey-eremin.png";
 
   function updateFeature(index: number, field: string, value: string) {
     const updated = features.map((f, i) =>
@@ -41,17 +49,31 @@ export function AboutRocketmindEditor({ data, onUpdate }: AboutRocketmindEditorP
       {/* Controls bar */}
       <div className="flex items-center gap-6">
         <div className="rounded border border-[#FFCC00]/30 bg-[#FFCC00]/5 px-3 py-2 text-[12px] leading-snug text-foreground/80 flex-1">
-          <strong className="text-[#FFCC00]">⚠</strong> Текст применяется <strong>ко всем страницам</strong>. Переключатель — только к текущей.
+          <strong className="text-[#FFCC00]">⚠</strong> Текст применяется <strong>ко всем страницам</strong>. Переключатели — только к текущей.
         </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <Switch
-            checked={isDark}
-            onCheckedChange={(v) => onUpdate({ variant: v ? "dark" : "light" })}
-            size="sm"
-          />
-          <span className="text-xs text-muted-foreground whitespace-nowrap">
-            {isDark ? "Тёмный" : "Светлый"}
-          </span>
+        <div className="flex items-center gap-4 shrink-0">
+          {/* Left variant switch */}
+          <div className="flex items-center gap-2">
+            <Switch
+              checked={isCanvas}
+              onCheckedChange={(v) => onUpdate({ leftVariant: v ? "canvas" : "alex" })}
+              size="sm"
+            />
+            <span className="text-xs text-muted-foreground whitespace-nowrap">
+              {isCanvas ? "Канвас" : "Алекс"}
+            </span>
+          </div>
+          {/* Dark/light switch */}
+          <div className="flex items-center gap-2">
+            <Switch
+              checked={isDark}
+              onCheckedChange={(v) => onUpdate({ variant: v ? "dark" : "light" })}
+              size="sm"
+            />
+            <span className="text-xs text-muted-foreground whitespace-nowrap">
+              {isDark ? "Тёмный" : "Светлый"}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -65,7 +87,7 @@ export function AboutRocketmindEditor({ data, onUpdate }: AboutRocketmindEditorP
               <div className="w-1/2 shrink-0 self-stretch rounded overflow-hidden bg-[#1a1a1a]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/images/about/alexey-eremin.png"
+                  src={photoSrc}
                   alt=""
                   className="w-full h-full object-cover object-top"
                 />
@@ -88,22 +110,37 @@ export function AboutRocketmindEditor({ data, onUpdate }: AboutRocketmindEditorP
                   </InlineEdit>
                 </div>
 
-                {/* Bottom: founder info */}
-                <div className="flex flex-col gap-2">
+                {/* Bottom: variant-dependent text */}
+                {isCanvas ? (
+                  <div className="flex flex-col gap-5">
+                    <div className="flex flex-col gap-2">
+                      <InlineEdit value={canvasTitle} onSave={(v) => onUpdate({ canvasTitle: v })} placeholder="Заголовок" multiline>
+                        <span className="font-[family-name:var(--font-heading-family)] text-[24px] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#F0F0F0] whitespace-pre-line">
+                          {canvasTitle}
+                        </span>
+                      </InlineEdit>
+                      <InlineEdit value={canvasText} onSave={(v) => onUpdate({ canvasText: v })} placeholder="Описание" multiline>
+                        <p className="text-[14px] leading-[1.28] text-[#F0F0F0]">{canvasText}</p>
+                      </InlineEdit>
+                    </div>
+                  </div>
+                ) : (
                   <div className="flex flex-col gap-2">
-                    <InlineEdit value={founderName} onSave={(v) => onUpdate({ founderName: v })} placeholder="Имя">
-                      <span className="font-[family-name:var(--font-heading-family)] text-[24px] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#F0F0F0]">
-                        {founderName}
-                      </span>
-                    </InlineEdit>
-                    <InlineEdit value={founderBio} onSave={(v) => onUpdate({ founderBio: v })} placeholder="Подпись" multiline>
-                      <p className="text-[14px] leading-[1.28] text-[#F0F0F0]">{founderBio}</p>
+                    <div className="flex flex-col gap-2">
+                      <InlineEdit value={founderName} onSave={(v) => onUpdate({ founderName: v })} placeholder="Имя">
+                        <span className="font-[family-name:var(--font-heading-family)] text-[24px] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#F0F0F0]">
+                          {founderName}
+                        </span>
+                      </InlineEdit>
+                      <InlineEdit value={founderBio} onSave={(v) => onUpdate({ founderBio: v })} placeholder="Подпись" multiline>
+                        <p className="text-[14px] leading-[1.28] text-[#F0F0F0]">{founderBio}</p>
+                      </InlineEdit>
+                    </div>
+                    <InlineEdit value={founderRole} onSave={(v) => onUpdate({ founderRole: v })} placeholder="Роль" multiline>
+                      <p className="text-[14px] leading-[1.28] text-[#939393]">{founderRole}</p>
                     </InlineEdit>
                   </div>
-                  <InlineEdit value={founderRole} onSave={(v) => onUpdate({ founderRole: v })} placeholder="Роль" multiline>
-                    <p className="text-[14px] leading-[1.28] text-[#939393]">{founderRole}</p>
-                  </InlineEdit>
-                </div>
+                )}
               </div>
             </div>
           </div>

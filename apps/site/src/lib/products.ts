@@ -103,8 +103,11 @@ export type AboutRocketmindData = {
   founderName: string;
   founderBio: string;
   founderRole: string;
+  canvasTitle?: string;
+  canvasText?: string;
   features: Array<{ title: string; text: string }>;
   variant?: "dark" | "light";
+  leftVariant?: "alex" | "canvas";
 };
 
 export type ProductData = {
