@@ -170,7 +170,7 @@ function AcademyStepCard({
       )}
     >
       {/* Title + number row */}
-      <div className="flex items-end gap-6 lg:w-1/2 lg:items-center">
+      <div className="flex items-start gap-6 lg:w-1/2 lg:items-center">
         <span className="flex-1 h4 text-[#F0F0F0]">{step.title}</span>
         <span className="w-[100px] shrink-0 text-right lg:text-left lg:order-first font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">
           {step.number}
