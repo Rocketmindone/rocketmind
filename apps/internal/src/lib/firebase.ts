@@ -12,12 +12,11 @@ const firebaseConfig = {
   databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
 };
 
-let app: FirebaseApp | undefined;
-let db: Database | undefined;
-
-if (firebaseConfig.databaseURL) {
-  app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-  db = getDatabase(app);
+function initDb(): Database {
+  const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+  return getDatabase(app);
 }
 
-export { db };
+export const db: Database = firebaseConfig.databaseURL
+  ? initDb()
+  : (null as unknown as Database);
