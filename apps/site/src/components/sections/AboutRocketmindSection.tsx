@@ -223,8 +223,10 @@ export function AboutRocketmindSection({
           <div className="w-1/2 flex flex-col">
             <div className="relative flex flex-col gap-4 border-b border-[#404040] p-8 overflow-hidden">
               <DotPattern />
-              <h3 className="relative z-10 h4 text-[#F0F0F0]">{features[0].title}</h3>
-              <p className="relative z-10 text-[length:var(--text-14)] leading-[1.28] text-[#939393]">{features[0].text}</p>
+              <div className="relative z-10 flex gap-2">
+                <h3 className="w-1/2 shrink-0 h4 text-[#F0F0F0]">{features[0].title}</h3>
+                <p className="w-1/2 text-[length:var(--text-14)] leading-[1.28] text-[#939393]">{features[0].text}</p>
+              </div>
               <div className="relative z-10"><MascotCarousel size="compact" /></div>
             </div>
             <div className="flex-1 flex flex-col gap-2 border-b border-[#404040] p-8">
@@ -287,8 +289,10 @@ export function AboutRocketmindSection({
           {/* AI Agents — dot pattern */}
           <div className="relative flex flex-col gap-4 border-t border-[#404040] px-5 py-6 overflow-hidden">
             <DotPattern />
-            <h3 className="relative z-10 h4 text-[#F0F0F0]">{features[0].title}</h3>
-            <p className="relative z-10 text-[length:var(--text-14)] leading-[1.28] text-[#939393]">{features[0].text}</p>
+            <div className="relative z-10 flex gap-2">
+              <h3 className="w-1/2 shrink-0 h4 text-[#F0F0F0]">{features[0].title}</h3>
+              <p className="w-1/2 text-[length:var(--text-14)] leading-[1.28] text-[#939393]">{features[0].text}</p>
+            </div>
             <div className="relative z-10"><MascotCarousel size="compact" /></div>
           </div>
         </div>
