@@ -159,7 +159,6 @@ const FRAGMENT_SHADER = `
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const CAPTURE_INTERVAL_MS = 180;
 const CAPTURE_THROTTLE_MS = 90;
 const MAX_CAPTURE_SCALE = 2.0;
 const PARALLAX_LIMIT = 102.4;
@@ -635,7 +634,6 @@ export function RoundGlassLens(props: RoundGlassLensProps) {
 
     // ── Mutable state ────────────────────────────────────────────────────────
     let frameId = 0;
-    let captureIntervalId = 0;
     let resizeObserver: ResizeObserver | null = null;
     let disposed = false;
     let html2canvasModule: null | (typeof import("html2canvas"))["default"] = null;
@@ -823,9 +821,8 @@ export function RoundGlassLens(props: RoundGlassLensProps) {
     glass.style.transform = "translate3d(-50%, -50%, 0)";
     scheduleRender();
 
-    if (!prefersReducedMotion) {
-      captureIntervalId = window.setInterval(() => requestCapture(true), CAPTURE_INTERVAL_MS);
-    }
+    // Single initial capture is triggered by syncLayout() above.
+    // Scene content is static — no need for continuous recapture.
 
     if (parallaxEnabled && !prefersReducedMotion) {
       scene.addEventListener("pointermove", handleMove);
@@ -844,7 +841,6 @@ export function RoundGlassLens(props: RoundGlassLensProps) {
     return () => {
       disposed = true;
       syncRef.current = null;
-      if (captureIntervalId) window.clearInterval(captureIntervalId);
       if (frameId) window.cancelAnimationFrame(frameId);
       scene.removeEventListener("pointermove", handleMove);
       scene.removeEventListener("pointerleave", handleLeave);
