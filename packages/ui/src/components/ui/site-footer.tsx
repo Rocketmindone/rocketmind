@@ -9,6 +9,7 @@ import {
   AI_PRODUCTS,
   LEGAL_LINKS,
 } from "../../content/site-nav";
+import { DottedSurface } from "./dotted-surface";
 
 const COMPANY_LINKS = [
   { href: "/about", label: "О Rocketmind" },
@@ -67,8 +68,8 @@ export function SiteFooter({ basePath = "", className }: SiteFooterProps) {
   }));
 
   return (
-    <footer className={className ?? "border-t border-border bg-background"}>
-      <div className="mx-auto max-w-[1512px] px-5 py-12 md:px-8 md:py-16 xl:px-14">
+    <footer className={className ?? "relative overflow-hidden border-t border-border bg-background"}>
+      <div className="relative z-10 mx-auto max-w-[1512px] px-5 py-12 md:px-8 md:py-16 xl:px-14">
         {/* Logo + scroll-to-top */}
         <div className="flex items-center justify-between">
           <Link href="/" className="inline-flex items-center">
@@ -108,6 +109,11 @@ export function SiteFooter({ basePath = "", className }: SiteFooterProps) {
         <p className="mt-10 text-[13px] text-muted-foreground/50 md:hidden">
           &copy; {new Date().getFullYear()} Rocketmind
         </p>
+      </div>
+
+      {/* Dotted surface background */}
+      <div className="relative h-[320px] md:h-[400px]">
+        <DottedSurface />
       </div>
     </footer>
   );

@@ -4,6 +4,15 @@ import { useState } from "react";
 import Image from "next/image";
 import type { AccordionItem } from "@/lib/products";
 
+/** Renders next/image for file paths, plain <img> for data URLs */
+function AboutImage({ src, alt, className }: { src: string; alt: string; className?: string }) {
+  if (src.startsWith("data:")) {
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={src} alt={alt} className={`absolute inset-0 w-full h-full object-cover ${className ?? ""}`} />;
+  }
+  return <Image src={src} alt={alt} fill className={className ?? "object-cover"} />;
+}
+
 // ── Accordion ──────────────────────────────────────────────────────────────────
 
 function AccordionIcon({ isOpen }: { isOpen: boolean }) {
@@ -118,12 +127,7 @@ export function AboutProduct({
 
           {/* Right: image */}
           <div className="flex-1 bg-[#121212] relative min-h-[684px]">
-            <Image
-              src={aboutImage}
-              alt={title}
-              fill
-              className="object-cover"
-            />
+            <AboutImage src={aboutImage} alt={title} className="object-cover" />
           </div>
         </div>
       )}
@@ -169,7 +173,7 @@ export function AboutProduct({
         <ProductAccordion items={accordion} />
         {hasImage && (
           <div className="relative w-full h-[340px] bg-[#121212] mt-6">
-            <Image src={aboutImage} alt={title} fill className="object-cover" />
+            <AboutImage src={aboutImage} alt={title} className="object-cover" />
           </div>
         )}
       </div>

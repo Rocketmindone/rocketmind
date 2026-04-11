@@ -1,5 +1,6 @@
 import { PageBottom } from "@/components/sections/PageBottom";
 import { ProductHero } from "@/components/sections/ProductHero";
+import { ProductHeroImage } from "@/components/sections/ProductHeroImage";
 import { AboutProduct } from "@/components/sections/AboutProduct";
 import { LogoMarqueeSection } from "@/components/sections/LogoMarqueeSection";
 import { AboutRocketmindSection } from "@/components/sections/AboutRocketmindSection";
@@ -36,7 +37,19 @@ export async function ServicePageTemplate(props: ServicePageTemplateProps) {
   return (
     <div className="flex flex-col">
       {/* 1. Hero + CTA */}
-      {hasProduct ? (
+      {hasProduct && (props.product.category === "academy" || props.product.category === "ai-products") ? (
+        <ProductHeroImage
+          caption={props.product.hero.caption}
+          title={props.product.hero.title}
+          description={props.product.hero.description}
+          ctaText={props.product.hero.ctaText}
+          factoids={props.product.hero.factoids}
+          coverImage={props.product.heroImage}
+          tags={props.product.hero.tags}
+          secondaryCta={props.product.hero.secondaryCta}
+          audioSrc={props.product.hero.audioData}
+        />
+      ) : hasProduct ? (
         <ProductHero
           caption={props.product.hero.caption}
           title={props.product.hero.title}
@@ -62,7 +75,7 @@ export async function ServicePageTemplate(props: ServicePageTemplateProps) {
       )}
 
       {/* 2. Социальное доказательство — логотипы партнёров */}
-      <LogoMarqueeSection />
+      <LogoMarqueeSection noBorder={hasProduct && (props.product.category === "academy" || props.product.category === "ai-products")} />
 
       {/* 3. О продукте */}
       {hasProduct && props.product.about ? (

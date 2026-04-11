@@ -4,6 +4,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { AdminStoreProvider } from "@/lib/store";
+import { NavigationGuardProvider } from "@/lib/navigation-guard";
 import { AdminHeader } from "@/components/admin-header";
 
 export default function AdminLayout({
@@ -32,12 +33,14 @@ export default function AdminLayout({
 
   return (
     <AdminStoreProvider>
-      <div className="fixed inset-0 flex flex-col overflow-hidden bg-background">
-        <AdminHeader />
-        <main className="flex flex-1 flex-col overflow-y-auto">
-          {children}
-        </main>
-      </div>
+      <NavigationGuardProvider>
+        <div className="fixed inset-0 flex flex-col overflow-hidden bg-background">
+          <AdminHeader />
+          <main className="flex flex-1 flex-col overflow-y-auto">
+            {children}
+          </main>
+        </div>
+      </NavigationGuardProvider>
     </AdminStoreProvider>
   );
 }

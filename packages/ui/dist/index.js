@@ -2158,7 +2158,7 @@ function AcademyStepCard({
         className
       ),
       children: [
-        /* @__PURE__ */ jsxs13("div", { className: "flex items-end gap-6 lg:w-1/2 lg:items-center", children: [
+        /* @__PURE__ */ jsxs13("div", { className: "flex items-start gap-6 lg:w-1/2 lg:items-center", children: [
           /* @__PURE__ */ jsx30("span", { className: "flex-1 h4 text-[#F0F0F0]", children: step.title }),
           /* @__PURE__ */ jsx30("span", { className: "w-[100px] shrink-0 text-right lg:text-left lg:order-first font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]", children: step.number })
         ] }),
@@ -3323,10 +3323,131 @@ function DropdownSection({
   ] });
 }
 
+// src/components/ui/dotted-surface.tsx
+import { useEffect as useEffect8, useRef as useRef9 } from "react";
+import { jsx as jsx40 } from "react/jsx-runtime";
+function DottedSurface({ className, ...props }) {
+  const containerRef = useRef9(null);
+  const cleanupRef = useRef9(null);
+  useEffect8(() => {
+    if (!containerRef.current) return;
+    const container = containerRef.current;
+    let cancelled = false;
+    import("three").then((THREE) => {
+      if (cancelled || !container) return;
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+      if (width === 0 || height === 0) return;
+      const SEPARATION = 150;
+      const AMOUNTX = 40;
+      const AMOUNTY = 60;
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(60, width / height, 1, 1e4);
+      camera.position.set(0, 355, 1220);
+      camera.lookAt(0, 0, 0);
+      const renderer = new THREE.WebGLRenderer({
+        alpha: true,
+        antialias: true
+      });
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(width, height);
+      renderer.setClearColor(0, 0);
+      container.appendChild(renderer.domElement);
+      const positions = [];
+      const colors = [];
+      const geometry = new THREE.BufferGeometry();
+      for (let ix = 0; ix < AMOUNTX; ix++) {
+        for (let iy = 0; iy < AMOUNTY; iy++) {
+          const x = ix * SEPARATION - AMOUNTX * SEPARATION / 2;
+          const z = iy * SEPARATION - AMOUNTY * SEPARATION / 2;
+          positions.push(x, 0, z);
+          colors.push(0.78, 0.78, 0.78);
+        }
+      }
+      geometry.setAttribute(
+        "position",
+        new THREE.Float32BufferAttribute(positions, 3)
+      );
+      geometry.setAttribute(
+        "color",
+        new THREE.Float32BufferAttribute(colors, 3)
+      );
+      const material = new THREE.PointsMaterial({
+        size: 8,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.8,
+        sizeAttenuation: true
+      });
+      const points = new THREE.Points(geometry, material);
+      scene.add(points);
+      let count = 0;
+      let animationId = 0;
+      const animate2 = () => {
+        animationId = requestAnimationFrame(animate2);
+        const positionAttribute = geometry.attributes.position;
+        const pos = positionAttribute.array;
+        let i = 0;
+        for (let ix = 0; ix < AMOUNTX; ix++) {
+          for (let iy = 0; iy < AMOUNTY; iy++) {
+            const index = i * 3;
+            pos[index + 1] = Math.sin((ix + count) * 0.3) * 50 + Math.sin((iy + count) * 0.5) * 50;
+            i++;
+          }
+        }
+        positionAttribute.needsUpdate = true;
+        renderer.render(scene, camera);
+        count += 0.1;
+      };
+      const handleResize = () => {
+        const w = container.clientWidth;
+        const h = container.clientHeight;
+        if (w === 0 || h === 0) return;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+      };
+      window.addEventListener("resize", handleResize);
+      animate2();
+      cleanupRef.current = () => {
+        window.removeEventListener("resize", handleResize);
+        cancelAnimationFrame(animationId);
+        scene.traverse((object) => {
+          if (object instanceof THREE.Points) {
+            object.geometry.dispose();
+            if (Array.isArray(object.material)) {
+              object.material.forEach((mat) => mat.dispose());
+            } else {
+              object.material.dispose();
+            }
+          }
+        });
+        renderer.dispose();
+        if (container && renderer.domElement.parentNode === container) {
+          container.removeChild(renderer.domElement);
+        }
+      };
+    });
+    return () => {
+      cancelled = true;
+      cleanupRef.current?.();
+      cleanupRef.current = null;
+    };
+  }, []);
+  return /* @__PURE__ */ jsx40(
+    "div",
+    {
+      ref: containerRef,
+      className: cn("pointer-events-none absolute inset-0", className),
+      ...props
+    }
+  );
+}
+
 // src/components/ui/site-footer.tsx
 import Link4 from "next/link";
 import { ChevronUp } from "lucide-react";
-import { jsx as jsx40, jsxs as jsxs23 } from "react/jsx-runtime";
+import { jsx as jsx41, jsxs as jsxs23 } from "react/jsx-runtime";
 var COMPANY_LINKS = [
   { href: "/about", label: "\u041E Rocketmind" },
   { href: "/cases", label: "\u041A\u0435\u0439\u0441\u044B" },
@@ -3335,8 +3456,8 @@ var COMPANY_LINKS = [
 ];
 function FooterColumn({ title, links }) {
   return /* @__PURE__ */ jsxs23("div", { children: [
-    /* @__PURE__ */ jsx40("p", { className: "font-mono text-[11px] uppercase tracking-[0.1em] text-muted-foreground/50", children: title }),
-    /* @__PURE__ */ jsx40("ul", { className: "mt-4 flex flex-col gap-2.5", children: links.map((link) => /* @__PURE__ */ jsx40("li", { children: /* @__PURE__ */ jsx40(
+    /* @__PURE__ */ jsx41("p", { className: "font-mono text-[11px] uppercase tracking-[0.1em] text-muted-foreground/50", children: title }),
+    /* @__PURE__ */ jsx41("ul", { className: "mt-4 flex flex-col gap-2.5", children: links.map((link) => /* @__PURE__ */ jsx41("li", { children: /* @__PURE__ */ jsx41(
       Link4,
       {
         href: link.href,
@@ -3361,61 +3482,64 @@ function SiteFooter({ basePath = "", className }) {
     href: s.href,
     label: s.title
   }));
-  return /* @__PURE__ */ jsx40("footer", { className: className ?? "border-t border-border bg-background", children: /* @__PURE__ */ jsxs23("div", { className: "mx-auto max-w-[1512px] px-5 py-12 md:px-8 md:py-16 xl:px-14", children: [
-    /* @__PURE__ */ jsxs23("div", { className: "flex items-center justify-between", children: [
-      /* @__PURE__ */ jsx40(Link4, { href: "/", className: "inline-flex items-center", children: /* @__PURE__ */ jsx40(
-        "img",
-        {
-          src: `${basePath}/with_descriptor_dark_background_en.svg`,
-          alt: "Rocketmind",
-          className: "h-[42px] w-auto"
-        }
-      ) }),
-      /* @__PURE__ */ jsx40(
-        "button",
-        {
-          type: "button",
-          onClick: () => window.scrollTo({ top: 0 }),
-          "aria-label": "\u041D\u0430\u0432\u0435\u0440\u0445",
-          className: "inline-flex items-center justify-center w-10 h-10 rounded-sm bg-secondary text-secondary-foreground transition-opacity duration-150 hover:opacity-[0.88] cursor-pointer",
-          children: /* @__PURE__ */ jsx40(ChevronUp, { size: 20, strokeWidth: 2 })
-        }
-      )
-    ] }),
-    /* @__PURE__ */ jsxs23("div", { className: "mt-10 grid grid-cols-2 gap-8 md:grid-cols-4 md:gap-12", children: [
-      /* @__PURE__ */ jsxs23("div", { className: "flex flex-col justify-between", children: [
-        /* @__PURE__ */ jsx40(FooterColumn, { title: "\u041A\u043E\u043D\u0441\u0430\u043B\u0442\u0438\u043D\u0433", links: consultingLinks.slice(0, 4) }),
-        /* @__PURE__ */ jsxs23("p", { className: "mt-8 text-[13px] text-muted-foreground/50 hidden md:block", children: [
-          "\xA9 ",
-          (/* @__PURE__ */ new Date()).getFullYear(),
-          " Rocketmind"
-        ] })
+  return /* @__PURE__ */ jsxs23("footer", { className: className ?? "relative overflow-hidden border-t border-border bg-background", children: [
+    /* @__PURE__ */ jsxs23("div", { className: "relative z-10 mx-auto max-w-[1512px] px-5 py-12 md:px-8 md:py-16 xl:px-14", children: [
+      /* @__PURE__ */ jsxs23("div", { className: "flex items-center justify-between", children: [
+        /* @__PURE__ */ jsx41(Link4, { href: "/", className: "inline-flex items-center", children: /* @__PURE__ */ jsx41(
+          "img",
+          {
+            src: `${basePath}/with_descriptor_dark_background_en.svg`,
+            alt: "Rocketmind",
+            className: "h-[42px] w-auto"
+          }
+        ) }),
+        /* @__PURE__ */ jsx41(
+          "button",
+          {
+            type: "button",
+            onClick: () => window.scrollTo({ top: 0 }),
+            "aria-label": "\u041D\u0430\u0432\u0435\u0440\u0445",
+            className: "inline-flex items-center justify-center w-10 h-10 rounded-sm bg-secondary text-secondary-foreground transition-opacity duration-150 hover:opacity-[0.88] cursor-pointer",
+            children: /* @__PURE__ */ jsx41(ChevronUp, { size: 20, strokeWidth: 2 })
+          }
+        )
       ] }),
-      /* @__PURE__ */ jsx40(FooterColumn, { title: "\xA0", links: consultingLinks.slice(4) }),
-      /* @__PURE__ */ jsxs23("div", { className: "flex flex-col gap-10", children: [
-        /* @__PURE__ */ jsx40(FooterColumn, { title: "\u041E\u043D\u043B\u0430\u0439\u043D-\u0448\u043A\u043E\u043B\u0430", links: academyLinks }),
-        /* @__PURE__ */ jsx40(FooterColumn, { title: "AI-\u043F\u0440\u043E\u0434\u0443\u043A\u0442\u044B", links: aiProductLinks })
+      /* @__PURE__ */ jsxs23("div", { className: "mt-10 grid grid-cols-2 gap-8 md:grid-cols-4 md:gap-12", children: [
+        /* @__PURE__ */ jsxs23("div", { className: "flex flex-col justify-between", children: [
+          /* @__PURE__ */ jsx41(FooterColumn, { title: "\u041A\u043E\u043D\u0441\u0430\u043B\u0442\u0438\u043D\u0433", links: consultingLinks.slice(0, 4) }),
+          /* @__PURE__ */ jsxs23("p", { className: "mt-8 text-[13px] text-muted-foreground/50 hidden md:block", children: [
+            "\xA9 ",
+            (/* @__PURE__ */ new Date()).getFullYear(),
+            " Rocketmind"
+          ] })
+        ] }),
+        /* @__PURE__ */ jsx41(FooterColumn, { title: "\xA0", links: consultingLinks.slice(4) }),
+        /* @__PURE__ */ jsxs23("div", { className: "flex flex-col gap-10", children: [
+          /* @__PURE__ */ jsx41(FooterColumn, { title: "\u041E\u043D\u043B\u0430\u0439\u043D-\u0448\u043A\u043E\u043B\u0430", links: academyLinks }),
+          /* @__PURE__ */ jsx41(FooterColumn, { title: "AI-\u043F\u0440\u043E\u0434\u0443\u043A\u0442\u044B", links: aiProductLinks })
+        ] }),
+        /* @__PURE__ */ jsx41(FooterColumn, { title: "\u041A\u043E\u043C\u043F\u0430\u043D\u0438\u044F", links: COMPANY_LINKS })
       ] }),
-      /* @__PURE__ */ jsx40(FooterColumn, { title: "\u041A\u043E\u043C\u043F\u0430\u043D\u0438\u044F", links: COMPANY_LINKS })
+      /* @__PURE__ */ jsxs23("p", { className: "mt-10 text-[13px] text-muted-foreground/50 md:hidden", children: [
+        "\xA9 ",
+        (/* @__PURE__ */ new Date()).getFullYear(),
+        " Rocketmind"
+      ] })
     ] }),
-    /* @__PURE__ */ jsxs23("p", { className: "mt-10 text-[13px] text-muted-foreground/50 md:hidden", children: [
-      "\xA9 ",
-      (/* @__PURE__ */ new Date()).getFullYear(),
-      " Rocketmind"
-    ] })
-  ] }) });
+    /* @__PURE__ */ jsx41("div", { className: "relative h-[320px] md:h-[400px]", children: /* @__PURE__ */ jsx41(DottedSurface, {}) })
+  ] });
 }
 
 // src/components/ui/site-header.tsx
-import { useEffect as useEffect8, useState as useState5 } from "react";
+import { useEffect as useEffect9, useState as useState5 } from "react";
 import Link5 from "next/link";
 import { usePathname } from "next/navigation";
-import { jsx as jsx41, jsxs as jsxs24 } from "react/jsx-runtime";
+import { jsx as jsx42, jsxs as jsxs24 } from "react/jsx-runtime";
 function SiteHeader({ basePath = "", className }) {
   const pathname = usePathname();
   const isHome = pathname === "/";
   const [isVisible, setIsVisible] = useState5(!isHome);
-  useEffect8(() => {
+  useEffect9(() => {
     if (!isHome) {
       setIsVisible(true);
       return;
@@ -3428,7 +3552,7 @@ function SiteHeader({ basePath = "", className }) {
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isHome]);
-  return /* @__PURE__ */ jsx41(
+  return /* @__PURE__ */ jsx42(
     "header",
     {
       className: cn(
@@ -3437,7 +3561,7 @@ function SiteHeader({ basePath = "", className }) {
         className
       ),
       children: /* @__PURE__ */ jsxs24("div", { className: "mx-auto flex w-full max-w-[1512px] items-center justify-between gap-6 px-5 md:px-8 xl:px-14", children: [
-        /* @__PURE__ */ jsx41(Link5, { href: "/", className: "flex items-center", children: /* @__PURE__ */ jsx41(
+        /* @__PURE__ */ jsx42(Link5, { href: "/", className: "flex items-center", children: /* @__PURE__ */ jsx42(
           "img",
           {
             src: `${basePath}/text_logo_dark_background_en.svg`,
@@ -3445,7 +3569,7 @@ function SiteHeader({ basePath = "", className }) {
             className: "h-auto w-[120px] md:w-[144px]"
           }
         ) }),
-        /* @__PURE__ */ jsx41(
+        /* @__PURE__ */ jsx42(
           RocketmindMenu,
           {
             className: "hero-menu-desktop ml-auto flex-1 items-center justify-end gap-5 lg:gap-7",
@@ -3453,7 +3577,7 @@ function SiteHeader({ basePath = "", className }) {
             showDropdowns: true
           }
         ),
-        /* @__PURE__ */ jsx41(MobileNav, { className: "ml-auto" })
+        /* @__PURE__ */ jsx42(MobileNav, { className: "ml-auto" })
       ] })
     }
   );
@@ -3487,6 +3611,7 @@ export {
   DialogTitle,
   DialogTrigger,
   DotGridLens,
+  DottedSurface,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,

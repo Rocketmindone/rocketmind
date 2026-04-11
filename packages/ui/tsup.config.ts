@@ -5,7 +5,7 @@ export default defineConfig({
   format: ['esm', 'cjs'],
   dts: true,
   clean: true,
-  external: ['react', 'react-dom', 'next', 'next-themes'],
+  external: ['react', 'react-dom', 'next', 'next-themes', 'three'],
   jsx: 'react-jsx',
   banner: {
     js: '"use client";',

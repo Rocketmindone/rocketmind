@@ -1,20 +1,231 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ArrowUpRight, ImagePlus } from "lucide-react";
-import { Button, Input, Textarea, Separator } from "@rocketmind/ui";
+import { ArrowLeft, ArrowUpRight, ImagePlus, Upload, Trash2 } from "lucide-react";
+import {
+  Button,
+  Input,
+  Textarea,
+  Separator,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@rocketmind/ui";
 import { toast } from "sonner";
 import type { SitePage } from "@/lib/types";
 import { useEditor } from "@/lib/use-editor";
 import { useAdminStore } from "@/lib/store";
+import { useNavigationGuard } from "@/lib/navigation-guard";
 import { InlineEdit } from "@/components/inline-edit";
 import { EditorToolbar } from "./editor-toolbar";
 import { BlockList } from "./block-list";
-import { ConfirmDialog } from "@/components/confirm-dialog";
 
 const DESC_REC_MIN = 60;
 const DESC_REC_MAX = 120;
+
+// ── Human-readable change descriptions ─────────────────────────────────────
+
+const BLOCK_LABELS: Record<string, string> = {
+  hero: "Hero",
+  logoMarquee: "Логотипы",
+  about: "О продукте",
+  audience: "Аудитория",
+  tools: "Инструменты",
+  results: "Результаты",
+  process: "Процесс",
+  experts: "Эксперты",
+  aboutRocketmind: "О Rocketmind",
+  pageBottom: "Низ страницы",
+};
+
+function getChangesDescription(original: SitePage, current: SitePage): string[] {
+  const changes: string[] = [];
+
+  const fields: Array<[keyof SitePage, string]> = [
+    ["menuTitle", "Название в меню"],
+    ["slug", "Slug (URL)"],
+    ["menuDescription", "Описание в меню"],
+    ["metaTitle", "Meta Title"],
+    ["metaDescription", "Meta Description"],
+    ["cardTitle", "Название на карточке"],
+    ["cardDescription", "Описание на карточке"],
+  ];
+
+  for (const [key, label] of fields) {
+    if (original[key] !== current[key]) changes.push(label);
+  }
+
+  if (original.status !== current.status) changes.push("Статус публикации");
+
+  const origMap = new Map(original.blocks.map((b) => [b.id, b]));
+  let orderChanged = false;
+
+  for (const block of current.blocks) {
+    const orig = origMap.get(block.id);
+    if (!orig) continue;
+    const label = BLOCK_LABELS[block.type] || block.type;
+    if (orig.enabled !== block.enabled) changes.push(`Блок «${label}» — видимость`);
+    if (orig.order !== block.order) orderChanged = true;
+    if (JSON.stringify(orig.data) !== JSON.stringify(block.data))
+      changes.push(`Блок «${label}» — контент`);
+  }
+
+  if (orderChanged) changes.push("Порядок блоков");
+
+  return changes;
+}
+
+// ── Product Card Preview ───────────────────────────────────────────────────
+
+function ProductCardPreview({
+  page,
+  isImageCard,
+  onUpdateMeta,
+  onUpdateBlock,
+}: {
+  page: SitePage;
+  isImageCard: boolean;
+  onUpdateMeta: (field: keyof SitePage, value: string) => void;
+  onUpdateBlock: (blockId: string, data: Record<string, unknown>) => void;
+}) {
+  const imgInputRef = useRef<HTMLInputElement>(null);
+  const heroBlock = page.blocks.find((b) => b.type === "hero");
+  const cardImageData = (heroBlock?.data?.heroImageData as string) || "";
+
+  function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !heroBlock) return;
+    const reader = new FileReader();
+    reader.onload = () => onUpdateBlock(heroBlock.id, { heroImageData: reader.result as string });
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  }
+
+  function handleImageDelete() {
+    if (heroBlock) onUpdateBlock(heroBlock.id, { heroImageData: "" });
+  }
+
+  if (isImageCard) {
+    return (
+      <div className="relative rounded-sm border border-[#404040] bg-[#0A0A0A]">
+        {/* Arrow button — top right */}
+        <div className="absolute right-2 top-2 z-10 flex h-10 w-10 items-center justify-center rounded-sm border border-[#404040]">
+          <ArrowUpRight className="h-3 w-3 text-[#F0F0F0]" />
+        </div>
+
+        {/* Image 3:2 */}
+        {cardImageData ? (
+          <div className="group/img relative">
+            <div
+              className="w-full bg-cover bg-center"
+              style={{ aspectRatio: "3/2", backgroundImage: `url(${cardImageData})` }}
+            />
+            <div className="absolute top-2 left-2 flex items-center gap-1 opacity-0 transition-opacity group-hover/img:opacity-100">
+              <button
+                type="button"
+                onClick={() => imgInputRef.current?.click()}
+                className="flex h-7 items-center gap-1 rounded-sm bg-[#1a1a1a]/80 px-2 text-[length:var(--text-12)] text-[#F0F0F0] backdrop-blur hover:bg-[#1a1a1a]"
+              >
+                <Upload className="h-3 w-3" />
+                Заменить
+              </button>
+              <button
+                type="button"
+                onClick={handleImageDelete}
+                className="flex h-7 w-7 items-center justify-center rounded-sm bg-[#1a1a1a]/80 text-[#F0F0F0] backdrop-blur hover:bg-destructive"
+              >
+                <Trash2 className="h-3 w-3" />
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => imgInputRef.current?.click()}
+            className="flex w-full items-center justify-center gap-2 border-b border-dashed border-[#404040] text-[#939393] transition-colors hover:border-[#FFCC00] hover:text-[#FFCC00]"
+            style={{ aspectRatio: "3/2" }}
+          >
+            <ImagePlus className="h-6 w-6" />
+            <span className="text-[length:var(--text-14)]">Изображение</span>
+          </button>
+        )}
+        <input
+          ref={imgInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleImageUpload}
+          className="hidden"
+        />
+
+        {/* Card text */}
+        <div className="flex h-[156px] flex-col justify-between gap-6 p-8">
+          <InlineEdit
+            value={page.cardTitle}
+            onSave={(v) => onUpdateMeta("cardTitle", v)}
+            multiline
+            placeholder="Название на карточке"
+          >
+            <span className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-24)] font-bold uppercase leading-[1.2] tracking-tight text-[#F0F0F0]">
+              {page.cardTitle || "Название"}
+            </span>
+          </InlineEdit>
+
+          <InlineEdit
+            value={page.cardDescription}
+            onSave={(v) => onUpdateMeta("cardDescription", v)}
+            multiline
+            placeholder="Описание на карточке"
+          >
+            <span className="text-[length:var(--text-14)] leading-[1.32] text-[#939393]">
+              {page.cardDescription || "Описание продукта"}
+            </span>
+          </InlineEdit>
+        </div>
+      </div>
+    );
+  }
+
+  // Default: icon-based card (consulting)
+  return (
+    <div className="relative rounded-sm border border-[#404040] bg-[#0A0A0A] p-8">
+      <div className="absolute right-2 top-2 flex h-10 w-10 items-center justify-center rounded-sm border border-[#404040]">
+        <ArrowUpRight className="h-3 w-3 text-[#F0F0F0]" />
+      </div>
+      <div className="mb-8 flex h-[120px] w-[120px] items-center justify-center rounded-sm border border-dashed border-[#404040] text-[#939393] transition-colors hover:border-[#FFCC00] hover:text-[#FFCC00]">
+        <ImagePlus className="h-6 w-6" />
+      </div>
+      <div className="flex h-[156px] flex-col justify-between gap-6">
+        <InlineEdit
+          value={page.cardTitle}
+          onSave={(v) => onUpdateMeta("cardTitle", v)}
+          multiline
+          placeholder="Название на карточке"
+        >
+          <span className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-24)] font-bold uppercase leading-[1.2] tracking-tight text-[#F0F0F0]">
+            {page.cardTitle || "Название"}
+          </span>
+        </InlineEdit>
+
+        <InlineEdit
+          value={page.cardDescription}
+          onSave={(v) => onUpdateMeta("cardDescription", v)}
+          multiline
+          placeholder="Описание на карточке"
+        >
+          <span className="text-[length:var(--text-14)] leading-[1.32] text-[#939393]">
+            {page.cardDescription || "Описание продукта"}
+          </span>
+        </InlineEdit>
+      </div>
+    </div>
+  );
+}
+
+// ── Component ──────────────────────────────────────────────────────────────
 
 interface EditorShellProps {
   initialPage: SitePage;
@@ -25,6 +236,7 @@ export function EditorShell({ initialPage }: EditorShellProps) {
   const { savePage } = useAdminStore();
   const {
     page,
+    original,
     isDirty,
     canUndo,
     canRedo,
@@ -39,7 +251,29 @@ export function EditorShell({ initialPage }: EditorShellProps) {
     discard,
   } = useEditor(initialPage);
 
-  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const { setDirty, pendingHref, clearPending } = useNavigationGuard();
+
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
+  const [navigateTarget, setNavigateTarget] = useState<string | null>(null);
+
+  // Sync dirty state to navigation guard
+  useEffect(() => {
+    setDirty(isDirty);
+  }, [isDirty, setDirty]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => setDirty(false);
+  }, [setDirty]);
+
+  // React to header navigation attempts
+  useEffect(() => {
+    if (pendingHref) {
+      setNavigateTarget(pendingHref);
+      setShowUnsavedDialog(true);
+      clearPending();
+    }
+  }, [pendingHref, clearPending]);
 
   const descLen = (page.menuDescription || "").length;
   const descColor =
@@ -58,24 +292,39 @@ export function EditorShell({ initialPage }: EditorShellProps) {
     toast.success("Изменения сохранены и записаны в файл");
   }
 
-  function handleCancel() {
+  function handleBack() {
     if (isDirty) {
-      setShowCancelDialog(true);
+      setNavigateTarget("/pages");
+      setShowUnsavedDialog(true);
     } else {
       router.push("/pages");
     }
   }
 
-  function handleConfirmCancel() {
-    discard();
-    router.push("/pages");
+  async function handleSaveAndNavigate() {
+    await handleSave();
+    setShowUnsavedDialog(false);
+    router.push(navigateTarget || "/pages");
   }
+
+  function handleDiscardAndNavigate() {
+    discard();
+    setShowUnsavedDialog(false);
+    router.push(navigateTarget || "/pages");
+  }
+
+  function handleCancelDialog() {
+    setShowUnsavedDialog(false);
+    setNavigateTarget(null);
+  }
+
+  const changes = isDirty ? getChangesDescription(original, page) : [];
 
   return (
     <div className="flex flex-1 flex-col pb-24">
       {/* Header */}
       <div className="flex items-center gap-3 border-b border-border px-6 py-4">
-        <Button variant="ghost" size="icon-sm" onClick={handleCancel}>
+        <Button variant="ghost" size="icon-sm" onClick={handleBack}>
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div className="flex-1">
@@ -174,42 +423,12 @@ export function EditorShell({ initialPage }: EditorShellProps) {
               Карточка продукта
             </h2>
 
-            <div className="relative rounded-sm border border-[#404040] bg-[#0A0A0A] p-8">
-              {/* Arrow button — top right */}
-              <div className="absolute right-2 top-2 flex h-10 w-10 items-center justify-center rounded-sm border border-[#404040]">
-                <ArrowUpRight className="h-3 w-3 text-[#F0F0F0]" />
-              </div>
-
-              {/* Icon 120×120 */}
-              <div className="mb-8 flex h-[120px] w-[120px] items-center justify-center rounded-sm border border-dashed border-[#404040] text-[#939393] transition-colors hover:border-[#FFCC00] hover:text-[#FFCC00]">
-                <ImagePlus className="h-6 w-6" />
-              </div>
-
-              {/* Card text — fixed height container like Figma */}
-              <div className="flex h-[156px] flex-col justify-between gap-6">
-                <InlineEdit
-                  value={page.cardTitle}
-                  onSave={(v) => updateMeta("cardTitle", v)}
-                  multiline
-                  placeholder="Название на карточке"
-                >
-                  <span className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-24)] font-bold uppercase leading-[1.2] tracking-tight text-[#F0F0F0]">
-                    {page.cardTitle || "Название"}
-                  </span>
-                </InlineEdit>
-
-                <InlineEdit
-                  value={page.cardDescription}
-                  onSave={(v) => updateMeta("cardDescription", v)}
-                  multiline
-                  placeholder="Описание на карточке"
-                >
-                  <span className="text-[length:var(--text-14)] leading-[1.32] text-[#939393]">
-                    {page.cardDescription || "Описание продукта"}
-                  </span>
-                </InlineEdit>
-              </div>
-            </div>
+            <ProductCardPreview
+              page={page}
+              isImageCard={page.sectionId === "academy" || page.sectionId === "ai-products"}
+              onUpdateMeta={updateMeta}
+              onUpdateBlock={updateBlock}
+            />
           </div>
         </div>
 
@@ -223,6 +442,7 @@ export function EditorShell({ initialPage }: EditorShellProps) {
 
           <BlockList
             blocks={page.blocks}
+            sectionId={page.sectionId}
             onToggleBlock={toggleBlock}
             onUpdateBlock={updateBlock}
             onReorderBlocks={reorderBlocks}
@@ -242,19 +462,45 @@ export function EditorShell({ initialPage }: EditorShellProps) {
           updateStatus(published ? "published" : "hidden")
         }
         onSave={handleSave}
-        onCancel={handleCancel}
+        onCancel={handleBack}
       />
 
-      {/* Cancel confirmation */}
-      <ConfirmDialog
-        open={showCancelDialog}
-        onOpenChange={setShowCancelDialog}
-        title="Отменить изменения?"
-        description="Все несохранённые изменения будут потеряны."
-        confirmLabel="Да, отменить"
-        variant="destructive"
-        onConfirm={handleConfirmCancel}
-      />
+      {/* Unsaved changes dialog */}
+      <Dialog open={showUnsavedDialog} onOpenChange={(open) => { if (!open) handleCancelDialog(); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Несохранённые изменения</DialogTitle>
+            <DialogDescription>
+              {changes.length > 0 ? (
+                <>
+                  <span className="mb-2 block">Вы изменили:</span>
+                  <ul className="mb-2 list-inside list-disc space-y-0.5">
+                    {changes.map((c) => (
+                      <li key={c}>{c}</li>
+                    ))}
+                  </ul>
+                  <span>Что сделать с изменениями?</span>
+                </>
+              ) : (
+                "Есть несохранённые изменения. Что сделать?"
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex gap-2 sm:justify-between">
+            <Button variant="outline" onClick={handleCancelDialog}>
+              Отмена
+            </Button>
+            <div className="flex gap-2">
+              <Button variant="destructive" onClick={handleDiscardAndNavigate}>
+                Да, отменить
+              </Button>
+              <Button onClick={handleSaveAndNavigate}>
+                Да, сохранить
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

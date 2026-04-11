@@ -2,6 +2,7 @@
 
 import type { PageBlock } from "@/lib/types";
 import { HeroEditor } from "./hero-editor";
+import { HeroImageEditor } from "./hero-image-editor";
 import { AboutEditor } from "./about-editor";
 import { AudienceEditor } from "./audience-editor";
 import { ToolsEditor } from "./tools-editor";
@@ -13,13 +14,20 @@ import { GenericEditor } from "./generic-editor";
 
 interface BlockEditorProps {
   block: PageBlock;
+  sectionId: string;
   onUpdate: (data: Record<string, unknown>) => void;
 }
 
-export function BlockEditor({ block, onUpdate }: BlockEditorProps) {
+const IMAGE_HERO_SECTIONS = new Set(["academy", "ai-products"]);
+
+export function BlockEditor({ block, sectionId, onUpdate }: BlockEditorProps) {
   switch (block.type) {
     case "hero":
-      return <HeroEditor data={block.data} onUpdate={onUpdate} />;
+      return IMAGE_HERO_SECTIONS.has(sectionId) ? (
+        <HeroImageEditor data={block.data} onUpdate={onUpdate} />
+      ) : (
+        <HeroEditor data={block.data} onUpdate={onUpdate} />
+      );
     case "about":
       return <AboutEditor data={block.data} onUpdate={onUpdate} />;
     case "audience":

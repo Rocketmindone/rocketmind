@@ -2,14 +2,16 @@ import type { Metadata } from "next";
 import { getProductBySlug } from "@/lib/products";
 import { ServicePageTemplate } from "@/components/templates/ServicePageTemplate";
 
-const product = getProductBySlug("business-design-teams", "academy");
-
-export const metadata: Metadata = {
-  title: product?.metaTitle || "Бизнес-дизайн для команд | Rocketmind",
-  description: product?.metaDescription || "Практикум по бизнес-дизайну для команд.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const product = getProductBySlug("business-design-teams", "academy");
+  return {
+    title: product?.metaTitle || "Бизнес-дизайн для команд | Rocketmind",
+    description: product?.metaDescription || "Практикум по бизнес-дизайну для команд.",
+  };
+}
 
 export default function BusinessDesignTeamsPage() {
+  const product = getProductBySlug("business-design-teams", "academy");
   if (!product) {
     return (
       <ServicePageTemplate
@@ -18,6 +20,5 @@ export default function BusinessDesignTeamsPage() {
       />
     );
   }
-
   return <ServicePageTemplate product={product} />;
 }

@@ -24,6 +24,14 @@ export interface HeroBlockData {
   description: string;
   ctaText: string;
   factoids: Array<{ number: string; label: string; text: string }>;
+  tags?: Array<{ text: string }>;
+  secondaryCta?: string;
+  /** Base64 data URL for hero background image (academy/ai-products) */
+  heroImageData?: string;
+  /** Base64 data URL for audio file */
+  audioData?: string;
+  /** Original filename of uploaded audio */
+  audioFilename?: string;
 }
 
 export interface AboutBlockData {

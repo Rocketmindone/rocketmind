@@ -117,6 +117,7 @@ function editorReducer(state: EditorState, action: EditorAction): EditorState {
       return {
         ...state,
         original: action.page,
+        present: action.page,
         past: [],
         future: [],
       };
@@ -193,6 +194,7 @@ export function useEditor(page: SitePage) {
 
   return {
     page: state.present,
+    original: state.original,
     isDirty,
     canUndo,
     canRedo,

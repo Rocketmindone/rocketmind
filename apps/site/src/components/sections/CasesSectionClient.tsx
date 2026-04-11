@@ -558,6 +558,7 @@ export function CasesSectionClient({ logos }: { logos: PartnerLogo[] }) {
   const fadeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const casesColumnRef = useRef<HTMLDivElement>(null);
   const scrollWindowRef = useRef<HTMLDivElement>(null);
+  const swipeTouchStart = useRef<{ x: number; y: number } | null>(null);
 
   const switchToCase = useCallback((i: number) => {
     if (timerRef.current) clearTimeout(timerRef.current);
@@ -579,6 +580,25 @@ export function CasesSectionClient({ logos }: { logos: PartnerLogo[] }) {
       }, FADE_MS + STAGGER_MS * 4);
     }, FADE_MS + STAGGER_MS * 3);
   }, [displayCase]);
+
+  const handleSwipeTouchStart = useCallback((e: React.TouchEvent) => {
+    const t = e.touches[0];
+    swipeTouchStart.current = { x: t.clientX, y: t.clientY };
+  }, []);
+
+  const handleSwipeTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (!swipeTouchStart.current) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - swipeTouchStart.current.x;
+    const dy = t.clientY - swipeTouchStart.current.y;
+    swipeTouchStart.current = null;
+    if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy)) return;
+    if (dx < 0) {
+      switchToCase((activeCase + 1) % CASES.length);
+    } else {
+      switchToCase((activeCase - 1 + CASES.length) % CASES.length);
+    }
+  }, [activeCase, switchToCase]);
 
   // Restart 15 s auto-advance whenever activeCase changes
   useEffect(() => {
@@ -643,7 +663,12 @@ export function CasesSectionClient({ logos }: { logos: PartnerLogo[] }) {
           </div>
 
           {/* ── RIGHT / TOP: Cases ──────────────────────────────────── */}
-          <div ref={casesColumnRef} className="flex-1 flex flex-col order-1 lg:order-2 mb-10 lg:mb-0">
+          <div
+            ref={casesColumnRef}
+            className="flex-1 flex flex-col order-1 lg:order-2 mb-10 lg:mb-0"
+            onTouchStart={handleSwipeTouchStart}
+            onTouchEnd={handleSwipeTouchEnd}
+          >
 
             {/* Label + mobile slider row */}
             <div className="flex items-center justify-between gap-2.5 mb-4">

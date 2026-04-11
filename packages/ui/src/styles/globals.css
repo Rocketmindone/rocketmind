@@ -572,7 +572,7 @@ code {
   font-family: var(--font-heading-family);
   font-size: var(--text-32);   /* 32px mobile */
   font-weight: 800;
-  line-height: 1.0;
+  line-height: 1.1;
   letter-spacing: -0.02em;
   text-transform: uppercase;
 }
@@ -584,7 +584,7 @@ code {
   font-family: var(--font-heading-family);
   font-size: var(--text-32);   /* 32px mobile */
   font-weight: 700;
-  line-height: 1.08;
+  line-height: 1.1;
   letter-spacing: -0.02em;
   text-transform: uppercase;
 }

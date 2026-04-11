@@ -9,6 +9,7 @@ import { BlockEditor } from "./block-editors/block-editor";
 
 interface BlockListProps {
   blocks: PageBlock[];
+  sectionId: string;
   onToggleBlock: (blockId: string) => void;
   onUpdateBlock: (blockId: string, data: Record<string, unknown>) => void;
   onReorderBlocks: (orderedIds: string[]) => void;
@@ -16,6 +17,7 @@ interface BlockListProps {
 
 export function BlockList({
   blocks,
+  sectionId,
   onToggleBlock,
   onUpdateBlock,
   onReorderBlocks,
@@ -165,6 +167,7 @@ export function BlockList({
               <div className={`mb-10 ${!block.enabled ? "pointer-events-none opacity-30" : ""}`}>
                 <BlockEditor
                   block={block}
+                  sectionId={sectionId}
                   onUpdate={(data) => onUpdateBlock(block.id, data)}
                 />
               </div>

@@ -1,17 +1,18 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ServicePageTemplate } from "@/components/templates/ServicePageTemplate";
 import { getProductBySlug } from "@/lib/products";
+import { ServicePageTemplate } from "@/components/templates/ServicePageTemplate";
 
-const product = getProductBySlug("ecosystem-strategy");
-
-export const metadata: Metadata = {
-  title: product?.metaTitle ?? "Экосистемная стратегия | Rocketmind",
-  description: product?.metaDescription,
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const product = getProductBySlug("ecosystem-strategy");
+  return {
+    title: product?.metaTitle ?? "Экосистемная стратегия | Rocketmind",
+    description: product?.metaDescription,
+  };
+}
 
 export default function EcosystemStrategyPage() {
+  const product = getProductBySlug("ecosystem-strategy");
   if (!product) return notFound();
-
   return <ServicePageTemplate product={product} />;
 }
