@@ -12,17 +12,27 @@ hero:
   title: |
     БИЗНЕС-ДИЗАЙН
     БЫСТРЫЙ СТАРТ
-  description: ''
+  description: Какой то текст
   ctaText: записаться
-  factoids: []
+  factoids:
+    - number: '1'
+      label: ''
+      text: что
+    - number: ''
+      label: ''
+      text: ''
+    - number: ''
+      label: ''
+      text: ''
+  secondaryCta: Отзыв участников
 about: null
 audience: null
+tools: null
 results: null
 process: null
-aboutRocketmind:
-  leftVariant: canvas
+experts: null
+aboutRocketmind: {}
 socialProof: null
-tools: null
 duration: null
 whyRocketmind: null
 expert: null

@@ -11,12 +11,23 @@ export type Factoid = {
   text: string;
 };
 
+export type HeroTag = {
+  text: string;
+  icon?: string;
+};
+
 export type ProductHeroData = {
   caption: string;
   title: string;
   description: string;
   ctaText: string;
   factoids: Factoid[];
+  /** Optional tags shown next to caption (e.g. "при поддержке PIK") */
+  tags?: HeroTag[];
+  /** Optional secondary ghost-style button text */
+  secondaryCta?: string;
+  /** Audio data URL (base64) from CMS */
+  audioData?: string;
 };
 
 export type AccordionItem = {
@@ -140,6 +151,8 @@ export type ProductData = {
   aboutRocketmind: AboutRocketmindData | null;
   // Image paths (auto-resolved)
   coverImage: string;
+  /** Resolved cover image path (null if file doesn't exist) */
+  heroImage: string | null;
   aboutImage: string | null;
 };
 
@@ -157,26 +170,34 @@ const PUBLIC_DIR = path.join(process.cwd(), "public");
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 /**
- * Auto-resolve product image by role.
+ * Auto-resolve product asset by role.
  *
  * Convention:
  *   /images/products/<category>/<slug>/cover.svg
  *   /images/products/<category>/<slug>/about.jpg
- *
- * Checks svg, png, jpg, webp in order.
+ *   /images/products/<category>/<slug>/audio.mp3
  */
-function resolveImage(
+function resolveAsset(
   category: string,
   slug: string,
   role: string,
+  extensions: string[],
 ): string | null {
   const base = `/images/products/${category}/${slug}/${role}`;
-  for (const ext of [".svg", ".png", ".jpg", ".webp"]) {
+  for (const ext of extensions) {
     if (fs.existsSync(path.join(PUBLIC_DIR, base + ext))) {
       return BASE_PATH + base + ext;
     }
   }
   return null;
+}
+
+function resolveImage(category: string, slug: string, role: string): string | null {
+  return resolveAsset(category, slug, role, [".svg", ".png", ".jpg", ".webp"]);
+}
+
+function resolveAudio(category: string, slug: string): string | null {
+  return resolveAsset(category, slug, "audio", [".mp3", ".wav", ".ogg", ".m4a", ".webm"]);
 }
 
 // ── API ────────────────────────────────────────────────────────────────────────
@@ -193,11 +214,17 @@ export function getProductBySlug(slug: string, category?: string): ProductData |
   const raw = fs.readFileSync(filePath, "utf-8");
   const { data } = matter(raw);
 
+  const staticCover = resolveImage(data.category, data.slug, "cover");
+  const staticAbout = resolveImage(data.category, data.slug, "about");
+
+  const staticAudio = resolveAudio(data.category, data.slug);
+
   const coverImage =
-    resolveImage(data.category, data.slug, "cover") ??
+    staticCover ??
     `${BASE_PATH}/images/products/${data.category}/${data.slug}/cover.svg`;
 
-  const aboutImage = resolveImage(data.category, data.slug, "about");
+  const heroImage = staticCover ?? null;
+  const aboutImage = staticAbout ?? null;
 
   const about: AboutProductData | null = data.about
     ? {
@@ -209,6 +236,9 @@ export function getProductBySlug(slug: string, category?: string): ProductData |
       }
     : null;
 
+  // Strip base64 blobs — assets are now resolved from filesystem
+  const { heroImageData: _h, audioData: _a, audioFilename: _af, ...heroClean } = data.hero ?? {};
+
   return {
     slug: data.slug,
     category: data.category,
@@ -219,8 +249,9 @@ export function getProductBySlug(slug: string, category?: string): ProductData |
     metaTitle: data.metaTitle,
     metaDescription: data.metaDescription,
     hero: {
-      ...data.hero,
+      ...heroClean,
       title: (data.hero.title as string).trimEnd(),
+      audioData: staticAudio ?? undefined,
     },
     about,
     audience: data.audience ?? null,
@@ -232,6 +263,7 @@ export function getProductBySlug(slug: string, category?: string): ProductData |
       : null,
     aboutRocketmind: data.aboutRocketmind ?? null,
     coverImage,
+    heroImage,
     aboutImage,
   };
 }

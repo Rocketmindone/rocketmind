@@ -2,6 +2,27 @@ import { NextResponse } from "next/server";
 
 const isStatic = process.env.NEXT_PUBLIC_STATIC === "1";
 
+// ── Asset resolution helpers ─────────────────────────────────────────────────
+
+const IMAGE_EXTS = [".svg", ".png", ".jpg", ".jpeg", ".webp", ".gif"];
+const AUDIO_EXTS = [".mp3", ".wav", ".ogg", ".m4a", ".webm"];
+
+function resolveAsset(
+  fs: typeof import("fs"),
+  path: typeof import("path"),
+  publicDir: string,
+  category: string,
+  slug: string,
+  role: string,
+  extensions: string[],
+): string | null {
+  for (const ext of extensions) {
+    const fp = path.join(publicDir, "images", "products", category, slug, role + ext);
+    if (fs.existsSync(fp)) return `/images/products/${category}/${slug}/${role}${ext}`;
+  }
+  return null;
+}
+
 export async function GET() {
   if (isStatic) return NextResponse.json([]);
 
@@ -11,6 +32,7 @@ export async function GET() {
   const { getAllContentDirs } = await import("@/lib/content-paths");
   const { DEFAULT_BLOCK_TYPES } = await import("@/lib/constants");
 
+  const sitePublicDir = path.resolve(process.cwd(), "..", "site", "public");
   const pages: unknown[] = [];
 
   for (const { sectionId, dir } of getAllContentDirs()) {
@@ -21,12 +43,29 @@ export async function GET() {
         const raw = fs.readFileSync(path.join(dir, file), "utf-8");
         const { data } = matter(raw);
         if (!data.slug) return;
+
+        // Resolve static asset URLs for this page
+        const coverUrl = resolveAsset(fs, path, sitePublicDir, data.category || sectionId, data.slug, "cover", IMAGE_EXTS);
+        const aboutUrl = resolveAsset(fs, path, sitePublicDir, data.category || sectionId, data.slug, "about", IMAGE_EXTS);
+        const audioUrl = resolveAsset(fs, path, sitePublicDir, data.category || sectionId, data.slug, "audio", AUDIO_EXTS);
+
         const blocks = DEFAULT_BLOCK_TYPES.map((type: string, i: number) => {
           let blockData: Record<string, unknown> = {};
           let enabled = true;
           switch (type) {
-            case "hero": blockData = data.hero || {}; enabled = !!data.hero; break;
-            case "about": if (data.about) blockData = data.about; else enabled = false; break;
+            case "hero":
+              blockData = data.hero || {};
+              enabled = !!data.hero;
+              // Inject static file URLs so admin UI can display them
+              if (coverUrl && !blockData.heroImageData) blockData = { ...blockData, heroImageData: coverUrl };
+              if (audioUrl && !blockData.audioData) blockData = { ...blockData, audioData: audioUrl };
+              break;
+            case "about":
+              if (data.about) {
+                blockData = data.about;
+                if (aboutUrl && !blockData.aboutImageData) blockData = { ...blockData, aboutImageData: aboutUrl };
+              } else { enabled = false; }
+              break;
             case "audience": if (data.audience) blockData = data.audience; else enabled = false; break;
             case "tools": if (data.tools) blockData = data.tools; else enabled = false; break;
             case "results": if (data.results) blockData = data.results; else enabled = false; break;
@@ -43,6 +82,9 @@ export async function GET() {
               }
               break;
             }
+            case "aboutRocketmind": if (data.aboutRocketmind) blockData = data.aboutRocketmind; else enabled = false; break;
+            case "logoMarquee": enabled = !!data.logoMarquee; if (data.logoMarquee) blockData = data.logoMarquee; break;
+            case "pageBottom": enabled = !!data.pageBottom; if (data.pageBottom) blockData = data.pageBottom; break;
           }
           return { id: `${data.slug}_${type}`, type, enabled, order: i, data: blockData };
         });
