@@ -499,7 +499,7 @@ function RefreshIcon({ className }: { className?: string }) {
 
 // ─── Undo / Redo types ───────────────────────────────────────────────────────
 
-type Snapshot = { weeks: Week[]; rows: Row[]; title: string; subtitle: string; locked: boolean };
+type Snapshot = { weeks: Week[]; rows: Row[]; archivedRows: Row[]; title: string; subtitle: string; locked: boolean };
 const MAX_HISTORY = 50;
 
 // ─── Toast (via DS Toaster + sonner) ────────────────────────────────────────
@@ -509,10 +509,13 @@ export default function RPlanBoard({ dbPath, trackName, trackColor = 'yellow', s
   const tmpl = createTemplate(trackColor as ColorToken, startWeekIdx);
   const [weeks, setWeeks] = useState<Week[]>(tmpl.weeks);
   const [rows, setRows] = useState<Row[]>(tmpl.rows);
+  const [archivedRows, setArchivedRows] = useState<Row[]>([]);
+  const [collapsedRows, setCollapsedRows] = useState<Set<string>>(new Set());
   const [title, setTitle] = useState(tmpl.title);
   const [subtitle, setSubtitle] = useState(tmpl.subtitle);
   const [locked, setLocked] = useState(false);
   const [showLockModal, setShowLockModal] = useState(false);
+  const [showArchive, setShowArchive] = useState(false);
   const [syncStatus, setSyncStatus] = useState<'synced' | 'saving' | 'error' | 'loading'>('loading');
 
   // ── Zoom mode (desktop/tablet only) ──────────────────────────────────────
@@ -533,7 +536,7 @@ export default function RPlanBoard({ dbPath, trackName, trackColor = 'yellow', s
   const future = useRef<Snapshot[]>([]);
   const skipHistory = useRef(false);
 
-  const snap = useCallback((): Snapshot => ({ weeks, rows, title, subtitle, locked }), [weeks, rows, title, subtitle, locked]);
+  const snap = useCallback((): Snapshot => ({ weeks, rows, archivedRows, title, subtitle, locked }), [weeks, rows, archivedRows, title, subtitle, locked]);
 
   const pushHistory = useCallback((s: Snapshot) => {
     history.current = [...history.current.slice(-(MAX_HISTORY - 1)), s];
@@ -547,8 +550,8 @@ export default function RPlanBoard({ dbPath, trackName, trackColor = 'yellow', s
 
   const applySnapshot = useCallback((s: Snapshot) => {
     skipHistory.current = true;
-    setWeeks(s.weeks); setRows(s.rows); setTitle(s.title); setSubtitle(s.subtitle); setLocked(s.locked);
-    persistRef.current(s.weeks, s.rows, s.title, s.subtitle, s.locked);
+    setWeeks(s.weeks); setRows(s.rows); setArchivedRows(s.archivedRows); setTitle(s.title); setSubtitle(s.subtitle); setLocked(s.locked);
+    persistRef.current(s.weeks, s.rows, s.archivedRows, s.title, s.subtitle, s.locked);
   }, []);
 
   const undo = useCallback(() => {
@@ -692,6 +695,7 @@ export default function RPlanBoard({ dbPath, trackName, trackColor = 'yellow', s
           if (data.rows) setRows(data.rows.map((r: Row) => ({ ...r, cells: r.cells ?? {} })));
           if (data.title) setTitle(data.title);
           if (data.subtitle) setSubtitle(data.subtitle);
+          if (data.archivedRows) setArchivedRows(data.archivedRows.map((r: Row) => ({ ...r, cells: r.cells ?? {} })));
           if (data.locked !== undefined) setLocked(data.locked);
           // Auto-scroll to current week on first load
           if (!didInitialScroll.current && data.weeks?.length > 0) {
@@ -712,7 +716,7 @@ export default function RPlanBoard({ dbPath, trackName, trackColor = 'yellow', s
           // Empty track — save template to Firebase
           const t = createTemplate(trackColor as ColorToken, startWeekIdx);
           set(ref(db, dbPath), {
-            weeks: t.weeks, rows: t.rows,
+            weeks: t.weeks, rows: t.rows, archivedRows: [],
             title: t.title, subtitle: t.subtitle, locked: false,
           });
         }
@@ -736,7 +740,7 @@ export default function RPlanBoard({ dbPath, trackName, trackColor = 'yellow', s
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const persist = useCallback((
-    nextWeeks: Week[], nextRows: Row[],
+    nextWeeks: Week[], nextRows: Row[], nextArchivedRows: Row[],
     nextTitle: string, nextSubtitle: string, nextLocked: boolean,
   ) => {
     if (!initialized.current || remoteUpdate.current) return;
@@ -746,6 +750,7 @@ export default function RPlanBoard({ dbPath, trackName, trackColor = 'yellow', s
       set(ref(db, dbPath), {
         weeks: nextWeeks,
         rows: nextRows,
+        archivedRows: nextArchivedRows,
         title: nextTitle,
         subtitle: nextSubtitle,
         locked: nextLocked,
@@ -761,14 +766,14 @@ export default function RPlanBoard({ dbPath, trackName, trackColor = 'yellow', s
   const updateWeeks = (next: Week[]) => {
     if (!skipHistory.current) pushHistory(snap());
     skipHistory.current = false;
-    setWeeks(next); persist(next, rows, title, subtitle, locked);
+    setWeeks(next); persist(next, rows, archivedRows, title, subtitle, locked);
   };
   const updateRows = (next: Row[]) => {
     if (!skipHistory.current) pushHistory(snap());
     skipHistory.current = false;
-    setRows(next); persist(weeks, next, title, subtitle, locked);
+    setRows(next); persist(weeks, next, archivedRows, title, subtitle, locked);
   };
-  const updateLocked = (v: boolean) => { setLocked(v); persist(weeks, rows, title, subtitle, v); };
+  const updateLocked = (v: boolean) => { setLocked(v); persist(weeks, rows, archivedRows, title, subtitle, v); };
 
   // ── Row drag ──────────────────────────────────────────────────────────────
   const dragRowIdx = useRef<number | null>(null);
@@ -936,12 +941,12 @@ export default function RPlanBoard({ dbPath, trackName, trackColor = 'yellow', s
     updateRows(next);
   };
 
-  const addCard = (rowId: string, weekId: string, day?: Day) => {
+  const addCard = (rowId: string, weekId: string, day?: Day, position: 'top' | 'bottom' = 'top') => {
     const c = card('Новая задача');
     if (day) c.days = [day];
     const next = rows.map(r =>
       r.id === rowId
-        ? { ...r, cells: { ...r.cells, [weekId]: [c, ...(r.cells[weekId] ?? [])] } }
+        ? { ...r, cells: { ...r.cells, [weekId]: position === 'bottom' ? [...(r.cells[weekId] ?? []), c] : [c, ...(r.cells[weekId] ?? [])] } }
         : r
     );
     updateRows(next);
@@ -1061,8 +1066,8 @@ export default function RPlanBoard({ dbPath, trackName, trackColor = 'yellow', s
     if (!needsPersistAfterResize) return;
     setNeedsPersistAfterResize(false);
     skipHistory.current = true;
-    persist(weeks, rows, title, subtitle, locked);
-  }, [needsPersistAfterResize, weeks, rows, title, subtitle, locked, persist]);
+    persist(weeks, rows, archivedRows, title, subtitle, locked);
+  }, [needsPersistAfterResize, weeks, rows, archivedRows, title, subtitle, locked, persist]);
 
   const updateWeekLabel = (weekId: string, val: string) =>
     updateWeeks(weeks.map(w => w.id === weekId ? { ...w, label: val } : w));
@@ -1080,10 +1085,38 @@ export default function RPlanBoard({ dbPath, trackName, trackColor = 'yellow', s
     updateRows([...rows, { id, label: 'Новый раздел', cells }]);
   };
 
-  const removeRow = (rowId: string) => {
+  const archiveRow = (rowId: string) => {
+    const row = rows.find(r => r.id === rowId);
+    if (!row) return;
     const prev = snap();
-    updateRows(rows.filter(r => r.id !== rowId));
-    showToast('Строка удалена', () => { applySnapshot(prev); });
+    const nextRows = rows.filter(r => r.id !== rowId);
+    const nextArchived = [...archivedRows, row];
+    setRows(nextRows);
+    setArchivedRows(nextArchived);
+    persist(weeks, nextRows, nextArchived, title, subtitle, locked);
+    pushHistory(prev);
+    showToast('Строка в архиве', () => { applySnapshot(prev); });
+  };
+
+  const restoreRow = (rowId: string) => {
+    const row = archivedRows.find(r => r.id === rowId);
+    if (!row) return;
+    const prev = snap();
+    const nextArchived = archivedRows.filter(r => r.id !== rowId);
+    const nextRows = [...rows, row];
+    setRows(nextRows);
+    setArchivedRows(nextArchived);
+    persist(weeks, nextRows, nextArchived, title, subtitle, locked);
+    pushHistory(prev);
+    showToast('Строка восстановлена');
+  };
+
+  const toggleCollapse = (rowId: string) => {
+    setCollapsedRows(prev => {
+      const next = new Set(prev);
+      if (next.has(rowId)) next.delete(rowId); else next.add(rowId);
+      return next;
+    });
   };
 
   // ── Add week ──────────────────────────────────────────────────────────────
@@ -1107,7 +1140,7 @@ export default function RPlanBoard({ dbPath, trackName, trackColor = 'yellow', s
     }));
     setWeeks(nextWeeks);
     setRows(nextRows);
-    persist(nextWeeks, nextRows, title, subtitle, locked);
+    persist(nextWeeks, nextRows, archivedRows, title, subtitle, locked);
     // Navigate to show the new week
     setVisibleStartIdx(Math.max(0, idx + 1 - VISIBLE_COUNT));
   };
@@ -1117,10 +1150,10 @@ export default function RPlanBoard({ dbPath, trackName, trackColor = 'yellow', s
   type AiProvider = 'openrouter' | 'groq';
 
   const OPENROUTER_MODELS = [
-    'qwen/qwen3.6-plus:free',
+    'qwen/qwen3-30b-a3b:free',
     'meta-llama/llama-3.3-70b-instruct:free',
-    'qwen/qwen3-next-80b-a3b-instruct:free',
-    'openai/gpt-oss-120b:free',
+    'google/gemma-3-27b-it:free',
+    'mistralai/mistral-small-3.2-24b-instruct:free',
   ];
 
   const AI_PROVIDERS: Record<AiProvider, { url: string; model: string; label: string; keyPrefix: string; keyHint: string; keyUrl: string }> = {
@@ -1208,9 +1241,9 @@ export default function RPlanBoard({ dbPath, trackName, trackColor = 'yellow', s
             setSummaryLoading(null);
             return;
           }
-          if (res.status === 429 && !isLast) {
-            console.warn(`Rate limit on ${model}, trying next…`);
-            updateWeekTheme(weekId, `Лимит ${model.split('/')[0]}, пробую другую…`);
+          if ((res.status === 429 || res.status === 404) && !isLast) {
+            console.warn(`${res.status} on ${model}, trying next…`);
+            updateWeekTheme(weekId, `${res.status === 404 ? 'Модель недоступна' : 'Лимит'}, пробую другую…`);
             continue;
           }
           updateWeekTheme(weekId, `Ошибка API: ${res.status}`);
@@ -1559,32 +1592,60 @@ export default function RPlanBoard({ dbPath, trackName, trackColor = 'yellow', s
                 >
                   {/* Left column */}
                   <div
-                    className="group/row flex-shrink-0 flex items-start gap-1 px-2 py-2 md:gap-2 md:px-3 md:py-3 border-r border-border bg-background"
+                    className="group/row flex-shrink-0 flex flex-col justify-between px-2 py-2 md:px-3 md:py-2 border-r border-border bg-background"
                     style={isMobile ? { width: '30%', minWidth: 0 } : { width: COL_W, minWidth: COL_W }}
                   >
-                    {!isMobile && (
-                      <Tooltip>
-                        <TooltipTrigger render={<span className="cursor-grab text-muted-foreground/30 hover:text-muted-foreground transition-colors select-none flex-shrink-0 mt-0.5 text-[length:var(--text-16)] leading-none" />}>⠿</TooltipTrigger>
-                        <TooltipContent>Перетащить строку</TooltipContent>
-                      </Tooltip>
-                    )}
-                    <span className="text-[length:var(--text-12)] font-medium text-foreground flex-1 min-w-0 mt-0.5">
-                      <EditableText value={row.label} onChange={v => updateRowLabel(row.id, v)} />
-                    </span>
+                    {/* Top: collapse arrow + label */}
+                    <div className="flex items-start gap-1 md:gap-1.5">
+                      {!isMobile && (
+                        <button
+                          onClick={() => toggleCollapse(row.id)}
+                          className="flex-shrink-0 mt-0.5 text-[length:var(--text-12)] leading-none text-muted-foreground/40 hover:text-muted-foreground transition-colors select-none"
+                        >
+                          {collapsedRows.has(row.id) ? '▸' : '▾'}
+                        </button>
+                      )}
+                      <span className="text-[length:var(--text-12)] font-medium text-foreground flex-1 min-w-0 mt-0.5">
+                        <EditableText value={row.label} onChange={v => updateRowLabel(row.id, v)} />
+                      </span>
+                    </div>
+                    {/* Bottom: drag handle + archive */}
                     {!isMobile && !locked && (
-                      <Tooltip>
-                        <TooltipTrigger render={
-                          <Button variant="ghost" size="icon-micro" onClick={() => removeRow(row.id)} className="flex-shrink-0 opacity-0 group-hover/row:opacity-100 transition-opacity text-muted-foreground/20 hover:text-destructive mt-0.5" />
-                        }>
-                          ×
-                        </TooltipTrigger>
-                        <TooltipContent>Удалить строку</TooltipContent>
-                      </Tooltip>
+                      <div className="flex items-center justify-between mt-1.5 opacity-0 group-hover/row:opacity-100 transition-opacity">
+                        <Tooltip>
+                          <TooltipTrigger render={<span className="cursor-grab text-muted-foreground/30 hover:text-muted-foreground transition-colors select-none text-[length:var(--text-14)] leading-none" />}>⠿</TooltipTrigger>
+                          <TooltipContent>Перетащить строку</TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger render={
+                            <button onClick={() => archiveRow(row.id)} className="text-[length:var(--text-12)] text-muted-foreground/30 hover:text-muted-foreground transition-colors" />
+                          }>
+                            ↓ архив
+                          </TooltipTrigger>
+                          <TooltipContent>Архивировать строку</TooltipContent>
+                        </Tooltip>
+                      </div>
                     )}
                   </div>
 
-                  {/* Week cells */}
-                  {shownWeeks.map((w, localIdx) => {
+                  {/* Week cells or collapsed badge */}
+                  {collapsedRows.has(row.id) ? (
+                    <div className="flex-1 flex items-center px-3 py-2 gap-2">
+                      {(() => {
+                        const allCards = Object.values(row.cells ?? {}).flat();
+                        const done = allCards.filter(c => c.done).length;
+                        const active = allCards.filter(c => !c.done).length;
+                        return (
+                          <span className="text-[length:var(--text-11)] font-mono text-muted-foreground">
+                            {active > 0 && <span className="text-foreground/70">{active} активн.</span>}
+                            {active > 0 && done > 0 && <span className="mx-1">·</span>}
+                            {done > 0 && <span className="text-muted-foreground/50">{done} завер.</span>}
+                            {active === 0 && done === 0 && <span className="text-muted-foreground/30">Пусто</span>}
+                          </span>
+                        );
+                      })()}
+                    </div>
+                  ) : shownWeeks.map((w, localIdx) => {
                     const globalIdx = visibleStartIdx + localIdx;
                     const isCurrent = globalIdx === currentWeekIdx;
                     const effColor = getEffectiveColor(globalIdx);
@@ -1592,7 +1653,7 @@ export default function RPlanBoard({ dbPath, trackName, trackColor = 'yellow', s
                     return (
                       <div
                         key={w.id}
-                        className="flex-1 px-1.5 py-1.5 md:px-2 md:py-2 border-r border-border/40 last:border-r-0"
+                        className="group/cell flex-1 px-1.5 py-1.5 md:px-2 md:py-2 border-r border-border/40 last:border-r-0"
                         style={{
                           minWidth: 0,
                           backgroundColor: isCurrent ? `color-mix(in srgb, ${cssVar(effColor, '900')}, transparent 60%)` : undefined,
@@ -1605,16 +1666,13 @@ export default function RPlanBoard({ dbPath, trackName, trackColor = 'yellow', s
                             <TooltipTrigger render={
                               <button
                                 onClick={() => addCard(row.id, w.id)}
-                                className="w-full mb-1.5 flex items-center justify-center gap-1 rounded text-[length:var(--text-12)] font-mono uppercase tracking-wide transition-colors"
+                                className="w-full mb-1.5 flex items-center justify-center gap-1 rounded text-[length:var(--text-12)] font-mono uppercase tracking-wide transition-all opacity-[0.35] md:opacity-[0.15] md:group-hover/cell:opacity-[0.35] md:hover:!opacity-[0.8]"
                                 style={{
                                   height: 18,
                                   color: cssVar(effColor, 'fg-subtle'),
-                                  opacity: 0.35,
                                   backgroundColor: cssVar(effColor, '900'),
                                   border: `1px dashed ${cssVar(effColor, '300')}`,
                                 }}
-                                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '0.8'; }}
-                                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '0.35'; }}
                               />
                             }>
                               +
@@ -1669,17 +1727,14 @@ export default function RPlanBoard({ dbPath, trackName, trackColor = 'yellow', s
                           <Tooltip>
                             <TooltipTrigger render={
                               <button
-                                onClick={() => addCard(row.id, w.id)}
-                                className="w-full mt-0.5 flex items-center justify-center gap-1 rounded text-[length:var(--text-12)] font-mono uppercase tracking-wide transition-colors"
+                                onClick={() => addCard(row.id, w.id, undefined, 'bottom')}
+                                className="w-full mt-0.5 flex items-center justify-center gap-1 rounded text-[length:var(--text-12)] font-mono uppercase tracking-wide transition-all opacity-[0.35] md:opacity-[0.15] md:group-hover/cell:opacity-[0.35] md:hover:!opacity-[0.8]"
                                 style={{
                                   height: 18,
                                   color: cssVar(effColor, 'fg-subtle'),
-                                  opacity: 0.35,
                                   backgroundColor: cssVar(effColor, '900'),
                                   border: `1px dashed ${cssVar(effColor, '300')}`,
                                 }}
-                                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '0.8'; }}
-                                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '0.35'; }}
                               />
                             }>
                               +
@@ -1718,26 +1773,59 @@ export default function RPlanBoard({ dbPath, trackName, trackColor = 'yellow', s
                     >
                       {/* Left column */}
                       <div
-                        className="group/row flex-shrink-0 flex items-start gap-2 px-3 py-3 border-r border-border bg-background"
+                        className="group/row flex-shrink-0 flex flex-col justify-between px-3 py-2 border-r border-border bg-background"
                         style={{ width: COL_W, minWidth: COL_W }}
                       >
-                        <Tooltip>
-                          <TooltipTrigger render={<span className="cursor-grab text-muted-foreground/30 hover:text-muted-foreground transition-colors select-none flex-shrink-0 mt-0.5 text-[length:var(--text-16)] leading-none" />}>⠿</TooltipTrigger>
-                          <TooltipContent>Перетащить строку</TooltipContent>
-                        </Tooltip>
-                        <span className="text-[length:var(--text-12)] font-medium text-foreground flex-1 min-w-0 mt-0.5">
-                          <EditableText value={row.label} onChange={v => updateRowLabel(row.id, v)} />
-                        </span>
+                        {/* Top: collapse arrow + label */}
+                        <div className="flex items-start gap-1.5">
+                          <button
+                            onClick={() => toggleCollapse(row.id)}
+                            className="flex-shrink-0 mt-0.5 text-[length:var(--text-12)] leading-none text-muted-foreground/40 hover:text-muted-foreground transition-colors select-none"
+                          >
+                            {collapsedRows.has(row.id) ? '▸' : '▾'}
+                          </button>
+                          <span className="text-[length:var(--text-12)] font-medium text-foreground flex-1 min-w-0 mt-0.5">
+                            <EditableText value={row.label} onChange={v => updateRowLabel(row.id, v)} />
+                          </span>
+                        </div>
+                        {/* Bottom: drag handle + archive */}
                         {!locked && (
-                          <Tooltip>
-                            <TooltipTrigger render={<Button variant="ghost" size="icon-micro" onClick={() => removeRow(row.id)} className="flex-shrink-0 opacity-0 group-hover/row:opacity-100 transition-opacity text-muted-foreground/20 hover:text-destructive mt-0.5" />}>×</TooltipTrigger>
-                            <TooltipContent>Удалить строку</TooltipContent>
-                          </Tooltip>
+                          <div className="flex items-center justify-between mt-1.5 opacity-0 group-hover/row:opacity-100 transition-opacity">
+                            <Tooltip>
+                              <TooltipTrigger render={<span className="cursor-grab text-muted-foreground/30 hover:text-muted-foreground transition-colors select-none text-[length:var(--text-14)] leading-none" />}>⠿</TooltipTrigger>
+                              <TooltipContent>Перетащить строку</TooltipContent>
+                            </Tooltip>
+                            <Tooltip>
+                              <TooltipTrigger render={
+                                <button onClick={() => archiveRow(row.id)} className="text-[length:var(--text-12)] text-muted-foreground/30 hover:text-muted-foreground transition-colors" />
+                              }>
+                                ↓ архив
+                              </TooltipTrigger>
+                              <TooltipContent>Архивировать строку</TooltipContent>
+                            </Tooltip>
+                          </div>
                         )}
                       </div>
 
-                      {/* Day grid */}
-                      <div className="flex-1 relative" style={{ backgroundColor: awIsCurrent ? `color-mix(in srgb, ${cssVar(awColor, '900')}, transparent 60%)` : undefined }}>
+                      {/* Day grid or collapsed badge */}
+                      {collapsedRows.has(row.id) ? (
+                        <div className="flex-1 flex items-center px-3 py-2 gap-2">
+                          {(() => {
+                            const allCards = Object.values(row.cells ?? {}).flat();
+                            const done = allCards.filter(c => c.done).length;
+                            const active = allCards.filter(c => !c.done).length;
+                            return (
+                              <span className="text-[length:var(--text-11)] font-mono text-muted-foreground">
+                                {active > 0 && <span className="text-foreground/70">{active} активн.</span>}
+                                {active > 0 && done > 0 && <span className="mx-1">·</span>}
+                                {done > 0 && <span className="text-muted-foreground/50">{done} завер.</span>}
+                                {active === 0 && done === 0 && <span className="text-muted-foreground/30">Пусто</span>}
+                              </span>
+                            );
+                          })()}
+                        </div>
+                      ) : (
+                      <div className="group/cell flex-1 relative" style={{ backgroundColor: awIsCurrent ? `color-mix(in srgb, ${cssVar(awColor, '900')}, transparent 60%)` : undefined }}>
                         {/* Column borders + hatched "Без дня" + drop highlight */}
                         <div className="absolute inset-0 pointer-events-none" style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)' }}>
                           {[0,1,2,3,4,5].map(i => (
@@ -1766,16 +1854,13 @@ export default function RPlanBoard({ dbPath, trackName, trackColor = 'yellow', s
                                   <TooltipTrigger render={
                                     <button
                                       onClick={() => addCard(row.id, aw.id, day)}
-                                      className="w-full flex items-center justify-center rounded text-[length:var(--text-11)] font-mono uppercase tracking-wide transition-colors"
+                                      className="w-full flex items-center justify-center rounded text-[length:var(--text-11)] font-mono uppercase tracking-wide transition-all opacity-[0.35] md:opacity-[0.15] md:group-hover/cell:opacity-[0.35] md:hover:!opacity-[0.8]"
                                       style={{
                                         height: 18,
                                         color: cssVar(awColor, 'fg-subtle'),
-                                        opacity: 0.35,
                                         backgroundColor: cssVar(awColor, '900'),
                                         border: `1px dashed ${cssVar(awColor, '300')}`,
                                       }}
-                                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '0.8'; }}
-                                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '0.35'; }}
                                     />
                                   }>
                                     +
@@ -1835,17 +1920,14 @@ export default function RPlanBoard({ dbPath, trackName, trackColor = 'yellow', s
                                 <Tooltip>
                                   <TooltipTrigger render={
                                     <button
-                                      onClick={() => addCard(row.id, aw.id, day)}
-                                      className="w-full flex items-center justify-center rounded text-[length:var(--text-11)] font-mono uppercase tracking-wide transition-colors"
+                                      onClick={() => addCard(row.id, aw.id, day, 'bottom')}
+                                      className="w-full flex items-center justify-center rounded text-[length:var(--text-11)] font-mono uppercase tracking-wide transition-all opacity-[0.35] md:opacity-[0.15] md:group-hover/cell:opacity-[0.35] md:hover:!opacity-[0.8]"
                                       style={{
                                         height: 18,
                                         color: cssVar(awColor, 'fg-subtle'),
-                                        opacity: 0.35,
                                         backgroundColor: cssVar(awColor, '900'),
                                         border: `1px dashed ${cssVar(awColor, '300')}`,
                                       }}
-                                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '0.8'; }}
-                                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '0.35'; }}
                                     />
                                   }>
                                     +
@@ -1857,6 +1939,7 @@ export default function RPlanBoard({ dbPath, trackName, trackColor = 'yellow', s
                           </div>
                         )}
                       </div>
+                      )}
                     </div>
                   );
                 });
@@ -1928,6 +2011,48 @@ export default function RPlanBoard({ dbPath, trackName, trackColor = 'yellow', s
             <TooltipContent>{locked ? 'Разблокировать' : 'Заблокировать редактирование'}</TooltipContent>
           </Tooltip>
         </div>
+
+        {/* Archive section */}
+        {archivedRows.length > 0 && (
+          <div className="mt-2 border border-border/40 rounded-lg overflow-hidden">
+            <button
+              onClick={() => setShowArchive(v => !v)}
+              className="w-full flex items-center gap-2 px-3 py-2 text-[length:var(--text-12)] font-mono text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <span className="text-[length:var(--text-11)]">{showArchive ? '▾' : '▸'}</span>
+              <span>Архив ({archivedRows.length})</span>
+            </button>
+            {showArchive && (
+              <div className="border-t border-border/40">
+                {archivedRows.map(row => {
+                  const allCards = Object.values(row.cells ?? {}).flat();
+                  const done = allCards.filter(c => c.done).length;
+                  const active = allCards.filter(c => !c.done).length;
+                  return (
+                    <div key={row.id} className="flex items-center gap-3 px-3 py-2 border-b border-border/20 last:border-b-0">
+                      <span className="text-[length:var(--text-12)] font-medium text-foreground/60 flex-1 min-w-0 truncate">{row.label}</span>
+                      <span className="text-[length:var(--text-11)] font-mono text-muted-foreground/50 flex-shrink-0">
+                        {active > 0 && <span>{active} активн.</span>}
+                        {active > 0 && done > 0 && <span className="mx-1">·</span>}
+                        {done > 0 && <span>{done} завер.</span>}
+                      </span>
+                      {!locked && (
+                        <Tooltip>
+                          <TooltipTrigger render={
+                            <button onClick={() => restoreRow(row.id)} className="flex-shrink-0 text-[length:var(--text-12)] text-muted-foreground/40 hover:text-foreground transition-colors" />
+                          }>
+                            ↑ восстановить
+                          </TooltipTrigger>
+                          <TooltipContent>Восстановить строку</TooltipContent>
+                        </Tooltip>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <LockModal
