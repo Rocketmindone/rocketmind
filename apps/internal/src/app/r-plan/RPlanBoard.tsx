@@ -1150,10 +1150,10 @@ export default function RPlanBoard({ dbPath, trackName, trackColor = 'yellow', s
   type AiProvider = 'openrouter' | 'groq';
 
   const OPENROUTER_MODELS = [
-    'qwen/qwen3-30b-a3b:free',
     'meta-llama/llama-3.3-70b-instruct:free',
     'google/gemma-3-27b-it:free',
-    'mistralai/mistral-small-3.2-24b-instruct:free',
+    'qwen/qwen3-next-80b-a3b-instruct:free',
+    'openai/gpt-oss-120b:free',
   ];
 
   const AI_PROVIDERS: Record<AiProvider, { url: string; model: string; label: string; keyPrefix: string; keyHint: string; keyUrl: string }> = {
