@@ -187,7 +187,7 @@ function ProductsCatalogInner({ sections }: Props) {
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       onBlur={() => { if (!searchQuery) setSearchOpen(false); }}
-                      className="w-full h-8 pl-8 pr-2 bg-[#1A1A1A] border border-border rounded-[4px] font-mono text-[12px] uppercase tracking-[0.02em] text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:border-ring transition-colors"
+                      className="w-full h-8 pl-8 pr-2 bg-[#1A1A1A] border border-border rounded-[4px] font-mono text-[16px] uppercase tracking-[0.02em] text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:border-ring transition-colors"
                     />
                   </div>
                 ) : (
