@@ -67,6 +67,7 @@ export function ServicesGrid() {
             description: s.description,
             href: s.href,
             coverImage: product?.heroImage ?? undefined,
+            factoids: product?.hero?.factoids?.slice(0, 3).map((f) => ({ number: f.number, text: f.text })),
           };
         }),
       ],
@@ -88,6 +89,7 @@ export function ServicesGrid() {
           description: s.description,
           href: s.href,
           coverImage: product?.heroImage ?? undefined,
+          factoids: product?.hero?.factoids?.slice(0, 3).map((f) => ({ number: f.number, text: f.text })),
         };
       }),
     },

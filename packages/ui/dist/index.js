@@ -1977,11 +1977,11 @@ function ProductCard({
     "group relative flex flex-col p-5 md:p-8",
     "bg-[rgba(10,10,10,0.8)] backdrop-blur-[10px]",
     "border border-[#404040] transition-[border-color] duration-75",
-    "active:[border-color:var(--rm-yellow-100)]",
+    "md:active:[border-color:var(--rm-yellow-100)]",
     className
   );
   const content = /* @__PURE__ */ jsxs11(Fragment2, { children: [
-    /* @__PURE__ */ jsx28(
+    /* @__PURE__ */ jsx28("div", { className: "hidden md:block", children: /* @__PURE__ */ jsx28(
       GlowingEffect,
       {
         spread: 40,
@@ -1989,10 +1989,10 @@ function ProductCard({
         disabled: false,
         proximity: 40,
         inactiveZone: 0.01,
-        borderWidth: 2,
+        borderWidth: 1,
         variant: "yellow"
       }
-    ),
+    ) }),
     /* @__PURE__ */ jsx28("div", { className: "absolute top-[2px] right-[2px] z-10 flex items-center justify-center w-10 h-10 rounded-[4px] text-[#404040] transition-all duration-200 group-hover:text-[#F0F0F0] group-hover:-top-[2px] group-hover:-right-[2px]", children: /* @__PURE__ */ jsx28("svg", { width: "11", height: "11", viewBox: "0 0 11 11", fill: "none", children: /* @__PURE__ */ jsx28(
       "path",
       {
@@ -2068,11 +2068,11 @@ function ProductImageCard({
       "group relative flex flex-col p-5 md:flex-row md:gap-8 md:p-8 md:h-[424px]",
       "bg-[rgba(10,10,10,0.8)] backdrop-blur-[10px]",
       "border border-[#404040] transition-[border-color] duration-75",
-      "active:[border-color:var(--rm-yellow-100)]",
+      "md:active:[border-color:var(--rm-yellow-100)]",
       className
     );
     const inner2 = /* @__PURE__ */ jsxs12(Fragment3, { children: [
-      /* @__PURE__ */ jsx29(GlowingEffect, { spread: 40, glow: false, disabled: false, proximity: 40, inactiveZone: 0.01, borderWidth: 2, variant: "yellow" }),
+      /* @__PURE__ */ jsx29("div", { className: "hidden md:block", children: /* @__PURE__ */ jsx29(GlowingEffect, { spread: 40, glow: false, disabled: false, proximity: 40, inactiveZone: 0.01, borderWidth: 1, variant: "yellow" }) }),
       /* @__PURE__ */ jsx29("div", { className: "absolute top-[2px] right-[2px] z-10 flex items-center justify-center w-10 h-10 rounded-[4px] text-[#404040] transition-all duration-200 group-hover:text-[#F0F0F0] group-hover:-top-[2px] group-hover:-right-[2px]", children: /* @__PURE__ */ jsx29("svg", { width: "11", height: "11", viewBox: "0 0 11 11", fill: "none", children: /* @__PURE__ */ jsx29("path", { d: "M1 10L10 1M10 1H3M10 1V8", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }) }) }),
       /* @__PURE__ */ jsxs12("div", { className: "relative md:flex-1 h-[220px] md:h-[360px] overflow-hidden shrink-0", children: [
         image ? /* @__PURE__ */ jsx29("img", { src: image, alt: "", className: "w-full h-full object-cover" }) : /* @__PURE__ */ jsx29(ImagePlaceholder, {}),
@@ -2097,7 +2097,7 @@ function ProductImageCard({
     "group relative flex flex-col p-5 md:p-8",
     "bg-[rgba(10,10,10,0.8)] backdrop-blur-[10px]",
     "border border-[#404040] transition-[border-color] duration-75",
-    "active:[border-color:var(--rm-yellow-100)]",
+    "md:active:[border-color:var(--rm-yellow-100)]",
     className
   );
   const inner = /* @__PURE__ */ jsxs12(Fragment3, { children: [

@@ -19,6 +19,8 @@ export type ServiceCard = {
   coverImage?: string;
   /** Expert avatars */
   experts?: Array<{ name: string; image: string }>;
+  /** Hero factoids for wide image cards */
+  factoids?: Array<{ number: string; text: string }>;
 };
 
 export type ServiceSection = {
@@ -59,33 +61,8 @@ export function ServicesGridClient({ sections }: ServicesGridClientProps) {
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
   const scrollRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  // Desktop drag-to-scroll
-  const dragState = useRef<{ active: boolean; startX: number; sIdx: number; startIdx: number } | null>(null);
-
-  const handleDragStart = useCallback((e: React.PointerEvent, sIdx: number) => {
-    if (isMobile) return;
-    dragState.current = { active: true, startX: e.clientX, sIdx, startIdx: carouselIndices[sIdx] };
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-  }, [isMobile, carouselIndices]);
-
-  const handleDragMove = useCallback((e: React.PointerEvent) => {
-    if (!dragState.current?.active) return;
-    const dx = dragState.current.startX - e.clientX;
-    if (Math.abs(dx) > 40) {
-      const { sIdx, startIdx } = dragState.current;
-      const section = sections[sIdx];
-      const epv = section.showImages ? Math.max(1, cardsPerView / 2) : cardsPerView;
-      const max = Math.max(0, section.cards.length - epv);
-      const step = dx > 0 ? 1 : -1;
-      const next = Math.max(0, Math.min(max, startIdx + step));
-      setCarouselIndices((prev) => ({ ...prev, [sIdx]: next }));
-      dragState.current.active = false;
-    }
-  }, [sections, cardsPerView]);
-
-  const handleDragEnd = useCallback(() => {
-    dragState.current = null;
-  }, []);
+  // Desktop drag refs (handlers defined after scrollCarousel)
+  const dragRef = useRef<{ startX: number; sIdx: number; dragged: boolean } | null>(null);
 
   // Responsive
   useEffect(() => {
@@ -139,6 +116,34 @@ export function ServicesGridClient({ sections }: ServicesGridClientProps) {
       return { ...prev, [sIdx]: Math.max(0, Math.min(max, next)) };
     });
   };
+
+  // Desktop drag-to-scroll handlers
+  const handleDragStart = useCallback((e: React.PointerEvent, sIdx: number) => {
+    if (isMobile) return;
+    e.preventDefault();
+    dragRef.current = { startX: e.clientX, sIdx, dragged: false };
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+  }, [isMobile]);
+
+  const handleDragMove = useCallback((e: React.PointerEvent) => {
+    const d = dragRef.current;
+    if (!d) return;
+    const dx = d.startX - e.clientX;
+    if (!d.dragged && Math.abs(dx) > 30) {
+      d.dragged = true;
+      scrollCarousel(d.sIdx, dx > 0 ? "right" : "left");
+    }
+  }, [scrollCarousel]);
+
+  const handleDragEnd = useCallback((e: React.PointerEvent) => {
+    const wasDrag = dragRef.current?.dragged;
+    dragRef.current = null;
+    if (wasDrag) {
+      const el = e.currentTarget as HTMLElement;
+      const suppress = (ev: Event) => { ev.preventDefault(); ev.stopPropagation(); };
+      el.addEventListener("click", suppress, { capture: true, once: true });
+    }
+  }, []);
 
   return (
     <section id="focus" className="dark bg-background text-foreground">
@@ -255,6 +260,7 @@ export function ServicesGridClient({ sections }: ServicesGridClientProps) {
                               href={card.href}
                               image={card.coverImage}
                               variant="wide"
+                              factoids={card.factoids}
                               className="h-full"
                             />
                           </div>
@@ -321,6 +327,7 @@ export function ServicesGridClient({ sections }: ServicesGridClientProps) {
                               href={card.href}
                               image={card.coverImage}
                               variant="wide"
+                              factoids={card.factoids}
                               className="[&:not(:first-child)]:border-l-0 h-full"
                             />
                           ) : (
