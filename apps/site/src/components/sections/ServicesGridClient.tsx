@@ -141,10 +141,21 @@ export function ServicesGridClient({ sections }: ServicesGridClientProps) {
                   {/* Header row */}
                   <div className="flex items-end justify-between gap-6 lg:gap-10 mb-6 md:mb-8 lg:mb-10 px-5 md:px-0">
                     <div className="flex flex-col gap-4 lg:gap-5 flex-1 min-w-0">
-                      {/* Yellow track label — mobile/tablet only */}
-                      <p className="lg:hidden font-['Loos_Condensed',sans-serif] font-medium text-[16px] md:text-[18px] uppercase leading-[1.16] tracking-[0.02em] text-[var(--rm-yellow-100)]">
-                        {section.trackName}
-                      </p>
+                      {/* Yellow track label + "Все" — mobile/tablet only */}
+                      <div className="flex items-center justify-between lg:hidden">
+                        <p className="font-['Loos_Condensed',sans-serif] font-medium text-[16px] md:text-[18px] uppercase leading-[1.16] tracking-[0.02em] text-[var(--rm-yellow-100)]">
+                          {section.trackName}
+                        </p>
+                        {section.catalogHref && (
+                          <Link
+                            href={section.catalogHref}
+                            className="inline-flex items-center gap-2 font-['Loos_Condensed',sans-serif] text-[16px] font-medium uppercase leading-[1.12] tracking-[0.02em] text-foreground"
+                          >
+                            {section.catalogLabel ?? "Все"}
+                            <ArrowUpRight size={13} strokeWidth={2} />
+                          </Link>
+                        )}
+                      </div>
                       {/* Title: mobile uses mobileTitle with line breaks */}
                       <h2 className="font-heading text-[28px] md:text-[42px] lg:text-[52px] font-bold uppercase leading-[1.16] md:leading-[1.08] tracking-[-0.01em] md:tracking-[-0.02em] text-foreground whitespace-pre-line">
                         {isMobile && section.mobileTitle ? section.mobileTitle : section.headerHighlight}
@@ -266,18 +277,6 @@ export function ServicesGridClient({ sections }: ServicesGridClientProps) {
                     </div>
                   )}
 
-                  {/* Mobile: catalog button under carousel */}
-                  {isMobile && section.catalogHref && (
-                    <div className="flex justify-end px-5 mt-4">
-                      <Link
-                        href={section.catalogHref}
-                        className="inline-flex items-center gap-3 border border-border bg-[#1a1a1a] text-foreground h-10 px-5 font-['Loos_Condensed',sans-serif] text-[14px] font-medium uppercase tracking-[0.04em] transition-colors hover:bg-[#242424] rounded-[4px]"
-                      >
-                        {section.catalogLabel ?? "Все"}
-                        <ArrowUpRight size={13} strokeWidth={2} />
-                      </Link>
-                    </div>
-                  )}
 
                 </div>
               );
