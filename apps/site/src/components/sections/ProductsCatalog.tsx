@@ -308,23 +308,25 @@ function ProductsCatalogInner({ sections }: Props) {
             className="flex flex-col gap-[72px] md:gap-[112px] mt-10 md:mt-[40px] pb-[72px] md:pb-[112px] animate-[slideUp_0.4s_ease-out]"
           >
             {filteredSections.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-16 md:py-24 lg:py-32 gap-4">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground/40">
+              <div className="flex items-center gap-3 py-5 md:flex-col md:items-center md:justify-center md:py-24 lg:py-32 md:gap-4">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-muted-foreground/40 md:w-12 md:h-12">
                   <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /><path d="M8 11h6" />
                 </svg>
-                <p className="text-[16px] md:text-[18px] text-muted-foreground text-center">
-                  {searchQuery
-                    ? <>По запросу <span className="text-foreground">&laquo;{searchQuery}&raquo;</span> ничего не найдено</>
-                    : "Нет продуктов в этой категории"}
-                </p>
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery("")}
-                    className="mt-2 inline-flex items-center gap-2 h-10 px-4 border border-border rounded-[4px] bg-background text-foreground font-mono text-[14px] uppercase tracking-[0.02em] transition-colors hover:bg-[#1A1A1A] cursor-pointer"
-                  >
-                    Сбросить поиск
-                  </button>
-                )}
+                <div className="flex flex-col gap-2 md:items-center">
+                  <p className="text-[14px] md:text-[18px] text-muted-foreground md:text-center">
+                    {searchQuery
+                      ? <>Ничего по запросу <span className="text-foreground">&laquo;{searchQuery}&raquo;</span></>
+                      : "Нет продуктов в этой категории"}
+                  </p>
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery("")}
+                      className="self-start md:self-auto inline-flex items-center gap-2 h-8 md:h-10 px-3 md:px-4 border border-border rounded-[4px] bg-background text-foreground font-mono text-[12px] md:text-[14px] uppercase tracking-[0.02em] transition-colors hover:bg-[#1A1A1A] cursor-pointer"
+                    >
+                      Сбросить
+                    </button>
+                  )}
+                </div>
               </div>
             )}
 
