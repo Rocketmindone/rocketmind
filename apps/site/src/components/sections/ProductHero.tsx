@@ -85,7 +85,7 @@ export function ProductHero({
           <div className="absolute -left-14 top-0 bottom-0 w-[180px] z-[1] pointer-events-none" style={{ background: "linear-gradient(90deg, #0A0A0A 0%, transparent 100%)" }} />
           <div className="relative z-10 flex flex-col justify-end h-full">
             <div className="absolute top-9 left-0">
-              <Image src={coverImage} alt="" width={156} height={156} className="w-[156px] h-[156px]" />
+              <Image src={coverImage} alt="" width={156} height={156} className="w-[156px] h-[156px] object-contain" />
             </div>
             <div className="flex flex-col gap-11 pr-10 pb-14 mt-auto" style={{ paddingTop: "298px" }}>
               <div className="flex flex-col gap-6">
@@ -127,7 +127,7 @@ export function ProductHero({
                 alt=""
                 width={120}
                 height={120}
-                className="w-[120px] h-[120px]"
+                className="w-[120px] h-[120px] object-contain"
               />
             </div>
 
@@ -180,7 +180,7 @@ export function ProductHero({
                 alt=""
                 width={92}
                 height={92}
-                className="w-[92px] h-[92px]"
+                className="w-[92px] h-[92px] object-contain"
               />
             </div>
 

@@ -3,7 +3,7 @@
 import React from "react"
 import {
   Avatar, AvatarFallback, AvatarImage,
-  Badge, GlowingEffect, ProductCard, ScrollArea, Separator, Skeleton, Slider,
+  Badge, GlowingEffect, ProductCard, ProductImageCard, ScrollArea, Separator, Skeleton, Slider,
   Tabs, TabsContent, TabsList, TabsTrigger,
 } from "@rocketmind/ui"
 import { Section, SubSection } from "@/components/ds/shared"
@@ -851,17 +851,37 @@ export default function ComponentsPage() {
                   href="#"
                 />
               </div>
-              <p className={`${mono} text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-2`}>Без иконки (академия, AI)</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
-                <ProductCard
+              {/* ════════ 3b. С ИЗОБРАЖЕНИЕМ ════════ */}
+              <h3 className="font-[family-name:var(--font-heading-family)] font-bold text-[length:var(--text-14)] uppercase tracking-[0.04em] text-muted-foreground mb-4 mt-4">3b. С изображением</h3>
+              <p className="text-muted-foreground text-[length:var(--text-14)] mb-4">
+                Карточки для разделов «Онлайн-школа» и «AI-продукты». Изображение cover 220px, бейдж -22px overlap.
+                Вариант «wide» — 2 колонки с фактоидами из hero.
+              </p>
+              <p className={`${mono} text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-2`}>1 колонка</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                <ProductImageCard
                   title="Бизнес-дизайн для команд"
                   description="Практикум по бизнес-дизайну для команд, помогающий системно подойти к развитию продукта"
+                  tag="Экспертный продукт"
                   href="#"
                 />
-                <ProductCard
+                <ProductImageCard
                   title="Тестирование гипотез"
                   description="ИИ-агент по тестированию бизнес-гипотез с автоматическим анализом данных"
-                  tag="Экспертный продукт"
+                  href="#"
+                />
+              </div>
+              <p className={`${mono} text-[length:var(--text-12)] uppercase tracking-[0.08em] text-muted-foreground mb-2`}>2 колонки (wide)</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+                <ProductImageCard
+                  title="Практикум по бизнес-дизайну для команд"
+                  description="Навыки стратегического развития бизнеса — от поиска бизнес-модели до проектирования платформ и экосистем"
+                  variant="wide"
+                  factoids={[
+                    { number: "1000+", text: "Руководителей и специалистов прошли обучение" },
+                    { number: "130+", text: "Стратегических консультаций проведено" },
+                    { number: "50+", text: "Стратегических сессий для корпораций" },
+                  ]}
                   href="#"
                 />
               </div>

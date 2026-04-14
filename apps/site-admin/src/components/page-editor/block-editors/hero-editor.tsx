@@ -1,6 +1,7 @@
 "use client";
 
-import { GripVertical, ImagePlus, ArrowUpRight } from "lucide-react";
+import { useRef } from "react";
+import { GripVertical, ImagePlus, ArrowUpRight, Upload, Trash2 } from "lucide-react";
 import { InlineEdit } from "@/components/inline-edit";
 import { useItemDnd } from "@/lib/use-item-dnd";
 
@@ -10,10 +11,12 @@ interface HeroEditorProps {
 }
 
 export function HeroEditor({ data, onUpdate }: HeroEditorProps) {
+  const iconInputRef = useRef<HTMLInputElement>(null);
   const caption = (data.caption as string) || "";
   const title = (data.title as string) || "";
   const description = (data.description as string) || "";
   const ctaText = (data.ctaText as string) || "";
+  const heroImageData = (data.heroImageData as string) || "";
   const factoids =
     (data.factoids as Array<{ number: string; label: string; text: string }>) || [];
 
@@ -41,12 +44,56 @@ export function HeroEditor({ data, onUpdate }: HeroEditorProps) {
         {/* Left: icon at top, text pushed to bottom */}
         <div className="relative flex flex-1 flex-col px-5 py-10 md:px-8 lg:min-h-[600px] xl:pl-14">
           {/* Cover icon — linked with card icon */}
-          <div className="mb-8 flex h-[156px] w-[156px] items-center justify-center rounded-sm border border-dashed border-[#404040] text-[#939393] transition-colors hover:border-[#FFCC00] hover:text-[#FFCC00]">
-            <div className="flex flex-col items-center gap-1">
-              <ImagePlus className="h-6 w-6" />
-              <span className="text-[length:var(--text-10)]">Иконка продукта</span>
+          {heroImageData ? (
+            <div className="group/icon relative mb-8 h-[156px] w-[156px]">
+              <div
+                className="h-full w-full rounded-sm bg-contain bg-center bg-no-repeat"
+                style={{ backgroundImage: `url(${heroImageData})` }}
+              />
+              <div className="absolute left-1 top-1 flex items-center gap-1 opacity-0 transition-opacity group-hover/icon:opacity-100">
+                <button
+                  type="button"
+                  onClick={() => iconInputRef.current?.click()}
+                  className="flex h-6 items-center gap-1 rounded-sm bg-[#1a1a1a]/80 px-1.5 text-[length:var(--text-10)] text-[#F0F0F0] backdrop-blur hover:bg-[#1a1a1a]"
+                >
+                  <Upload className="h-3 w-3" />
+                  Заменить
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onUpdate({ heroImageData: "" })}
+                  className="flex h-6 w-6 items-center justify-center rounded-sm bg-[#1a1a1a]/80 text-[#F0F0F0] backdrop-blur hover:bg-destructive"
+                >
+                  <Trash2 className="h-3 w-3" />
+                </button>
+              </div>
             </div>
-          </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => iconInputRef.current?.click()}
+              className="mb-8 flex h-[156px] w-[156px] cursor-pointer items-center justify-center rounded-sm border border-dashed border-[#404040] text-[#939393] transition-colors hover:border-[#FFCC00] hover:text-[#FFCC00]"
+            >
+              <div className="flex flex-col items-center gap-1">
+                <ImagePlus className="h-6 w-6" />
+                <span className="text-[length:var(--text-10)]">Иконка продукта</span>
+              </div>
+            </button>
+          )}
+          <input
+            ref={iconInputRef}
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              const reader = new FileReader();
+              reader.onload = () => onUpdate({ heroImageData: reader.result as string });
+              reader.readAsDataURL(file);
+              e.target.value = "";
+            }}
+            className="hidden"
+          />
 
           {/* Text — pushed to bottom */}
           <div className="mt-auto flex flex-col gap-6 lg:gap-11 lg:pr-10">

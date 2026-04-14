@@ -33,6 +33,7 @@ export * from './components/ui/slider';
 export * from './components/ui/tooltip';
 
 export * from './components/ui/product-card';
+export * from './components/ui/product-image-card';
 
 export * from './components/ui/for-whom-section';
 export * from './components/ui/process-section';

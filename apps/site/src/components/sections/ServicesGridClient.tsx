@@ -4,7 +4,7 @@ import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, ArrowUpRight } from "lucide-react";
-import { ProductCard } from "@rocketmind/ui";
+import { ProductCard, ProductImageCard } from "@rocketmind/ui";
 
 export type ServiceCard = {
   title: string;
@@ -33,6 +33,14 @@ export type ServiceSection = {
   catalogLabel?: string;
   /** Show 120×120 icon in cards (consulting section only) */
   showIcons?: boolean;
+  /** Show cover image in cards (academy / ai-products) */
+  showImages?: boolean;
+  /** Yellow partner block below carousel */
+  partnerBlock?: {
+    title: string;
+    description: string;
+    logos: Array<{ src: string; width?: number; height?: number }>;
+  };
   cards: ServiceCard[];
 };
 
@@ -96,7 +104,9 @@ export function ServicesGridClient({ sections }: ServicesGridClientProps) {
   const scrollCarousel = (sIdx: number, direction: "left" | "right") => {
     setCarouselIndices((prev) => {
       const current = prev[sIdx];
-      const max = Math.max(0, sections[sIdx].cards.length - cardsPerView);
+      const section = sections[sIdx];
+      const epv = section.showImages ? Math.max(1, cardsPerView / 2) : cardsPerView;
+      const max = Math.max(0, section.cards.length - epv);
       const next = direction === "left" ? current - 1 : current + 1;
       return { ...prev, [sIdx]: Math.max(0, Math.min(max, next)) };
     });
@@ -135,7 +145,9 @@ export function ServicesGridClient({ sections }: ServicesGridClientProps) {
           <div className="flex flex-col min-w-0">
             {sections.map((section, sIdx) => {
               const carouselIndex = carouselIndices[sIdx];
-              const max = Math.max(0, section.cards.length - cardsPerView);
+              // Wide image cards take 2x width → show half as many per view
+              const effectivePerView = section.showImages ? Math.max(1, cardsPerView / 2) : cardsPerView;
+              const max = Math.max(0, section.cards.length - effectivePerView);
               const canLeft = carouselIndex > 0;
               const canRight = carouselIndex < max;
 
@@ -207,8 +219,17 @@ export function ServicesGridClient({ sections }: ServicesGridClientProps) {
                       style={{ scrollbarWidth: "none", scrollPaddingLeft: 20 }}
                     >
                       {section.cards.map((card) =>
-                        card.variant === "info" ? (
-                          <MobileInfoCard key={card.title} card={card} />
+                        section.showImages ? (
+                          <div key={card.title} className="flex-none w-[335px] snap-start -ml-px first:ml-0">
+                            <ProductImageCard
+                              title={card.title}
+                              description={card.description}
+                              href={card.href}
+                              image={card.coverImage}
+                              variant="wide"
+                              className="h-full"
+                            />
+                          </div>
                         ) : (
                           <div key={card.title} className="flex-none w-[335px] snap-start -ml-px first:ml-0">
                             <ProductCard
@@ -232,44 +253,42 @@ export function ServicesGridClient({ sections }: ServicesGridClientProps) {
                     </div>
                   ) : (
                     /* ── Desktop/tablet: grid carousel ── */
-                    <div className="overflow-hidden">
+                    <div className="relative overflow-hidden md:-mr-8 xl:-mr-14 md:pr-8 xl:pr-14">
+                      {/* Left fade — visible when scrolled */}
+                      <div
+                        className="pointer-events-none absolute left-0 top-0 z-10 h-full w-10 transition-opacity duration-300"
+                        style={{
+                          background: "linear-gradient(90deg, rgba(10,10,10,1) 0%, rgba(10,10,10,0) 100%)",
+                          opacity: canLeft ? 1 : 0,
+                        }}
+                      />
+                      {/* Right fade — visible when more cards ahead */}
+                      <div
+                        className="pointer-events-none absolute right-0 top-0 z-10 h-full w-10 transition-opacity duration-300"
+                        style={{
+                          background: "linear-gradient(-90deg, rgba(10,10,10,1) 0%, rgba(10,10,10,0) 100%)",
+                          opacity: canRight ? 1 : 0,
+                        }}
+                      />
                       <div
                         className="grid transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
                         style={{
                           gridTemplateColumns: `repeat(${section.cards.length}, 1fr)`,
-                          width: `${(section.cards.length * 100) / cardsPerView}%`,
+                          width: `${(section.cards.length * 100) / effectivePerView}%`,
                           transform: `translateX(-${(carouselIndex * 100) / section.cards.length}%)`,
                         }}
                       >
                         {section.cards.map((card) =>
-                          card.variant === "info" ? (
-                            <article
+                          section.showImages ? (
+                            <ProductImageCard
                               key={card.title}
-                              className="flex flex-col border border-border [&:not(:first-child)]:border-l-0 p-8 bg-[#A172F8]"
-                            >
-                              <div className="flex flex-col h-full gap-2">
-                                <div className="flex flex-col gap-2 min-h-[156px]">
-                                  <h3 className="font-heading text-[24px] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#0A0A0A]">
-                                    {card.title}
-                                  </h3>
-                                  <p className="text-[14px] leading-[1.32] tracking-[0.01em] text-[#0A0A0A]">
-                                    {card.description}
-                                  </p>
-                                </div>
-                                <div className="flex items-end justify-between gap-[clamp(16px,4vw,40px)] py-2 mt-auto">
-                                  {card.partnerLogos ? (
-                                    card.partnerLogos.map((logo, i) => (
-                                      <Image key={i} src={logo.src} alt="" width={logo.width ?? 139} height={logo.height ?? 32} className="h-[clamp(36px,7vw,40px)] w-auto max-w-[45%] object-contain" unoptimized />
-                                    ))
-                                  ) : (
-                                    <>
-                                      <div className="h-[clamp(36px,7vw,40px)] w-[139px] max-w-[45%] bg-muted-foreground/15 rounded-sm" />
-                                      <div className="h-[clamp(36px,7vw,40px)] w-[108px] max-w-[45%] bg-muted-foreground/15 rounded-sm" />
-                                    </>
-                                  )}
-                                </div>
-                              </div>
-                            </article>
+                              title={card.title}
+                              description={card.description}
+                              href={card.href}
+                              image={card.coverImage}
+                              variant="wide"
+                              className="[&:not(:first-child)]:border-l-0 h-full"
+                            />
                           ) : (
                             <ProductCard
                               key={card.title}
@@ -291,6 +310,37 @@ export function ServicesGridClient({ sections }: ServicesGridClientProps) {
                     </div>
                   )}
 
+                  {/* ── Partner block (yellow, below carousel) ── */}
+                  {section.partnerBlock && (
+                    <div className="bg-[#FFCC00] p-5 md:p-8 mt-[-1px]">
+                      <div className="flex flex-col gap-8 md:flex-row md:justify-between">
+                        <div className="flex flex-col gap-4 md:max-w-[665px]">
+                          <h3 className="font-heading text-[28px] md:text-[32px] font-bold uppercase leading-[1.12] tracking-[-0.01em] text-[#0A0A0A]">
+                            {section.partnerBlock.title}
+                          </h3>
+                          <p className="font-['Loos_Condensed',sans-serif] text-[14px] md:text-[18px] font-medium uppercase tracking-[0.02em] leading-[1.12] text-[#0A0A0A]">
+                            {section.partnerBlock.description}
+                          </p>
+                        </div>
+                        <div className="relative w-[284px] h-[60px] md:h-[140px] shrink-0 self-end md:self-auto">
+                          {section.partnerBlock.logos.map((logo, i) => (
+                            <Image
+                              key={i}
+                              src={logo.src}
+                              alt=""
+                              width={logo.width ?? 180}
+                              height={logo.height ?? 46}
+                              className={i === 0
+                                ? "absolute bottom-0 left-4 h-[27px] md:h-[46px] w-auto object-contain"
+                                : "absolute top-0 left-0 h-[39px] md:h-[60px] w-auto object-contain"
+                              }
+                              unoptimized
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                 </div>
               );
@@ -300,39 +350,5 @@ export function ServicesGridClient({ sections }: ServicesGridClientProps) {
         </div>
       </div>
     </section>
-  );
-}
-
-/* ── Mobile info card (purple): 335px, Figma specs ── */
-function MobileInfoCard({ card }: { card: ServiceCard }) {
-  return (
-    <article
-      className="flex-none w-[335px] snap-start border border-border -ml-px first:ml-0 p-5 bg-[#A172F8]"
-    >
-      <div className="flex flex-col gap-8 h-full">
-        {/* Text area — fixed 140px */}
-        <div className="flex flex-col gap-2 h-[140px]">
-          <h3 className="font-heading text-[20px] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#0A0A0A]">
-            {card.title}
-          </h3>
-          <p className="text-[14px] leading-[1.32] tracking-[0.01em] text-[#0A0A0A]">
-            {card.description}
-          </p>
-        </div>
-        {/* Partner logos */}
-        <div className="flex items-end justify-between gap-[39px] py-2 mt-auto max-w-[286px]">
-          {card.partnerLogos ? (
-            card.partnerLogos.map((logo, i) => (
-              <Image key={i} src={logo.src} alt="" width={logo.width ?? 139} height={logo.height ?? 32} className="h-8 w-auto object-contain" unoptimized />
-            ))
-          ) : (
-            <>
-              <div className="h-8 w-[139px] bg-muted-foreground/15 rounded-sm" />
-              <div className="h-8 w-[108px] bg-muted-foreground/15 rounded-sm" />
-            </>
-          )}
-        </div>
-      </div>
-    </article>
   );
 }

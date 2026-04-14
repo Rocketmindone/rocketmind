@@ -2,7 +2,7 @@
 
 import { Suspense, useState, useMemo, useCallback, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { ProductCard } from "@rocketmind/ui";
+import { cn, ProductCard, ProductImageCard } from "@rocketmind/ui";
 import { ShaderBackground } from "@/components/ui/ShaderBackground";
 import type { CatalogSection, CatalogCard } from "@/app/products/page";
 
@@ -397,22 +397,36 @@ function ProductsCatalogInner({ sections }: Props) {
 
                   {/* Cards grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 border-t border-l border-[#404040]">
-                    {section.cards.map((card) => (
-                      <ProductCard
-                        key={card.slug}
-                        title={card.cardTitle}
-                        description={card.cardDescription}
-                        href={card.href}
-                        icon={
-                          card.category === "consulting" && card.coverImage
-                            ? <img src={card.coverImage} alt="" className="w-full h-full object-contain" />
-                            : undefined
-                        }
-                        experts={card.experts}
-                        tag={card.experts.length > 0 ? "Экспертный продукт" : undefined}
-                        className="border-t-0 border-l-0"
-                      />
-                    ))}
+                    {section.cards.map((card, cardIdx) =>
+                      card.category === "consulting" ? (
+                        <ProductCard
+                          key={card.slug}
+                          title={card.cardTitle}
+                          description={card.cardDescription}
+                          href={card.href}
+                          icon={
+                            card.coverImage
+                              ? <img src={card.coverImage} alt="" className="w-full h-full object-contain" />
+                              : undefined
+                          }
+                          experts={card.experts}
+                          tag={card.experts.length > 0 ? "Экспертный продукт" : undefined}
+                          className="border-t-0 border-l-0"
+                        />
+                      ) : (
+                        <ProductImageCard
+                          key={card.slug}
+                          title={card.cardTitle}
+                          description={card.cardDescription}
+                          href={card.href}
+                          image={card.coverImage || undefined}
+                          tag={card.experts.length > 0 ? "Экспертный продукт" : undefined}
+                          variant="wide"
+                          factoids={card.factoids}
+                          className="border-t-0 border-l-0 md:col-span-2"
+                        />
+                      )
+                    )}
                   </div>
                 </div>
 

@@ -48,22 +48,27 @@ export function ServicesGrid() {
         "Среда, где управленцы и команды осваивают бизнес-дизайн, платформенное мышление и работу с гипотезами. Мы обучаем тому, что сами применяем в проектах: от системной стратегии до запуска цифровых инициатив.",
       catalogHref: "/products?filter=academy",
       catalogLabel: "Все курсы",
+      showImages: true,
+      partnerBlock: {
+        title: "Программы с ведущими бизнес-школами",
+        description:
+          "Обучаем топ-менеджеров крупных компаний, помогаем трансформировать бизнес с помощью бизнес-дизайна",
+        logos: [
+          { src: `${BASE_PATH}/partners/partner-logo-1.1.svg`, width: 230, height: 46 },
+          { src: `${BASE_PATH}/partners/partner-logo-2.2.png`, width: 182, height: 60 },
+        ],
+      },
       cards: [
-        {
-          title: "Программы с ведущими бизнес-школами",
-          description:
-            "Обучаем топ-менеджеров крупных компаний, помогаем трансформировать бизнес с помощью бизнес-дизайна",
-          variant: "info" as const,
-          partnerLogos: [
-            { src: `${BASE_PATH}/partners/partner-logo-1.1.svg`, width: 139, height: 32 },
-            { src: `${BASE_PATH}/partners/partner-logo-2.2.png`, width: 120, height: 39 },
-          ],
-        },
-        ...ACADEMY_COURSES.map((s) => ({
-          title: s.title,
-          description: s.description,
-          href: s.href,
-        })),
+        ...ACADEMY_COURSES.map((s) => {
+          const slug = s.href.split("/").pop()!;
+          const product = productMap.get(`academy/${slug}`);
+          return {
+            title: s.title,
+            description: s.description,
+            href: s.href,
+            coverImage: product?.heroImage ?? undefined,
+          };
+        }),
       ],
     },
     {
@@ -74,11 +79,17 @@ export function ServicesGrid() {
         "Встроенные помощники, которые усиливают мышление, а не заменяют экспертов. Они помогают командам быстрее проходить через сложные задачи: от исследования и анализа до формирования бизнес-моделей и стратегий.",
       catalogHref: "/products?filter=ai-products",
       catalogLabel: "Все продукты",
-      cards: AI_PRODUCTS.map((s) => ({
-        title: s.title,
-        description: s.description,
-        href: s.href,
-      })),
+      showImages: true,
+      cards: AI_PRODUCTS.map((s) => {
+        const slug = s.href.split("/").pop()!;
+        const product = productMap.get(`ai-products/${slug}`);
+        return {
+          title: s.title,
+          description: s.description,
+          href: s.href,
+          coverImage: product?.heroImage ?? undefined,
+        };
+      }),
     },
   ];
 

@@ -23,6 +23,31 @@ function resolveAsset(
   return null;
 }
 
+/** Read an asset file and return as base64 data URL for inline display in admin. */
+function resolveAssetAsDataUrl(
+  fs: typeof import("fs"),
+  path: typeof import("path"),
+  publicDir: string,
+  category: string,
+  slug: string,
+  role: string,
+  extensions: string[],
+): string | null {
+  const MIME: Record<string, string> = {
+    ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg", ".webp": "image/webp", ".gif": "image/gif",
+  };
+  for (const ext of extensions) {
+    const fp = path.join(publicDir, "images", "products", category, slug, role + ext);
+    if (fs.existsSync(fp)) {
+      const buf = fs.readFileSync(fp);
+      const mime = MIME[ext] || "application/octet-stream";
+      return `data:${mime};base64,${buf.toString("base64")}`;
+    }
+  }
+  return null;
+}
+
 export async function GET() {
   if (isStatic) return NextResponse.json([]);
 
@@ -45,8 +70,8 @@ export async function GET() {
         if (!data.slug) return;
 
         // Resolve static asset URLs for this page
-        const coverUrl = resolveAsset(fs, path, sitePublicDir, data.category || sectionId, data.slug, "cover", IMAGE_EXTS);
-        const aboutUrl = resolveAsset(fs, path, sitePublicDir, data.category || sectionId, data.slug, "about", IMAGE_EXTS);
+        const coverUrl = resolveAssetAsDataUrl(fs, path, sitePublicDir, data.category || sectionId, data.slug, "cover", IMAGE_EXTS);
+        const aboutUrl = resolveAssetAsDataUrl(fs, path, sitePublicDir, data.category || sectionId, data.slug, "about", IMAGE_EXTS);
         const audioUrl = resolveAsset(fs, path, sitePublicDir, data.category || sectionId, data.slug, "audio", AUDIO_EXTS);
 
         const blocks = DEFAULT_BLOCK_TYPES.map((type: string, i: number) => {

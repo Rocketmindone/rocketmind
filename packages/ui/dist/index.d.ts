@@ -318,6 +318,29 @@ interface ProductCardProps {
 }
 declare function ProductCard({ title, description, icon, experts, tag, href, className, }: ProductCardProps): react_jsx_runtime.JSX.Element;
 
+interface ProductImageCardFactoid {
+    number: string;
+    text: string;
+}
+interface ProductImageCardProps {
+    /** Product title (uppercase, max 2 lines) */
+    title: string;
+    /** Short description */
+    description: string;
+    /** Cover image URL */
+    image?: string;
+    /** Yellow badge label */
+    tag?: string;
+    /** Makes the entire card a link */
+    href?: string;
+    /** "default" = 1 column, "wide" = 2 columns with factoids on desktop */
+    variant?: "default" | "wide";
+    /** Hero factoids for the wide variant (desktop only, max 3) */
+    factoids?: ProductImageCardFactoid[];
+    className?: string;
+}
+declare function ProductImageCard({ title, description, image, tag, href, variant, factoids, className, }: ProductImageCardProps): react_jsx_runtime.JSX.Element;
+
 type ForWhomFact = {
     title: string;
     text: string;
@@ -532,4 +555,4 @@ type SiteHeaderProps = {
 };
 declare function SiteHeader({ basePath, className }: SiteHeaderProps): react_jsx_runtime.JSX.Element;
 
-export { AccordionFAQ, type AccordionFAQItem, type AccordionFAQProps, Avatar, AvatarFallback, AvatarImage, Badge, type BadgeSize, type BadgeVariant, Button, CTASectionDark, type CTASectionDarkProps, CTASectionYellow, type CTASectionYellowProps, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Checkbox, DOT_GRID_LENS_DEFAULTS, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger, DotGridLens, type DotGridLensProps, DottedSurface, DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuSeparator, DropdownMenuTrigger, type Expert, ExpertsSection, type ExpertsSectionProps, type ForWhomFact, ForWhomSection, type ForWhomSectionProps, GlowingEffect, InfiniteLogoMarquee, type InfiniteLogoMarqueeProps, Input, InputOTP, type InputOTPProps, type LogoMarqueeItem, MobileNav, NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, NavigationMenuViewport, Note, NoteDescription, NoteEyebrow, NoteTitle, type ProcessParticipant, ProcessSection, type ProcessSectionProps, type ProcessStep, ProductCard, type ProductCardExpert, type ProductCardProps, Radio, type ResultCard, ResultsSection, type ResultsSectionProps, RocketmindMenu, ScrollArea, ScrollBar, SearchCombobox, type SearchComboboxOption, Separator, ShowMore, ShowMorePanel, type ShowMorePanelProps, type ShowMoreProps, SiteFooter, type SiteFooterProps, SiteHeader, type SiteHeaderProps, Skeleton, Slider, type SliderProps, Switch, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, Tabs, TabsContent, TabsList, TabsTrigger, Textarea, ThemeProvider, Toaster, type ToolCard, ToolsSection, type ToolsSectionProps, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, avatarVariants, badgeVariants, buttonVariants, checkboxBaseClassName, cn, inputVariants, noteVariants, radioBaseClassName, HEADER_NAV as rocketmindMenuItems, tabsListVariants, textareaVariants };
+export { AccordionFAQ, type AccordionFAQItem, type AccordionFAQProps, Avatar, AvatarFallback, AvatarImage, Badge, type BadgeSize, type BadgeVariant, Button, CTASectionDark, type CTASectionDarkProps, CTASectionYellow, type CTASectionYellowProps, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Checkbox, DOT_GRID_LENS_DEFAULTS, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger, DotGridLens, type DotGridLensProps, DottedSurface, DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuSeparator, DropdownMenuTrigger, type Expert, ExpertsSection, type ExpertsSectionProps, type ForWhomFact, ForWhomSection, type ForWhomSectionProps, GlowingEffect, InfiniteLogoMarquee, type InfiniteLogoMarqueeProps, Input, InputOTP, type InputOTPProps, type LogoMarqueeItem, MobileNav, NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, NavigationMenuViewport, Note, NoteDescription, NoteEyebrow, NoteTitle, type ProcessParticipant, ProcessSection, type ProcessSectionProps, type ProcessStep, ProductCard, type ProductCardExpert, type ProductCardProps, ProductImageCard, type ProductImageCardFactoid, type ProductImageCardProps, Radio, type ResultCard, ResultsSection, type ResultsSectionProps, RocketmindMenu, ScrollArea, ScrollBar, SearchCombobox, type SearchComboboxOption, Separator, ShowMore, ShowMorePanel, type ShowMorePanelProps, type ShowMoreProps, SiteFooter, type SiteFooterProps, SiteHeader, type SiteHeaderProps, Skeleton, Slider, type SliderProps, Switch, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, Tabs, TabsContent, TabsList, TabsTrigger, Textarea, ThemeProvider, Toaster, type ToolCard, ToolsSection, type ToolsSectionProps, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, avatarVariants, badgeVariants, buttonVariants, checkboxBaseClassName, cn, inputVariants, noteVariants, radioBaseClassName, HEADER_NAV as rocketmindMenuItems, tabsListVariants, textareaVariants };

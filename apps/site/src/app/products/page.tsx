@@ -18,6 +18,8 @@ export type CatalogCard = {
   cardDescription: string;
   coverImage: string;
   experts: Array<{ name: string; image: string }>;
+  /** Hero factoids for wide image cards (academy / ai-products) */
+  factoids?: Array<{ number: string; text: string }>;
 };
 
 /** Section descriptor for each category block. */
@@ -70,6 +72,13 @@ export default function ProductsPage() {
           p.experts
             ?.filter((e) => e.image)
             .map((e) => ({ name: e.name, image: e.image! })) ?? [],
+        factoids:
+          cat !== "consulting" && p.hero?.factoids?.length
+            ? p.hero.factoids.slice(0, 3).map((f) => ({
+                number: f.number,
+                text: f.text,
+              }))
+            : undefined,
       }));
 
     return {

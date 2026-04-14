@@ -195,9 +195,45 @@ function ProductCardPreview({
       <div className="absolute right-2 top-2 flex h-10 w-10 items-center justify-center rounded-sm border border-[#404040]">
         <ArrowUpRight className="h-3 w-3 text-[#F0F0F0]" />
       </div>
-      <div className="mb-8 flex h-[120px] w-[120px] items-center justify-center rounded-sm border border-dashed border-[#404040] text-[#939393] transition-colors hover:border-[#FFCC00] hover:text-[#FFCC00]">
-        <ImagePlus className="h-6 w-6" />
-      </div>
+      {cardImageData ? (
+        <div className="group/icon relative mb-8 h-[120px] w-[120px]">
+          <div
+            className="h-full w-full rounded-sm bg-contain bg-center bg-no-repeat"
+            style={{ backgroundImage: `url(${cardImageData})` }}
+          />
+          <div className="absolute left-1 top-1 flex items-center gap-1 opacity-0 transition-opacity group-hover/icon:opacity-100">
+            <button
+              type="button"
+              onClick={() => imgInputRef.current?.click()}
+              className="flex h-6 items-center gap-1 rounded-sm bg-[#1a1a1a]/80 px-1.5 text-[length:var(--text-10)] text-[#F0F0F0] backdrop-blur hover:bg-[#1a1a1a]"
+            >
+              <Upload className="h-3 w-3" />
+            </button>
+            <button
+              type="button"
+              onClick={handleImageDelete}
+              className="flex h-6 w-6 items-center justify-center rounded-sm bg-[#1a1a1a]/80 text-[#F0F0F0] backdrop-blur hover:bg-destructive"
+            >
+              <Trash2 className="h-3 w-3" />
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => imgInputRef.current?.click()}
+          className="mb-8 flex h-[120px] w-[120px] cursor-pointer items-center justify-center rounded-sm border border-dashed border-[#404040] text-[#939393] transition-colors hover:border-[#FFCC00] hover:text-[#FFCC00]"
+        >
+          <ImagePlus className="h-6 w-6" />
+        </button>
+      )}
+      <input
+        ref={imgInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleImageUpload}
+        className="hidden"
+      />
       <div className="flex h-[156px] flex-col justify-between gap-6">
         <InlineEdit
           value={page.cardTitle}
