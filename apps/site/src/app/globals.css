@@ -377,4 +377,15 @@
   animation-fill-mode: backwards;
 }
 
+/* ── Products catalog: tab switch animation ── */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 

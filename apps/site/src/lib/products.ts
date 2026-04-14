@@ -281,3 +281,28 @@ export function getAllProducts(): ProductData[] {
 export function getProductsByCategory(category: string): ProductData[] {
   return getAllProducts().filter((p) => p.category === category);
 }
+
+/**
+ * Load all products from all content directories (consulting, academy, ai-products).
+ */
+export function getAllCatalogProducts(): ProductData[] {
+  const results: ProductData[] = [];
+  const productCategories = ["consulting", "academy", "ai-products"];
+
+  for (const cat of productCategories) {
+    const dir = CONTENT_DIRS[cat];
+    if (!dir || !fs.existsSync(dir)) continue;
+
+    const files = fs
+      .readdirSync(dir)
+      .filter((f) => f.endsWith(".md") && !f.startsWith("_"));
+
+    for (const f of files) {
+      const slug = f.replace(/\.md$/, "");
+      const product = getProductBySlug(slug, cat);
+      if (product) results.push(product);
+    }
+  }
+
+  return results;
+}

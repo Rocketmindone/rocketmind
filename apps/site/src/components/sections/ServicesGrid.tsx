@@ -14,7 +14,7 @@ const sectionsData: ServiceSection[] = [
     mobileTitle: "Стратегия\nи бизнес-модели",
     description:
       "Помогаем командам искать, проверять и усиливать бизнес-модели, связывать стратегию с операционными действиями и переходить от продуктовой логики к платформенной и экосистемной архитектуре.",
-    catalogHref: "/consulting",
+    catalogHref: "/products?filter=consulting",
     catalogLabel: "Все продукты",
     cards: CONSULTING_SERVICES.map((s) => ({
       title: s.title,
@@ -28,7 +28,7 @@ const sectionsData: ServiceSection[] = [
     mobileTitle: "Академия\nбизнес-дизайна",
     description:
       "Среда, где управленцы и команды осваивают бизнес-дизайн, платформенное мышление и работу с гипотезами. Мы обучаем тому, что сами применяем в проектах: от системной стратегии до запуска цифровых инициатив.",
-    catalogHref: "/academy",
+    catalogHref: "/products?filter=academy",
     catalogLabel: "Все курсы",
     cards: [
       {
@@ -54,7 +54,7 @@ const sectionsData: ServiceSection[] = [
     mobileTitle: "Продукты\nс AI для бизнеса",
     description:
       "Встроенные помощники, которые усиливают мышление, а не заменяют экспертов. Они помогают командам быстрее проходить через сложные задачи: от исследования и анализа до формирования бизнес-моделей и стратегий.",
-    catalogHref: "/ai-products",
+    catalogHref: "/products?filter=ai-products",
     catalogLabel: "Все продукты",
     cards: AI_PRODUCTS.map((s) => ({
       title: s.title,

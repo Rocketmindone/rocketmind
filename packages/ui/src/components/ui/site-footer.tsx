@@ -51,9 +51,11 @@ export type SiteFooterProps = {
   /** Base path for static assets (logo). Default: "" */
   basePath?: string;
   className?: string;
+  /** Content rendered on top of the DottedSurface area (e.g. chat widget) */
+  children?: React.ReactNode;
 };
 
-export function SiteFooter({ basePath = "", className }: SiteFooterProps) {
+export function SiteFooter({ basePath = "", className, children }: SiteFooterProps) {
   const consultingLinks = CONSULTING_SERVICES.map((s) => ({
     href: s.href,
     label: s.title,
@@ -111,9 +113,14 @@ export function SiteFooter({ basePath = "", className }: SiteFooterProps) {
         </p>
       </div>
 
-      {/* Dotted surface background */}
-      <div className="relative h-[320px] md:h-[400px]">
+      {/* Dotted surface background + optional overlay content */}
+      <div className="relative h-[320px] md:h-[460px]">
         <DottedSurface />
+        {children && (
+          <div className="absolute inset-0 z-10 flex flex-col justify-end">
+            {children}
+          </div>
+        )}
       </div>
     </footer>
   );

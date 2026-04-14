@@ -709,7 +709,7 @@ export function HeroSectionClient({ logos }: HeroSectionClientProps) {
           <div className="hero-background-fade" />
         </div>
 
-        <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-[1512px] flex-col px-5 pb-6 pt-6 md:px-8 md:pb-10 md:pt-10 xl:px-14">
+        <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-[1512px] flex-col px-5 pb-6 pt-6 md:px-8 md:pb-[56px] md:pt-10 xl:px-14">
           <motion.div className="hero-top-bar relative z-20 flex flex-col gap-6" {...heroFadeUp(heroReady, 0)}>
             <InfiniteLogoMarquee logos={logos} maxLogoHeight={breakpointKey === "mobile" ? 27 : 39} reverse />
 

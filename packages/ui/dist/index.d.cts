@@ -512,8 +512,10 @@ type SiteFooterProps = {
     /** Base path for static assets (logo). Default: "" */
     basePath?: string;
     className?: string;
+    /** Content rendered on top of the DottedSurface area (e.g. chat widget) */
+    children?: React.ReactNode;
 };
-declare function SiteFooter({ basePath, className }: SiteFooterProps): react_jsx_runtime.JSX.Element;
+declare function SiteFooter({ basePath, className, children }: SiteFooterProps): react_jsx_runtime.JSX.Element;
 
 type SiteHeaderProps = {
     /** Base path for static assets (logo). Default: "" */

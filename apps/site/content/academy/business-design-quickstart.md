@@ -19,7 +19,7 @@ hero:
       label: ''
       text: что
     - number: ''
-      label: ''
+      label: менять
       text: ''
     - number: ''
       label: ''
@@ -30,7 +30,8 @@ audience: null
 tools: null
 results: null
 process: null
-experts: null
+experts:
+  - alexey-eremin
 aboutRocketmind: {}
 socialProof: null
 duration: null

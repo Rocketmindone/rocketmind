@@ -102,17 +102,17 @@ export const AI_PRODUCTS: NavItem[] = [
 
 export const HEADER_NAV: NavSection[] = [
   {
-    href: "/consulting",
+    href: "/products?filter=consulting",
     label: "Консалтинг и стратегии",
     items: CONSULTING_SERVICES,
   },
   {
-    href: "/academy",
+    href: "/products?filter=academy",
     label: "Онлайн-школа",
     items: ACADEMY_COURSES,
   },
   {
-    href: "/ai-products",
+    href: "/products?filter=ai-products",
     label: "AI-продукты",
     items: AI_PRODUCTS,
   },
