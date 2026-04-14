@@ -239,9 +239,27 @@ function TypingIndicator() {
 
 /* ── Suggestion Chips ── */
 function SuggestionChips({ onSelect }: { onSelect: (text: string) => void }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    function check() {
+      if (!el) return;
+      setCanScrollLeft(el.scrollLeft > 2);
+      setCanScrollRight(el.scrollWidth - el.scrollLeft - el.clientWidth > 2);
+    }
+    check();
+    el.addEventListener("scroll", check, { passive: true });
+    return () => el.removeEventListener("scroll", check);
+  }, []);
+
   return (
     <div className="relative mb-2">
       <div
+        ref={scrollRef}
         className="flex gap-2 overflow-x-auto md:px-[108px]"
         style={{ scrollbarWidth: "none" }}
       >
@@ -257,18 +275,20 @@ function SuggestionChips({ onSelect }: { onSelect: (text: string) => void }) {
         ))}
       </div>
 
-      {/* Left fade */}
+      {/* Left fade — hidden at scroll start */}
       <div
-        className="pointer-events-none absolute left-0 top-0 h-full w-8"
+        className="pointer-events-none absolute left-0 top-0 h-full w-8 transition-opacity duration-200"
         style={{
+          opacity: canScrollLeft ? 1 : 0,
           background:
             "linear-gradient(90deg, var(--background) 0%, transparent 100%)",
         }}
       />
-      {/* Right fade */}
+      {/* Right fade — hidden at scroll end */}
       <div
-        className="pointer-events-none absolute right-0 top-0 h-full w-8"
+        className="pointer-events-none absolute right-0 top-0 h-full w-8 transition-opacity duration-200"
         style={{
+          opacity: canScrollRight ? 1 : 0,
           background:
             "linear-gradient(-90deg, var(--background) 0%, transparent 100%)",
         }}
