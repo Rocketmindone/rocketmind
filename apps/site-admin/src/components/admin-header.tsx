@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogOut, FileText, Users } from "lucide-react";
+import { LogOut, FileText, Users, Sun, Moon } from "lucide-react";
+import { useTheme } from "next-themes";
 import { Button } from "@rocketmind/ui";
 import { useAuth } from "@/lib/auth-context";
 import { useNavigationGuard } from "@/lib/navigation-guard";
@@ -107,15 +108,41 @@ export function AdminHeader() {
         </nav>
       </div>
 
-      <Button
-        variant="ghost"
-        size="xs"
-        className="gap-1.5 text-muted-foreground"
-        onClick={logout}
-      >
-        <LogOut className="h-3.5 w-3.5" />
-        Выйти
-      </Button>
+      <div className="flex items-center gap-2">
+        <ThemeSwitch />
+        <Button
+          variant="ghost"
+          size="xs"
+          className="gap-1.5 text-muted-foreground"
+          onClick={logout}
+        >
+          <LogOut className="h-3.5 w-3.5" />
+          Выйти
+        </Button>
+      </div>
     </header>
+  );
+}
+
+/* ── Theme toggle ────────────────────────────────────────────────────────────── */
+
+function ThemeSwitch() {
+  const { theme, setTheme } = useTheme();
+  const isDark = theme === "dark";
+
+  return (
+    <button
+      type="button"
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+      className="relative flex h-6 w-11 shrink-0 items-center rounded-full border border-border bg-rm-gray-1 transition-colors cursor-pointer"
+      aria-label={isDark ? "Светлая тема" : "Тёмная тема"}
+    >
+      <span
+        className="absolute flex h-4 w-4 items-center justify-center rounded-full bg-foreground text-background transition-transform duration-200"
+        style={{ transform: isDark ? "translateX(22px)" : "translateX(4px)" }}
+      >
+        {isDark ? <Moon className="h-2.5 w-2.5" /> : <Sun className="h-2.5 w-2.5" />}
+      </span>
+    </button>
   );
 }

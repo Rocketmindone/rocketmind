@@ -8,3 +8,9 @@
     overscroll-behavior: none;
   }
 }
+
+/* Admin dark theme: slightly lighter background so editor blocks don't blend */
+.dark {
+  --background: #141414;
+  --rm-gray-1: #1E1E1E;
+}

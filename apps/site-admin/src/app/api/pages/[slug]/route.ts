@@ -16,7 +16,7 @@ const IMAGE_EXTS = [".svg", ".png", ".jpg", ".jpeg", ".webp", ".gif"];
 const AUDIO_EXTS = [".mp3", ".wav", ".ogg", ".m4a", ".webm"];
 
 function parseDataUrl(dataUrl: string): { ext: string; buffer: Buffer } | null {
-  const match = dataUrl.match(/^data:([^;]+);base64,(.+)$/s);
+  const match = dataUrl.match(/^data:([^;]+);base64,(.+)$/);
   if (!match) return null;
   const ext = MIME_TO_EXT[match[1]] || null;
   if (!ext) return null;
