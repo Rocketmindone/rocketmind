@@ -1,36 +1,32 @@
 ---
-slug: "strategy-sessions"
-category: "consulting"
-
-menuTitle: "Стратегические сессии"
-menuDescription: "Стратегические и дизайн-сессии для вашей команды."
-
-cardTitle: "Стратегические сессии"
-cardDescription: "Стратегические и дизайн-сессии для вашей команды."
-
-metaTitle: "Стратегические сессии | Rocketmind"
-metaDescription: "Стратегические и дизайн-сессии для вашей команды."
-
+slug: strategy-sessions
+category: consulting
+menuTitle: Стратегические сессии
+menuDescription: Стратегические и дизайн-сессии для вашей команды.
+cardTitle: Стратегические сессии
+cardDescription: Стратегические и дизайн-сессии для вашей команды.
+metaTitle: Стратегические сессии | Rocketmind
+metaDescription: Стратегические и дизайн-сессии для вашей команды.
 hero:
-  caption: "консалтинг и стратегии"
+  caption: консалтинг и стратегии
   title: |
     СТРАТЕГИЧЕСКИЕ СЕССИИ
     ДЛЯ ВАШЕЙ КОМАНДЫ
-  description: ""
-  ctaText: "оставить заявку"
+  description: ''
+  ctaText: оставить заявку
   factoids: []
-
 about: null
 audience: null
+tools: null
 results: null
 process: null
-
+experts: null
+aboutRocketmind: null
 socialProof: null
-tools: null
 duration: null
 whyRocketmind: null
-experts: null
 expert: null
 cases: null
 reviews: null
 ---
+

@@ -1,0 +1,33 @@
+{
+  "caption": "Партнёрства",
+  "title": "Программы с ведущими бизнес-школами",
+  "description": "Помогают собрать карту участников, связей и ценностных потоков помогают собрать карту участников, связей и ценностных потоков",
+  "logos": [
+    {
+      "src": "/images/partnerships/logo-0.svg",
+      "alt": "СберУниверситет"
+    },
+    {
+      "src": "/images/partnerships/logo-1.png",
+      "alt": "Сколково Московская школа управления"
+    }
+  ],
+  "photos": [
+    {
+      "src": "/images/partnerships/photo-1.png",
+      "alt": ""
+    },
+    {
+      "src": "/images/partnerships/photo-2.png",
+      "alt": ""
+    },
+    {
+      "src": "/images/partnerships/photo-3.png",
+      "alt": ""
+    },
+    {
+      "src": "/images/partnerships/photo-4.png",
+      "alt": ""
+    }
+  ]
+}

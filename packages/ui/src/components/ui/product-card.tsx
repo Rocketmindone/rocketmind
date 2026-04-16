@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { cn } from "../../lib/utils";
 import { GlowingEffect } from "./glowing-effect";
 
@@ -43,9 +44,10 @@ export function ProductCard({
   const extra = hasExperts ? Math.max(0, experts.length - 2) : 0;
 
   const rootCn = cn(
-    "group relative flex flex-col p-5 md:p-8",
+    "group relative flex flex-col p-5 md:p-8 md:h-full",
     "bg-[rgba(10,10,10,0.8)] backdrop-blur-[10px]",
     "border border-[#404040] transition-[border-color] duration-75",
+    "md:hover:z-10",
     "md:active:[border-color:var(--rm-yellow-100)]",
     className,
   );
@@ -81,47 +83,43 @@ export function ProductCard({
       <div className={cn("flex flex-col", icon ? "gap-6 md:gap-8" : "")}>
         {/* ── Icon + Experts + Tag ── */}
         {icon && (
-          <div className="flex flex-col">
-            <div className="flex items-center overflow-hidden">
-              <div className="w-[120px] h-[120px] shrink-0 z-0">{icon}</div>
-              {hasExperts && (
-                <div className="flex items-center -ml-[18px] pb-10 pt-2 justify-end min-w-0">
-                  {shown.map((e, i) => (
-                    <div
-                      key={e.name}
-                      className={cn(
-                        "w-[72px] h-[72px] min-w-[52px] min-h-[52px] rounded-full border border-[#0A0A0A] bg-[#2a2a2a] bg-cover bg-center",
-                        i > 0 && "-ml-4",
-                      )}
-                      style={{
-                        backgroundImage: `url(${e.image})`,
-                        zIndex: shown.length + 1 - i,
-                      }}
-                    />
-                  ))}
-                  {extra > 0 && (
-                    <div className="w-[72px] h-[72px] min-w-[52px] min-h-[52px] rounded-full bg-[#1A1A1A] flex items-center justify-center -ml-4 z-[1]">
-                      <span className="font-heading text-[24px] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#F0F0F0]">
-                        +{extra}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-            {tag && (
-              <div className="-mt-[22px] relative z-10">
-                <span className="inline-flex items-center px-2.5 py-1 bg-[#3D3300] border border-[#4A3C00] font-['Loos_Condensed',sans-serif] text-[12px] font-medium uppercase tracking-[0.02em] leading-[1.2] text-[#FFE466]">
-                  {tag}
-                </span>
+          <div className="relative flex items-center overflow-visible">
+            <div className="w-[120px] h-[120px] shrink-0 z-0">{icon}</div>
+            {hasExperts && (
+              <div className="flex items-center -ml-[18px] pb-10 pt-2 justify-end min-w-0">
+                {shown.map((e, i) => (
+                  <div
+                    key={e.name}
+                    className={cn(
+                      "w-[72px] h-[72px] min-w-[52px] min-h-[52px] rounded-full border border-[#0A0A0A] bg-[#2a2a2a] bg-cover bg-center",
+                      i > 0 && "-ml-4",
+                    )}
+                    style={{
+                      backgroundImage: `url(${e.image})`,
+                      zIndex: shown.length + 1 - i,
+                    }}
+                  />
+                ))}
+                {extra > 0 && (
+                  <div className="w-[72px] h-[72px] min-w-[52px] min-h-[52px] rounded-full bg-[#1A1A1A] flex items-center justify-center -ml-4 z-[1]">
+                    <span className="font-heading text-[24px] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#F0F0F0]">
+                      +{extra}
+                    </span>
+                  </div>
+                )}
               </div>
+            )}
+            {tag && (
+              <span className="absolute left-0 bottom-[-22px] inline-flex items-center px-2.5 py-1 bg-[#3D3300] border border-[#4A3C00] font-[family-name:var(--font-mono-family)] text-[12px] font-medium uppercase tracking-[0.02em] leading-[1.2] text-[#FFE466] z-10">
+                {tag}
+              </span>
             )}
           </div>
         )}
 
         {/* ── Tag without icon ── */}
         {tag && !icon && (
-          <span className="inline-flex self-start items-center px-2.5 py-1 mb-4 md:mb-5 bg-[#3D3300] border border-[#4A3C00] font-['Loos_Condensed',sans-serif] text-[12px] font-medium uppercase tracking-[0.02em] leading-[1.2] text-[#FFE466]">
+          <span className="inline-flex self-start items-center px-2.5 py-1 mb-4 md:mb-5 bg-[#3D3300] border border-[#4A3C00] font-[family-name:var(--font-mono-family)] text-[12px] font-medium uppercase tracking-[0.02em] leading-[1.2] text-[#FFE466]">
             {tag}
           </span>
         )}
@@ -141,9 +139,9 @@ export function ProductCard({
 
   if (href) {
     return (
-      <a href={href} className={rootCn}>
+      <Link href={href} className={rootCn}>
         {content}
-      </a>
+      </Link>
     );
   }
   return <div className={rootCn}>{content}</div>;

@@ -11,14 +11,19 @@ hero:
   caption: консалтинг и стратегии
   title: |
     ГОТОВНОСТЬ БИЗНЕСА
-    ДИАГНОСТИКА И ТРАНСФОРМАЦИЯ
   description: ''
   ctaText: оставить заявку
   factoids: []
+  titleSecondary: "ДИАГНОСТИКА И\_ТРАНСФОРМАЦИЯ"
+  tags:
+    - text: Супер продукт
+    - text: Дорого и ахуенно
+logoMarquee: null
 about: null
 audience: null
 tools: null
 results: null
+services: null
 process: null
 experts: null
 aboutRocketmind: null

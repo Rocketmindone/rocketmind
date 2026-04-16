@@ -26,6 +26,13 @@ cardDescription: "Создадим стратегию и портфель биз
 metaTitle: "Экосистемная стратегия | Rocketmind"
 metaDescription: "Переход от линейной модели к экосистемной архитектуре роста."
 
+# ── Flags ───────────────────────────────────────────────────
+# Explicit toggle: treats this product as an "expert product".
+# When true: adds "Экспертный продукт" tag to card + hero, moves hero description up,
+# and renders the experts block (with optional quote) in the hero bottom-left slot.
+# If omitted, defaults to `experts.length > 0`.
+expertProduct: true
+
 # ── Hero ────────────────────────────────────────────────────
 hero:
   caption: "консалтинг и стратегии"   # Category label (yellow, uppercase)
@@ -34,6 +41,8 @@ hero:
     ОТ ПРОДУКТА К СЕТИ ПАРТНЕРОВ
   description: "Спроектируем стратегию и портфель бизнес-моделей, ..."
   ctaText: "оставить заявку"
+  # Optional: quote shown under the experts block (expert-product variant only).
+  quote: "Расскажу покажу всё понятно будет..."
   factoids:
     - number: "600+"
       label: "кейсов платформ"
@@ -49,12 +58,16 @@ hero:
 about:
   caption: "О продукте"
   title: "Экосистемная стратегия"
-  description: "Описание продукта..."
+  paragraphs:
+    - "Первый абзац описания продукта..."
+    - "Второй абзац, если нужен."
   accordion:
     - title: "Быстро занимает ключевые позиции в смежных рынках"
-      description: "Подробное описание..."
+      paragraphs:
+        - "Подробное описание..."
     - title: "Объединяет партнеров, клиентов и технологии"
-      description: "Подробное описание..."
+      paragraphs:
+        - "Подробное описание..."
 
 # ── Для кого ───────────────────────────────────────────────
 # Optional. White background section with 2–4 fact cards.

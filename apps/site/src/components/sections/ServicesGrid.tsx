@@ -37,6 +37,7 @@ export function ServicesGrid() {
             product?.experts
               ?.filter((e) => e.image)
               .map((e) => ({ name: e.name, image: e.image! })) ?? [],
+          expertProduct: product?.expertProduct ?? false,
         };
       }),
     },

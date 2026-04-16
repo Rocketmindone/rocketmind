@@ -3,6 +3,7 @@
 import { Plus, GripVertical } from "lucide-react";
 import { Switch } from "@rocketmind/ui";
 import { InlineEdit } from "@/components/inline-edit";
+import { MdText } from "@/components/md-text";
 import { InlineConfirmDelete } from "@/components/inline-confirm";
 import { useItemDnd } from "@/lib/use-item-dnd";
 
@@ -14,6 +15,7 @@ interface ProcessEditorProps {
 export function ProcessEditor({ data, onUpdate }: ProcessEditorProps) {
   const tag = (data.tag as string) || "";
   const title = (data.title as string) || "";
+  const titleSecondary = (data.titleSecondary as string) || "";
   const subtitle = (data.subtitle as string) || "";
   const description = (data.description as string) || "";
   const steps =
@@ -105,15 +107,26 @@ export function ProcessEditor({ data, onUpdate }: ProcessEditorProps) {
               </span>
             </InlineEdit>
 
-            <InlineEdit
-              value={title}
-              onSave={(v) => onUpdate({ title: v })}
-              placeholder="Заголовок"
-            >
-              <h2 className="h2 text-[#F0F0F0]">
-                {title || "Заголовок"}
-              </h2>
-            </InlineEdit>
+            <div className="flex flex-col gap-1">
+              <InlineEdit
+                value={title}
+                onSave={(v) => onUpdate({ title: v })}
+                placeholder="Заголовок"
+              >
+                <h2 className="h2 text-[#F0F0F0]">
+                  {title || "Заголовок"}
+                </h2>
+              </InlineEdit>
+              <InlineEdit
+                value={titleSecondary}
+                onSave={(v) => onUpdate({ titleSecondary: v })}
+                placeholder="Дополнительная часть (серая)"
+              >
+                <span className="h2 text-[#939393] block">
+                  {titleSecondary || "доп. часть"}
+                </span>
+              </InlineEdit>
+            </div>
           </div>
 
           <div className="flex flex-col gap-1">
@@ -122,9 +135,12 @@ export function ProcessEditor({ data, onUpdate }: ProcessEditorProps) {
               onSave={(v) => onUpdate({ subtitle: v })}
               placeholder="Общий срок проекта: ~10 недель"
             >
-              <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#F0F0F0]">
-                {subtitle || "подзаголовок"}
-              </span>
+              <MdText
+                value={subtitle}
+                placeholder="подзаголовок"
+                as="span"
+                className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#F0F0F0]"
+              />
             </InlineEdit>
 
             {(description || true) && (
@@ -135,9 +151,11 @@ export function ProcessEditor({ data, onUpdate }: ProcessEditorProps) {
                 copy
                 placeholder="Описание процесса"
               >
-                <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#939393]">
-                  {description || "Описание"}
-                </p>
+                <MdText
+                  value={description}
+                  placeholder="Описание"
+                  className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#939393]"
+                />
               </InlineEdit>
             )}
           </div>
@@ -211,9 +229,12 @@ export function ProcessEditor({ data, onUpdate }: ProcessEditorProps) {
                         onSave={(v) => updateParticipant(index, "text", v)}
                         placeholder="Описание"
                       >
-                        <span className="text-[length:var(--text-16)] leading-[1.28] text-[#939393]">
-                          {p.text || "Описание"}
-                        </span>
+                        <MdText
+                          value={p.text}
+                          placeholder="Описание"
+                          as="span"
+                          className="text-[length:var(--text-16)] leading-[1.28] text-[#939393]"
+                        />
                       </InlineEdit>
                     </div>
                   );
@@ -302,9 +323,11 @@ export function ProcessEditor({ data, onUpdate }: ProcessEditorProps) {
                         copy
                         placeholder="Описание модуля"
                       >
-                        <p className="text-[length:var(--text-16)] leading-[1.28] text-[#939393]">
-                          {step.text || "Описание"}
-                        </p>
+                        <MdText
+                          value={step.text}
+                          placeholder="Описание"
+                          className="text-[length:var(--text-16)] leading-[1.28] text-[#939393]"
+                        />
                       </InlineEdit>
                     </div>
                   </div>
@@ -351,9 +374,11 @@ export function ProcessEditor({ data, onUpdate }: ProcessEditorProps) {
                         copy
                         placeholder="Описание этапа"
                       >
-                        <p className="text-[length:var(--text-16)] leading-[1.28] text-[#939393]">
-                          {step.text || "Описание"}
-                        </p>
+                        <MdText
+                          value={step.text}
+                          placeholder="Описание"
+                          className="text-[length:var(--text-16)] leading-[1.28] text-[#939393]"
+                        />
                       </InlineEdit>
 
                       <InlineEdit

@@ -7,22 +7,54 @@ cardTitle: Дизайн-спринты
 cardDescription: Организация дизайн-спринтов для быстрого тестирования идей.
 metaTitle: Дизайн-спринты | Rocketmind
 metaDescription: Организация дизайн-спринтов для быстрого тестирования идей.
+expertProduct: null
 hero:
   caption: консалтинг и стратегии
   title: |
     ДИЗАЙН-СПРИНТЫ
     БЫСТРОЕ ТЕСТИРОВАНИЕ ИДЕЙ
-  description: ''
+  description: Какое то описание продукта
   ctaText: оставить заявку
-  factoids: []
-about: null
+  factoids:
+    - number: ''
+      label: ''
+      text: ''
+    - number: ''
+      label: ''
+      text: ''
+    - number: '1'
+      label: дил
+      text: ''
+  quote: 'Эксперты говорят, что продукт классный'
+logoMarquee: null
+about:
+  paragraphs: []
+  title: Тестовый заг
+  titleSecondary: и его доп
+  hasImage: false
+  accordion:
+    - title: что
+      paragraphs: []
+    - title: Ещё
+      paragraphs: []
+    - title: Добавить
+      paragraphs:
+        - |-
+          чего то там
+          1. вв
+          2. 3ав
+          3. 554п
+  imageLeft: false
 audience: null
 tools: null
 results: null
+services: null
 process: null
 experts:
   - alexander-pavlovich
-aboutRocketmind: null
+aboutRocketmind:
+  variant: dark
+  leftVariant: alex
 socialProof: null
 duration: null
 whyRocketmind: null

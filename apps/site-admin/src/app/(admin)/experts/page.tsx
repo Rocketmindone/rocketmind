@@ -5,12 +5,14 @@ import { Plus, Upload, Trash2, UserCircle } from "lucide-react";
 import { Button, Input } from "@rocketmind/ui";
 import { toast } from "sonner";
 import { InlineEdit } from "@/components/inline-edit";
+import { MdText } from "@/components/md-text";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 
 type ExpertInfo = {
   slug: string;
   name: string;
   tag: string;
+  shortBio: string;
   bio: string;
   image: string | null;
 };
@@ -167,7 +169,7 @@ function ExpertCard({
   const fileRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div className="flex gap-8 rounded bg-[#121212] p-8 h-[349px]">
+    <div className="flex gap-8 rounded bg-[#121212] p-8 min-h-[349px]">
       {/* Photo */}
       <div className="relative w-[45%] shrink-0 self-stretch group/photo">
         {expert.image ? (
@@ -222,17 +224,33 @@ function ExpertCard({
             <h3 className="h3 text-[#F0F0F0]">{expert.name || "Имя Фамилия"}</h3>
           </InlineEdit>
 
-          <div className="flex flex-1 items-end">
+          <div className="flex flex-1 flex-col gap-3 justify-end">
+            <InlineEdit
+              value={expert.shortBio}
+              onSave={(v) => onUpdate("shortBio", v)}
+              multiline
+              copy
+              placeholder="Короткое описание — опыт и должность"
+            >
+              <MdText
+                value={expert.shortBio}
+                placeholder="Короткое описание — опыт и должность"
+                className="text-[length:var(--text-14)] leading-[1.32] tracking-[0.01em] text-[#F0F0F0]"
+              />
+            </InlineEdit>
+
             <InlineEdit
               value={expert.bio}
               onSave={(v) => onUpdate("bio", v)}
               multiline
               copy
-              placeholder="Биография эксперта"
+              placeholder="Полная биография эксперта"
             >
-              <p className="text-[length:var(--text-14)] leading-[1.32] tracking-[0.01em] text-[#939393]">
-                {expert.bio || "Биография эксперта"}
-              </p>
+              <MdText
+                value={expert.bio}
+                placeholder="Полная биография эксперта"
+                className="text-[length:var(--text-14)] leading-[1.32] tracking-[0.01em] text-[#939393]"
+              />
             </InlineEdit>
           </div>
         </div>

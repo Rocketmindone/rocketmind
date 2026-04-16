@@ -2,6 +2,7 @@
 
 import { GripVertical } from "lucide-react";
 import { InlineEdit } from "@/components/inline-edit";
+import { MdText } from "@/components/md-text";
 import { InlineConfirmDelete } from "@/components/inline-confirm";
 import { InsertButton } from "@/components/insert-button";
 import { useItemDnd } from "@/lib/use-item-dnd";
@@ -14,6 +15,7 @@ interface ResultsEditorProps {
 export function ResultsEditor({ data, onUpdate }: ResultsEditorProps) {
   const tag = (data.tag as string) || "";
   const title = (data.title as string) || "";
+  const titleSecondary = (data.titleSecondary as string) || "";
   const description = (data.description as string) || "";
   const cards = (data.cards as Array<{ title: string; text: string }>) || [];
 
@@ -52,15 +54,26 @@ export function ResultsEditor({ data, onUpdate }: ResultsEditorProps) {
           </InlineEdit>
 
           <div className="flex flex-col gap-6">
-            <InlineEdit
-              value={title}
-              onSave={(v) => onUpdate({ title: v })}
-              placeholder="Заголовок"
-            >
-              <h2 className="h2 text-[#F0F0F0]">
-                {title || "Заголовок"}
-              </h2>
-            </InlineEdit>
+            <div className="flex flex-col gap-1">
+              <InlineEdit
+                value={title}
+                onSave={(v) => onUpdate({ title: v })}
+                placeholder="Заголовок"
+              >
+                <h2 className="h2 text-[#F0F0F0]">
+                  {title || "Заголовок"}
+                </h2>
+              </InlineEdit>
+              <InlineEdit
+                value={titleSecondary}
+                onSave={(v) => onUpdate({ titleSecondary: v })}
+                placeholder="Дополнительная часть (серая)"
+              >
+                <span className="h2 text-[#939393] block">
+                  {titleSecondary || "доп. часть"}
+                </span>
+              </InlineEdit>
+            </div>
 
             <InlineEdit
               value={description}
@@ -69,9 +82,11 @@ export function ResultsEditor({ data, onUpdate }: ResultsEditorProps) {
               copy
               placeholder="Описание"
             >
-              <p className="text-[length:var(--text-18)] leading-[1.2] text-[#939393]">
-                {description || "Описание"}
-              </p>
+              <MdText
+                value={description}
+                placeholder="Описание"
+                className="text-[length:var(--text-18)] leading-[1.2] text-[#939393]"
+              />
             </InlineEdit>
           </div>
         </div>
@@ -130,9 +145,11 @@ export function ResultsEditor({ data, onUpdate }: ResultsEditorProps) {
                     copy
                     placeholder="Описание"
                   >
-                    <p className="text-[length:var(--text-16)] leading-[1.28] text-[#0A0A0A]">
-                      {card.text || "Описание результата"}
-                    </p>
+                    <MdText
+                      value={card.text}
+                      placeholder="Описание результата"
+                      className="text-[length:var(--text-16)] leading-[1.28] text-[#0A0A0A]"
+                    />
                   </InlineEdit>
                 </div>
               </div>

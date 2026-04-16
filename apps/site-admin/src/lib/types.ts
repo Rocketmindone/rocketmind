@@ -8,19 +8,24 @@ export type BlockType =
   | "hero"
   | "logoMarquee"
   | "about"
+  | "projects"
   | "audience"
   | "tools"
   | "results"
   | "process"
+  | "services"
   | "experts"
+  | "partnerships"
   | "aboutRocketmind"
-  | "pageBottom";
+  | "pageBottom"
+  | "customSection";
 
 // ── Block data shapes (mirror apps/site/src/lib/products.ts) ────────────────
 
 export interface HeroBlockData {
   caption: string;
   title: string;
+  titleSecondary?: string;
   description: string;
   ctaText: string;
   factoids: Array<{ number: string; label: string; text: string }>;
@@ -32,18 +37,58 @@ export interface HeroBlockData {
   audioData?: string;
   /** Original filename of uploaded audio */
   audioFilename?: string;
+  /** Optional quote shown under experts block (expert-product variant only). */
+  quote?: string;
+  /** Layout variant. "product" — default with title/caption/cta; "about" — minimal (description + experts strip + 2x2 factoids + marquee) for unique /about page. */
+  variant?: "product" | "about";
+  /** Factoid layout: "column" — 3-card column (default), "2x2" — 4-card 2×2 grid (about variant). */
+  factoidsLayout?: "column" | "2x2";
+  /** Experts shown in hero strip (slugs). Used for the "about" hero variant independently from the experts block. */
+  experts?: string[];
+}
+
+export interface AboutParagraph {
+  text: string;
+  /** If true, this paragraph uses the uppercase label-18 style (mono, uppercase, tracked). */
+  uppercase?: boolean;
 }
 
 export interface AboutBlockData {
   caption: string;
   title: string;
-  description: string;
-  accordion: Array<{ title: string; description: string }>;
+  titleSecondary?: string;
+  paragraphs: AboutParagraph[];
+  accordion: Array<{ title: string; paragraphs: string[] }>;
+  /** Layout of image (when hasImage is true). Default: false (image on right). */
+  imageLeft?: boolean;
+  /** If true, paragraphs render in the right column above the accordion. Default: false (in left column under title). */
+  paragraphsRight?: boolean;
+  /** What to render in the media slot. "image" — upload via aboutImageData (default); "logoGrid" — editable logo grid; "none" — no media. */
+  imageMode?: "image" | "logoGrid" | "none";
+  /** Editable logo grid (active when imageMode = "logoGrid"). */
+  logoGrid?: LogoGridData;
 }
+
+export interface LogoGridCell {
+  id: string;
+  /** Base64 data URL (admin) or /images/... path (persisted). */
+  src: string;
+  alt?: string;
+  /** Bento size: S=2 cols, M=3 cols, L=4 cols in a 6-col grid. Default M. */
+  size?: "S" | "M" | "L";
+}
+
+export interface LogoGridData {
+  cells: LogoGridCell[];
+}
+
+/** Projects block — about-clone with mandatory logoGrid media (used on /about unique page). */
+export type ProjectsBlockData = AboutBlockData;
 
 export interface AudienceBlockData {
   tag: string;
   title: string;
+  titleSecondary?: string;
   subtitle?: string;
   wideColumn?: "left" | "right";
   facts: Array<{ title: string; text: string }>;
@@ -52,6 +97,7 @@ export interface AudienceBlockData {
 export interface ToolsBlockData {
   tag: string;
   title: string;
+  titleSecondary?: string;
   description?: string;
   useIcons?: boolean;
   tools: Array<{ number: string; title: string; text: string; icon?: string | null; wide?: boolean }>;
@@ -60,6 +106,7 @@ export interface ToolsBlockData {
 export interface ResultsBlockData {
   tag: string;
   title: string;
+  titleSecondary?: string;
   description?: string;
   cards: Array<{ title: string; text: string }>;
 }
@@ -67,6 +114,40 @@ export interface ResultsBlockData {
 export interface ExpertsBlockData {
   /** Array of expert slugs referencing content/experts/{slug}.md */
   experts: string[];
+}
+
+export interface ServiceCard {
+  title: string;
+  paragraphs: string[];
+  showArrow?: boolean;
+  href?: string;
+  colSpan?: 1 | 2;
+  rowSpan?: 1 | 2;
+  featured?: boolean;
+  paragraphsTwoCol?: boolean;
+}
+
+export interface ServicesBlockData {
+  tag?: string;
+  title: string;
+  titleSecondary?: string;
+  description?: string;
+  cards: ServiceCard[];
+}
+
+export interface LogoMarqueeBlockData {
+  // No editable fields — auto-rendered from /public/clip-logos/.
+  // Visibility controlled by `block.enabled` flag in PageBlock.
+  // Empty placeholder shape for type completeness.
+  __placeholder?: never;
+}
+
+export interface PartnershipsBlockData {
+  caption: string;
+  title: string;
+  description: string;
+  logos: Array<{ src: string; alt: string }>;
+  photos: Array<{ src: string; alt?: string }>;
 }
 
 export interface AboutRocketmindBlockData {
@@ -84,6 +165,7 @@ export interface AboutRocketmindBlockData {
 export interface ProcessBlockData {
   tag: string;
   title: string;
+  titleSecondary?: string;
   subtitle: string;
   description?: string;
   steps: Array<{ number: string; title: string; text: string; duration: string }>;
@@ -115,6 +197,8 @@ export interface SitePage {
   cardDescription: string;
   metaTitle: string;
   metaDescription: string;
+  /** Explicit "expert product" flag. If undefined, legacy behaviour (derived from experts block) applies. */
+  expertProduct?: boolean;
   blocks: PageBlock[];
   createdAt: string;
   updatedAt: string;

@@ -21,6 +21,8 @@ export type ServiceCard = {
   experts?: Array<{ name: string; image: string }>;
   /** Hero factoids for wide image cards */
   factoids?: Array<{ number: string; text: string }>;
+  /** Whether to show the "Экспертный продукт" tag on the card. */
+  expertProduct?: boolean;
 };
 
 export type ServiceSection = {
@@ -120,9 +122,9 @@ export function ServicesGridClient({ sections }: ServicesGridClientProps) {
   // Desktop drag-to-scroll handlers
   const handleDragStart = useCallback((e: React.PointerEvent, sIdx: number) => {
     if (isMobile) return;
-    e.preventDefault();
+    // Only track drag on primary button (left mouse / touch)
+    if (e.button !== 0) return;
     dragRef.current = { startX: e.clientX, sIdx, dragged: false };
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
   }, [isMobile]);
 
   const handleDragMove = useCallback((e: React.PointerEvent) => {
@@ -276,7 +278,7 @@ export function ServicesGridClient({ sections }: ServicesGridClientProps) {
                                   : undefined
                               }
                               experts={section.showIcons ? card.experts : undefined}
-                              tag={section.showIcons && card.experts?.length ? "Экспертный продукт" : undefined}
+                              tag={section.showIcons && card.expertProduct ? "Экспертный продукт" : undefined}
                               className="h-full"
                             />
                           </div>
@@ -293,6 +295,7 @@ export function ServicesGridClient({ sections }: ServicesGridClientProps) {
                       onPointerMove={handleDragMove}
                       onPointerUp={handleDragEnd}
                       onPointerCancel={handleDragEnd}
+                      onDragStart={(e) => e.preventDefault()}
                     >
                       {/* Left fade — visible when scrolled */}
                       <div
@@ -342,7 +345,7 @@ export function ServicesGridClient({ sections }: ServicesGridClientProps) {
                                   : undefined
                               }
                               experts={section.showIcons ? card.experts : undefined}
-                              tag={section.showIcons && card.experts?.length ? "Экспертный продукт" : undefined}
+                              tag={section.showIcons && card.expertProduct ? "Экспертный продукт" : undefined}
                               className="[&:not(:first-child)]:border-l-0 h-full"
                             />
                           )

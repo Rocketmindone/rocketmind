@@ -562,8 +562,20 @@ code {
   }
 
   html {
-    scroll-behavior: smooth;
+    scroll-behavior: auto;
   }
+}
+
+/* ── Hero fade-in animation ── */
+@keyframes heroFadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Background image fade-in (no translate) ── */
+@keyframes heroBgFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 /* ── Responsive Heading Utilities ──

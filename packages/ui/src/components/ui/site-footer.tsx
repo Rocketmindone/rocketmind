@@ -34,8 +34,6 @@ function FooterColumn({ title, links }: FooterColumnProps) {
           <li key={link.href}>
             <Link
               href={link.href}
-              scroll={false}
-              onClick={() => window.scrollTo(0, 0)}
               className="text-[14px] leading-[1.5] text-muted-foreground transition-colors duration-150 hover:text-foreground"
             >
               {link.label}
@@ -83,7 +81,7 @@ export function SiteFooter({ basePath = "", className, children }: SiteFooterPro
           </Link>
           <button
             type="button"
-            onClick={() => window.scrollTo({ top: 0 })}
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             aria-label="Наверх"
             className="inline-flex items-center justify-center w-10 h-10 rounded-sm bg-secondary text-secondary-foreground transition-opacity duration-150 hover:opacity-[0.88] cursor-pointer"
           >

@@ -1,12 +1,14 @@
 "use client";
 
 import { cn } from "../../lib/utils";
+import { RichText } from "./rich-text";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
 export type Expert = {
   tag?: string;
   name: string;
+  shortBio?: string;
   bio: string;
   image: string | null;
 };
@@ -60,9 +62,10 @@ function ExpertCardHorizontal({ expert }: { expert: Expert }) {
         <div className="flex flex-col gap-6 flex-1">
           <h3 className="h3 text-[#F0F0F0]">{expert.name}</h3>
           <div className="flex-1 flex items-end">
-            <p className="text-[length:var(--text-14)] leading-[1.32] tracking-[0.01em] text-[#939393]">
-              {expert.bio}
-            </p>
+            <RichText
+              text={expert.bio}
+              className="text-[length:var(--text-14)] leading-[1.32] tracking-[0.01em] text-[#939393]"
+            />
           </div>
         </div>
       </div>
@@ -89,9 +92,10 @@ function ExpertCardVertical({ expert }: { expert: Expert }) {
           <h3 className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-28)] font-bold uppercase leading-[1.16] tracking-[-0.01em] text-[#F0F0F0]">
             {expert.name}
           </h3>
-          <p className="text-[length:var(--text-16)] leading-[1.28] text-[#939393]">
-            {expert.bio}
-          </p>
+          <RichText
+            text={expert.bio}
+            className="text-[length:var(--text-16)] leading-[1.28] text-[#939393]"
+          />
         </div>
       </div>
     </div>

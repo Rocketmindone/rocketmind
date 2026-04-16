@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { GripVertical, Upload, Columns2, Square } from "lucide-react";
 import { Switch } from "@rocketmind/ui";
 import { InlineEdit } from "@/components/inline-edit";
+import { MdText } from "@/components/md-text";
 import { InlineConfirmDelete } from "@/components/inline-confirm";
 import { InsertButton } from "@/components/insert-button";
 import { useItemDnd } from "@/lib/use-item-dnd";
@@ -18,6 +19,7 @@ type Tool = { number: string; title: string; text: string; icon?: string | null;
 export function ToolsEditor({ data, onUpdate }: ToolsEditorProps) {
   const tag = (data.tag as string) || "";
   const title = (data.title as string) || "";
+  const titleSecondary = (data.titleSecondary as string) || "";
   const description = (data.description as string) || "";
   const useIcons = (data.useIcons as boolean) || false;
   const tools = (data.tools as Tool[]) || [];
@@ -86,13 +88,22 @@ export function ToolsEditor({ data, onUpdate }: ToolsEditorProps) {
               </span>
             </InlineEdit>
 
-            <InlineEdit
-              value={title}
-              onSave={(v) => onUpdate({ title: v })}
-              placeholder="Заголовок"
-            >
-              <h2 className="h2 text-[#F0F0F0]">{title || "Заголовок"}</h2>
-            </InlineEdit>
+            <div className="flex flex-col gap-1">
+              <InlineEdit
+                value={title}
+                onSave={(v) => onUpdate({ title: v })}
+                placeholder="Заголовок"
+              >
+                <h2 className="h2 text-[#F0F0F0]">{title || "Заголовок"}</h2>
+              </InlineEdit>
+              <InlineEdit
+                value={titleSecondary}
+                onSave={(v) => onUpdate({ titleSecondary: v })}
+                placeholder="Дополнительная часть (серая)"
+              >
+                <span className="h2 text-[#939393] block">{titleSecondary || "доп. часть"}</span>
+              </InlineEdit>
+            </div>
 
             <InlineEdit
               value={description}
@@ -101,9 +112,11 @@ export function ToolsEditor({ data, onUpdate }: ToolsEditorProps) {
               copy
               placeholder="Описание"
             >
-              <p className="text-[length:var(--text-18)] leading-[1.2] text-[#939393]">
-                {description || "Описание"}
-              </p>
+              <MdText
+                value={description}
+                placeholder="Описание"
+                className="text-[length:var(--text-18)] leading-[1.2] text-[#939393]"
+              />
             </InlineEdit>
           </div>
 
@@ -194,9 +207,11 @@ export function ToolsEditor({ data, onUpdate }: ToolsEditorProps) {
                     copy
                     placeholder="Описание"
                   >
-                    <p className="text-[length:var(--text-16)] leading-[1.28] text-[#939393]">
-                      {tool.text || "Описание инструмента"}
-                    </p>
+                    <MdText
+                      value={tool.text}
+                      placeholder="Описание инструмента"
+                      className="text-[length:var(--text-16)] leading-[1.28] text-[#939393]"
+                    />
                   </InlineEdit>
                 </div>
               </div>

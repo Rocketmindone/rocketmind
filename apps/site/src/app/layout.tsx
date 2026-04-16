@@ -5,6 +5,7 @@ import { ThemeProvider } from "@rocketmind/ui";
 import { Header } from "@/components/sections/Header";
 import { Footer } from "@/components/sections/Footer";
 import { PageLoader } from "@/components/ui/PageLoader";
+import { ScrollToTop } from "@/components/ui/ScrollToTop";
 
 export const metadata: Metadata = {
   title: "Rocketmind | Стратегия и бизнес-модели",
@@ -25,6 +26,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
       </head>
       <body className="antialiased">
+        <ScrollToTop />
         <PageLoader />
         <ThemeProvider
           attribute="class"

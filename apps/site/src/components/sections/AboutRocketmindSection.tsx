@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { RichText } from "@rocketmind/ui";
 import { MascotCarousel } from "@/components/blocks/MascotCarousel";
 import {
   ABOUT_RM_DEFAULTS,
@@ -74,9 +75,10 @@ function LeftBottomText({
           <span className={`font-[family-name:var(--font-heading-family)] ${compact ? "h4" : "text-[24px]"} font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#F0F0F0] whitespace-pre-line`}>
             {canvasTitle}
           </span>
-          <p className={`${compact ? "text-[length:var(--text-14)]" : "text-[14px]"} leading-[1.28] text-[#F0F0F0]`}>
-            {canvasText}
-          </p>
+          <RichText
+            text={canvasText}
+            className={`${compact ? "text-[length:var(--text-14)]" : "text-[14px]"} leading-[1.28] text-[#F0F0F0]`}
+          />
         </div>
       </div>
     );
@@ -88,13 +90,15 @@ function LeftBottomText({
         <span className={`font-[family-name:var(--font-heading-family)] ${compact ? "h4" : "text-[24px]"} font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#F0F0F0]`}>
           {founderName}
         </span>
-        <p className={`${compact ? "text-[length:var(--text-14)]" : "text-[14px]"} leading-[1.28] text-[#F0F0F0]`}>
-          {founderBio}
-        </p>
+        <RichText
+          text={founderBio}
+          className={`${compact ? "text-[length:var(--text-14)]" : "text-[14px]"} leading-[1.28] text-[#F0F0F0]`}
+        />
       </div>
-      <p className={`${compact ? "text-[length:var(--text-14)]" : "text-[14px]"} leading-[1.28] text-[#939393]`}>
-        {founderRole}
-      </p>
+      <RichText
+        text={founderRole}
+        className={`${compact ? "text-[length:var(--text-14)]" : "text-[14px]"} leading-[1.28] text-[#939393]`}
+      />
     </div>
   );
 }
@@ -161,9 +165,10 @@ export function AboutRocketmindSection({
               <DotPattern />
               <div className="relative z-10 flex gap-12">
                 <h3 className="h4 text-[#F0F0F0] shrink-0">{features[0].title}</h3>
-                <p className="text-[length:var(--text-14)] leading-[1.28] text-[#939393]">
-                  {features[0].text}
-                </p>
+                <RichText
+                  text={features[0].text}
+                  className="text-[length:var(--text-14)] leading-[1.28] text-[#939393]"
+                />
               </div>
               <div className="relative z-10">
                 <MascotCarousel />
@@ -173,15 +178,17 @@ export function AboutRocketmindSection({
             <div className="flex">
               <div className="w-1/2 flex flex-col gap-2 border-r border-[#404040] p-8">
                 <h3 className="h4 text-[#F0F0F0]">{features[1].title}</h3>
-                <p className="text-[length:var(--text-14)] leading-[1.28] text-[#939393]">
-                  {features[1].text}
-                </p>
+                <RichText
+                  text={features[1].text}
+                  className="text-[length:var(--text-14)] leading-[1.28] text-[#939393]"
+                />
               </div>
               <div className="w-1/2 flex flex-col gap-2 p-8">
                 <h3 className="h4 text-[#F0F0F0]">{features[2].title}</h3>
-                <p className="text-[length:var(--text-14)] leading-[1.28] text-[#939393]">
-                  {features[2].text}
-                </p>
+                <RichText
+                  text={features[2].text}
+                  className="text-[length:var(--text-14)] leading-[1.28] text-[#939393]"
+                />
               </div>
             </div>
           </div>
@@ -225,17 +232,17 @@ export function AboutRocketmindSection({
               <DotPattern />
               <div className="relative z-10 flex gap-2">
                 <h3 className="w-1/2 shrink-0 h4 text-[#F0F0F0]">{features[0].title}</h3>
-                <p className="w-1/2 text-[length:var(--text-14)] leading-[1.28] text-[#939393]">{features[0].text}</p>
+                <RichText text={features[0].text} className="w-1/2 text-[length:var(--text-14)] leading-[1.28] text-[#939393]" />
               </div>
               <div className="relative z-10"><MascotCarousel size="compact" /></div>
             </div>
             <div className="flex-1 flex flex-col gap-2 border-b border-[#404040] p-8">
               <h3 className="h4 text-[#F0F0F0]">{features[1].title}</h3>
-              <p className="text-[length:var(--text-14)] leading-[1.28] text-[#939393]">{features[1].text}</p>
+              <RichText text={features[1].text} className="text-[length:var(--text-14)] leading-[1.28] text-[#939393]" />
             </div>
             <div className="flex-1 flex flex-col gap-2 p-8">
               <h3 className="h4 text-[#F0F0F0]">{features[2].title}</h3>
-              <p className="text-[length:var(--text-14)] leading-[1.28] text-[#939393]">{features[2].text}</p>
+              <RichText text={features[2].text} className="text-[length:var(--text-14)] leading-[1.28] text-[#939393]" />
             </div>
           </div>
         </div>
@@ -280,18 +287,18 @@ export function AboutRocketmindSection({
           {/* Features */}
           <div className="flex flex-col gap-2 border-t border-[#404040] px-5 py-6">
             <h3 className="h4 text-[#F0F0F0]">{features[1].title}</h3>
-            <p className="text-[length:var(--text-14)] leading-[1.28] text-[#939393]">{features[1].text}</p>
+            <RichText text={features[1].text} className="text-[length:var(--text-14)] leading-[1.28] text-[#939393]" />
           </div>
           <div className="flex flex-col gap-2 border-t border-[#404040] px-5 py-6">
             <h3 className="h4 text-[#F0F0F0]">{features[2].title}</h3>
-            <p className="text-[length:var(--text-14)] leading-[1.28] text-[#939393]">{features[2].text}</p>
+            <RichText text={features[2].text} className="text-[length:var(--text-14)] leading-[1.28] text-[#939393]" />
           </div>
           {/* AI Agents — dot pattern */}
           <div className="relative flex flex-col gap-4 border-t border-[#404040] px-5 py-6 overflow-hidden">
             <DotPattern />
             <div className="relative z-10 flex gap-2">
               <h3 className="w-1/2 shrink-0 h4 text-[#F0F0F0]">{features[0].title}</h3>
-              <p className="w-1/2 text-[length:var(--text-14)] leading-[1.28] text-[#939393]">{features[0].text}</p>
+              <RichText text={features[0].text} className="w-1/2 text-[length:var(--text-14)] leading-[1.28] text-[#939393]" />
             </div>
             <div className="relative z-10"><MascotCarousel size="compact" /></div>
           </div>

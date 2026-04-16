@@ -1,6 +1,7 @@
 "use client";
 
 import { GripVertical, Columns2, Square } from "lucide-react";
+import { RichText } from "@rocketmind/ui";
 import { InlineEdit } from "@/components/inline-edit";
 import { InlineConfirmDelete } from "@/components/inline-confirm";
 import { InsertButton } from "@/components/insert-button";
@@ -16,6 +17,7 @@ type Fact = { title: string; text: string; wide?: boolean };
 export function AudienceEditor({ data, onUpdate }: AudienceEditorProps) {
   const tag = (data.tag as string) || "";
   const title = (data.title as string) || "";
+  const titleSecondary = (data.titleSecondary as string) || "";
   const subtitle = (data.subtitle as string) || "";
   const facts = (data.facts as Fact[]) || [];
 
@@ -58,7 +60,7 @@ export function AudienceEditor({ data, onUpdate }: AudienceEditorProps) {
               </span>
             </InlineEdit>
 
-            <div className="mt-3">
+            <div className="mt-3 flex flex-col gap-1">
               <InlineEdit
                 value={title}
                 onSave={(v) => onUpdate({ title: v })}
@@ -67,6 +69,15 @@ export function AudienceEditor({ data, onUpdate }: AudienceEditorProps) {
                 <h2 className="h2 text-[#0A0A0A]">
                   {title || "Заголовок"}
                 </h2>
+              </InlineEdit>
+              <InlineEdit
+                value={titleSecondary}
+                onSave={(v) => onUpdate({ titleSecondary: v })}
+                placeholder="Дополнительная часть (серая)"
+              >
+                <span className="h2 text-[#666666] block">
+                  {titleSecondary || "доп. часть"}
+                </span>
               </InlineEdit>
             </div>
           </div>
@@ -78,9 +89,16 @@ export function AudienceEditor({ data, onUpdate }: AudienceEditorProps) {
               multiline
               placeholder="Подзаголовок"
             >
-              <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#0A0A0A]">
-                {subtitle || "Подзаголовок"}
-              </p>
+              {subtitle ? (
+                <RichText
+                  text={subtitle}
+                  className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#0A0A0A]"
+                />
+              ) : (
+                <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#0A0A0A]">
+                  Подзаголовок
+                </p>
+              )}
             </InlineEdit>
           </div>
         </div>
@@ -158,9 +176,16 @@ export function AudienceEditor({ data, onUpdate }: AudienceEditorProps) {
                       copy
                       placeholder="Описание факта"
                     >
-                      <p className="max-w-[480px] text-[length:var(--text-16)] leading-[1.28] text-[#0A0A0A]">
-                        {fact.text || "Описание"}
-                      </p>
+                      {fact.text ? (
+                        <RichText
+                          text={fact.text}
+                          className="max-w-[480px] text-[length:var(--text-16)] leading-[1.28] text-[#0A0A0A]"
+                        />
+                      ) : (
+                        <p className="max-w-[480px] text-[length:var(--text-16)] leading-[1.28] text-[#0A0A0A]">
+                          Описание
+                        </p>
+                      )}
                     </InlineEdit>
                   </div>
                 </div>

@@ -32,13 +32,17 @@ export * from './components/ui/textarea';
 export * from './components/ui/slider';
 export * from './components/ui/tooltip';
 
+export * from './components/ui/partnership-block';
 export * from './components/ui/product-card';
 export * from './components/ui/product-image-card';
 
+export * from './components/ui/rich-text';
 export * from './components/ui/for-whom-section';
 export * from './components/ui/process-section';
 export * from './components/ui/results-section';
+export * from './components/ui/services-section';
 export * from './components/ui/experts-section';
+export * from './components/ui/hero-experts';
 export * from './components/ui/tools-section';
 
 // Blocks

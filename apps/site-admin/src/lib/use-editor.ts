@@ -1,9 +1,18 @@
 "use client";
 
 import { useCallback, useReducer } from "react";
-import type { SitePage, PageBlock } from "./types";
+import type { SitePage, PageBlock, BlockType } from "./types";
+import { CUSTOM_BLOCK_ID_PREFIX } from "./constants";
 
 const MAX_HISTORY = 50;
+
+function generateId(prefix: string): string {
+  return `${prefix}${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`;
+}
+
+export function isCustomBlock(block: Pick<PageBlock, "id">): boolean {
+  return block.id.startsWith(CUSTOM_BLOCK_ID_PREFIX);
+}
 
 // ── State ───────────────────────────────────────────────────────────────────
 
@@ -22,11 +31,30 @@ type EditorAction =
   | { type: "UPDATE_BLOCK"; blockId: string; data: Record<string, unknown> }
   | { type: "TOGGLE_BLOCK"; blockId: string }
   | { type: "REORDER_BLOCKS"; orderedIds: string[] }
+  | { type: "INSERT_BLOCK"; afterBlockId: string | null; blockType: BlockType }
+  | { type: "DELETE_BLOCK"; blockId: string }
   | { type: "UPDATE_STATUS"; status: SitePage["status"] }
   | { type: "UNDO" }
   | { type: "REDO" }
   | { type: "SAVE"; page: SitePage }
   | { type: "DISCARD" };
+
+/** Default data shape for a newly inserted custom section (mirrors AboutBlockData). */
+function createDefaultBlockData(type: BlockType): Record<string, unknown> {
+  switch (type) {
+    case "customSection":
+      return {
+        caption: "",
+        title: "",
+        titleSecondary: "",
+        paragraphs: [],
+        accordion: [],
+        imageMode: "none",
+      };
+    default:
+      return {};
+  }
+}
 
 // ── Reducer ─────────────────────────────────────────────────────────────────
 
@@ -84,6 +112,33 @@ function editorReducer(state: EditorState, action: EditorAction): EditorState {
         .filter(Boolean) as PageBlock[];
       const next = { ...state.present, blocks: reordered };
       return pushHistory(state, next);
+    }
+
+    case "INSERT_BLOCK": {
+      const sorted = [...state.present.blocks].sort((a, b) => a.order - b.order);
+      const afterIdx = action.afterBlockId
+        ? sorted.findIndex((b) => b.id === action.afterBlockId)
+        : -1;
+      const insertAt = afterIdx === -1 ? 0 : afterIdx + 1;
+      const newBlock: PageBlock = {
+        id: generateId(CUSTOM_BLOCK_ID_PREFIX),
+        type: action.blockType,
+        enabled: true,
+        order: 0,
+        data: createDefaultBlockData(action.blockType),
+      };
+      const nextBlocks = [...sorted];
+      nextBlocks.splice(insertAt, 0, newBlock);
+      const renumbered = nextBlocks.map((b, i) => ({ ...b, order: i }));
+      return pushHistory(state, { ...state.present, blocks: renumbered });
+    }
+
+    case "DELETE_BLOCK": {
+      const filtered = state.present.blocks.filter((b) => b.id !== action.blockId);
+      const renumbered = filtered
+        .sort((a, b) => a.order - b.order)
+        .map((b, i) => ({ ...b, order: i }));
+      return pushHistory(state, { ...state.present, blocks: renumbered });
     }
 
     case "UPDATE_STATUS": {
@@ -176,6 +231,17 @@ export function useEditor(page: SitePage) {
     []
   );
 
+  const insertBlock = useCallback(
+    (afterBlockId: string | null, blockType: BlockType) =>
+      dispatch({ type: "INSERT_BLOCK", afterBlockId, blockType }),
+    []
+  );
+
+  const deleteBlock = useCallback(
+    (blockId: string) => dispatch({ type: "DELETE_BLOCK", blockId }),
+    []
+  );
+
   const updateStatus = useCallback(
     (status: SitePage["status"]) =>
       dispatch({ type: "UPDATE_STATUS", status }),
@@ -202,6 +268,8 @@ export function useEditor(page: SitePage) {
     updateBlock,
     toggleBlock,
     reorderBlocks,
+    insertBlock,
+    deleteBlock,
     updateStatus,
     undo,
     redo,

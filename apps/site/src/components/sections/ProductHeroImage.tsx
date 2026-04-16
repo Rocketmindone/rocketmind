@@ -2,6 +2,7 @@
 
 import { useRef, useState, useEffect, useCallback } from "react";
 import Image from "next/image";
+import { RichText } from "@rocketmind/ui";
 import type { Factoid, HeroTag } from "@/lib/products";
 
 /** Renders next/image for file paths, plain <img> for data URLs */
@@ -18,6 +19,7 @@ function HeroImage({ src, className, priority }: { src: string; className?: stri
 type ProductHeroImageProps = {
   caption: string;
   title: string;
+  titleSecondary?: string;
   description: string;
   ctaText: string;
   factoids: Factoid[];
@@ -60,18 +62,20 @@ function HeroCTA({ text }: { text: string }) {
   return (
     <button
       type="button"
-      className="flex flex-col justify-between w-full h-full bg-[#FFCC00] p-5 md:p-7 cursor-pointer"
+      className="group flex flex-col justify-between w-full h-full bg-[#FFCC00] p-5 md:p-7 cursor-pointer transition-colors duration-200 hover:bg-[#FFE040]"
     >
       <div className="flex justify-end w-full">
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-          <path
-            d="M8 8H24M24 8V24M24 8L8 24"
-            stroke="#0A0A0A"
-            strokeWidth="4"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        <div className="transition-transform duration-200 group-hover:-translate-y-1 group-hover:translate-x-1">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path
+              d="M8 8H24M24 8V24M24 8L8 24"
+              stroke="#0A0A0A"
+              strokeWidth="4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
       </div>
       <span className="h4 md:h3 text-[#0A0A0A] text-left">{text}</span>
     </button>
@@ -169,11 +173,30 @@ function HeroTagBadge({ text }: HeroTag) {
   );
 }
 
+// ── Stagger animation helper ──────────────────────────────────────────────────
+
+function fadeIn(index: number): React.CSSProperties {
+  return {
+    opacity: 0,
+    transform: "translateY(20px)",
+    animation: `heroFadeIn 600ms ease-out ${index * 150}ms forwards`,
+  };
+}
+
+/** Pure opacity fade-in (no translate) — for background images. */
+function bgFade(): React.CSSProperties {
+  return {
+    opacity: 0,
+    animation: "heroBgFade 900ms ease-out 0ms forwards",
+  };
+}
+
 // ── Product Hero (Image variant) ───────────────────────────────────────────────
 
 export function ProductHeroImage({
   caption,
   title,
+  titleSecondary,
   description,
   ctaText,
   factoids,
@@ -182,7 +205,10 @@ export function ProductHeroImage({
   secondaryCta,
   audioSrc,
 }: ProductHeroImageProps) {
-  const hasFactoids = factoids.length > 0;
+  const visibleFactoids = factoids.filter(
+    (f) => f.number?.trim() || f.label?.trim() || f.text?.trim(),
+  );
+  const hasFactoids = visibleFactoids.length > 0;
 
   return (
     <section className="relative w-full bg-[#0A0A0A]">
@@ -192,7 +218,7 @@ export function ProductHeroImage({
         <div className="relative min-h-[756px] overflow-hidden">
           {/* Background image — right 2/3 */}
           {coverImage && (
-            <div className="absolute top-0 right-0 w-[60%] bottom-0">
+            <div className="absolute top-0 right-0 w-[60%] bottom-0" style={bgFade()}>
               <HeroImage src={coverImage} className="object-cover" priority />
             </div>
           )}
@@ -212,7 +238,7 @@ export function ProductHeroImage({
           <div className="relative z-10 flex flex-col gap-11 max-w-[752px] px-5 md:px-8 xl:px-14 pb-14 pt-[188px]">
             {/* Header */}
             <div className="flex flex-col gap-6">
-              <div className="flex items-center gap-5">
+              <div className="flex items-center gap-5" style={fadeIn(0)}>
                 <span className="h4 text-[#FFCC00]">{caption}</span>
                 {tags && tags.length > 0 && (
                   <div className="flex items-center gap-5">
@@ -222,37 +248,39 @@ export function ProductHeroImage({
                   </div>
                 )}
               </div>
-              <h1 className="h1 text-[#F0F0F0] whitespace-pre-line">{title}</h1>
+              <h1 className="h1 whitespace-pre-line" style={fadeIn(1)}><span className="text-[#F0F0F0]">{title}</span>{titleSecondary ? <><span className="text-[#F0F0F0]"> </span><span className="text-[#939393]">{titleSecondary}</span></> : null}</h1>
             </div>
 
             {/* Description */}
             {description && (
-              <div className="max-w-[696px]">
-                <p className="text-[length:var(--text-18)] leading-[1.2] text-[#F0F0F0]">
-                  {description}
-                </p>
+              <div className="max-w-[696px]" style={fadeIn(2)}>
+                <RichText
+                  text={description}
+                  className="text-[length:var(--text-18)] leading-[1.2] text-[#F0F0F0]"
+                />
               </div>
             )}
 
             {/* Secondary CTA (ghost button) */}
-            {secondaryCta && audioSrc && <AudioButton text={secondaryCta} src={audioSrc} />}
+            {secondaryCta && audioSrc && <div style={fadeIn(3)}><AudioButton text={secondaryCta} src={audioSrc} /></div>}
           </div>
         </div>
 
-        {/* Factoids + CTA row below — content-sized cards, CTA fills rest */}
+        {/* Factoids + CTA row — equal columns; factoid widens if content exceeds its share */}
         {hasFactoids && (
           <div
             className="hidden xl:grid px-5 md:px-8 xl:px-14"
-            style={{ gridTemplateColumns: "repeat(3, max-content) 1fr" }}
+            style={{ gridTemplateColumns: `repeat(${visibleFactoids.length + 1}, minmax(max-content, 1fr))` }}
           >
-            {factoids.map((f) => (
-              <FactoidCard
-                key={f.number}
-                {...f}
-                className="border-t border-b border-l border-[#404040]"
-              />
+            {visibleFactoids.map((f, i) => (
+              <div key={f.number || i} className="self-stretch" style={fadeIn(1 + i)}>
+                <FactoidCard
+                  {...f}
+                  className="border-t border-b border-l border-[#404040] h-full"
+                />
+              </div>
             ))}
-            <div className="border-t border-b border-l border-[#404040]">
+            <div className="border-t border-b border-l border-[#404040] self-stretch" style={fadeIn(1)}>
               <HeroCTA text={ctaText} />
             </div>
           </div>
@@ -260,10 +288,15 @@ export function ProductHeroImage({
         {/* Narrow desktop fallback — 2-col grid */}
         {hasFactoids && (
           <div className="hidden lg:grid xl:hidden grid-cols-2 px-5 md:px-8 xl:px-14">
-            <HeroCTA text={ctaText} />
-            <FactoidCard {...factoids[0]} className="border border-[#404040]" />
-            <FactoidCard {...factoids[1]} className="border border-[#404040]" />
-            <FactoidCard {...factoids[2]} className="border-r border-b border-[#404040]" />
+            <div style={fadeIn(1)}><HeroCTA text={ctaText} /></div>
+            {visibleFactoids.map((f, i) => (
+              <div key={f.number || i} style={fadeIn(1 + i)}>
+                <FactoidCard
+                  {...f}
+                  className={i === visibleFactoids.length - 1 && visibleFactoids.length === 3 ? "border-r border-b border-[#404040]" : "border border-[#404040]"}
+                />
+              </div>
+            ))}
           </div>
         )}
 
@@ -272,7 +305,7 @@ export function ProductHeroImage({
           <div className="px-5 md:px-8 xl:px-14 pt-4 pb-8">
             <button
               type="button"
-              className="inline-flex items-center gap-2 bg-[#FFCC00] px-6 py-3.5 cursor-pointer"
+              className="inline-flex items-center gap-2 bg-[#FFCC00] px-6 py-3.5 cursor-pointer transition-colors duration-200 hover:bg-[#FFE040]"
             >
               <span className="h4 text-[#0A0A0A]">{ctaText}</span>
             </button>
@@ -286,7 +319,7 @@ export function ProductHeroImage({
         <div className="relative min-h-[600px] overflow-hidden">
           {/* Background image */}
           {coverImage && (
-            <div className="absolute top-0 right-0 w-[65%] h-full">
+            <div className="absolute top-0 right-0 w-[65%] h-full" style={bgFade()}>
               <HeroImage src={coverImage} className="object-cover" priority />
             </div>
           )}
@@ -305,7 +338,7 @@ export function ProductHeroImage({
           {/* Content */}
           <div className="relative z-10 flex flex-col gap-8 max-w-[600px] px-10 pb-10 pt-[140px]">
             <div className="flex flex-col gap-5">
-              <div className="flex items-center gap-4 flex-wrap">
+              <div className="flex items-center gap-4 flex-wrap" style={fadeIn(0)}>
                 <span className="h4 text-[#FFCC00]">{caption}</span>
                 {tags && tags.length > 0 && (
                   <div className="flex items-center gap-3 flex-wrap">
@@ -315,32 +348,40 @@ export function ProductHeroImage({
                   </div>
                 )}
               </div>
-              <h1 className="h1 text-[#F0F0F0] whitespace-pre-line">{title}</h1>
+              <h1 className="h1 whitespace-pre-line" style={fadeIn(1)}><span className="text-[#F0F0F0]">{title}</span>{titleSecondary ? <><span className="text-[#F0F0F0]"> </span><span className="text-[#939393]">{titleSecondary}</span></> : null}</h1>
             </div>
 
             {description && (
-              <p className="text-[length:var(--text-18)] leading-[1.2] text-[#F0F0F0]">
-                {description}
-              </p>
+              <div style={fadeIn(2)}>
+                <RichText
+                  text={description}
+                  className="text-[length:var(--text-18)] leading-[1.2] text-[#F0F0F0]"
+                />
+              </div>
             )}
 
-            {secondaryCta && audioSrc && <AudioButton text={secondaryCta} src={audioSrc} />}
+            {secondaryCta && audioSrc && <div style={fadeIn(3)}><AudioButton text={secondaryCta} src={audioSrc} /></div>}
           </div>
         </div>
 
         {/* Factoids + CTA */}
         {hasFactoids ? (
           <div className="grid grid-cols-2 px-10">
-            <HeroCTA text={ctaText} />
-            <FactoidCard {...factoids[0]} className="border border-[#404040]" />
-            <FactoidCard {...factoids[1]} className="border border-[#404040]" />
-            <FactoidCard {...factoids[2]} className="border-r border-b border-[#404040]" />
+            <div style={fadeIn(1)}><HeroCTA text={ctaText} /></div>
+            {visibleFactoids.map((f, i) => (
+              <div key={f.number || i} style={fadeIn(1 + i)}>
+                <FactoidCard
+                  {...f}
+                  className={i === visibleFactoids.length - 1 && visibleFactoids.length === 3 ? "border-r border-b border-[#404040]" : "border border-[#404040]"}
+                />
+              </div>
+            ))}
           </div>
         ) : (
           <div className="px-10 pt-4 pb-8">
             <button
               type="button"
-              className="inline-flex items-center gap-2 bg-[#FFCC00] px-6 py-3.5 cursor-pointer"
+              className="inline-flex items-center gap-2 bg-[#FFCC00] px-6 py-3.5 cursor-pointer transition-colors duration-200 hover:bg-[#FFE040]"
             >
               <span className="h4 text-[#0A0A0A]">{ctaText}</span>
             </button>
@@ -349,12 +390,12 @@ export function ProductHeroImage({
       </div>
 
       {/* ── Mobile layout ── */}
-      <div className="flex md:hidden flex-col">
+      <div className="flex md:hidden flex-col pt-16">
         {/* Image area */}
         <div className="relative min-h-[360px] overflow-hidden">
           {/* Background image — full width */}
           {coverImage && (
-            <div className="absolute inset-0">
+            <div className="absolute inset-0" style={bgFade()}>
               <HeroImage src={coverImage} className="object-cover object-right" priority />
             </div>
           )}
@@ -373,7 +414,7 @@ export function ProductHeroImage({
           {/* Content overlay */}
           <div className="relative z-10 flex flex-col justify-end h-full min-h-[360px] px-5 pb-6 pt-[100px]">
             <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex items-center gap-3 flex-wrap" style={fadeIn(0)}>
                 <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">
                   {caption}
                 </span>
@@ -385,7 +426,7 @@ export function ProductHeroImage({
                   </div>
                 )}
               </div>
-              <h1 className="h1 text-[#F0F0F0]">{title}</h1>
+              <h1 className="h1" style={fadeIn(1)}><span className="text-[#F0F0F0]">{title}</span>{titleSecondary ? <><span className="text-[#F0F0F0]"> </span><span className="text-[#939393]">{titleSecondary}</span></> : null}</h1>
             </div>
           </div>
         </div>
@@ -393,44 +434,51 @@ export function ProductHeroImage({
         {/* Text content below image */}
         <div className="flex flex-col gap-6 px-5 pt-4">
           {description && (
-            <p className="text-[length:var(--text-16)] leading-[1.28] text-[#F0F0F0]">
-              {description}
-            </p>
+            <div style={fadeIn(2)}>
+              <RichText
+                text={description}
+                className="text-[length:var(--text-16)] leading-[1.28] text-[#F0F0F0]"
+              />
+            </div>
           )}
 
-          {secondaryCta && audioSrc && <AudioButton text={secondaryCta} src={audioSrc} />}
+          {secondaryCta && audioSrc && <div style={fadeIn(3)}><AudioButton text={secondaryCta} src={audioSrc} /></div>}
 
           {/* CTA */}
           <button
             type="button"
-            className="flex items-center justify-between w-full bg-[#FFCC00] p-5 cursor-pointer"
+            style={fadeIn(1)}
+            className="group flex items-center justify-between w-full bg-[#FFCC00] p-5 cursor-pointer transition-colors duration-200 hover:bg-[#FFE040]"
           >
             <span className="h4 text-[#0A0A0A]">{ctaText}</span>
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-              <path
-                d="M8 8H24M24 8V24M24 8L8 24"
-                stroke="#0A0A0A"
-                strokeWidth="4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <div className="transition-transform duration-200 group-hover:-translate-y-1 group-hover:translate-x-1">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                <path
+                  d="M8 8H24M24 8V24M24 8L8 24"
+                  stroke="#0A0A0A"
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
           </button>
         </div>
 
         {/* Factoids stacked */}
         {hasFactoids && (
           <div className="flex flex-col px-5">
-            {factoids.map((f, i) => (
-              <FactoidCard
-                key={f.number}
-                {...f}
-                className={
-                  i === 0
-                    ? "border border-[#404040]"
-                    : "border-l border-r border-b border-[#404040]"
-                }
-              />
+            {visibleFactoids.map((f, i) => (
+              <div key={f.number || i} style={fadeIn(1 + i)}>
+                <FactoidCard
+                  {...f}
+                  className={
+                    i === 0
+                      ? "border border-[#404040]"
+                      : "border-l border-r border-b border-[#404040]"
+                  }
+                />
+              </div>
             ))}
           </div>
         )}

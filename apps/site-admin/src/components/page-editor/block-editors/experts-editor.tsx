@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { GripVertical, Search, Plus, X, UserCircle } from "lucide-react";
+import { MdText } from "@/components/md-text";
 import { InlineConfirmDelete } from "@/components/inline-confirm";
 import { useItemDnd } from "@/lib/use-item-dnd";
 
@@ -11,6 +12,7 @@ type ExpertInfo = {
   slug: string;
   name: string;
   tag: string;
+  shortBio: string;
   bio: string;
   image: string | null;
 };
@@ -268,9 +270,11 @@ function ExpertCardPreview({
         <div className="flex flex-1 flex-col gap-6">
           <h3 className="h3 text-[#F0F0F0]">{expert.name || "Имя Фамилия"}</h3>
           <div className="flex flex-1 items-end">
-            <p className="text-[length:var(--text-14)] leading-[1.32] tracking-[0.01em] text-[#939393]">
-              {expert.bio || "Биография эксперта"}
-            </p>
+            <MdText
+              value={expert.bio}
+              placeholder="Биография эксперта"
+              className="text-[length:var(--text-14)] leading-[1.32] tracking-[0.01em] text-[#939393]"
+            />
           </div>
         </div>
       </div>

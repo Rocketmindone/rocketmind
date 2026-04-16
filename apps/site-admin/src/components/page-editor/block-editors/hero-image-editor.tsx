@@ -13,10 +13,12 @@ import {
   X,
 } from "lucide-react";
 import { InlineEdit } from "@/components/inline-edit";
+import { MdText } from "@/components/md-text";
 import { useItemDnd } from "@/lib/use-item-dnd";
 
 interface HeroImageEditorProps {
   data: Record<string, unknown>;
+  hasExperts: boolean;
   onUpdate: (data: Record<string, unknown>) => void;
 }
 
@@ -342,9 +344,10 @@ function FactoidCardEditor({
 
 // ── Main Editor ────────────────────────────────────────────────────────────
 
-export function HeroImageEditor({ data, onUpdate }: HeroImageEditorProps) {
+export function HeroImageEditor({ data, hasExperts, onUpdate }: HeroImageEditorProps) {
   const caption = (data.caption as string) || "";
   const title = (data.title as string) || "";
+  const titleSecondary = (data.titleSecondary as string) || "";
   const description = (data.description as string) || "";
   const ctaText = (data.ctaText as string) || "";
   const secondaryCta = (data.secondaryCta as string) || "";
@@ -412,6 +415,12 @@ export function HeroImageEditor({ data, onUpdate }: HeroImageEditorProps) {
                 </span>
               </InlineEdit>
 
+              {hasExperts && (
+                <span className="inline-flex items-center px-2.5 py-1 bg-[#3D3300] border border-[#4A3C00] font-[family-name:var(--font-mono-family)] text-[12px] font-medium uppercase tracking-[0.02em] leading-[1.2] text-[#FFE466]">
+                  Экспертный продукт
+                </span>
+              )}
+
               {tags.map((tag, i) => (
                 <TagBadge
                   key={i}
@@ -431,16 +440,29 @@ export function HeroImageEditor({ data, onUpdate }: HeroImageEditorProps) {
               </button>
             </div>
 
-            <InlineEdit
-              value={title}
-              onSave={(v) => onUpdate({ title: v })}
-              multiline
-              placeholder="ЗАГОЛОВОК БЛОКА"
-            >
-              <h1 className="h1 whitespace-pre-line text-[#F0F0F0]">
-                {title || "ЗАГОЛОВОК"}
-              </h1>
-            </InlineEdit>
+            <div className="flex flex-col gap-2">
+              <InlineEdit
+                value={title}
+                onSave={(v) => onUpdate({ title: v })}
+                multiline
+                placeholder="ЗАГОЛОВОК БЛОКА"
+              >
+                <h1 className="h1 whitespace-pre-line text-[#F0F0F0]">
+                  {title || "ЗАГОЛОВОК"}
+                </h1>
+              </InlineEdit>
+
+              <InlineEdit
+                value={titleSecondary}
+                onSave={(v) => onUpdate({ titleSecondary: v })}
+                multiline
+                placeholder="Дополнительная часть (серая)"
+              >
+                <span className="h1 whitespace-pre-line text-[#939393] block">
+                  {titleSecondary || "доп. часть заголовка"}
+                </span>
+              </InlineEdit>
+            </div>
           </div>
 
           {/* Description */}
@@ -451,9 +473,11 @@ export function HeroImageEditor({ data, onUpdate }: HeroImageEditorProps) {
             copy
             placeholder="Описание продукта..."
           >
-            <p className="max-w-[696px] text-[length:var(--text-18)] leading-[1.2] text-[#F0F0F0]">
-              {description || "Описание продукта"}
-            </p>
+            <MdText
+              value={description}
+              placeholder="Описание продукта"
+              className="max-w-[696px] text-[length:var(--text-18)] leading-[1.2] text-[#F0F0F0]"
+            />
           </InlineEdit>
 
           {/* Secondary CTA (audio button) */}

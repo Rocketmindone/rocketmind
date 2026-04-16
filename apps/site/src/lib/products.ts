@@ -19,6 +19,7 @@ export type HeroTag = {
 export type ProductHeroData = {
   caption: string;
   title: string;
+  titleSecondary?: string;
   description: string;
   ctaText: string;
   factoids: Factoid[];
@@ -28,20 +29,35 @@ export type ProductHeroData = {
   secondaryCta?: string;
   /** Audio data URL (base64) from CMS */
   audioData?: string;
+  /** Optional quote shown under experts block (expert-product variant only) */
+  quote?: string;
 };
 
 export type AccordionItem = {
   title: string;
-  description: string;
+  paragraphs: string[];
+};
+
+export type AboutParagraph = {
+  text: string;
+  /** If true, this paragraph uses the uppercase label-18 style. */
+  uppercase: boolean;
 };
 
 export type AboutProductData = {
   caption: string;
   title: string;
-  description: string;
+  titleSecondary?: string;
+  paragraphs: AboutParagraph[];
   accordion: AccordionItem[];
+  /** If false, items are always expanded (no click-to-collapse). Default: true. */
+  accordionCollapsible: boolean;
   /** Whether an image is shown (resolved from filesystem) */
   hasImage: boolean;
+  /** If true, image is on the left; otherwise on the right. Default: false. */
+  imageLeft: boolean;
+  /** If true, paragraphs render in right column above accordion. Default: false. */
+  paragraphsRight: boolean;
 };
 
 export type ForWhomFact = {
@@ -52,6 +68,7 @@ export type ForWhomFact = {
 export type ForWhomData = {
   tag: string;
   title: string;
+  titleSecondary?: string;
   subtitle?: string;
   facts: ForWhomFact[];
   wideColumn?: "left" | "right";
@@ -72,6 +89,7 @@ export type ProcessParticipant = {
 export type ProcessData = {
   tag: string;
   title: string;
+  titleSecondary?: string;
   subtitle: string;
   description?: string;
   steps: ProcessStep[];
@@ -85,9 +103,29 @@ export type ResultCardData = {
   text: string;
 };
 
+export type ServiceCardData = {
+  title: string;
+  paragraphs: string[];
+  showArrow?: boolean;
+  href?: string;
+  colSpan?: 1 | 2;
+  rowSpan?: 1 | 2;
+  featured?: boolean;
+  paragraphsTwoCol?: boolean;
+};
+
+export type ServicesData = {
+  tag?: string;
+  title: string;
+  titleSecondary?: string;
+  description?: string;
+  cards: ServiceCardData[];
+};
+
 export type ResultsData = {
   tag: string;
   title: string;
+  titleSecondary?: string;
   description?: string;
   cards: ResultCardData[];
 };
@@ -104,6 +142,7 @@ export type ToolCardData = {
 export type ToolsData = {
   tag: string;
   title: string;
+  titleSecondary?: string;
   description?: string;
   useIcons?: boolean;
   tools: ToolCardData[];
@@ -119,6 +158,14 @@ export type AboutRocketmindData = {
   features: Array<{ title: string; text: string }>;
   variant?: "dark" | "light";
   leftVariant?: "alex" | "canvas";
+};
+
+export type CustomSectionData = {
+  id: string;
+  /** Built-in block type after which this section renders (null = very top). */
+  insertAfter: string | null;
+  enabled: boolean;
+  about: AboutProductData;
 };
 
 export type ProductData = {
@@ -143,17 +190,27 @@ export type ProductData = {
   tools: ToolsData | null;
   // Results
   results: ResultsData | null;
+  // Services (optional bento grid)
+  services: ServicesData | null;
   // Process
   process: ProcessData | null;
   // Experts
   experts: ExpertData[] | null;
   // About Rocketmind (CMS-editable)
   aboutRocketmind: AboutRocketmindData | null;
+  /** Whether the "About Rocketmind" block is shown (default: true; disabled if frontmatter `aboutRocketmind: false`) */
+  aboutRocketmindEnabled: boolean;
+  /** Whether the partner logo marquee is shown (default: true; disabled if frontmatter `logoMarquee: false`) */
+  logoMarqueeEnabled: boolean;
+  /** Explicit flag — treats this as an "expert product" (shows tag, moves description up, renders experts block in hero). Defaults to `experts.length > 0` if unset. */
+  expertProduct: boolean;
   // Image paths (auto-resolved)
   coverImage: string;
   /** Resolved cover image path (null if file doesn't exist) */
   heroImage: string | null;
   aboutImage: string | null;
+  /** User-inserted custom sections (universal "О продукте"-style blocks). */
+  customSections: CustomSectionData[];
 };
 
 // ── Paths ──────────────────────────────────────────────────────────────────────
@@ -226,15 +283,103 @@ export function getProductBySlug(slug: string, category?: string): ProductData |
   const heroImage = staticCover ?? null;
   const aboutImage = staticAbout ?? null;
 
+  const legacyUppercase = data.about?.paragraphsUppercase === true;
+  const aboutParagraphs: AboutParagraph[] = data.about
+    ? Array.isArray(data.about.paragraphs) && data.about.paragraphs.length > 0
+      ? data.about.paragraphs
+          .map((p: unknown): AboutParagraph | null => {
+            if (typeof p === "string") return { text: p, uppercase: legacyUppercase };
+            if (p && typeof p === "object") {
+              const o = p as { text?: unknown; uppercase?: unknown };
+              if (typeof o.text === "string")
+                return { text: o.text, uppercase: o.uppercase === true || legacyUppercase };
+            }
+            return null;
+          })
+          .filter((p: AboutParagraph | null): p is AboutParagraph => p !== null)
+      : typeof data.about.description === "string" && data.about.description
+        ? [{ text: data.about.description, uppercase: legacyUppercase }]
+        : []
+    : [];
+
+  const aboutAccordion: AccordionItem[] = data.about
+    ? (data.about.accordion ?? []).map(
+        (item: { title?: string; paragraphs?: unknown; description?: unknown }) => {
+          const itemParagraphs: string[] =
+            Array.isArray(item.paragraphs) && item.paragraphs.length > 0
+              ? item.paragraphs.filter(
+                  (p: unknown): p is string => typeof p === "string",
+                )
+              : typeof item.description === "string" && item.description
+                ? [item.description]
+                : [];
+          return { title: item.title ?? "", paragraphs: itemParagraphs };
+        },
+      )
+    : [];
+
   const about: AboutProductData | null = data.about
     ? {
         caption: data.about.caption,
         title: data.about.title,
-        description: data.about.description,
-        accordion: data.about.accordion ?? [],
+        titleSecondary: data.about.titleSecondary,
+        paragraphs: aboutParagraphs,
+        accordion: aboutAccordion,
+        accordionCollapsible: data.about.accordionCollapsible !== false,
         hasImage: aboutImage !== null,
+        imageLeft: data.about.imageLeft === true,
+        paragraphsRight: data.about.paragraphsRight === true,
       }
     : null;
+
+  // ── Custom sections (user-inserted "О продукте"-style blocks) ──
+  function parseAboutLike(raw: unknown): AboutProductData {
+    const r = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+    const rawParagraphs: AboutParagraph[] = Array.isArray(r.paragraphs)
+      ? (r.paragraphs as unknown[])
+          .map((p): AboutParagraph | null => {
+            if (typeof p === "string") return { text: p, uppercase: false };
+            if (p && typeof p === "object") {
+              const o = p as { text?: unknown; uppercase?: unknown };
+              if (typeof o.text === "string")
+                return { text: o.text, uppercase: o.uppercase === true };
+            }
+            return null;
+          })
+          .filter((p: AboutParagraph | null): p is AboutParagraph => p !== null)
+      : [];
+    const rawAccordion: AccordionItem[] = Array.isArray(r.accordion)
+      ? (r.accordion as Array<{ title?: string; paragraphs?: unknown }>).map((item) => ({
+          title: item.title ?? "",
+          paragraphs: Array.isArray(item.paragraphs)
+            ? item.paragraphs.filter((p): p is string => typeof p === "string")
+            : [],
+        }))
+      : [];
+    return {
+      caption: typeof r.caption === "string" ? r.caption : "",
+      title: typeof r.title === "string" ? r.title : "",
+      titleSecondary: typeof r.titleSecondary === "string" ? r.titleSecondary : undefined,
+      paragraphs: rawParagraphs,
+      accordion: rawAccordion,
+      accordionCollapsible: r.accordionCollapsible !== false,
+      hasImage: false,
+      imageLeft: r.imageLeft === true,
+      paragraphsRight: r.paragraphsRight === true,
+    };
+  }
+
+  const customSections: CustomSectionData[] = Array.isArray(data.customSections)
+    ? (data.customSections as Array<{ id?: unknown; insertAfter?: unknown; enabled?: unknown; data?: unknown }>)
+        .filter((cs) => cs && typeof cs === "object" && cs.enabled !== false)
+        .map((cs, i) => ({
+          id: typeof cs.id === "string" ? cs.id : `cs_${i}`,
+          insertAfter:
+            typeof cs.insertAfter === "string" && cs.insertAfter.length > 0 ? cs.insertAfter : null,
+          enabled: cs.enabled !== false,
+          about: parseAboutLike(cs.data),
+        }))
+    : [];
 
   // Strip base64 blobs — assets are now resolved from filesystem
   const { heroImageData: _h, audioData: _a, audioFilename: _af, ...heroClean } = data.hero ?? {};
@@ -257,14 +402,25 @@ export function getProductBySlug(slug: string, category?: string): ProductData |
     audience: data.audience ?? null,
     tools: data.tools ?? null,
     results: data.results ?? null,
+    services: data.services ?? null,
     process: data.process ?? null,
     experts: Array.isArray(data.experts) && data.experts.length > 0
       ? resolveExperts(data.experts as string[])
       : null,
-    aboutRocketmind: data.aboutRocketmind ?? null,
+    aboutRocketmind:
+      data.aboutRocketmind && typeof data.aboutRocketmind === "object"
+        ? data.aboutRocketmind
+        : null,
+    aboutRocketmindEnabled: data.aboutRocketmind !== false,
+    logoMarqueeEnabled: data.logoMarquee !== false,
+    expertProduct:
+      typeof data.expertProduct === "boolean"
+        ? data.expertProduct
+        : Array.isArray(data.experts) && data.experts.length > 0,
     coverImage,
     heroImage,
     aboutImage,
+    customSections,
   };
 }
 

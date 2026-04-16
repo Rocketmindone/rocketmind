@@ -9,7 +9,14 @@ export function LegalPageTemplate({ title, children }: LegalPageTemplateProps) {
   return (
     <div className="px-5 py-24 md:px-8 xl:px-14">
       <div className="mx-auto max-w-[800px]">
-        <h1 className="font-heading text-3xl font-bold md:text-4xl">
+        <h1
+          className="font-heading text-3xl font-bold md:text-4xl"
+          style={{
+            opacity: 0,
+            transform: "translateY(20px)",
+            animation: "heroFadeIn 600ms ease-out 0ms forwards",
+          }}
+        >
           {title}
         </h1>
         <div
@@ -21,6 +28,11 @@ export function LegalPageTemplate({ title, children }: LegalPageTemplateProps) {
             "[&>ol]:mb-4 [&>ol]:list-decimal [&>ol]:pl-6 [&>ol]:leading-relaxed",
             "[&_li]:mb-2",
           ].join(" ")}
+          style={{
+            opacity: 0,
+            transform: "translateY(20px)",
+            animation: "heroFadeIn 600ms ease-out 150ms forwards",
+          }}
         >
           {children}
         </div>

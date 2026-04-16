@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { cn } from "../../lib/utils";
+import { RichText } from "./rich-text";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -20,6 +21,7 @@ export type ProcessParticipant = {
 export type ProcessSectionProps = {
   tag: string;
   title: string;
+  titleSecondary?: string;
   subtitle: string;
   description?: string;
   steps: ProcessStep[];
@@ -101,12 +103,12 @@ function StepCard({
             {step.title}
           </h3>
         </div>
-        <p
-          className="text-[length:var(--text-16)] leading-[1.28] transition-colors duration-300"
-          style={{ color: isActive ? "#939393" : "rgba(147,147,147,0.5)" }}
-        >
-          {step.text}
-        </p>
+        <div style={{ color: isActive ? "#939393" : "rgba(147,147,147,0.5)" }}>
+          <RichText
+            text={step.text}
+            className="text-[length:var(--text-16)] leading-[1.28] transition-colors duration-300"
+          />
+        </div>
         <span
           className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] font-medium uppercase leading-[1.16] tracking-[0.02em] transition-colors duration-300"
           style={{ color: isActive ? "#FFCC00" : "#939393" }}
@@ -140,9 +142,10 @@ function ParticipantsBlock({
             <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#F0F0F0]">
               {p.role}
             </span>
-            <p className="text-[length:var(--text-16)] leading-[1.28] text-[#939393]">
-              {p.text}
-            </p>
+            <RichText
+              text={p.text}
+              className="text-[length:var(--text-16)] leading-[1.28] text-[#939393]"
+            />
           </div>
         ))}
       </div>
@@ -178,9 +181,10 @@ function AcademyStepCard({
       </div>
       {/* Description */}
       <div className="pl-0 lg:w-1/2 lg:pl-4">
-        <p className="text-[length:var(--text-16)] leading-[1.28] text-[#939393]">
-          {step.text}
-        </p>
+        <RichText
+          text={step.text}
+          className="text-[length:var(--text-16)] leading-[1.28] text-[#939393]"
+        />
       </div>
     </div>
   );
@@ -257,6 +261,7 @@ function useStepProgress(stepCount: number) {
 export function ProcessSection({
   tag,
   title,
+  titleSecondary,
   subtitle,
   description,
   steps,
@@ -285,16 +290,18 @@ export function ProcessSection({
                   <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">
                     {tag}
                   </span>
-                  <h2 className="h2 text-[#F0F0F0]">{title}</h2>
+                  <h2 className="h2"><span className="text-[#F0F0F0]">{title}</span>{titleSecondary ? <><span className="text-[#F0F0F0]"> </span><span className="text-[#939393]">{titleSecondary}</span></> : null}</h2>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#F0F0F0]">
-                    {subtitle}
-                  </p>
+                  <RichText
+                    text={subtitle}
+                    className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#F0F0F0]"
+                  />
                   {description && (
-                    <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#939393]">
-                      {description}
-                    </p>
+                    <RichText
+                      text={description}
+                      className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#939393]"
+                    />
                   )}
                 </div>
               </div>
@@ -339,18 +346,21 @@ export function ProcessSection({
                   <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">
                     {tag}
                   </span>
-                  <h2 className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-28)] font-bold uppercase leading-[1.16] tracking-[-0.01em] text-[#F0F0F0]">
-                    {title}
+                  <h2 className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-28)] font-bold uppercase leading-[1.16] tracking-[-0.01em]">
+                    <span className="text-[#F0F0F0]">{title}</span>
+                    {titleSecondary ? <><span className="text-[#F0F0F0]"> </span><span className="text-[#939393]">{titleSecondary}</span></> : null}
                   </h2>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#F0F0F0]">
-                    {subtitle}
-                  </p>
+                  <RichText
+                    text={subtitle}
+                    className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#F0F0F0]"
+                  />
                   {description && (
-                    <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#939393]">
-                      {description}
-                    </p>
+                    <RichText
+                      text={description}
+                      className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#939393]"
+                    />
                   )}
                 </div>
               </div>
@@ -395,16 +405,18 @@ export function ProcessSection({
             <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">
               {tag}
             </span>
-            <h2 className="h3 text-[#F0F0F0]">{title}</h2>
+            <h2 className="h3"><span className="text-[#F0F0F0]">{title}</span>{titleSecondary ? <><span className="text-[#F0F0F0]"> </span><span className="text-[#939393]">{titleSecondary}</span></> : null}</h2>
           </div>
           <div className="flex flex-col gap-1">
-            <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#F0F0F0]">
-              {subtitle}
-            </p>
+            <RichText
+              text={subtitle}
+              className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#F0F0F0]"
+            />
             {description && (
-              <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#939393]">
-                {description}
-              </p>
+              <RichText
+                text={description}
+                className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#939393]"
+              />
             )}
           </div>
         </div>

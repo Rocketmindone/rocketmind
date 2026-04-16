@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getAllCatalogProducts } from "@/lib/products";
+import { getPartnershipsData, type PartnershipsData } from "@/lib/partnerships";
 import { ProductsCatalog } from "@/components/sections/ProductsCatalog";
 import { PageBottom } from "@/components/sections/PageBottom";
 
@@ -17,9 +18,11 @@ export type CatalogCard = {
   cardTitle: string;
   cardDescription: string;
   coverImage: string;
-  experts: Array<{ name: string; image: string }>;
+  experts: Array<{ name: string; tag?: string; image: string }>;
   /** Hero factoids for wide image cards (academy / ai-products) */
   factoids?: Array<{ number: string; text: string }>;
+  /** Whether this product should show the "Экспертный продукт" tag. */
+  expertProduct: boolean;
 };
 
 /** Section descriptor for each category block. */
@@ -54,8 +57,11 @@ function buildHref(category: string, slug: string): string {
   return `/${category}/${slug}`;
 }
 
+export { type PartnershipsData };
+
 export default function ProductsPage() {
   const allProducts = getAllCatalogProducts();
+  const partnerships = getPartnershipsData();
 
   const sections: CatalogSection[] = CATEGORY_ORDER.map((cat) => {
     const meta = SECTION_META[cat];
@@ -71,7 +77,11 @@ export default function ProductsPage() {
         experts:
           p.experts
             ?.filter((e) => e.image)
-            .map((e) => ({ name: e.name, image: e.image! })) ?? [],
+            .map((e) => ({
+              name: e.name,
+              tag: e.shortBio || e.tag,
+              image: e.image!,
+            })) ?? [],
         factoids:
           cat !== "consulting" && p.hero?.factoids?.length
             ? p.hero.factoids.slice(0, 3).map((f) => ({
@@ -79,6 +89,7 @@ export default function ProductsPage() {
                 text: f.text,
               }))
             : undefined,
+        expertProduct: p.expertProduct,
       }));
 
     return {
@@ -91,7 +102,7 @@ export default function ProductsPage() {
 
   return (
     <>
-      <ProductsCatalog sections={sections} />
+      <ProductsCatalog sections={sections} partnerships={partnerships} />
       <PageBottom />
     </>
   );

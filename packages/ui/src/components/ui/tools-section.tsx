@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "../../lib/utils";
+import { RichText } from "./rich-text";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -15,6 +16,7 @@ export type ToolCard = {
 export type ToolsSectionProps = {
   tag: string;
   title: string;
+  titleSecondary?: string;
   description?: string;
   tools: ToolCard[];
   /** Show icons instead of numbers */
@@ -53,9 +55,10 @@ function ToolCardItem({
       </h4>
 
       {/* Description */}
-      <p className="text-[length:var(--text-16)] leading-[1.28] text-[#939393]">
-        {tool.text}
-      </p>
+      <RichText
+        text={tool.text}
+        className="text-[length:var(--text-16)] leading-[1.28] text-[#939393]"
+      />
     </div>
   );
 }
@@ -65,6 +68,7 @@ function ToolCardItem({
 export function ToolsSection({
   tag,
   title,
+  titleSecondary,
   description,
   tools,
   useIcons,
@@ -85,13 +89,14 @@ export function ToolsSection({
             <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">
               {tag}
             </span>
-            <h2 className="h2 text-[#F0F0F0]">{title}</h2>
+            <h2 className="h2"><span className="text-[#F0F0F0]">{title}</span>{titleSecondary ? <><span className="text-[#F0F0F0]"> </span><span className="text-[#939393]">{titleSecondary}</span></> : null}</h2>
           </div>
           {description && (
             <div className="w-1/2 flex items-end">
-              <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#939393] max-w-[668px]">
-                {description}
-              </p>
+              <RichText
+                text={description}
+                className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#939393] max-w-[668px]"
+              />
             </div>
           )}
         </div>
@@ -112,7 +117,7 @@ export function ToolsSection({
                 return (
                   <div
                     key={i}
-                    className="border border-[#404040] p-8 h-[300px]"
+                    className="border border-[#404040] p-8"
                     style={{ gridColumn: `${start} / span ${span}` }}
                   >
                     <ToolCardItem tool={tool} useIcons={useIcons} />
@@ -131,13 +136,15 @@ export function ToolsSection({
           <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">
             {tag}
           </span>
-          <h2 className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-28)] font-bold uppercase leading-[1.16] tracking-[-0.01em] text-[#F0F0F0]">
-            {title}
+          <h2 className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-28)] font-bold uppercase leading-[1.16] tracking-[-0.01em]">
+            <span className="text-[#F0F0F0]">{title}</span>
+            {titleSecondary ? <><span className="text-[#F0F0F0]"> </span><span className="text-[#939393]">{titleSecondary}</span></> : null}
           </h2>
           {description && (
-            <p className="text-[length:var(--text-16)] leading-[1.28] text-[#939393] mt-2">
-              {description}
-            </p>
+            <RichText
+              text={description}
+              className="text-[length:var(--text-16)] leading-[1.28] text-[#939393] mt-2"
+            />
           )}
         </div>
 
@@ -158,11 +165,12 @@ export function ToolsSection({
           <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">
             {tag}
           </span>
-          <h2 className="h3 text-[#F0F0F0]">{title}</h2>
+          <h2 className="h3"><span className="text-[#F0F0F0]">{title}</span>{titleSecondary ? <><span className="text-[#F0F0F0]"> </span><span className="text-[#939393]">{titleSecondary}</span></> : null}</h2>
           {description && (
-            <p className="text-[length:var(--text-16)] leading-[1.28] text-[#939393]">
-              {description}
-            </p>
+            <RichText
+              text={description}
+              className="text-[length:var(--text-16)] leading-[1.28] text-[#939393]"
+            />
           )}
         </div>
 

@@ -13,6 +13,7 @@ export const SECTION_DIRS: Record<string, string> = {
   "ai-products": path.join(SITE_ROOT, "content", "ai-products"),
   cases: path.join(SITE_ROOT, "content", "cases"),
   media: path.join(SITE_ROOT, "content", "media"),
+  unique: path.join(SITE_ROOT, "content", "unique"),
 };
 
 export function getContentDir(sectionId: string): string {

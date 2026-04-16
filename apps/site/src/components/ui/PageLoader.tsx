@@ -12,7 +12,7 @@ export function PageLoader() {
   useEffect(() => {
     let raf: number
     let startTime: number | null = null
-    const duration = 1200
+    const duration = 350
 
     const tick = (ts: number) => {
       if (startTime === null) startTime = ts
@@ -22,7 +22,7 @@ export function PageLoader() {
         raf = requestAnimationFrame(tick)
       } else {
         setFading(true)
-        setTimeout(() => setGone(true), 500)
+        setTimeout(() => setGone(true), 250)
       }
     }
 
@@ -46,8 +46,8 @@ export function PageLoader() {
         justifyContent: "center",
         gap: 20,
         opacity: fading ? 0 : 1,
-        transition: "opacity 0.5s ease",
-        pointerEvents: fading ? "none" : "all",
+        transition: "opacity 0.25s ease",
+        pointerEvents: "none",
       }}
     >
       <img

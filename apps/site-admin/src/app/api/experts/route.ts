@@ -36,6 +36,7 @@ export async function GET() {
           slug,
           name: data.name || "",
           tag: data.tag || "Эксперт продукта",
+          shortBio: data.shortBio || "",
           bio: data.bio || "",
           image: resolveImage(slug),
         };
@@ -56,7 +57,7 @@ export async function POST(request: Request) {
   const matter = (await import("gray-matter")).default;
 
   const body = await request.json();
-  const { slug, name, tag, bio } = body;
+  const { slug, name, tag, shortBio, bio } = body;
 
   if (!slug) return NextResponse.json({ error: "slug required" }, { status: 400 });
 
@@ -69,12 +70,13 @@ export async function POST(request: Request) {
     slug,
     name: name || "",
     tag: tag || "Эксперт продукта",
+    shortBio: shortBio || "",
     bio: bio || "",
   };
   fs.writeFileSync(filePath, matter.stringify("", fm), "utf-8");
 
   return NextResponse.json(
-    { slug, name: fm.name, tag: fm.tag, bio: fm.bio, image: null },
+    { slug, name: fm.name, tag: fm.tag, shortBio: fm.shortBio, bio: fm.bio, image: null },
     { status: 201 },
   );
 }

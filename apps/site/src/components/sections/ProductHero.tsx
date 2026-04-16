@@ -1,19 +1,51 @@
 "use client";
 
 import Image from "next/image";
-import { DotGridLens } from "@rocketmind/ui";
-import type { Factoid } from "@/lib/products";
+import { DotGridLens, RichText, HeroExperts, type HeroExpert } from "@rocketmind/ui";
+import type { Factoid, HeroTag } from "@/lib/products";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
 type ProductHeroProps = {
   caption: string;
   title: string;
+  titleSecondary?: string;
   description: string;
   ctaText: string;
   factoids: Factoid[];
   coverImage: string;
+  tags?: HeroTag[];
+  /** When true: auto-injects expert tag, moves description up, renders experts block in bottom-left slot. */
+  expertProduct?: boolean;
+  /** Experts to render inside hero block (only when expertProduct is true). */
+  experts?: HeroExpert[];
+  /** Optional quote under the experts block. */
+  quote?: string;
 };
+
+// ── Hero Tag Badge ────────────────────────────────────────────────────────────
+
+function HeroTagBadge({ text }: HeroTag) {
+  return (
+    <span className="inline-flex items-center gap-2.5 rounded-[4px] border border-[#404040] bg-[#121212] px-2.5 py-1 h-7">
+      <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] font-medium uppercase leading-[1.16] tracking-[0.02em] text-[#939393]">
+        {text}
+      </span>
+    </span>
+  );
+}
+
+// ── Expert Tag Badge (auto, dark-yellow theme) ────────────────────────────────
+
+function ExpertTagBadge() {
+  return (
+    <span className="inline-flex items-center h-7 rounded-[4px] border border-[#4A3C00] bg-[#3D3300] px-2.5 py-1">
+      <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-14)] font-medium uppercase leading-[1.16] tracking-[0.02em] text-[#FFE466]">
+        Экспертный продукт
+      </span>
+    </span>
+  );
+}
 
 // ── Factoid Card ───────────────────────────────────────────────────────────────
 
@@ -41,21 +73,72 @@ function HeroCTA({ text, stretch }: { text: string; stretch?: boolean }) {
   return (
     <button
       type="button"
-      className={`flex flex-col justify-between w-full bg-[#FFCC00] p-5 md:p-7 cursor-pointer ${stretch ? "flex-1" : "h-[126px] md:h-[189px]"}`}
+      className={`group flex flex-col justify-between w-full bg-[#FFCC00] p-5 md:p-7 cursor-pointer transition-colors duration-200 hover:bg-[#FFE040] ${stretch ? "flex-1" : "h-[126px] md:h-[189px]"}`}
     >
       <div className="flex justify-end w-full">
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-          <path
-            d="M8 8H24M24 8V24M24 8L8 24"
-            stroke="#0A0A0A"
-            strokeWidth="4"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        <div className="transition-transform duration-200 group-hover:-translate-y-1 group-hover:translate-x-1">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path
+              d="M8 8H24M24 8V24M24 8L8 24"
+              stroke="#0A0A0A"
+              strokeWidth="4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
       </div>
       <span className="h4 md:h3 text-[#0A0A0A] text-left">{text}</span>
     </button>
+  );
+}
+
+// ── Stagger animation helper ──────────────────────────────────────────────────
+
+function fadeIn(index: number): React.CSSProperties {
+  const delay = index * 150;
+  const duration = 600;
+  return {
+    opacity: 0,
+    transform: "translateY(20px)",
+    animation: `heroFadeIn ${duration}ms ease-out ${delay}ms forwards`,
+  };
+}
+
+/** Pure opacity fade-in (no translate) — for background images. */
+function bgFade(): React.CSSProperties {
+  return {
+    opacity: 0,
+    animation: "heroBgFade 900ms ease-out 0ms forwards",
+  };
+}
+
+// ── Caption + Tags row (shared, auto-injects expert tag) ──────────────────────
+
+function CaptionTagsRow({
+  caption,
+  tags,
+  expertProduct,
+  gapClass,
+  innerGapClass,
+}: {
+  caption: string;
+  tags?: HeroTag[];
+  expertProduct?: boolean;
+  gapClass: string;
+  innerGapClass: string;
+}) {
+  const hasTags = expertProduct || (tags && tags.length > 0);
+  return (
+    <div className={`flex items-center flex-wrap ${gapClass}`}>
+      <span className="h4 text-[#FFCC00]">{caption}</span>
+      {hasTags && (
+        <div className={`flex items-center flex-wrap ${innerGapClass}`}>
+          {expertProduct && <ExpertTagBadge />}
+          {tags?.map((tag) => <HeroTagBadge key={tag.text} {...tag} />)}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -64,11 +147,37 @@ function HeroCTA({ text, stretch }: { text: string; stretch?: boolean }) {
 export function ProductHero({
   caption,
   title,
+  titleSecondary,
   description,
   ctaText,
   factoids,
   coverImage,
+  tags,
+  expertProduct,
+  experts,
+  quote,
 }: ProductHeroProps) {
+  const showExpertsBlock = !!expertProduct && !!experts && experts.length > 0;
+
+  const titleBlock = (
+    <h1 className="h1 whitespace-pre-line" style={fadeIn(1)}>
+      <span className="text-[#F0F0F0]">{title}</span>
+      {titleSecondary ? (
+        <>
+          <span className="text-[#F0F0F0]"> </span>
+          <span className="text-[#939393]">{titleSecondary}</span>
+        </>
+      ) : null}
+    </h1>
+  );
+
+  const descriptionEl = description ? (
+    <RichText
+      text={description}
+      className="text-[length:var(--text-18)] leading-[1.2] text-[#F0F0F0]"
+    />
+  ) : null;
+
   return (
     <section className="relative w-full bg-[#0A0A0A] pt-16">
       {/* ── Desktop layout ── */}
@@ -83,33 +192,75 @@ export function ProductHero({
             className="absolute -left-14 top-0 bottom-0 right-0 z-0 opacity-30"
           />
           <div className="absolute -left-14 top-0 bottom-0 w-[180px] z-[1] pointer-events-none" style={{ background: "linear-gradient(90deg, #0A0A0A 0%, transparent 100%)" }} />
-          <div className="relative z-10 flex flex-col justify-end h-full">
-            <div className="absolute top-9 left-0">
-              <Image src={coverImage} alt="" width={156} height={156} className="w-[156px] h-[156px] object-contain" />
+
+          <div
+            className="relative z-10 grid h-full min-h-[756px] pr-10 pt-12 pb-8"
+            style={{
+              gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+              gridTemplateRows: "auto 1fr auto",
+              columnGap: "24px",
+            }}
+          >
+            {/* Top: caption + tags + title (+ description when expertProduct) */}
+            <div className="col-span-3 row-start-1 flex flex-col gap-6">
+              <div style={fadeIn(0)}>
+                <CaptionTagsRow
+                  caption={caption}
+                  tags={tags}
+                  expertProduct={expertProduct}
+                  gapClass="gap-5"
+                  innerGapClass="gap-5"
+                />
+              </div>
+              {titleBlock}
+              {showExpertsBlock && descriptionEl && (
+                <div className="max-w-[696px]" style={fadeIn(2)}>
+                  {descriptionEl}
+                </div>
+              )}
             </div>
-            <div className="flex flex-col gap-11 pr-10 pb-14 mt-auto" style={{ paddingTop: "298px" }}>
-              <div className="flex flex-col gap-6">
-                <span className="h4 text-[#FFCC00]">{caption}</span>
-                <h1 className="h1 text-[#F0F0F0] whitespace-pre-line">{title}</h1>
-              </div>
-              <div className="max-w-[696px]">
-                <p className="text-[length:var(--text-18)] leading-[1.2] text-[#F0F0F0]">{description}</p>
-              </div>
+
+            {/* Bottom-left (col 1-2): either description (default) or experts block */}
+            <div
+              className="col-span-2 col-start-1 row-start-3 self-end"
+              style={fadeIn(showExpertsBlock ? 3 : 2)}
+            >
+              {showExpertsBlock ? (
+                <HeroExperts experts={experts!} quote={quote} />
+              ) : (
+                descriptionEl
+              )}
+            </div>
+
+            {/* Bottom-right (col 3): icon */}
+            <div className="col-start-3 row-start-3 self-end translate-x-4" style={fadeIn(3)}>
+              <Image
+                src={coverImage}
+                alt=""
+                width={400}
+                height={400}
+                className="w-full h-auto object-contain"
+              />
             </div>
           </div>
         </div>
+
+        {/* Right: factoids + CTA column */}
         <div className="w-[344px] shrink-0 flex flex-col">
-          {factoids.map((f) => (
-            <FactoidCard key={f.number} {...f} stretch className="border-b border-l border-r border-[#404040]" />
+          {factoids.map((f, i) => (
+            <div key={f.number} className="flex-1 flex flex-col" style={fadeIn(1 + i)}>
+              <FactoidCard {...f} stretch className="border-b border-l border-r border-[#404040]" />
+            </div>
           ))}
-          <HeroCTA text={ctaText} stretch />
+          <div className="flex-1 flex flex-col" style={fadeIn(1)}>
+            <HeroCTA text={ctaText} stretch />
+          </div>
         </div>
       </div>
 
       {/* ── Tablet layout (md → lg) ── */}
       <div className="hidden md:flex lg:hidden flex-col mx-auto">
-        {/* Upper hero area — icon at top, text pushed to bottom */}
-        <div className="relative min-h-[840px]">
+        <div className="relative min-h-[760px]">
           <DotGridLens
             accentColor
             gridGap={13}
@@ -119,109 +270,151 @@ export function ProductHero({
           />
           <div className="absolute left-0 right-0 bottom-0 h-[180px] z-[1] pointer-events-none" style={{ background: "linear-gradient(180deg, transparent 0%, #0A0A0A 100%)" }} />
 
-          <div className="relative z-10 flex flex-col justify-end min-h-[840px]">
-            {/* Product icon — absolute top-left */}
-            <div className="absolute top-10 left-10">
+          <div
+            className="relative z-10 grid min-h-[760px] px-10 pt-12 pb-[52px]"
+            style={{
+              gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+              gridTemplateRows: "auto 1fr auto",
+              columnGap: "20px",
+            }}
+          >
+            <div className="col-span-3 row-start-1 flex flex-col gap-6">
+              <div style={fadeIn(0)}>
+                <CaptionTagsRow
+                  caption={caption}
+                  tags={tags}
+                  expertProduct={expertProduct}
+                  gapClass="gap-4"
+                  innerGapClass="gap-3"
+                />
+              </div>
+              {titleBlock}
+              {showExpertsBlock && descriptionEl && (
+                <div className="max-w-[696px]" style={fadeIn(2)}>
+                  {descriptionEl}
+                </div>
+              )}
+            </div>
+
+            <div
+              className="col-span-2 col-start-1 row-start-3 self-end"
+              style={fadeIn(showExpertsBlock ? 3 : 2)}
+            >
+              {showExpertsBlock ? (
+                <HeroExperts experts={experts!} quote={quote} />
+              ) : (
+                descriptionEl
+              )}
+            </div>
+
+            <div className="col-start-3 row-start-3 self-end translate-x-3" style={fadeIn(3)}>
               <Image
                 src={coverImage}
                 alt=""
-                width={120}
-                height={120}
-                className="w-[120px] h-[120px] object-contain"
+                width={400}
+                height={400}
+                className="w-full h-auto object-contain"
               />
-            </div>
-
-            {/* Text content at bottom */}
-            <div className="flex flex-col gap-11 px-10 pb-14">
-              <div className="flex flex-col gap-6">
-                <span className="h4 text-[#FFCC00]">{caption}</span>
-                <h1 className="h1 text-[#F0F0F0] whitespace-pre-line">{title}</h1>
-              </div>
-              <div className="max-w-[696px]">
-                <p className="text-[length:var(--text-18)] leading-[1.2] text-[#F0F0F0]">
-                  {description}
-                </p>
-              </div>
             </div>
           </div>
         </div>
 
         {/* Cards: 2-col grid — [CTA, F1] / [F2, F3] */}
         <div className="grid grid-cols-2 px-10">
-          {/* Row 1 */}
-          <HeroCTA text={ctaText} />
-          <FactoidCard {...factoids[0]} className="border border-[#404040]" />
-          {/* Row 2 */}
-          <FactoidCard {...factoids[1]} className="border border-[#404040]" />
-          <FactoidCard {...factoids[2]} className="border-r border-b border-[#404040]" />
+          <div style={fadeIn(1)}><HeroCTA text={ctaText} /></div>
+          <div style={fadeIn(1)}><FactoidCard {...factoids[0]} className="border border-[#404040]" /></div>
+          <div style={fadeIn(2)}><FactoidCard {...factoids[1]} className="border border-[#404040]" /></div>
+          <div style={fadeIn(3)}><FactoidCard {...factoids[2]} className="border-r border-b border-[#404040]" /></div>
         </div>
       </div>
 
-      {/* ── Mobile layout ── */}
+      {/* ── Mobile layout — image hero ── */}
       <div className="flex md:hidden flex-col">
-        {/* Hero area — dot grid covers icon + content + CTA */}
-        <div className="relative">
-          <div className="absolute top-0 left-0 right-0 h-[420px] z-0">
-            <DotGridLens
-              accentColor
-              gridGap={10}
-              baseRadius={0.75}
-              maxScale={4.2}
-              className="absolute inset-0 opacity-30"
-            />
-            <div className="absolute left-0 right-0 bottom-0 h-[180px] pointer-events-none" style={{ background: "linear-gradient(180deg, transparent 0%, #0A0A0A 100%)" }} />
-          </div>
-
-          <div className="relative z-10 px-5">
-            {/* Product icon */}
-            <div className="pt-5">
+        <div className="relative min-h-[360px] overflow-hidden">
+          {coverImage && (
+            <div className="absolute inset-0" style={bgFade()}>
               <Image
                 src={coverImage}
                 alt=""
-                width={92}
-                height={92}
-                className="w-[92px] h-[92px] object-contain"
+                fill
+                priority
+                className="object-cover object-right"
               />
             </div>
+          )}
 
-            {/* Text content */}
-            <div className="flex flex-col gap-6 pt-[68px]">
-              <div className="flex flex-col gap-2">
+          <div
+            className="absolute inset-0 z-[1]"
+            style={{
+              background:
+                "linear-gradient(0deg, rgba(10,10,10,1) 0%, rgba(10,10,10,0.6) 40%, rgba(10,10,10,0.2) 100%)",
+            }}
+          />
+
+          <div className="relative z-10 flex flex-col justify-end h-full min-h-[360px] px-5 pb-6 pt-[100px]">
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-3 flex-wrap" style={fadeIn(0)}>
                 <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">
                   {caption}
                 </span>
-                <h1 className="h1 text-[#F0F0F0] whitespace-pre-line">{title}</h1>
+                {(expertProduct || (tags && tags.length > 0)) && (
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {expertProduct && <ExpertTagBadge />}
+                    {tags?.map((tag) => <HeroTagBadge key={tag.text} {...tag} />)}
+                  </div>
+                )}
               </div>
-              <p className="text-[length:var(--text-16)] leading-[1.28] text-[#F0F0F0]">
-                {description}
-              </p>
-            </div>
-
-            {/* CTA — horizontal row layout */}
-            <div className="pt-8">
-              <button
-                type="button"
-                className="flex items-center justify-between w-full bg-[#FFCC00] p-5 cursor-pointer"
-              >
-                <span className="h4 text-[#0A0A0A]">{ctaText}</span>
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                  <path
-                    d="M8 8H24M24 8V24M24 8L8 24"
-                    stroke="#0A0A0A"
-                    strokeWidth="4"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
+              <h1 className="h1" style={fadeIn(1)}>
+                <span className="text-[#F0F0F0]">{title}</span>
+                {titleSecondary ? (
+                  <>
+                    <span className="text-[#F0F0F0]"> </span>
+                    <span className="text-[#939393]">{titleSecondary}</span>
+                  </>
+                ) : null}
+              </h1>
             </div>
           </div>
+        </div>
+
+        {/* Text content below image */}
+        <div className="flex flex-col gap-6 px-5 pt-4">
+          {descriptionEl && (
+            <div style={fadeIn(2)}>{descriptionEl}</div>
+          )}
+
+          {showExpertsBlock && (
+            <div style={fadeIn(3)}>
+              <HeroExperts experts={experts!} quote={quote} />
+            </div>
+          )}
+
+          <button
+            type="button"
+            style={fadeIn(1)}
+            className="group flex items-center justify-between w-full bg-[#FFCC00] p-5 cursor-pointer transition-colors duration-200 hover:bg-[#FFE040]"
+          >
+            <span className="h4 text-[#0A0A0A]">{ctaText}</span>
+            <div className="transition-transform duration-200 group-hover:-translate-y-1 group-hover:translate-x-1">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                <path
+                  d="M8 8H24M24 8V24M24 8L8 24"
+                  stroke="#0A0A0A"
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+          </button>
         </div>
 
         {/* Factoids stacked */}
         <div className="flex flex-col px-5">
           {factoids.map((f, i) => (
-            <FactoidCard key={f.number} {...f} className={i === 0 ? "border border-[#404040]" : "border-l border-r border-b border-[#404040]"} />
+            <div key={f.number} style={fadeIn(1 + i)}>
+              <FactoidCard {...f} className={i === 0 ? "border border-[#404040]" : "border-l border-r border-b border-[#404040]"} />
+            </div>
           ))}
         </div>
       </div>

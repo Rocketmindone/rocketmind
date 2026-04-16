@@ -2,9 +2,9 @@
 
 import { Suspense, useState, useMemo, useCallback, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { cn, ProductCard, ProductImageCard } from "@rocketmind/ui";
+import { cn, ProductCard, ProductImageCard, PartnershipBlock } from "@rocketmind/ui";
 import { ShaderBackground } from "@/components/ui/ShaderBackground";
-import type { CatalogSection, CatalogCard } from "@/app/products/page";
+import type { CatalogSection, CatalogCard, PartnershipsData } from "@/app/products/page";
 
 // ── Filter definitions ─────────────────────────────────────────────────────────
 
@@ -81,17 +81,63 @@ const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 type Props = {
   sections: CatalogSection[];
+  partnerships?: PartnershipsData | null;
 };
 
-export function ProductsCatalog({ sections }: Props) {
+/** Mount-only fade-in helper (runs once on page load, not on filter changes). */
+function heroFade(index: number): React.CSSProperties {
+  return {
+    opacity: 0,
+    transform: "translateY(20px)",
+    animation: `heroFadeIn 600ms ease-out ${index * 150}ms forwards`,
+  };
+}
+
+/** Renders the appropriate card component based on category. */
+function renderCatalogCard(card: CatalogCard, compact = false) {
+  if (card.category === "consulting") {
+    return (
+      <ProductCard
+        key={card.slug}
+        title={card.cardTitle}
+        description={card.cardDescription}
+        href={card.href}
+        icon={
+          card.coverImage
+            ? <img src={card.coverImage} alt="" className="w-full h-full object-contain" />
+            : undefined
+        }
+        experts={card.experts}
+        tag={card.expertProduct ? "Экспертный продукт" : undefined}
+        className="-mt-px -ml-px"
+      />
+    );
+  }
+  return (
+    <ProductImageCard
+      key={card.slug}
+      title={card.cardTitle}
+      description={card.cardDescription}
+      href={card.href}
+      image={card.coverImage || undefined}
+      tag={card.experts.length > 0 ? "Экспертный продукт" : undefined}
+      variant="wide"
+      factoids={card.factoids}
+      compact={compact}
+      className="-mt-px -ml-px md:col-span-2"
+    />
+  );
+}
+
+export function ProductsCatalog({ sections, partnerships }: Props) {
   return (
     <Suspense>
-      <ProductsCatalogInner sections={sections} />
+      <ProductsCatalogInner sections={sections} partnerships={partnerships} />
     </Suspense>
   );
 }
 
-function ProductsCatalogInner({ sections }: Props) {
+function ProductsCatalogInner({ sections, partnerships }: Props) {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -118,7 +164,7 @@ function ProductsCatalogInner({ sections }: Props) {
       all: allCards.length,
       consulting: allCards.filter((p) => p.category === "consulting").length,
       academy: allCards.filter((p) => p.category === "academy").length,
-      expert: allCards.filter((p) => p.experts.length > 0).length,
+      expert: allCards.filter((p) => p.expertProduct).length,
       "ai-products": allCards.filter((p) => p.category === "ai-products").length,
     };
     return c;
@@ -141,7 +187,7 @@ function ProductsCatalogInner({ sections }: Props) {
         let cards = section.cards;
 
         if (activeFilter === "expert") {
-          cards = cards.filter((c) => c.experts.length > 0);
+          cards = cards.filter((c) => c.expertProduct);
         } else if (activeFilter !== "all") {
           if (section.key !== activeFilter) return { ...section, cards: [] };
         }
@@ -171,7 +217,7 @@ function ProductsCatalogInner({ sections }: Props) {
         </div>
         <div className="relative z-10">
           {/* Mobile hero (< lg) */}
-          <div className="lg:hidden px-5 pt-[102px] pb-6">
+          <div className="lg:hidden px-5 pt-[102px] pb-6" style={heroFade(0)}>
             <div className="flex flex-col gap-6">
               {/* Row: title LEFT + animated search RIGHT */}
               <div className="flex items-end justify-between gap-3">
@@ -229,7 +275,7 @@ function ProductsCatalogInner({ sections }: Props) {
           </div>
 
           {/* Mobile filter chips — horizontal scroll, bleeds edge-to-edge */}
-          <div className="lg:hidden overflow-x-auto px-5 pb-6 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: "none" }}>
+          <div className="lg:hidden overflow-x-auto px-5 pb-6 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: "none", ...heroFade(1) }}>
             <div className="flex gap-1 w-max">
               {FILTERS.map((f) => {
                 const isActive = f.key === activeFilter;
@@ -260,12 +306,12 @@ function ProductsCatalogInner({ sections }: Props) {
               <div className="flex flex-col gap-10 mt-10">
                 {/* Title + description */}
                 <div className="grid grid-cols-2">
-                  <div className="pr-10">
+                  <div className="pr-10" style={heroFade(0)}>
                     <h1 className="font-heading text-[80px] font-extrabold uppercase leading-[1.08] tracking-[-0.02em]">
                       продукты
                     </h1>
                   </div>
-                  <div className="flex items-center">
+                  <div className="flex items-center" style={heroFade(1)}>
                     <p className="text-[18px] leading-[1.2] text-foreground pt-2">
                       Единый маркетплейс решений для трансформации вашего бизнеса.
                       {" "}От бизнес-моделирования и консалтинга до корпоративного обучения
@@ -275,7 +321,7 @@ function ProductsCatalogInner({ sections }: Props) {
                 </div>
 
                 {/* Search + filters */}
-                <div className="grid grid-cols-2">
+                <div className="grid grid-cols-2" style={heroFade(2)}>
                   <div className="pr-10">
                     <div className="relative max-w-[380px]">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="absolute left-3.5 top-1/2 -translate-y-1/2 z-[1] text-muted-foreground pointer-events-none"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
@@ -375,12 +421,11 @@ function ProductsCatalogInner({ sections }: Props) {
               </>
             )}
 
-            {filteredSections.map((section) => (
-              <div key={section.key}>
-                <div className="flex flex-col gap-8 md:gap-10">
-
-                  {/* Section header — only visible in "all" tab */}
-                  {activeFilter === "all" && (
+            {activeFilter === "all" ? (
+              /* ── All tab: grouped by section with headers ── */
+              filteredSections.map((section) => (
+                <div key={section.key}>
+                  <div className="flex flex-col gap-8 md:gap-10">
                     <div className="flex flex-col gap-4 lg:grid lg:grid-cols-2 lg:gap-0">
                       <div className="lg:pr-10">
                         <h2 className="font-heading text-[28px] md:text-[36px] lg:text-[52px] font-bold uppercase leading-[1.08] tracking-[-0.02em]">
@@ -393,49 +438,46 @@ function ProductsCatalogInner({ sections }: Props) {
                         </p>
                       </div>
                     </div>
-                  )}
 
-                  {/* Cards grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 border-t border-l border-[#404040]">
-                    {section.cards.map((card, cardIdx) =>
-                      card.category === "consulting" ? (
-                        <ProductCard
-                          key={card.slug}
-                          title={card.cardTitle}
-                          description={card.cardDescription}
-                          href={card.href}
-                          icon={
-                            card.coverImage
-                              ? <img src={card.coverImage} alt="" className="w-full h-full object-contain" />
-                              : undefined
-                          }
-                          experts={card.experts}
-                          tag={card.experts.length > 0 ? "Экспертный продукт" : undefined}
-                          className="border-t-0 border-l-0"
-                        />
-                      ) : (
-                        <ProductImageCard
-                          key={card.slug}
-                          title={card.cardTitle}
-                          description={card.cardDescription}
-                          href={card.href}
-                          image={card.coverImage || undefined}
-                          tag={card.experts.length > 0 ? "Экспертный продукт" : undefined}
-                          variant="wide"
-                          factoids={card.factoids}
-                          className="border-t-0 border-l-0 md:col-span-2"
-                        />
-                      )
-                    )}
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 pt-px pl-px">
+                      {section.cards.map((card) => renderCatalogCard(card))}
+                    </div>
                   </div>
-                </div>
 
-                {/* Partnership — visible in: all, academy, expert */}
-                {section.key === "academy" &&
-                  (activeFilter === "all" || activeFilter === "academy" || activeFilter === "expert") &&
-                  <PartnershipBlock />}
-              </div>
-            ))}
+                  {section.key === "academy" && partnerships && (
+                    <PartnershipBlock
+                      caption={partnerships.caption}
+                      title={partnerships.title}
+                      description={partnerships.description}
+                      logos={partnerships.logos}
+                      photos={partnerships.photos}
+                      className="mt-[72px] md:mt-[112px]"
+                    />
+                  )}
+                </div>
+              ))
+            ) : (
+              /* ── Filtered tab: single unified grid ── */
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 pt-px pl-px">
+                  {(() => {
+                    const allCards = filteredSections.flatMap((s) => s.cards);
+                    const hasMixedTypes = allCards.some((c) => c.category === "consulting") && allCards.some((c) => c.category !== "consulting");
+                    return allCards.map((card) => renderCatalogCard(card, hasMixedTypes));
+                  })()}
+                </div>
+                {(activeFilter === "academy" || activeFilter === "expert") && partnerships && (
+                  <PartnershipBlock
+                    caption={partnerships.caption}
+                    title={partnerships.title}
+                    description={partnerships.description}
+                    logos={partnerships.logos}
+                    photos={partnerships.photos}
+                    className="mt-[72px] md:mt-[112px]"
+                  />
+                )}
+              </>
+            )}
           </div>
 
       </div>
@@ -443,75 +485,4 @@ function ProductsCatalogInner({ sections }: Props) {
   );
 }
 
-// ── Partnership block ───────────────────────────────────────────────────────────
-
-function PartnershipBlock() {
-  return (
-    <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-10 mt-[72px] md:mt-[112px]">
-      {/* Left: text content */}
-      <div className="flex flex-col gap-8 lg:max-w-[560px]">
-        {/* Tag + Title + Description */}
-        <div className="flex flex-col gap-2">
-          <span className="font-mono text-[18px] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[var(--rm-yellow-100)]">
-            Партнёрства
-          </span>
-          <div className="flex flex-col gap-6">
-            <h3 className="font-heading text-[28px] md:text-[36px] lg:text-[52px] font-bold uppercase leading-[1.08] tracking-[-0.02em]">
-              Программы с ведущими бизнес-школами
-            </h3>
-            <p className="text-[14px] leading-[1.32] tracking-[0.01em] text-muted-foreground">
-              Помогают собрать карту участников, связей и ценностных потоков помогают собрать карту участников, связей и ценностных потоков
-            </p>
-          </div>
-        </div>
-
-        {/* Partner logos */}
-        <div className="flex items-center gap-8">
-          <img
-            src={`${BASE_PATH}/images/partnerships/sberuniver.svg`}
-            alt="СберУниверситет"
-            className="h-auto w-auto max-h-[46px] max-w-[45%] object-contain"
-          />
-          <img
-            src={`${BASE_PATH}/images/partnerships/skolkovo-moscow-school-160103.png`}
-            alt="Сколково Московская школа управления"
-            className="h-auto w-auto max-h-[56px] max-w-[45%] object-contain"
-          />
-        </div>
-      </div>
-
-      {/* Right: 2×2 photo grid */}
-      <div className="grid grid-cols-2 gap-4 lg:w-[696px] shrink-0">
-        <div className="aspect-[340/252] overflow-hidden">
-          <img
-            src={`${BASE_PATH}/images/partnerships/photo-1.png`}
-            alt=""
-            className="w-full h-full object-cover"
-          />
-        </div>
-        <div className="aspect-[340/252] overflow-hidden">
-          <img
-            src={`${BASE_PATH}/images/partnerships/photo-4.png`}
-            alt=""
-            className="w-full h-full object-cover"
-          />
-        </div>
-        <div className="aspect-[340/252] overflow-hidden">
-          <img
-            src={`${BASE_PATH}/images/partnerships/photo-3.png`}
-            alt=""
-            className="w-full h-full object-cover"
-          />
-        </div>
-        <div className="aspect-[340/252] overflow-hidden">
-          <img
-            src={`${BASE_PATH}/images/partnerships/photo-2.png`}
-            alt=""
-            className="w-full h-full object-cover"
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
 

@@ -161,7 +161,7 @@ function heroFadeUp(ready: boolean, delay: number) {
   return {
     initial: { opacity: 0, y: 8 } as const,
     animate: ready ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 },
-    transition: { duration: 0.65, delay, ease: HERO_EASE },
+    transition: { duration: 0.45, delay, ease: HERO_EASE },
   };
 }
 
@@ -169,7 +169,7 @@ function heroFadeIn(ready: boolean, delay: number) {
   return {
     initial: { opacity: 0 } as const,
     animate: ready ? { opacity: 1 } : { opacity: 0 },
-    transition: { duration: 0.75, delay, ease: HERO_EASE },
+    transition: { duration: 0.5, delay, ease: HERO_EASE },
   };
 }
 
@@ -177,7 +177,7 @@ function heroScaleIn(ready: boolean, delay: number) {
   return {
     initial: { opacity: 0, scale: 0.88 } as const,
     animate: ready ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.88 },
-    transition: { duration: 0.85, delay, ease: HERO_EASE },
+    transition: { duration: 0.6, delay, ease: HERO_EASE },
   };
 }
 
@@ -348,14 +348,17 @@ export function HeroSectionClient({ logos }: HeroSectionClientProps) {
 
   // ── Hero entrance animations ──────────────────────────────────────────────
   useEffect(() => {
-    const t = setTimeout(() => setHeroReady(true), 1200);
+    const t = setTimeout(() => setHeroReady(true), 150);
     return () => clearTimeout(t);
   }, []);
 
   useEffect(() => {
     if (!heroReady) return;
-    const t1 = setTimeout(() => setSmallLensReady(true), 2100);
-    const t2 = setTimeout(() => setLargeLensReady(true), 2500);
+    const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
+    const lensDelay1 = isMobile ? 500 : 600;
+    const lensDelay2 = isMobile ? 650 : 800;
+    const t1 = setTimeout(() => setSmallLensReady(true), lensDelay1);
+    const t2 = setTimeout(() => setLargeLensReady(true), lensDelay2);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [heroReady]);
 
@@ -696,7 +699,12 @@ export function HeroSectionClient({ logos }: HeroSectionClientProps) {
         ref={heroRef}
         className="relative isolate overflow-hidden bg-background text-foreground dark"
       >
-        <div className="absolute inset-0">
+        <motion.div
+          className="absolute inset-0"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: heroReady ? 1 : 0 }}
+          transition={{ duration: 0.8, ease: HERO_EASE }}
+        >
           <Image
             alt=""
             aria-hidden="true"
@@ -707,7 +715,7 @@ export function HeroSectionClient({ logos }: HeroSectionClientProps) {
             unoptimized
           />
           <div className="hero-background-fade" />
-        </div>
+        </motion.div>
 
         <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-[1512px] flex-col px-5 pb-6 pt-6 md:px-8 md:pb-[56px] md:pt-10 xl:px-14">
           <motion.div className="hero-top-bar relative z-20 flex flex-col gap-6" {...heroFadeUp(heroReady, 0)}>

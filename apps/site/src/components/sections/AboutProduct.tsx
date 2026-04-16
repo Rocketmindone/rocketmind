@@ -1,16 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
-import type { AccordionItem } from "@/lib/products";
+import { RichText } from "@rocketmind/ui";
+import type { AccordionItem, AboutParagraph } from "@/lib/products";
 
-/** Renders next/image for file paths, plain <img> for data URLs */
+/** Preserves natural image proportions — scales width to container, height follows. */
 function AboutImage({ src, alt, className }: { src: string; alt: string; className?: string }) {
-  if (src.startsWith("data:")) {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img src={src} alt={alt} className={`absolute inset-0 w-full h-full object-cover ${className ?? ""}`} />;
-  }
-  return <Image src={src} alt={alt} fill className={className ?? "object-cover"} />;
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src={src} alt={alt} className={`block w-full h-auto ${className ?? ""}`} />;
 }
 
 // ── Accordion ──────────────────────────────────────────────────────────────────
@@ -35,47 +32,81 @@ function AccordionIcon({ isOpen }: { isOpen: boolean }) {
   );
 }
 
+function AccordionItemContent({
+  item,
+  isOpen,
+}: {
+  item: AccordionItem;
+  isOpen: boolean;
+}) {
+  return (
+    <>
+      <div className="flex flex-col flex-1 min-w-0">
+        <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#F0F0F0]">
+          {item.title}
+        </span>
+        <div
+          className="grid transition-[grid-template-rows] duration-200 ease-out"
+          style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}
+        >
+          <div className="overflow-hidden">
+            {item.paragraphs.length > 0 && (
+              <div className="flex flex-col gap-3 pt-4">
+                {item.paragraphs.map((p, pi) => (
+                  <RichText
+                    key={pi}
+                    text={p}
+                    className="text-[length:var(--text-14)] leading-[1.32] tracking-[0.01em] text-[#939393]"
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
 function ProductAccordion({
   items,
   defaultOpen = 0,
+  collapsible = true,
 }: {
   items: AccordionItem[];
   defaultOpen?: number;
+  collapsible?: boolean;
 }) {
   const [openIndex, setOpenIndex] = useState(defaultOpen);
 
   return (
     <div className="flex flex-col">
       {items.map((item, i) => {
-        const isOpen = openIndex === i;
+        const isOpen = collapsible ? openIndex === i : true;
         const isFirst = i === 0;
+
+        const baseClass = `flex items-start gap-7 py-4 pr-4 text-left border-[#404040] ${
+          isFirst ? "border-t border-b" : "border-b"
+        }`;
+
+        const hasParagraphs = item.paragraphs.length > 0;
+
+        if (!collapsible || !hasParagraphs) {
+          return (
+            <div key={i} className={baseClass}>
+              <AccordionItemContent item={item} isOpen={isOpen} />
+            </div>
+          );
+        }
 
         return (
           <button
             key={i}
             type="button"
-            className={`flex items-start gap-7 py-4 pr-4 text-left cursor-pointer border-[#404040] ${
-              isFirst ? "border-t border-b" : "border-b"
-            }`}
+            className={`${baseClass} cursor-pointer`}
             onClick={() => setOpenIndex(isOpen ? -1 : i)}
           >
-            <div className="flex flex-col flex-1 min-w-0">
-              <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#F0F0F0]">
-                {item.title}
-              </span>
-              <div
-                className="grid transition-[grid-template-rows] duration-200 ease-out"
-                style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}
-              >
-                <div className="overflow-hidden">
-                  {item.description && (
-                    <p className="pt-4 text-[length:var(--text-14)] leading-[1.32] tracking-[0.01em] text-[#939393]">
-                      {item.description}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
+            <AccordionItemContent item={item} isOpen={isOpen} />
             <AccordionIcon isOpen={isOpen} />
           </button>
         );
@@ -89,45 +120,77 @@ function ProductAccordion({
 type AboutProductProps = {
   caption: string;
   title: string;
-  description: string;
+  titleSecondary?: string;
+  paragraphs: AboutParagraph[];
   accordion: AccordionItem[];
+  /** If false, accordion items are always expanded (no click-to-collapse). */
+  accordionCollapsible?: boolean;
+  /** If true, image is on the left. Default: false (right). */
+  imageLeft?: boolean;
+  /** If true, paragraphs render in right column above accordion (without-image variant). */
+  paragraphsRight?: boolean;
   /** Image path (if present, uses image variant) */
   aboutImage?: string | null;
 };
 
+const DESKTOP_UPPERCASE =
+  "font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#939393]";
+const DESKTOP_NORMAL = "text-[length:var(--text-18)] leading-[1.2] text-[#939393]";
+const MOBILE_UPPERCASE =
+  "font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#939393]";
+const MOBILE_NORMAL = "text-[length:var(--text-16)] leading-[1.28] text-[#939393]";
+
 export function AboutProduct({
   caption,
   title,
-  description,
+  titleSecondary,
+  paragraphs,
   accordion,
+  accordionCollapsible = true,
+  imageLeft = false,
+  paragraphsRight = false,
   aboutImage,
 }: AboutProductProps) {
   const hasImage = !!aboutImage;
+  const paragraphsBlock =
+    paragraphs.length > 0 ? (
+      <div className="flex flex-col gap-3">
+        {paragraphs.map((p, i) => (
+          <RichText
+            key={i}
+            text={p.text}
+            className={p.uppercase ? DESKTOP_UPPERCASE : DESKTOP_NORMAL}
+          />
+        ))}
+      </div>
+    ) : null;
 
   return (
     <section className="w-full border-t border-border py-10 md:py-16 lg:py-20">
       {/* ── Desktop with image ── */}
       {hasImage && (
-        <div className="hidden lg:flex mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14">
-          {/* Left: text + accordion */}
+        <div
+          className={`hidden lg:flex mx-auto max-w-[1512px] px-5 md:px-8 xl:px-14 ${
+            imageLeft ? "flex-row-reverse" : ""
+          }`}
+        >
+          {/* Text + accordion */}
           <div className="w-[560px] shrink-0 flex flex-col justify-between gap-28">
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-2">
                 <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">
                   {caption}
                 </span>
-                <h2 className="h2 text-[#F0F0F0]">{title}</h2>
+                <h2 className="h2 whitespace-pre-line"><span className="text-[#F0F0F0]">{title}</span>{titleSecondary ? <><span className="text-[#F0F0F0]"> </span><span className="text-[#939393]">{titleSecondary}</span></> : null}</h2>
               </div>
-              <p className="text-[length:var(--text-18)] leading-[1.2] text-[#939393]">
-                {description}
-              </p>
+              {paragraphsBlock}
             </div>
-            <ProductAccordion items={accordion} />
+            <ProductAccordion items={accordion} collapsible={accordionCollapsible} />
           </div>
 
-          {/* Right: image */}
-          <div className="flex-1 bg-[#121212] relative min-h-[684px]">
-            <AboutImage src={aboutImage} alt={title} className="object-cover" />
+          {/* Right: image — preserves natural proportions */}
+          <div className="flex-1 self-start bg-[#121212]">
+            <AboutImage src={aboutImage} alt={title} />
           </div>
         </div>
       )}
@@ -142,17 +205,16 @@ export function AboutProduct({
                 <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">
                   {caption}
                 </span>
-                <h2 className="h2 text-[#F0F0F0]">{title}</h2>
+                <h2 className="h2 whitespace-pre-line"><span className="text-[#F0F0F0]">{title}</span>{titleSecondary ? <><span className="text-[#F0F0F0]"> </span><span className="text-[#939393]">{titleSecondary}</span></> : null}</h2>
               </div>
-              <p className="text-[length:var(--text-18)] leading-[1.2] text-[#939393]">
-                {description}
-              </p>
+              {!paragraphsRight && paragraphsBlock}
             </div>
           </div>
 
-          {/* Right: accordion — 50% */}
-          <div className="w-1/2">
-            <ProductAccordion items={accordion} />
+          {/* Right: paragraphs (optional) + accordion — 50% */}
+          <div className="w-1/2 flex flex-col gap-6">
+            {paragraphsRight && paragraphsBlock}
+            <ProductAccordion items={accordion} collapsible={accordionCollapsible} />
           </div>
         </div>
       )}
@@ -164,16 +226,24 @@ export function AboutProduct({
             <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#FFCC00]">
               {caption}
             </span>
-            <h2 className="h3 text-[#F0F0F0]">{title}</h2>
+            <h2 className="h3 whitespace-pre-line"><span className="text-[#F0F0F0]">{title}</span>{titleSecondary ? <><span className="text-[#F0F0F0]"> </span><span className="text-[#939393]">{titleSecondary}</span></> : null}</h2>
           </div>
-          <p className="text-[length:var(--text-16)] leading-[1.28] text-[#939393]">
-            {description}
-          </p>
+          {paragraphs.length > 0 && (
+            <div className="flex flex-col gap-3">
+              {paragraphs.map((p, i) => (
+                <RichText
+                  key={i}
+                  text={p.text}
+                  className={p.uppercase ? MOBILE_UPPERCASE : MOBILE_NORMAL}
+                />
+              ))}
+            </div>
+          )}
         </div>
-        <ProductAccordion items={accordion} />
+        <ProductAccordion items={accordion} collapsible={accordionCollapsible} />
         {hasImage && (
-          <div className="relative w-full h-[340px] bg-[#121212] mt-6">
-            <AboutImage src={aboutImage} alt={title} className="object-cover" />
+          <div className="mt-6 bg-[#121212]">
+            <AboutImage src={aboutImage} alt={title} />
           </div>
         )}
       </div>

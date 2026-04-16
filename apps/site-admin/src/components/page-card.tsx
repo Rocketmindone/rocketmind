@@ -8,13 +8,11 @@ import {
   ArchiveRestore,
   Trash2,
   GripVertical,
+  Image as ImageIcon,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardAction,
   Badge,
   Button,
   DropdownMenu,
@@ -34,99 +32,335 @@ const STATUS_BADGE: Record<
   archived: { label: "В архиве", variant: "neutral-subtle" },
 };
 
-interface PageCardProps {
+/** Extract cover thumbnail data URL from hero block */
+function getCoverData(page: SitePage): string | null {
+  const hero = page.blocks.find((b) => b.type === "hero");
+  return (hero?.data?.heroImageData as string) || null;
+}
+
+/** Whether this section uses full-width cover images (vs icons) */
+function isImageSection(sectionId: string): boolean {
+  return sectionId === "academy" || sectionId === "ai-products" || sectionId === "media";
+}
+
+/** Build a display path for the cover asset */
+function getCoverPath(page: SitePage): string {
+  return `images/products/${page.sectionId}/${page.slug}/cover.*`;
+}
+
+/** Extract card tag: "Экспертный продукт" if experts assigned */
+function getCardTag(page: SitePage): string | null {
+  const expertsBlock = page.blocks.find((b) => b.type === "experts");
+  const experts = expertsBlock?.data?.experts as string[] | undefined;
+  if (experts && experts.length > 0) return "Экспертный продукт";
+  return null;
+}
+
+// ── Shared action buttons ─────────────────────────────────────────────────
+
+function PageActions({
+  page,
+  isArchived,
+  onArchive,
+  onRestore,
+  onDelete,
+  onTogglePublish,
+}: {
   page: SitePage;
+  isArchived: boolean;
   onArchive: (id: string) => void;
   onRestore: (id: string) => void;
   onDelete: (id: string) => void;
-  onGripDown?: () => void;
-  onGripUp?: () => void;
+  onTogglePublish: (id: string) => void;
+}) {
+  const router = useRouter();
+  const isPublished = page.status === "published";
+  return (
+    <div className="flex items-center gap-1">
+      <Button
+        variant="ghost"
+        size="icon-sm"
+        onClick={() => router.push(`/pages/${encodeURIComponent(page.id)}`)}
+      >
+        <Pencil className="h-3.5 w-3.5" />
+      </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon-sm">
+            <MoreHorizontal className="h-3.5 w-3.5" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => router.push(`/pages/${encodeURIComponent(page.id)}`)}>
+            <Pencil className="mr-2 h-3.5 w-3.5" />
+            Редактировать
+          </DropdownMenuItem>
+          {!isArchived && (
+            <DropdownMenuItem onClick={() => onTogglePublish(page.id)}>
+              {isPublished ? (
+                <>
+                  <EyeOff className="mr-2 h-3.5 w-3.5" />
+                  Скрыть
+                </>
+              ) : (
+                <>
+                  <Eye className="mr-2 h-3.5 w-3.5" />
+                  Опубликовать
+                </>
+              )}
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuSeparator />
+          {isArchived ? (
+            <DropdownMenuItem onClick={() => onRestore(page.id)}>
+              <ArchiveRestore className="mr-2 h-3.5 w-3.5" />
+              Восстановить
+            </DropdownMenuItem>
+          ) : (
+            <DropdownMenuItem onClick={() => onArchive(page.id)}>
+              <Archive className="mr-2 h-3.5 w-3.5" />
+              В архив
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuItem
+            className="text-[var(--rm-red-500)]"
+            onClick={() => onDelete(page.id)}
+          >
+            <Trash2 className="mr-2 h-3.5 w-3.5" />
+            Удалить
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
 }
 
-export function PageCard({ page, onArchive, onRestore, onDelete, onGripDown, onGripUp }: PageCardProps) {
+// ── Grid card (mini product card) ─────────────────────────────────────────
+
+interface PageCardProps {
+  page: SitePage;
+  viewMode?: "grid" | "list";
+  onArchive: (id: string) => void;
+  onRestore: (id: string) => void;
+  onDelete: (id: string) => void;
+  onTogglePublish: (id: string) => void;
+  onGripDown?: () => void;
+  onGripUp?: () => void;
+  /** Drag props for list-mode <tr> (applied directly since no wrapper div) */
+  dragProps?: {
+    draggable: boolean;
+    onDragStart: (e: React.DragEvent) => void;
+    onDragOver: (e: React.DragEvent) => void;
+    onDrop: (e: React.DragEvent) => void;
+    onDragEnd: () => void;
+    isDragging: boolean;
+  };
+}
+
+export function PageCard({ page, viewMode = "grid", onArchive, onRestore, onDelete, onTogglePublish, onGripDown, onGripUp, dragProps }: PageCardProps) {
   const router = useRouter();
   const status = STATUS_BADGE[page.status] || STATUS_BADGE.hidden;
   const isArchived = page.status === "archived";
+  const cover = getCoverData(page);
+  const isImage = isImageSection(page.sectionId);
+  const coverPath = getCoverPath(page);
+  const tag = getCardTag(page);
 
-  return (
-    <Card className="group relative transition-colors hover:border-foreground/20">
-      <CardHeader>
-        {/* Drag handle */}
-        {onGripDown && (
-          <div
-            className="mr-1 cursor-grab text-muted-foreground opacity-0 transition-opacity select-none active:cursor-grabbing group-hover:opacity-100"
-            onMouseDown={onGripDown}
-            onMouseUp={onGripUp}
-          >
-            <GripVertical className="h-4 w-4" />
+  // ── List (table row) ──────────────────────────────────────────────────
+  if (viewMode === "list") {
+    return (
+      <tr
+        className={`group border-b border-border transition-colors hover:bg-muted/50 cursor-pointer ${dragProps?.isDragging ? "opacity-50" : ""}`}
+        onClick={() => router.push(`/pages/${encodeURIComponent(page.id)}`)}
+        draggable={dragProps?.draggable}
+        onDragStart={dragProps?.onDragStart}
+        onDragOver={dragProps?.onDragOver}
+        onDrop={dragProps?.onDrop}
+        onDragEnd={dragProps?.onDragEnd}
+      >
+        {/* # */}
+        <td className="w-8 py-2 pl-3 pr-1 text-center align-middle">
+          <div className="flex items-center gap-1">
+            {onGripDown && (
+              <div
+                className="cursor-grab text-muted-foreground opacity-0 transition-opacity select-none active:cursor-grabbing group-hover:opacity-100"
+                onMouseDown={(e) => { e.stopPropagation(); onGripDown(); }}
+                onMouseUp={(e) => { e.stopPropagation(); onGripUp?.(); }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <GripVertical className="h-3.5 w-3.5" />
+              </div>
+            )}
+            <span className="text-[length:var(--text-12)] text-muted-foreground tabular-nums">
+              {page.order + 1}
+            </span>
           </div>
-        )}
-        <span className="mr-2 flex h-5 w-5 shrink-0 items-center justify-center rounded-sm bg-rm-gray-1 text-[length:var(--text-10)] font-medium text-muted-foreground">
-          {page.order + 1}
-        </span>
-        <div className="flex-1 min-w-0">
-          <CardTitle className="text-[length:var(--text-16)] truncate">
-            {page.menuTitle || page.cardTitle || "Без названия"}
-          </CardTitle>
-          <CardDescription className="mt-1 line-clamp-2 text-[length:var(--text-12)]">
-            {page.menuDescription || page.cardDescription || "Нет описания"}
-          </CardDescription>
-        </div>
-        <CardAction>
+        </td>
+
+        {/* Thumbnail */}
+        <td className="w-10 py-2 px-1 align-middle">
+          {cover ? (
+            <div
+              className={`h-8 w-8 shrink-0 rounded-sm border border-border ${isImage ? "bg-cover bg-center" : "bg-contain bg-center bg-no-repeat"}`}
+              style={{ backgroundImage: `url(${cover})` }}
+            />
+          ) : (
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm border border-dashed border-border">
+              <ImageIcon className="h-3 w-3 text-muted-foreground/50" />
+            </div>
+          )}
+        </td>
+
+        {/* Title + Tag */}
+        <td className="py-2 px-2 align-middle">
+          <div className="flex items-center gap-1.5">
+            <span className="text-[length:var(--text-14)] font-semibold text-foreground line-clamp-1">
+              {page.menuTitle || page.cardTitle || "Без названия"}
+            </span>
+            {tag && (
+              <span className="shrink-0 rounded-sm bg-[color:var(--rm-yellow-100)]/10 px-1.5 py-0.5 text-[length:var(--text-10)] font-medium text-[color:var(--rm-yellow-100)]">
+                {tag}
+              </span>
+            )}
+          </div>
+        </td>
+
+        {/* Description (hidden on small screens) */}
+        <td className="hidden md:table-cell py-2 px-2 align-middle max-w-[260px]">
+          <span className="text-[length:var(--text-12)] text-muted-foreground line-clamp-1">
+            {page.menuDescription || page.cardDescription || "—"}
+          </span>
+        </td>
+
+        {/* Cover path */}
+        <td className="hidden lg:table-cell py-2 px-2 align-middle">
+          {cover ? (
+            <span className="text-[length:var(--text-10)] font-mono text-muted-foreground/70 line-clamp-1">
+              {coverPath}
+            </span>
+          ) : (
+            <span className="text-[length:var(--text-10)] text-muted-foreground/40">—</span>
+          )}
+        </td>
+
+        {/* Status */}
+        <td className="py-2 px-2 align-middle">
           <Badge variant={status.variant as never} size="sm">
             {status.label}
           </Badge>
-        </CardAction>
-      </CardHeader>
+        </td>
 
-      <div className="flex items-center justify-between px-4 pb-4">
-        <p className="text-[length:var(--text-10)] text-muted-foreground">
-          /{page.sectionId}/{page.slug}
+        {/* Path */}
+        <td className="hidden sm:table-cell py-2 px-2 align-middle">
+          <span className="text-[length:var(--text-10)] font-mono text-muted-foreground">
+            /{page.sectionId}/{page.slug}
+          </span>
+        </td>
+
+        {/* Actions */}
+        <td className="py-2 pr-3 pl-1 align-middle" onClick={(e) => e.stopPropagation()}>
+          <PageActions page={page} isArchived={isArchived} onArchive={onArchive} onRestore={onRestore} onDelete={onDelete} onTogglePublish={onTogglePublish} />
+        </td>
+      </tr>
+    );
+  }
+
+  // ── Grid (mini product card) ──────────────────────────────────────────
+
+  return (
+    <div
+      className="group relative flex h-full flex-col overflow-hidden rounded-sm border border-border bg-card transition-colors hover:border-foreground/25 cursor-pointer"
+      onClick={() => router.push(`/pages/${encodeURIComponent(page.id)}`)}
+    >
+      {/* Drag handle — top-left, visible on hover */}
+      {onGripDown && (
+        <div
+          className="absolute left-1.5 top-1.5 z-10 cursor-grab rounded-sm bg-background/80 p-0.5 text-muted-foreground opacity-0 backdrop-blur transition-opacity select-none active:cursor-grabbing group-hover:opacity-100"
+          onMouseDown={(e) => { e.stopPropagation(); onGripDown(); }}
+          onMouseUp={(e) => { e.stopPropagation(); onGripUp?.(); }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <GripVertical className="h-3.5 w-3.5" />
+        </div>
+      )}
+
+      {/* Thumbnail area */}
+      {isImage ? (
+        /* Image-style cover (academy / ai-products / media) — 4:3 landscape */
+        <div className="relative aspect-[4/3] w-full bg-muted/30">
+          {cover ? (
+            <div
+              className="h-full w-full bg-cover bg-center"
+              style={{ backgroundImage: `url(${cover})` }}
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center text-muted-foreground/30">
+              <ImageIcon className="h-6 w-6" />
+            </div>
+          )}
+        </div>
+      ) : (
+        /* Icon-style cover (consulting) — small square */
+        <div className="flex h-[80px] items-center px-4 pt-4">
+          {cover ? (
+            <div
+              className="h-[56px] w-[56px] shrink-0 rounded-sm bg-contain bg-center bg-no-repeat"
+              style={{ backgroundImage: `url(${cover})` }}
+            />
+          ) : (
+            <div className="flex h-[56px] w-[56px] shrink-0 items-center justify-center rounded-sm border border-dashed border-border text-muted-foreground/30">
+              <ImageIcon className="h-5 w-5" />
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Card body */}
+      <div className="flex flex-1 flex-col gap-2 px-4 pb-3 pt-2">
+        {/* Order + Tag + Status */}
+        <div className="flex items-center gap-1.5">
+          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-sm bg-muted text-[length:var(--text-10)] font-medium text-muted-foreground">
+            {page.order + 1}
+          </span>
+          {tag && (
+            <span className="truncate rounded-sm bg-[color:var(--rm-yellow-100)]/10 px-1.5 py-0.5 text-[length:var(--text-10)] font-medium text-[color:var(--rm-yellow-100)]">
+              {tag}
+            </span>
+          )}
+          <span className="ml-auto shrink-0">
+            <Badge variant={status.variant as never} size="sm">
+              {status.label}
+            </Badge>
+          </span>
+        </div>
+
+        {/* Title */}
+        <h3 className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-14)] font-bold uppercase leading-[1.2] tracking-tight text-foreground line-clamp-2 min-h-[2.4em]">
+          {page.menuTitle || page.cardTitle || "Без названия"}
+        </h3>
+
+        {/* Description */}
+        <p className="text-[length:var(--text-12)] leading-[1.32] text-muted-foreground line-clamp-2">
+          {page.menuDescription || page.cardDescription || "Нет описания"}
         </p>
 
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            onClick={() => router.push(`/pages/${encodeURIComponent(page.id)}`)}
-          >
-            <Pencil className="h-3.5 w-3.5" />
-          </Button>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon-sm">
-                <MoreHorizontal className="h-3.5 w-3.5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => router.push(`/pages/${encodeURIComponent(page.id)}`)}>
-                <Pencil className="mr-2 h-3.5 w-3.5" />
-                Редактировать
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              {isArchived ? (
-                <DropdownMenuItem onClick={() => onRestore(page.id)}>
-                  <ArchiveRestore className="mr-2 h-3.5 w-3.5" />
-                  Восстановить
-                </DropdownMenuItem>
-              ) : (
-                <DropdownMenuItem onClick={() => onArchive(page.id)}>
-                  <Archive className="mr-2 h-3.5 w-3.5" />
-                  В архив
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuItem
-                className="text-[var(--rm-red-500)]"
-                onClick={() => onDelete(page.id)}
-              >
-                <Trash2 className="mr-2 h-3.5 w-3.5" />
-                Удалить
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+        {/* Footer: paths + actions */}
+        <div className="mt-auto flex items-end justify-between gap-2 pt-1">
+          <div className="flex flex-col gap-0.5 min-w-0">
+            <span className="text-[length:var(--text-10)] font-mono text-muted-foreground truncate">
+              /{page.sectionId}/{page.slug}
+            </span>
+            {cover && (
+              <span className="text-[length:var(--text-10)] font-mono text-muted-foreground/50 truncate">
+                {coverPath}
+              </span>
+            )}
+          </div>
+          <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
+            <PageActions page={page} isArchived={isArchived} onArchive={onArchive} onRestore={onRestore} onDelete={onDelete} onTogglePublish={onTogglePublish} />
+          </div>
         </div>
       </div>
-    </Card>
+    </div>
   );
 }

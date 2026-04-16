@@ -7,6 +7,25 @@ const isStatic = process.env.NEXT_PUBLIC_STATIC === "1";
 const IMAGE_EXTS = [".svg", ".png", ".jpg", ".jpeg", ".webp", ".gif"];
 const AUDIO_EXTS = [".mp3", ".wav", ".ogg", ".m4a", ".webm"];
 
+/** Returns disk dir + public-URL base for page assets, split by category. */
+function assetPaths(
+  path: typeof import("path"),
+  publicDir: string,
+  category: string,
+  slug: string,
+): { dir: string; base: string } {
+  if (category === "unique") {
+    return {
+      dir: path.join(publicDir, "images", "unique", slug),
+      base: `/images/unique/${slug}`,
+    };
+  }
+  return {
+    dir: path.join(publicDir, "images", "products", category, slug),
+    base: `/images/products/${category}/${slug}`,
+  };
+}
+
 function resolveAsset(
   fs: typeof import("fs"),
   path: typeof import("path"),
@@ -16,9 +35,10 @@ function resolveAsset(
   role: string,
   extensions: string[],
 ): string | null {
+  const { dir, base } = assetPaths(path, publicDir, category, slug);
   for (const ext of extensions) {
-    const fp = path.join(publicDir, "images", "products", category, slug, role + ext);
-    if (fs.existsSync(fp)) return `/images/products/${category}/${slug}/${role}${ext}`;
+    const fp = path.join(dir, role + ext);
+    if (fs.existsSync(fp)) return `${base}/${role}${ext}`;
   }
   return null;
 }
@@ -37,8 +57,9 @@ function resolveAssetAsDataUrl(
     ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg",
     ".jpeg": "image/jpeg", ".webp": "image/webp", ".gif": "image/gif",
   };
+  const { dir } = assetPaths(path, publicDir, category, slug);
   for (const ext of extensions) {
-    const fp = path.join(publicDir, "images", "products", category, slug, role + ext);
+    const fp = path.join(dir, role + ext);
     if (fs.existsSync(fp)) {
       const buf = fs.readFileSync(fp);
       const mime = MIME[ext] || "application/octet-stream";
@@ -46,6 +67,19 @@ function resolveAssetAsDataUrl(
     }
   }
   return null;
+}
+
+function readFileAsDataUrl(fs: typeof import("fs"), path: typeof import("path"), publicDir: string, publicUrl: string): string | null {
+  if (!publicUrl || publicUrl.startsWith("data:")) return publicUrl || null;
+  const fp = path.join(publicDir, publicUrl);
+  if (!fs.existsSync(fp)) return null;
+  const MIME: Record<string, string> = {
+    ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg", ".webp": "image/webp", ".gif": "image/gif",
+  };
+  const ext = path.extname(fp).toLowerCase();
+  const mime = MIME[ext] || "application/octet-stream";
+  return `data:${mime};base64,${fs.readFileSync(fp).toString("base64")}`;
 }
 
 export async function GET() {
@@ -74,7 +108,10 @@ export async function GET() {
         const aboutUrl = resolveAssetAsDataUrl(fs, path, sitePublicDir, data.category || sectionId, data.slug, "about", IMAGE_EXTS);
         const audioUrl = resolveAsset(fs, path, sitePublicDir, data.category || sectionId, data.slug, "audio", AUDIO_EXTS);
 
-        const blocks = DEFAULT_BLOCK_TYPES.map((type: string, i: number) => {
+        const blockTypesForSection: string[] = sectionId === "unique"
+          ? ["hero", "about", "tools", "projects", "process", "experts", "audience", "pageBottom"]
+          : DEFAULT_BLOCK_TYPES;
+        const blocks = blockTypesForSection.map((type: string, i: number) => {
           let blockData: Record<string, unknown> = {};
           let enabled = true;
           switch (type) {
@@ -91,28 +128,119 @@ export async function GET() {
                 if (aboutUrl && !blockData.aboutImageData) blockData = { ...blockData, aboutImageData: aboutUrl };
               } else { enabled = false; }
               break;
+            case "projects": {
+              const p = data.projects as Record<string, unknown> | undefined;
+              if (p && typeof p === "object") {
+                blockData = p;
+                // Resolve logoGrid cell src (file paths) to data URLs for admin display
+                const lg = blockData.logoGrid as { cells?: Array<{ id: string; src: string; alt?: string; size?: string }> } | undefined;
+                if (lg && Array.isArray(lg.cells)) {
+                  const cells = lg.cells.map((c) => {
+                    const dataUrl = readFileAsDataUrl(fs, path, sitePublicDir, c.src);
+                    return dataUrl ? { ...c, src: dataUrl } : c;
+                  });
+                  blockData = { ...blockData, logoGrid: { cells } };
+                }
+              } else { enabled = false; }
+              break;
+            }
             case "audience": if (data.audience) blockData = data.audience; else enabled = false; break;
             case "tools": if (data.tools) blockData = data.tools; else enabled = false; break;
             case "results": if (data.results) blockData = data.results; else enabled = false; break;
             case "process": if (data.process) blockData = data.process; else enabled = false; break;
+            case "services": if (data.services) blockData = data.services; else enabled = false; break;
             case "experts": {
-              const arr = data.experts as unknown[] | null;
-              if (arr && arr.length > 0) {
+              const arr = data.experts as unknown[] | null | undefined;
+              if (Array.isArray(arr)) {
+                // Field present (even empty array) → user has explicit on-state
                 blockData = { experts: arr };
                 enabled = true;
               } else {
+                // Field missing/null → use section default
                 blockData = { experts: [] };
-                // academy pages: on by default, others: off
                 enabled = sectionId === "academy";
               }
               break;
             }
-            case "aboutRocketmind": if (data.aboutRocketmind) blockData = data.aboutRocketmind; else enabled = false; break;
-            case "logoMarquee": enabled = !!data.logoMarquee; if (data.logoMarquee) blockData = data.logoMarquee; break;
+            case "partnerships": {
+              // Shared block — load from _partnerships.json, resolve images to data URLs
+              const pFile = path.join(path.resolve(process.cwd(), "..", "site", "content"), "_partnerships.json");
+              if (fs.existsSync(pFile)) {
+                try {
+                  const pRaw = JSON.parse(fs.readFileSync(pFile, "utf-8"));
+                  const MIME: Record<string, string> = { ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp", ".gif": "image/gif" };
+                  function resolveImg(src: string): string {
+                    if (!src || src.startsWith("data:")) return src;
+                    const fp = path.join(sitePublicDir, src);
+                    if (!fs.existsSync(fp)) return src;
+                    const ext = path.extname(fp).toLowerCase();
+                    const mime = MIME[ext] || "application/octet-stream";
+                    return `data:${mime};base64,${fs.readFileSync(fp).toString("base64")}`;
+                  }
+                  blockData = {
+                    caption: pRaw.caption || "",
+                    title: pRaw.title || "",
+                    description: pRaw.description || "",
+                    logos: (pRaw.logos || []).map((l: { src: string; alt: string }) => ({ src: resolveImg(l.src), alt: l.alt || "" })),
+                    photos: (pRaw.photos || []).map((p: { src: string; alt?: string }) => ({ src: resolveImg(p.src), alt: p.alt || "" })),
+                  };
+                } catch { /* skip */ }
+              }
+              // Only enable for academy pages by default
+              enabled = sectionId === "academy";
+              break;
+            }
+            case "aboutRocketmind":
+              // Enabled-by-default block (rendered with defaults if no custom data).
+              // Frontmatter stores `false` only to explicitly hide on site.
+              enabled = data.aboutRocketmind !== false;
+              blockData = data.aboutRocketmind && typeof data.aboutRocketmind === "object"
+                ? data.aboutRocketmind
+                : {};
+              break;
+            case "logoMarquee":
+              // Auto-block: enabled by default; only disabled if frontmatter explicitly stores false
+              enabled = data.logoMarquee !== false;
+              break;
             case "pageBottom": enabled = !!data.pageBottom; if (data.pageBottom) blockData = data.pageBottom; break;
           }
           return { id: `${data.slug}_${type}`, type, enabled, order: i, data: blockData };
         });
+
+        // ── Merge in custom sections (user-inserted between built-ins) ─────────
+        const customSections = Array.isArray(data.customSections) ? data.customSections : [];
+        const finalBlocks: Array<{ id: string; type: string; enabled: boolean; order: number; data: Record<string, unknown> }> = [];
+        for (const b of blocks) {
+          finalBlocks.push(b);
+          for (const cs of customSections) {
+            if (cs && typeof cs === "object" && cs.insertAfter === b.type) {
+              finalBlocks.push({
+                id: typeof cs.id === "string" ? cs.id : `cs_${Math.random().toString(36).slice(2, 9)}`,
+                type: "customSection",
+                enabled: cs.enabled !== false,
+                order: 0, // renumbered below
+                data: (cs.data && typeof cs.data === "object" ? cs.data : {}) as Record<string, unknown>,
+              });
+            }
+          }
+        }
+        // Handle customs inserted before any built-in (insertAfter = null / "")
+        const preBlocks = customSections.filter(
+          (cs: { insertAfter?: unknown }) =>
+            cs && typeof cs === "object" && (cs.insertAfter === null || cs.insertAfter === "" || cs.insertAfter === undefined),
+        );
+        for (let i = preBlocks.length - 1; i >= 0; i--) {
+          const cs = preBlocks[i];
+          finalBlocks.unshift({
+            id: typeof cs.id === "string" ? cs.id : `cs_${Math.random().toString(36).slice(2, 9)}`,
+            type: "customSection",
+            enabled: cs.enabled !== false,
+            order: 0,
+            data: (cs.data && typeof cs.data === "object" ? cs.data : {}) as Record<string, unknown>,
+          });
+        }
+        finalBlocks.forEach((b, i) => { b.order = i; });
+
         const stat = fs.statSync(path.join(dir, file));
         pages.push({
           id: `${sectionId}/${data.slug}`,
@@ -126,7 +254,8 @@ export async function GET() {
           cardDescription: data.cardDescription || "",
           metaTitle: data.metaTitle || "",
           metaDescription: data.metaDescription || "",
-          blocks,
+          expertProduct: typeof data.expertProduct === "boolean" ? data.expertProduct : undefined,
+          blocks: finalBlocks,
           createdAt: stat.birthtime.toISOString(),
           updatedAt: stat.mtime.toISOString(),
         });

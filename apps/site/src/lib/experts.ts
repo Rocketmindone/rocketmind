@@ -8,6 +8,7 @@ export type ExpertData = {
   slug: string;
   name: string;
   tag: string;
+  shortBio: string;
   bio: string;
   image: string | null;
 };
@@ -41,6 +42,7 @@ export function getExpertBySlug(slug: string): ExpertData | null {
     slug: data.slug || slug,
     name: data.name || "",
     tag: data.tag || "Эксперт продукта",
+    shortBio: data.shortBio || "",
     bio: data.bio || "",
     image: resolveExpertImage(data.slug || slug),
   };

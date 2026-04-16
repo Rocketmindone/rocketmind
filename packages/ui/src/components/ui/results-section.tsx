@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { cn } from "../../lib/utils";
+import { RichText } from "./rich-text";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -13,6 +14,7 @@ export type ResultCard = {
 export type ResultsSectionProps = {
   tag: string;
   title: string;
+  titleSecondary?: string;
   description?: string;
   cards: ResultCard[];
   className?: string;
@@ -83,6 +85,7 @@ function useResultsScroll(cardCount: number) {
 export function ResultsSection({
   tag,
   title,
+  titleSecondary,
   description,
   cards,
   className,
@@ -111,11 +114,12 @@ export function ResultsSection({
               {tag}
             </span>
             <div className="flex flex-col gap-6">
-              <h2 className="h2 text-[#F0F0F0]">{title}</h2>
+              <h2 className="h2"><span className="text-[#F0F0F0]">{title}</span>{titleSecondary ? <><span className="text-[#F0F0F0]"> </span><span className="text-[#939393]">{titleSecondary}</span></> : null}</h2>
               {description && (
-                <p className="text-[length:var(--text-18)] leading-[1.2] text-[#939393]">
-                  {description}
-                </p>
+                <RichText
+                  text={description}
+                  className="text-[length:var(--text-18)] leading-[1.2] text-[#939393]"
+                />
               )}
             </div>
           </div>
@@ -154,14 +158,13 @@ export function ResultsSection({
                     >
                       {card.title}
                     </h3>
-                    <p
+                    <RichText
+                      text={card.text}
                       className={cn(
                         "text-[length:var(--text-16)] leading-[1.28] transition-colors duration-300",
                         isCurrent ? "text-[#0A0A0A]" : "text-[#939393]",
                       )}
-                    >
-                      {card.text}
-                    </p>
+                    />
                   </div>
                 </div>
               );
@@ -178,13 +181,15 @@ export function ResultsSection({
             {tag}
           </span>
           <div className="flex flex-col gap-4">
-            <h2 className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-28)] font-bold uppercase leading-[1.16] tracking-[-0.01em] text-[#F0F0F0]">
-              {title}
+            <h2 className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-28)] font-bold uppercase leading-[1.16] tracking-[-0.01em]">
+              <span className="text-[#F0F0F0]">{title}</span>
+              {titleSecondary ? <><span className="text-[#F0F0F0]"> </span><span className="text-[#939393]">{titleSecondary}</span></> : null}
             </h2>
             {description && (
-              <p className="text-[length:var(--text-16)] leading-[1.28] text-[#939393]">
-                {description}
-              </p>
+              <RichText
+                text={description}
+                className="text-[length:var(--text-16)] leading-[1.28] text-[#939393]"
+              />
             )}
           </div>
         </div>
@@ -199,9 +204,10 @@ export function ResultsSection({
               <h3 className="font-[family-name:var(--font-heading-family)] text-[length:var(--text-20)] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#0A0A0A]">
                 {card.title}
               </h3>
-              <p className="text-[length:var(--text-16)] leading-[1.28] text-[#0A0A0A]">
-                {card.text}
-              </p>
+              <RichText
+                text={card.text}
+                className="text-[length:var(--text-16)] leading-[1.28] text-[#0A0A0A]"
+              />
             </div>
           ))}
         </div>
@@ -215,11 +221,12 @@ export function ResultsSection({
             {tag}
           </span>
           <div className="flex flex-col gap-4">
-            <h2 className="h3 text-[#F0F0F0]">{title}</h2>
+            <h2 className="h3"><span className="text-[#F0F0F0]">{title}</span>{titleSecondary ? <><span className="text-[#F0F0F0]"> </span><span className="text-[#939393]">{titleSecondary}</span></> : null}</h2>
             {description && (
-              <p className="text-[length:var(--text-16)] leading-[1.28] text-[#939393]">
-                {description}
-              </p>
+              <RichText
+                text={description}
+                className="text-[length:var(--text-16)] leading-[1.28] text-[#939393]"
+              />
             )}
           </div>
         </div>

@@ -37,6 +37,22 @@ function deleteExisting(
   }
 }
 
+/** Public-URL base for page assets. Unique pages live under /images/unique/<slug>/, everything else under /images/products/<category>/<slug>/. */
+function assetUrlBase(category: string, slug: string): string {
+  if (category === "unique") return `/images/unique/${slug}`;
+  return `/images/products/${category}/${slug}`;
+}
+
+function assetDir(
+  path: typeof import("path"),
+  sitePublicDir: string,
+  category: string,
+  slug: string,
+): string {
+  if (category === "unique") return path.join(sitePublicDir, "images", "unique", slug);
+  return path.join(sitePublicDir, "images", "products", category, slug);
+}
+
 /**
  * Save a base64 data URL as a file. Returns the public URL path.
  * Deletes any previous file for the same role (cover, about, audio).
@@ -53,7 +69,7 @@ function saveAsset(
   const parsed = parseDataUrl(dataUrl);
   if (!parsed) return null;
 
-  const dir = path.join(sitePublicDir, "images", "products", category, slug);
+  const dir = assetDir(path, sitePublicDir, category, slug);
   fs.mkdirSync(dir, { recursive: true });
 
   const basePath = path.join(dir, role);
@@ -61,7 +77,32 @@ function saveAsset(
   deleteExisting(fs, basePath, exts);
 
   fs.writeFileSync(basePath + parsed.ext, parsed.buffer);
-  return `/images/products/${category}/${slug}/${role}${parsed.ext}`;
+  return `${assetUrlBase(category, slug)}/${role}${parsed.ext}`;
+}
+
+/**
+ * Save a logo-grid cell image (role = "logos/cell-<id>"). Deletes previous file with same base name.
+ */
+function saveLogoCell(
+  fs: typeof import("fs"),
+  path: typeof import("path"),
+  sitePublicDir: string,
+  category: string,
+  slug: string,
+  cellId: string,
+  dataUrl: string,
+): string | null {
+  const parsed = parseDataUrl(dataUrl);
+  if (!parsed) return null;
+
+  const logosDir = path.join(assetDir(path, sitePublicDir, category, slug), "logos");
+  fs.mkdirSync(logosDir, { recursive: true });
+
+  const basePath = path.join(logosDir, `cell-${cellId}`);
+  deleteExisting(fs, basePath, IMAGE_EXTS);
+
+  fs.writeFileSync(basePath + parsed.ext, parsed.buffer);
+  return `${assetUrlBase(category, slug)}/logos/cell-${cellId}${parsed.ext}`;
 }
 
 // ── PUT ──────────────────────────────────────────────────────────────────────
@@ -94,12 +135,32 @@ export async function PUT(request: Request, { params }: { params: Promise<{ slug
   // Site public dir for saving assets
   const sitePublicDir = path.resolve(process.cwd(), "..", "site", "public");
 
-  type Block = { type: string; enabled: boolean; data: Record<string, unknown> };
+  type Block = { id: string; type: string; enabled: boolean; order?: number; data: Record<string, unknown> };
   const blocks: Block[] = page.blocks ?? [];
   const block = (t: string) => blocks.find((b) => b.type === t);
-  const hasContent = (d: Record<string, unknown>) => d && !!(d.title as string)?.trim();
-  const enabled = (b: Block | undefined) => b?.enabled ? b.data : null;
-  const enabledIf = (b: Block | undefined) => b?.enabled && hasContent(b.data) ? b.data : null;
+  // Switch alone determines persistence: enabled → data (object as-is, even if partially filled), disabled → null.
+  const enabled = (b: Block | undefined) => b?.enabled ? (b.data ?? {}) : null;
+
+  // ── Extract custom sections and compute their position ──────────────────────
+  // Each custom section's `insertAfter` = type of the nearest preceding built-in block
+  // (null if it comes before any built-in). Relative order is preserved via array index.
+  const sortedBlocks = [...blocks].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  const customSections: Array<{ id: string; insertAfter: string | null; enabled: boolean; data: Record<string, unknown> }> = [];
+  {
+    let lastBuiltinType: string | null = null;
+    for (const b of sortedBlocks) {
+      if (b.type === "customSection") {
+        customSections.push({
+          id: b.id,
+          insertAfter: lastBuiltinType,
+          enabled: b.enabled !== false,
+          data: b.data ?? {},
+        });
+      } else {
+        lastBuiltinType = b.type;
+      }
+    }
+  }
 
   const category = page.sectionId as string;
   const pageSlug = page.slug as string;
@@ -132,26 +193,118 @@ export async function PUT(request: Request, { params }: { params: Promise<{ slug
     aboutBlock.data = cleanAbout;
   }
 
+  // ── Projects block (about-clone with logoGrid; used on unique /about page) ──
+  const projectsBlock = block("projects");
+  if (projectsBlock?.enabled && projectsBlock.data) {
+    const cleanProjects = { ...projectsBlock.data } as Record<string, unknown>;
+    const logoGrid = cleanProjects.logoGrid as { cells?: Array<{ id: string; src: string; alt?: string; size?: string }> } | undefined;
+    if (logoGrid && Array.isArray(logoGrid.cells)) {
+      const persistedCells = logoGrid.cells.map((cell) => {
+        if (cell.src && cell.src.startsWith("data:")) {
+          const url = saveLogoCell(fs, path, sitePublicDir, category, pageSlug, cell.id, cell.src);
+          if (url) return { ...cell, src: url };
+        }
+        return cell;
+      });
+      cleanProjects.logoGrid = { cells: persistedCells };
+    }
+    projectsBlock.data = cleanProjects;
+  }
+
   // ── Build frontmatter ───────────────────────────────────────────────────────
 
   const expertsBlock = block("experts");
-  const expertsValue = expertsBlock?.enabled && Array.isArray(expertsBlock.data?.experts) && (expertsBlock.data.experts as string[]).length > 0
-    ? expertsBlock.data.experts
+  // Switch authoritative: enabled → array (possibly empty); disabled → null.
+  const expertsValue = expertsBlock?.enabled
+    ? (Array.isArray(expertsBlock.data?.experts) ? expertsBlock.data.experts : [])
     : null;
+
+  // ── Save shared partnerships block (if changed) ────────────────────────────
+  const partnershipsBlock = block("partnerships");
+  if (partnershipsBlock?.enabled && partnershipsBlock.data) {
+    const pData = partnershipsBlock.data;
+    const partnershipsDir = path.join(sitePublicDir, "images", "partnerships");
+    fs.mkdirSync(partnershipsDir, { recursive: true });
+
+    // Save logo images
+    const logos: Array<{ src: string; alt: string }> = [];
+    const rawLogos = (pData.logos as Array<{ src: string; alt: string }>) || [];
+    for (let i = 0; i < rawLogos.length; i++) {
+      const logo = rawLogos[i];
+      if (logo.src && logo.src.startsWith("data:")) {
+        const parsed = parseDataUrl(logo.src);
+        if (parsed) {
+          const filename = `logo-${i}${parsed.ext}`;
+          for (const ext of IMAGE_EXTS) {
+            const old = path.join(partnershipsDir, `logo-${i}${ext}`);
+            if (fs.existsSync(old)) fs.unlinkSync(old);
+          }
+          fs.writeFileSync(path.join(partnershipsDir, filename), parsed.buffer);
+          logos.push({ src: `/images/partnerships/${filename}`, alt: logo.alt || "" });
+        }
+      } else {
+        logos.push({ src: logo.src, alt: logo.alt || "" });
+      }
+    }
+
+    // Save photo images
+    const photos: Array<{ src: string; alt: string }> = [];
+    const rawPhotos = (pData.photos as Array<{ src: string; alt?: string }>) || [];
+    for (let i = 0; i < rawPhotos.length; i++) {
+      const photo = rawPhotos[i];
+      if (photo.src && photo.src.startsWith("data:")) {
+        const parsed = parseDataUrl(photo.src);
+        if (parsed) {
+          const filename = `photo-${i + 1}${parsed.ext}`;
+          for (const ext of IMAGE_EXTS) {
+            const old = path.join(partnershipsDir, `photo-${i + 1}${ext}`);
+            if (fs.existsSync(old)) fs.unlinkSync(old);
+          }
+          fs.writeFileSync(path.join(partnershipsDir, filename), parsed.buffer);
+          photos.push({ src: `/images/partnerships/${filename}`, alt: photo.alt || "" });
+        }
+      } else {
+        photos.push({ src: photo.src, alt: photo.alt || "" });
+      }
+    }
+
+    const sharedData = {
+      caption: pData.caption || "",
+      title: pData.title || "",
+      description: pData.description || "",
+      logos,
+      photos,
+    };
+    const pJsonPath = path.join(path.resolve(process.cwd(), "..", "site", "content"), "_partnerships.json");
+    fs.writeFileSync(pJsonPath, JSON.stringify(sharedData, null, 2), "utf-8");
+  }
 
   const fm: Record<string, unknown> = {
     slug: pageSlug, category,
     menuTitle: page.menuTitle, menuDescription: page.menuDescription,
     cardTitle: page.cardTitle, cardDescription: page.cardDescription,
     metaTitle: page.metaTitle, metaDescription: page.metaDescription,
+    expertProduct: typeof page.expertProduct === "boolean" ? page.expertProduct : null,
     hero: enabled(heroBlock),
-    about: enabledIf(aboutBlock),
-    audience: enabledIf(block("audience")),
-    tools: enabledIf(block("tools")),
-    results: enabledIf(block("results")),
-    process: enabledIf(block("process")),
+    // logoMarquee is auto-enabled by default; persist `false` only if disabled, otherwise omit (null)
+    logoMarquee: block("logoMarquee")?.enabled === false ? false : null,
+    about: enabled(aboutBlock),
+    audience: enabled(block("audience")),
+    tools: enabled(block("tools")),
+    results: enabled(block("results")),
+    services: enabled(block("services")),
+    process: enabled(block("process")),
     experts: expertsValue,
-    aboutRocketmind: enabled(block("aboutRocketmind")),
+    // Enabled-by-default: store `false` to hide; otherwise object (custom data) or null (use defaults)
+    aboutRocketmind: (() => {
+      const b = block("aboutRocketmind");
+      if (b?.enabled === false) return false;
+      const d = (b?.data ?? {}) as Record<string, unknown>;
+      return Object.keys(d).length > 0 ? d : null;
+    })(),
+    projects: enabled(projectsBlock),
+    pageBottom: enabled(block("pageBottom")),
+    customSections: customSections.length > 0 ? customSections : null,
     socialProof: null, duration: null, whyRocketmind: null, expert: null, cases: null, reviews: null,
   };
 

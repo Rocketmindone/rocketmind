@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, ImagePlus, Upload, Trash2 } from "lucide-react";
 import {
@@ -8,6 +8,7 @@ import {
   Input,
   Textarea,
   Separator,
+  Switch,
   Dialog,
   DialogContent,
   DialogHeader,
@@ -81,14 +82,58 @@ function getChangesDescription(original: SitePage, current: SitePage): string[] 
 
 // ── Product Card Preview ───────────────────────────────────────────────────
 
+const EXPERT_TAG_CLASSES =
+  "inline-flex items-center px-2.5 py-1 bg-[#3D3300] border border-[#4A3C00] font-[family-name:var(--font-mono-family)] text-[12px] font-medium uppercase tracking-[0.02em] leading-[1.2] text-[#FFE466]";
+
+function ExpertTagBadge({ className }: { className?: string }) {
+  return (
+    <span className={`${EXPERT_TAG_CLASSES} ${className ?? ""}`}>Экспертный продукт</span>
+  );
+}
+
+type CardExpert = { name: string; image: string | null };
+
+function ExpertAvatars({ experts }: { experts: CardExpert[] }) {
+  if (experts.length === 0) return null;
+  const shown = experts.slice(0, 2);
+  const extra = Math.max(0, experts.length - 2);
+  return (
+    <div className="flex items-center -ml-[18px] pb-10 pt-2 justify-end min-w-0">
+      {shown.map((e, i) => (
+        <div
+          key={`${e.name}-${i}`}
+          className={`w-[72px] h-[72px] min-w-[52px] min-h-[52px] rounded-full border border-[#0A0A0A] bg-[#2a2a2a] bg-cover bg-center ${
+            i > 0 ? "-ml-4" : ""
+          }`}
+          style={{
+            backgroundImage: e.image ? `url(${e.image})` : undefined,
+            zIndex: shown.length + 1 - i,
+          }}
+        />
+      ))}
+      {extra > 0 && (
+        <div className="w-[72px] h-[72px] min-w-[52px] min-h-[52px] rounded-full bg-[#1A1A1A] flex items-center justify-center -ml-4 z-[1]">
+          <span className="font-[family-name:var(--font-heading-family)] text-[24px] font-bold uppercase leading-[1.2] tracking-[-0.01em] text-[#F0F0F0]">
+            +{extra}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ProductCardPreview({
   page,
   isImageCard,
+  hasExperts,
+  experts,
   onUpdateMeta,
   onUpdateBlock,
 }: {
   page: SitePage;
   isImageCard: boolean;
+  hasExperts: boolean;
+  experts: CardExpert[];
   onUpdateMeta: (field: keyof SitePage, value: string) => void;
   onUpdateBlock: (blockId: string, data: Record<string, unknown>) => void;
 }) {
@@ -117,12 +162,12 @@ function ProductCardPreview({
           <ArrowUpRight className="h-3 w-3 text-[#F0F0F0]" />
         </div>
 
-        {/* Image 3:2 */}
+        {/* Image 4:3 (landscape) */}
         {cardImageData ? (
           <div className="group/img relative">
             <div
               className="w-full bg-cover bg-center"
-              style={{ aspectRatio: "3/2", backgroundImage: `url(${cardImageData})` }}
+              style={{ aspectRatio: "4/3", backgroundImage: `url(${cardImageData})` }}
             />
             <div className="absolute top-2 left-2 flex items-center gap-1 opacity-0 transition-opacity group-hover/img:opacity-100">
               <button
@@ -147,7 +192,7 @@ function ProductCardPreview({
             type="button"
             onClick={() => imgInputRef.current?.click()}
             className="flex w-full items-center justify-center gap-2 border-b border-dashed border-[#404040] text-[#939393] transition-colors hover:border-[#FFCC00] hover:text-[#FFCC00]"
-            style={{ aspectRatio: "3/2" }}
+            style={{ aspectRatio: "4/3" }}
           >
             <ImagePlus className="h-6 w-6" />
             <span className="text-[length:var(--text-14)]">Изображение</span>
@@ -161,8 +206,15 @@ function ProductCardPreview({
           className="hidden"
         />
 
+        {/* Expert tag — overlaps image bottom by 22px (matches site) */}
+        {hasExperts && (
+          <div className="relative -mt-[22px] px-8">
+            <ExpertTagBadge />
+          </div>
+        )}
+
         {/* Card text */}
-        <div className="flex h-[156px] flex-col justify-between gap-6 p-8">
+        <div className={`flex h-[156px] flex-col justify-between gap-6 p-8 ${hasExperts ? "pt-5" : ""}`}>
           <InlineEdit
             value={page.cardTitle}
             onSave={(v) => onUpdateMeta("cardTitle", v)}
@@ -195,8 +247,9 @@ function ProductCardPreview({
       <div className="absolute right-2 top-2 flex h-10 w-10 items-center justify-center rounded-sm border border-[#404040]">
         <ArrowUpRight className="h-3 w-3 text-[#F0F0F0]" />
       </div>
+      <div className="relative mb-8 flex items-center overflow-visible">
       {cardImageData ? (
-        <div className="group/icon relative mb-8 h-[120px] w-[120px]">
+        <div className="group/icon relative h-[120px] w-[120px] shrink-0 z-0">
           <div
             className="h-full w-full rounded-sm bg-contain bg-center bg-no-repeat"
             style={{ backgroundImage: `url(${cardImageData})` }}
@@ -222,11 +275,16 @@ function ProductCardPreview({
         <button
           type="button"
           onClick={() => imgInputRef.current?.click()}
-          className="mb-8 flex h-[120px] w-[120px] cursor-pointer items-center justify-center rounded-sm border border-dashed border-[#404040] text-[#939393] transition-colors hover:border-[#FFCC00] hover:text-[#FFCC00]"
+          className="flex h-[120px] w-[120px] shrink-0 cursor-pointer items-center justify-center rounded-sm border border-dashed border-[#404040] text-[#939393] transition-colors hover:border-[#FFCC00] hover:text-[#FFCC00]"
         >
           <ImagePlus className="h-6 w-6" />
         </button>
       )}
+      <ExpertAvatars experts={experts} />
+      {hasExperts && (
+        <ExpertTagBadge className="absolute left-0 bottom-[-22px] z-10" />
+      )}
+      </div>
       <input
         ref={imgInputRef}
         type="file"
@@ -234,7 +292,7 @@ function ProductCardPreview({
         onChange={handleImageUpload}
         className="hidden"
       />
-      <div className="flex h-[156px] flex-col justify-between gap-6">
+      <div className={`flex h-[156px] flex-col justify-between gap-6 ${hasExperts ? "mt-3" : ""}`}>
         <InlineEdit
           value={page.cardTitle}
           onSave={(v) => onUpdateMeta("cardTitle", v)}
@@ -280,6 +338,8 @@ export function EditorShell({ initialPage }: EditorShellProps) {
     updateBlock,
     toggleBlock,
     reorderBlocks,
+    insertBlock,
+    deleteBlock,
     updateStatus,
     undo,
     redo,
@@ -356,6 +416,41 @@ export function EditorShell({ initialPage }: EditorShellProps) {
 
   const changes = isDirty ? getChangesDescription(original, page) : [];
 
+  const expertSlugs = useMemo(() => {
+    const expertsBlock = page.blocks.find((b) => b.type === "experts");
+    return (expertsBlock?.data?.experts as string[] | undefined) ?? [];
+  }, [page.blocks]);
+
+  const hasExperts = expertSlugs.length > 0;
+  const expertProduct =
+    typeof page.expertProduct === "boolean" ? page.expertProduct : hasExperts;
+
+  const [resolvedExperts, setResolvedExperts] = useState<CardExpert[]>([]);
+
+  useEffect(() => {
+    if (expertSlugs.length === 0) {
+      setResolvedExperts([]);
+      return;
+    }
+    let cancelled = false;
+    fetch("/api/experts")
+      .then((r) => r.json())
+      .then((all: Array<{ slug: string; name: string; image: string | null }>) => {
+        if (cancelled) return;
+        const map = new Map(all.map((e) => [e.slug, e]));
+        setResolvedExperts(
+          expertSlugs
+            .map((s) => map.get(s))
+            .filter(Boolean)
+            .map((e) => ({ name: e!.name, image: e!.image })),
+        );
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [expertSlugs]);
+
   return (
     <div className="flex flex-1 flex-col pb-24">
       {/* Header */}
@@ -374,6 +469,7 @@ export function EditorShell({ initialPage }: EditorShellProps) {
       </div>
 
       <div className="flex-1 overflow-y-auto px-6 py-6">
+       <div className="mx-auto w-full max-w-[1400px]">
         {/* ── Top section: left fields + right card ──────────────── */}
         <div className="mb-8 flex flex-col gap-8 lg:flex-row">
           {/* Left column — inputs */}
@@ -461,10 +557,28 @@ export function EditorShell({ initialPage }: EditorShellProps) {
 
             <ProductCardPreview
               page={page}
-              isImageCard={page.sectionId === "academy" || page.sectionId === "ai-products"}
+              isImageCard={page.sectionId === "academy" || page.sectionId === "ai-products" || page.sectionId === "media"}
+              hasExperts={expertProduct}
+              experts={resolvedExperts}
               onUpdateMeta={updateMeta}
               onUpdateBlock={updateBlock}
             />
+
+            {/* Expert product toggle */}
+            <div className="mt-2 flex items-start justify-between gap-4 rounded-sm border border-[#404040] bg-[#0A0A0A] p-4">
+              <div className="flex flex-col gap-1">
+                <span className="text-[length:var(--text-14)] font-medium text-[#F0F0F0]">
+                  Экспертный продукт
+                </span>
+                <span className="text-[length:var(--text-12)] text-[#939393]">
+                  Показывает тег, выносит описание в шапку и добавляет блок экспертов в hero.
+                </span>
+              </div>
+              <Switch
+                checked={expertProduct}
+                onCheckedChange={(v) => updateMeta("expertProduct", v)}
+              />
+            </div>
           </div>
         </div>
 
@@ -479,11 +593,15 @@ export function EditorShell({ initialPage }: EditorShellProps) {
           <BlockList
             blocks={page.blocks}
             sectionId={page.sectionId}
+            hasExperts={expertProduct}
             onToggleBlock={toggleBlock}
             onUpdateBlock={updateBlock}
             onReorderBlocks={reorderBlocks}
+            onInsertBlock={insertBlock}
+            onDeleteBlock={deleteBlock}
           />
         </div>
+       </div>
       </div>
 
       {/* Toolbar */}

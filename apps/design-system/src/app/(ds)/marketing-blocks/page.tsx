@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { Separator, CTASectionDark, CTASectionYellow, AccordionFAQ, ForWhomSection, ProcessSection, ResultsSection, ExpertsSection } from "@rocketmind/ui"
+import { Separator, CTASectionDark, CTASectionYellow, AccordionFAQ, ForWhomSection, ProcessSection, ResultsSection, ExpertsSection, PartnershipBlock } from "@rocketmind/ui"
 import { Section, SubSection, SpecBlock } from "@/components/ds/shared"
 import { TokenChip } from "@/components/ds/color-helpers"
 import { CasesSectionShowcase } from "@/components/ds/cases-section-showcase"
@@ -287,6 +287,58 @@ export default function MarketingBlocksPage() {
             ]}
           />
         </div>
+
+        {/* ── Partnership — Партнёрства ── */}
+        <SubSection id="marketing-blocks-partnership" title="Партнёрства" />
+        <p className="text-[length:var(--text-14)] text-muted-foreground mb-6">
+          Блок партнёрств с бизнес-школами и организациями. Слева: жёлтый лейбл, заголовок, описание, логотипы партнёров. Справа: сетка 2×2 фотографий. Контент управляется через общий файл — синхронизируется между каталогом продуктов и страницами курсов.
+        </p>
+        <div className="-mx-5 md:-mx-10 border-y border-border py-10 px-5 md:px-10 mb-8">
+          <PartnershipBlock
+            caption="Партнёрства"
+            title="Программы с ведущими бизнес-школами"
+            description="Помогают собрать карту участников, связей и ценностных потоков помогают собрать карту участников, связей и ценностных потоков"
+            logos={[
+              { src: "/images/partnerships/sberuniver.svg", alt: "СберУниверситет" },
+              { src: "/images/partnerships/skolkovo-moscow-school-160103.png", alt: "Сколково" },
+            ]}
+            photos={[
+              { src: "/images/partnerships/photo-1.png" },
+              { src: "/images/partnerships/photo-4.png" },
+              { src: "/images/partnerships/photo-3.png" },
+              { src: "/images/partnerships/photo-2.png" },
+            ]}
+          />
+        </div>
+        <SpecBlock title="Токены">
+          <div className="overflow-auto rounded-lg border border-border">
+            <table className="w-full text-[length:var(--text-14)]">
+              <thead>
+                <tr className="border-b border-border bg-rm-gray-2/30">
+                  <th className="text-left px-4 py-2 font-medium">Свойство</th>
+                  <th className="text-left px-4 py-2 font-medium">Значение</th>
+                  <th className="text-left px-4 py-2 font-medium">Описание</th>
+                </tr>
+              </thead>
+              <tbody className="text-muted-foreground">
+                {[
+                  ["Лейбл",            "--font-mono-family, 18px, uppercase",  "--rm-yellow-100"],
+                  ["Заголовок",        "--font-heading-family, 52/36/28px",    "Bold, uppercase, -2% LS"],
+                  ["Описание",         "14px, 1.32 LH",                        "text-muted-foreground"],
+                  ["Логотипы",         "max-h-[56px], max-w-[45%]",            "object-contain, gap-8"],
+                  ["Фото-сетка",       "2×2 grid, gap-4, 696px desktop",       "aspect-[340/252], object-cover"],
+                  ["Layout",           "flex col → lg:row, gap-10",            "Текст слева max-w-560px"],
+                ].map(([prop, val, desc]) => (
+                  <tr key={prop} className="border-b border-border last:border-0">
+                    <td className="px-4 py-2 font-medium text-foreground">{prop}</td>
+                    <td className="px-4 py-2"><TokenChip>{val}</TokenChip></td>
+                    <td className="px-4 py-2 text-muted-foreground">{desc}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </SpecBlock>
 
         {/* ── PageBottom — Состав ── */}
         <SubSection id="marketing-blocks-page-bottom" title="Состав PageBottom" />

@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { cn } from "../../lib/utils";
+import { RichText } from "./rich-text";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -15,6 +16,8 @@ export type ForWhomSectionProps = {
   tag: string;
   /** Main heading */
   title: string;
+  /** Secondary (gray) part of heading — rendered in same h2 for SEO */
+  titleSecondary?: string;
   /** Subtitle / lead text (optional) */
   subtitle?: string;
   /** 2–4 fact cards */
@@ -39,9 +42,10 @@ function FactCard({ title, text }: ForWhomFact) {
       </div>
       <div className="h-0 w-full border-t border-[#404040]" />
       <div>
-        <p className="text-[length:var(--text-16)] leading-[1.28] text-[#0A0A0A] max-w-[480px]">
-          {text}
-        </p>
+        <RichText
+          text={text}
+          className="text-[length:var(--text-16)] leading-[1.28] text-[#0A0A0A] max-w-[480px]"
+        />
       </div>
     </div>
   );
@@ -52,6 +56,7 @@ function FactCard({ title, text }: ForWhomFact) {
 export function ForWhomSection({
   tag,
   title,
+  titleSecondary,
   subtitle,
   facts,
   wideColumn = "right",
@@ -68,13 +73,14 @@ export function ForWhomSection({
           </span>
           <div className="flex">
             <div className="w-1/2 shrink-0 pr-8">
-              <h2 className="h2 text-[#0A0A0A]">{title}</h2>
+              <h2 className="h2"><span className="text-[#0A0A0A]">{title}</span>{titleSecondary ? <><span className="text-[#0A0A0A]"> </span><span className="text-[#666666]">{titleSecondary}</span></> : null}</h2>
             </div>
             {subtitle && (
               <div className="w-1/2">
-                <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#0A0A0A] max-w-[480px]">
-                  {subtitle}
-                </p>
+                <RichText
+                  text={subtitle}
+                  className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-18)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#0A0A0A] max-w-[480px]"
+                />
               </div>
             )}
           </div>
@@ -109,9 +115,10 @@ export function ForWhomSection({
                 <h4 className="h4 text-[#0A0A0A]">{f.title}</h4>
               </div>
               <div className="h-0 w-full border-t border-[#404040]" />
-              <p className="text-[length:var(--text-16)] leading-[1.28] text-[#0A0A0A]">
-                {f.text}
-              </p>
+              <RichText
+                text={f.text}
+                className="text-[length:var(--text-16)] leading-[1.28] text-[#0A0A0A]"
+              />
             </div>
           );
 
@@ -141,11 +148,12 @@ export function ForWhomSection({
           <span className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#0A0A0A]">
             {tag}
           </span>
-          <h2 className="h3 text-[#0A0A0A]">{title}</h2>
+          <h2 className="h3"><span className="text-[#0A0A0A]">{title}</span>{titleSecondary ? <><span className="text-[#0A0A0A]"> </span><span className="text-[#666666]">{titleSecondary}</span></> : null}</h2>
           {subtitle && (
-            <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#0A0A0A] mt-1">
-              {subtitle}
-            </p>
+            <RichText
+              text={subtitle}
+              className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-16)] font-medium uppercase leading-[1.12] tracking-[0.02em] text-[#0A0A0A] mt-1"
+            />
           )}
         </div>
 

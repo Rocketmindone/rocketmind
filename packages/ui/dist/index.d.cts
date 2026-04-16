@@ -297,6 +297,29 @@ declare function Tooltip({ ...props }: Tooltip$1.Root.Props): react_jsx_runtime.
 declare function TooltipTrigger({ ...props }: Tooltip$1.Trigger.Props): react_jsx_runtime.JSX.Element;
 declare function TooltipContent({ className, side, sideOffset, align, alignOffset, children, ...props }: Tooltip$1.Popup.Props & Pick<Tooltip$1.Positioner.Props, "align" | "alignOffset" | "side" | "sideOffset">): react_jsx_runtime.JSX.Element;
 
+interface PartnershipLogo {
+    src: string;
+    alt: string;
+}
+interface PartnershipPhoto {
+    src: string;
+    alt?: string;
+}
+interface PartnershipBlockProps {
+    /** Yellow caption label (e.g. "Партнёрства") */
+    caption: string;
+    /** Main heading */
+    title: string;
+    /** Description text */
+    description: string;
+    /** Partner logos (max ~4, displayed inline) */
+    logos: PartnershipLogo[];
+    /** Photos for 2×2 grid (exactly 4) */
+    photos: PartnershipPhoto[];
+    className?: string;
+}
+declare function PartnershipBlock({ caption, title, description, logos, photos, className, }: PartnershipBlockProps): react_jsx_runtime.JSX.Element;
+
 interface ProductCardExpert {
     name: string;
     image: string;
@@ -337,9 +360,27 @@ interface ProductImageCardProps {
     variant?: "default" | "wide";
     /** Hero factoids for the wide variant (desktop only, max 3) */
     factoids?: ProductImageCardFactoid[];
+    /** Compact wide: min-h 350px, max 2 factoids (for mixed grids with 1-col cards) */
+    compact?: boolean;
     className?: string;
 }
-declare function ProductImageCard({ title, description, image, tag, href, variant, factoids, className, }: ProductImageCardProps): react_jsx_runtime.JSX.Element;
+declare function ProductImageCard({ title, description, image, tag, href, variant, factoids, compact, className, }: ProductImageCardProps): react_jsx_runtime.JSX.Element;
+
+type RichTextProps = {
+    text: string;
+    className?: string;
+    /** Class for inner <p>, <ul>, <ol> elements. */
+    blockClassName?: string;
+};
+/**
+ * Renders text with markdown-style list recognition:
+ *   - "- text" / "• text" → bullet list
+ *   - "1. text" / "1) text" → numbered list
+ *   - newline → paragraph break
+ *
+ * Lists get 4px top spacing and 4px between items.
+ */
+declare function RichText({ text, className, blockClassName }: RichTextProps): react_jsx_runtime.JSX.Element | null;
 
 type ForWhomFact = {
     title: string;
@@ -350,6 +391,8 @@ type ForWhomSectionProps = {
     tag: string;
     /** Main heading */
     title: string;
+    /** Secondary (gray) part of heading — rendered in same h2 for SEO */
+    titleSecondary?: string;
     /** Subtitle / lead text (optional) */
     subtitle?: string;
     /** 2–4 fact cards */
@@ -363,7 +406,7 @@ type ForWhomSectionProps = {
     wideColumn?: "left" | "right";
     className?: string;
 };
-declare function ForWhomSection({ tag, title, subtitle, facts, wideColumn, className, }: ForWhomSectionProps): react_jsx_runtime.JSX.Element;
+declare function ForWhomSection({ tag, title, titleSecondary, subtitle, facts, wideColumn, className, }: ForWhomSectionProps): react_jsx_runtime.JSX.Element;
 
 type ProcessStep = {
     number: string;
@@ -378,6 +421,7 @@ type ProcessParticipant = {
 type ProcessSectionProps = {
     tag: string;
     title: string;
+    titleSecondary?: string;
     subtitle: string;
     description?: string;
     steps: ProcessStep[];
@@ -387,7 +431,7 @@ type ProcessSectionProps = {
     variant?: "product" | "academy";
     className?: string;
 };
-declare function ProcessSection({ tag, title, subtitle, description, steps, participantsTag, participants, variant, className, }: ProcessSectionProps): react_jsx_runtime.JSX.Element;
+declare function ProcessSection({ tag, title, titleSecondary, subtitle, description, steps, participantsTag, participants, variant, className, }: ProcessSectionProps): react_jsx_runtime.JSX.Element;
 
 type ResultCard = {
     title: string;
@@ -396,15 +440,49 @@ type ResultCard = {
 type ResultsSectionProps = {
     tag: string;
     title: string;
+    titleSecondary?: string;
     description?: string;
     cards: ResultCard[];
     className?: string;
 };
-declare function ResultsSection({ tag, title, description, cards, className, }: ResultsSectionProps): react_jsx_runtime.JSX.Element;
+declare function ResultsSection({ tag, title, titleSecondary, description, cards, className, }: ResultsSectionProps): react_jsx_runtime.JSX.Element;
+
+interface ServiceCardData {
+    /** Card heading (uppercase) */
+    title: string;
+    /** Paragraph array — each entry renders as a separate <p> */
+    paragraphs: string[];
+    /** Show the arrow icon in the top-right corner */
+    showArrow?: boolean;
+    /** Optional link target — makes the whole card clickable */
+    href?: string;
+    /** Bento grid sizing (1–2 cols / 1–2 rows). Defaults to 1/1. */
+    colSpan?: 1 | 2;
+    rowSpan?: 1 | 2;
+    /** Highlight card with yellow background (featured variant) */
+    featured?: boolean;
+    /** For wide cards (colSpan=2): render paragraphs in two columns */
+    paragraphsTwoCol?: boolean;
+}
+interface ServicesSectionProps {
+    tag?: string;
+    title: string;
+    titleSecondary?: string;
+    description?: string;
+    cards: ServiceCardData[];
+    className?: string;
+}
+declare function ServicesSection({ tag, title, titleSecondary, description, cards, className, }: ServicesSectionProps): react_jsx_runtime.JSX.Element | null;
+/**
+ * Assign bento-style sizing to cards based on content volume, then sort so
+ * larger cards tend to come first for dense packing on a 4-column grid.
+ */
+declare function repackBento(cards: ServiceCardData[]): ServiceCardData[];
 
 type Expert = {
     tag?: string;
     name: string;
+    shortBio?: string;
     bio: string;
     image: string | null;
 };
@@ -413,6 +491,21 @@ type ExpertsSectionProps = {
     className?: string;
 };
 declare function ExpertsSection({ experts, className, }: ExpertsSectionProps): react_jsx_runtime.JSX.Element | null;
+
+type HeroExpert = {
+    name: string;
+    tag?: string;
+    image: string | null;
+};
+type HeroExpertsProps = {
+    experts: HeroExpert[];
+    /** Optional quote shown below the expert block */
+    quote?: string;
+    /** Max avatars before collapsing the rest into a "+N" counter. Default: 6 */
+    maxVisible?: number;
+    className?: string;
+};
+declare function HeroExperts({ experts, quote, maxVisible, className, }: HeroExpertsProps): react_jsx_runtime.JSX.Element | null;
 
 type ToolCard = {
     number: string;
@@ -424,13 +517,14 @@ type ToolCard = {
 type ToolsSectionProps = {
     tag: string;
     title: string;
+    titleSecondary?: string;
     description?: string;
     tools: ToolCard[];
     /** Show icons instead of numbers */
     useIcons?: boolean;
     className?: string;
 };
-declare function ToolsSection({ tag, title, description, tools, useIcons, className, }: ToolsSectionProps): react_jsx_runtime.JSX.Element;
+declare function ToolsSection({ tag, title, titleSecondary, description, tools, useIcons, className, }: ToolsSectionProps): react_jsx_runtime.JSX.Element;
 
 type AccordionFAQItem = {
     id: string;
@@ -555,4 +649,4 @@ type SiteHeaderProps = {
 };
 declare function SiteHeader({ basePath, className }: SiteHeaderProps): react_jsx_runtime.JSX.Element;
 
-export { AccordionFAQ, type AccordionFAQItem, type AccordionFAQProps, Avatar, AvatarFallback, AvatarImage, Badge, type BadgeSize, type BadgeVariant, Button, CTASectionDark, type CTASectionDarkProps, CTASectionYellow, type CTASectionYellowProps, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Checkbox, DOT_GRID_LENS_DEFAULTS, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger, DotGridLens, type DotGridLensProps, DottedSurface, DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuSeparator, DropdownMenuTrigger, type Expert, ExpertsSection, type ExpertsSectionProps, type ForWhomFact, ForWhomSection, type ForWhomSectionProps, GlowingEffect, InfiniteLogoMarquee, type InfiniteLogoMarqueeProps, Input, InputOTP, type InputOTPProps, type LogoMarqueeItem, MobileNav, NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, NavigationMenuViewport, Note, NoteDescription, NoteEyebrow, NoteTitle, type ProcessParticipant, ProcessSection, type ProcessSectionProps, type ProcessStep, ProductCard, type ProductCardExpert, type ProductCardProps, ProductImageCard, type ProductImageCardFactoid, type ProductImageCardProps, Radio, type ResultCard, ResultsSection, type ResultsSectionProps, RocketmindMenu, ScrollArea, ScrollBar, SearchCombobox, type SearchComboboxOption, Separator, ShowMore, ShowMorePanel, type ShowMorePanelProps, type ShowMoreProps, SiteFooter, type SiteFooterProps, SiteHeader, type SiteHeaderProps, Skeleton, Slider, type SliderProps, Switch, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, Tabs, TabsContent, TabsList, TabsTrigger, Textarea, ThemeProvider, Toaster, type ToolCard, ToolsSection, type ToolsSectionProps, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, avatarVariants, badgeVariants, buttonVariants, checkboxBaseClassName, cn, inputVariants, noteVariants, radioBaseClassName, HEADER_NAV as rocketmindMenuItems, tabsListVariants, textareaVariants };
+export { AccordionFAQ, type AccordionFAQItem, type AccordionFAQProps, Avatar, AvatarFallback, AvatarImage, Badge, type BadgeSize, type BadgeVariant, Button, CTASectionDark, type CTASectionDarkProps, CTASectionYellow, type CTASectionYellowProps, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Checkbox, DOT_GRID_LENS_DEFAULTS, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger, DotGridLens, type DotGridLensProps, DottedSurface, DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuSeparator, DropdownMenuTrigger, type Expert, ExpertsSection, type ExpertsSectionProps, type ForWhomFact, ForWhomSection, type ForWhomSectionProps, GlowingEffect, type HeroExpert, HeroExperts, type HeroExpertsProps, InfiniteLogoMarquee, type InfiniteLogoMarqueeProps, Input, InputOTP, type InputOTPProps, type LogoMarqueeItem, MobileNav, NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, NavigationMenuViewport, Note, NoteDescription, NoteEyebrow, NoteTitle, PartnershipBlock, type PartnershipBlockProps, type PartnershipLogo, type PartnershipPhoto, type ProcessParticipant, ProcessSection, type ProcessSectionProps, type ProcessStep, ProductCard, type ProductCardExpert, type ProductCardProps, ProductImageCard, type ProductImageCardFactoid, type ProductImageCardProps, Radio, type ResultCard, ResultsSection, type ResultsSectionProps, RichText, type RichTextProps, RocketmindMenu, ScrollArea, ScrollBar, SearchCombobox, type SearchComboboxOption, Separator, type ServiceCardData, ServicesSection, type ServicesSectionProps, ShowMore, ShowMorePanel, type ShowMorePanelProps, type ShowMoreProps, SiteFooter, type SiteFooterProps, SiteHeader, type SiteHeaderProps, Skeleton, Slider, type SliderProps, Switch, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, Tabs, TabsContent, TabsList, TabsTrigger, Textarea, ThemeProvider, Toaster, type ToolCard, ToolsSection, type ToolsSectionProps, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, avatarVariants, badgeVariants, buttonVariants, checkboxBaseClassName, cn, inputVariants, noteVariants, radioBaseClassName, repackBento, HEADER_NAV as rocketmindMenuItems, tabsListVariants, textareaVariants };

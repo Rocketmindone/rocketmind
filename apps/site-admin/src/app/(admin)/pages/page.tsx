@@ -12,7 +12,7 @@ import {
   Input,
 } from "@rocketmind/ui";
 import { toast } from "sonner";
-import { ADMIN_SECTIONS } from "@/lib/constants";
+import { ADMIN_SECTIONS, LOCKED_SECTIONS } from "@/lib/constants";
 import { useAdminStore } from "@/lib/store";
 import { useItemDnd } from "@/lib/use-item-dnd";
 import { PageCard } from "@/components/page-card";
@@ -72,6 +72,14 @@ function PagesContent() {
     toast.success("Страница восстановлена");
   }
 
+  function handleTogglePublish(id: string) {
+    const page = pages.find((p) => p.id === id);
+    if (!page) return;
+    const next = page.status === "published" ? "hidden" : "published";
+    setPageStatus(id, next);
+    toast.success(next === "published" ? "Страница опубликована" : "Страница скрыта");
+  }
+
   async function handleDelete() {
     if (!deleteTarget) return;
     await deletePage(deleteTarget);
@@ -124,78 +132,120 @@ function PagesContent() {
 
         {ADMIN_SECTIONS.map((section) => (
           <TabsContent key={section.id} value={section.id}>
-            {/* Add page */}
-            <div className="mb-4">
-              {isCreating ? (
-                <div className="flex items-center gap-2">
-                  <Input
-                    size="sm"
-                    placeholder="Название страницы"
-                    value={newTitle}
-                    onChange={(e) => setNewTitle(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") handleCreate();
-                      if (e.key === "Escape") {
+            {/* Add page — hidden in locked sections (e.g. "Уникальные") */}
+            {!LOCKED_SECTIONS.has(section.id) && (
+              <div className="mb-4">
+                {isCreating ? (
+                  <div className="flex items-center gap-2">
+                    <Input
+                      size="sm"
+                      placeholder="Название страницы"
+                      value={newTitle}
+                      onChange={(e) => setNewTitle(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleCreate();
+                        if (e.key === "Escape") {
+                          setIsCreating(false);
+                          setNewTitle("");
+                        }
+                      }}
+                      autoFocus
+                      className="max-w-xs"
+                    />
+                    <Button size="sm" onClick={handleCreate} disabled={!newTitle.trim()}>
+                      Создать
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => {
                         setIsCreating(false);
                         setNewTitle("");
-                      }
-                    }}
-                    autoFocus
-                    className="max-w-xs"
-                  />
-                  <Button size="sm" onClick={handleCreate} disabled={!newTitle.trim()}>
-                    Создать
-                  </Button>
+                      }}
+                    >
+                      Отмена
+                    </Button>
+                  </div>
+                ) : (
                   <Button
+                    variant="outline"
                     size="sm"
-                    variant="ghost"
-                    onClick={() => {
-                      setIsCreating(false);
-                      setNewTitle("");
-                    }}
+                    onClick={() => setIsCreating(true)}
                   >
-                    Отмена
+                    <Plus className="mr-1 h-4 w-4" />
+                    Добавить страницу
                   </Button>
-                </div>
-              ) : (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsCreating(true)}
-                >
-                  <Plus className="mr-1 h-4 w-4" />
-                  Добавить страницу
-                </Button>
-              )}
-            </div>
+                )}
+              </div>
+            )}
 
             {/* Active pages */}
-            <div className={viewMode === "grid" ? "grid gap-3 sm:grid-cols-2 lg:grid-cols-3" : "flex flex-col gap-2"}>
-              {activePages.map((page, index) => {
-                const { draggable, onDragStart, onDragOver, onDrop, onDragEnd, isDragging } =
-                  dnd.itemProps(index);
-                return (
-                  <div
-                    key={page.id}
-                    draggable={draggable}
-                    onDragStart={onDragStart}
-                    onDragOver={onDragOver}
-                    onDrop={onDrop}
-                    onDragEnd={onDragEnd}
-                    className={`transition-opacity ${isDragging ? "opacity-50" : ""}`}
-                  >
-                    <PageCard
-                      page={page}
-                      onArchive={handleArchive}
-                      onRestore={handleRestore}
-                      onDelete={setDeleteTarget}
-                      onGripDown={() => dnd.onGripDown(index)}
-                      onGripUp={dnd.onGripUp}
-                    />
-                  </div>
-                );
-              })}
-            </div>
+            {viewMode === "grid" ? (
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {activePages.map((page, index) => {
+                  const { draggable, onDragStart, onDragOver, onDrop, onDragEnd, isDragging } =
+                    dnd.itemProps(index);
+                  return (
+                    <div
+                      key={page.id}
+                      draggable={draggable}
+                      onDragStart={onDragStart}
+                      onDragOver={onDragOver}
+                      onDrop={onDrop}
+                      onDragEnd={onDragEnd}
+                      className={`h-full transition-opacity ${isDragging ? "opacity-50" : ""}`}
+                    >
+                      <PageCard
+                        page={page}
+                        viewMode="grid"
+                        onArchive={handleArchive}
+                        onRestore={handleRestore}
+                        onDelete={setDeleteTarget}
+                        onTogglePublish={handleTogglePublish}
+                        onGripDown={() => dnd.onGripDown(index)}
+                        onGripUp={dnd.onGripUp}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="overflow-hidden rounded-sm border border-border">
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="border-b border-border bg-muted/50 text-[length:var(--text-11)] font-medium uppercase tracking-wider text-muted-foreground">
+                      <th className="py-2 pl-3 pr-1 w-8">#</th>
+                      <th className="py-2 px-1 w-10"></th>
+                      <th className="py-2 px-2">Название</th>
+                      <th className="hidden md:table-cell py-2 px-2">Описание</th>
+                      <th className="hidden lg:table-cell py-2 px-2">Обложка</th>
+                      <th className="py-2 px-2">Статус</th>
+                      <th className="hidden sm:table-cell py-2 px-2">Путь</th>
+                      <th className="py-2 pr-3 pl-1 w-20"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {activePages.map((page, index) => {
+                      const props = dnd.itemProps(index);
+                      return (
+                        <PageCard
+                          key={page.id}
+                          page={page}
+                          viewMode="list"
+                          onArchive={handleArchive}
+                          onRestore={handleRestore}
+                          onDelete={setDeleteTarget}
+                          onTogglePublish={handleTogglePublish}
+                          onGripDown={() => dnd.onGripDown(index)}
+                          onGripUp={dnd.onGripUp}
+                          dragProps={props}
+                        />
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
 
             {activePages.length === 0 && (
               <p className="py-12 text-center text-[length:var(--text-14)] text-muted-foreground">
@@ -209,17 +259,39 @@ function PagesContent() {
                 <p className="mb-3 text-[length:var(--text-12)] font-medium uppercase tracking-wider text-muted-foreground">
                   Архив ({archivedPages.length})
                 </p>
-                <div className={`opacity-60 ${viewMode === "grid" ? "grid gap-3 sm:grid-cols-2 lg:grid-cols-3" : "flex flex-col gap-2"}`}>
-                  {archivedPages.map((page) => (
-                    <PageCard
-                      key={page.id}
-                      page={page}
-                      onArchive={handleArchive}
-                      onRestore={handleRestore}
-                      onDelete={setDeleteTarget}
-                    />
-                  ))}
-                </div>
+                {viewMode === "grid" ? (
+                  <div className="grid gap-3 opacity-60 sm:grid-cols-2 lg:grid-cols-3">
+                    {archivedPages.map((page) => (
+                      <PageCard
+                        key={page.id}
+                        page={page}
+                        viewMode="grid"
+                        onArchive={handleArchive}
+                        onRestore={handleRestore}
+                        onDelete={setDeleteTarget}
+                        onTogglePublish={handleTogglePublish}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="overflow-hidden rounded-sm border border-border opacity-60">
+                    <table className="w-full text-left">
+                      <tbody>
+                        {archivedPages.map((page) => (
+                          <PageCard
+                            key={page.id}
+                            page={page}
+                            viewMode="list"
+                            onArchive={handleArchive}
+                            onRestore={handleRestore}
+                            onDelete={setDeleteTarget}
+                            onTogglePublish={handleTogglePublish}
+                          />
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
             )}
           </TabsContent>

@@ -10,16 +10,6 @@ interface GenericEditorProps {
 export function GenericEditor({ block }: GenericEditorProps) {
   const info = BLOCK_TYPES[block.type];
 
-  if (block.type === "logoMarquee") {
-    return (
-      <div className="flex items-center justify-center bg-[#F0F0F0] py-8">
-        <p className="font-[family-name:var(--font-mono-family)] text-[length:var(--text-12)] uppercase tracking-wider text-[#939393]">
-          ● ● ● Логотипы партнёров — автоматический блок ● ● ●
-        </p>
-      </div>
-    );
-  }
-
   if (block.type === "pageBottom") {
     return (
       <div className="flex items-center justify-center bg-[#0A0A0A] py-8">

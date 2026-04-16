@@ -19,6 +19,7 @@ export function generateStaticParams() {
       section: "ai-products",
       slug: s.href.split("/").pop()!,
     })),
+    { section: "unique", slug: "rocketmind" },
   ];
 
   return allItems.map(({ section, slug }) => ({
