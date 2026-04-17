@@ -98,10 +98,14 @@ export function WaveAnimation({
             sin(p.z / M_PI * ${waveIntensity.toFixed(1)} + u_time * ${waveSpeed.toFixed(1)})
           );
           vec4 mvPos = modelViewMatrix * vec4(p, 1.0);
+          vec4 clipPos = projectionMatrix * mvPos;
           float depth = -mvPos.z;
-          v_alpha = 1.0 - smoothstep(u_fade_near, u_fade_far, depth);
+          float depthFade = 1.0 - smoothstep(u_fade_near, u_fade_far, depth);
+          float ndcY = clipPos.y / clipPos.w;
+          float topFade = 1.0 - smoothstep(0.80, 1.0, ndcY);
+          v_alpha = depthFade * topFade;
           gl_PointSize = u_point_size;
-          gl_Position = projectionMatrix * mvPos;
+          gl_Position = clipPos;
         }
       `,
       fragmentShader: `

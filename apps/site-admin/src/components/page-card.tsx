@@ -86,7 +86,7 @@ function PageActions({
       <Button
         variant="ghost"
         size="icon-sm"
-        onClick={() => router.push(`/pages/${encodeURIComponent(page.id)}`)}
+        onClick={() => router.push(`/pages/${page.id}`)}
       >
         <Pencil className="h-3.5 w-3.5" />
       </Button>
@@ -97,7 +97,7 @@ function PageActions({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => router.push(`/pages/${encodeURIComponent(page.id)}`)}>
+          <DropdownMenuItem onClick={() => router.push(`/pages/${page.id}`)}>
             <Pencil className="mr-2 h-3.5 w-3.5" />
             Редактировать
           </DropdownMenuItem>
@@ -188,7 +188,7 @@ export function PageCard({ page, viewMode = "grid", onArchive, onRestore, onDele
     return (
       <tr
         className={`group border-b border-border transition-colors hover:bg-muted/50 cursor-pointer ${dragProps?.isDragging ? "opacity-50" : ""}`}
-        onClick={() => router.push(`/pages/${encodeURIComponent(page.id)}`)}
+        onClick={() => router.push(`/pages/${page.id}`)}
         draggable={dragProps?.draggable}
         onDragStart={dragProps?.onDragStart}
         onDragOver={dragProps?.onDragOver}
@@ -302,7 +302,7 @@ export function PageCard({ page, viewMode = "grid", onArchive, onRestore, onDele
   return (
     <div
       className="group relative flex h-full flex-col overflow-hidden rounded-sm border border-border bg-card transition-colors hover:border-foreground/25 cursor-pointer"
-      onClick={() => router.push(`/pages/${encodeURIComponent(page.id)}`)}
+      onClick={() => router.push(`/pages/${page.id}`)}
     >
       {/* Drag handle — top-left, visible on hover */}
       {onGripDown && (

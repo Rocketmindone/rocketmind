@@ -67,7 +67,14 @@
       "Bash(grep -E \"editor\\\\.tsx$\")",
       "Bash(npx --no-install tsc --noEmit -p apps/site-admin)",
       "Bash(../../node_modules/.bin/tsc --noEmit)",
-      "Bash(node scripts/build-cms-data.mjs)"
+      "Bash(node scripts/build-cms-data.mjs)",
+      "Bash(mkdir -p \"apps/site-admin/src/app/\\(admin\\)/pages/[...pageId]\")",
+      "Bash(mv \"apps/site-admin/src/app/\\(admin\\)/pages/[pageId]/page.tsx\" \"apps/site-admin/src/app/\\(admin\\)/pages/[...pageId]/page.tsx\")",
+      "Bash(mv \"apps/site-admin/src/app/\\(admin\\)/pages/[pageId]/client.tsx\" \"apps/site-admin/src/app/\\(admin\\)/pages/[...pageId]/client.tsx\")",
+      "Bash(rmdir \"apps/site-admin/src/app/\\(admin\\)/pages/[pageId]\")",
+      "Bash(sed -i '' 's|`/pages/${encodeURIComponent\\(page.id\\)}`|`/pages/${page.id}`|g' apps/site-admin/src/components/page-card.tsx)",
+      "Bash(grep -n 'pages/${' apps/site-admin/src/components/page-card.tsx)",
+      "Bash(lsof -ti:3001,3002)"
     ],
     "additionalDirectories": [
       "/private/tmp",

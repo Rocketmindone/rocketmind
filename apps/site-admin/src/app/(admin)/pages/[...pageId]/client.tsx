@@ -8,10 +8,10 @@ import { EditorShell } from "@/components/page-editor/editor-shell";
 export function PageEditorClient({
   params,
 }: {
-  params: Promise<{ pageId: string }>;
+  params: Promise<{ pageId: string[] }>;
 }) {
-  const { pageId: rawId } = use(params);
-  const pageId = decodeURIComponent(rawId);
+  const { pageId: segments } = use(params);
+  const pageId = segments.map((s) => decodeURIComponent(s)).join("/");
   const { getPage } = useAdminStore();
   const router = useRouter();
 

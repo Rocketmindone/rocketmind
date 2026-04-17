@@ -114,7 +114,7 @@ export function SiteFooter({ basePath = "", className, children }: SiteFooterPro
       {/* Wave animation background + optional overlay content */}
       <div className="relative h-[440px] md:h-[460px]">
         <WaveAnimation
-          className="pointer-events-none absolute left-0 right-0 bottom-[95px] h-[1145px] md:bottom-[155px] md:h-[1245px]"
+          className="pointer-events-none absolute left-0 right-0 bottom-[87px] h-[1153px] md:bottom-[147px] md:h-[1253px]"
           pointSize={3}
           waveSpeed={2}
           waveIntensity={10}
