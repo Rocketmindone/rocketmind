@@ -57,11 +57,11 @@ export function RocketmindMenu({
             )}
           >
             <NavigationMenuList className="flex list-none items-center gap-0.5">
-              {dropdownItems.map((item, i) => (
+              {dropdownItems.map((item) => (
                 <DropdownSection
                   key={item.label}
                   item={item as NavSection & { items: NonNullable<NavSection["items"]> }}
-                  itemClassName={cn(itemClassName, i === dropdownItems.length - 1 && "pr-0")}
+                  itemClassName={itemClassName}
                 />
               ))}
             </NavigationMenuList>
